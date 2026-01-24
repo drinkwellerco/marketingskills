@@ -1,0 +1,522 @@
+{% doc %}
+  @prompt
+    i need a section with as many buttons as i want that I can fully customize and put links to
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-button-grid-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+  }
+
+  .ai-button-grid__container-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_desktop }}, 1fr);
+    gap: {{ block.settings.button_spacing }}px;
+    width: {{ block.settings.desktop_width_percent }}%;
+    margin: 0 auto;
+  }
+
+  .ai-button-grid__button-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: {{ block.settings.button_padding_vertical }}px {{ block.settings.button_padding_horizontal }}px;
+    background-color: {{ block.settings.button_bg_color }};
+    color: {{ block.settings.button_text_color }};
+    text-decoration: none;
+    border: {{ block.settings.button_border_width }}px solid {{ block.settings.button_border_color }};
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: {{ block.settings.button_font_size }}px;
+    font-weight: {{ block.settings.button_font_weight }};
+    text-transform: {{ block.settings.button_text_transform }};
+    letter-spacing: {{ block.settings.button_letter_spacing }}px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+  }
+
+  .ai-button-grid__button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_bg_color }};
+    color: {{ block.settings.button_hover_text_color }};
+    border-color: {{ block.settings.button_hover_border_color }};
+    transform: translateY(-2px);
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-button-grid__container-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_mobile }}, 1fr);
+      width: 100%;
+    }
+  }
+{% endstyle %}
+
+<custom-button-grid-{{ ai_gen_id }} class="ai-button-grid-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-button-grid__container-{{ ai_gen_id }}">
+    {% for i in (1..12) %}
+      {% liquid
+        assign button_text_key = 'button_' | append: i | append: '_text'
+        assign button_url_key = 'button_' | append: i | append: '_url'
+        assign button_enabled_key = 'button_' | append: i | append: '_enabled'
+        
+        assign button_text = block.settings[button_text_key]
+        assign button_url = block.settings[button_url_key]
+        assign button_enabled = block.settings[button_enabled_key]
+      %}
+      
+      {% if button_enabled and button_text != blank %}
+        <a 
+          href="{{ button_url }}" 
+          class="ai-button-grid__button-{{ ai_gen_id }}"
+        >
+          {{ button_text }}
+        </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+</custom-button-grid-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class CustomButtonGrid{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.style.display = 'block';
+      }
+    }
+
+    customElements.define('custom-button-grid-{{ ai_gen_id }}', CustomButtonGrid{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Button grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "button_spacing",
+      "label": "Button spacing",
+      "min": 4,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Button style"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical",
+      "label": "Vertical padding",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal",
+      "label": "Horizontal padding",
+      "min": 12,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "select",
+      "id": "button_text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "lowercase", "label": "lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "button_letter_spacing",
+      "label": "Letter spacing",
+      "min": 0,
+      "max": 3,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Button colors"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Background",
+      "default": "#46cc96"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text",
+      "default": "#17433c"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Border",
+      "default": "#46cc96"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg_color",
+      "label": "Hover background",
+      "default": "#17433c"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Hover text",
+      "default": "#e4e2bc"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_border_color",
+      "label": "Hover border",
+      "default": "#17433c"
+    },
+    {
+      "type": "header",
+      "content": "Button 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_1_enabled",
+      "label": "Enable button 1",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_1_text",
+      "label": "Button text",
+      "default": "Button 1"
+    },
+    {
+      "type": "url",
+      "id": "button_1_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Button 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_2_enabled",
+      "label": "Enable button 2",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_2_text",
+      "label": "Button text",
+      "default": "Button 2"
+    },
+    {
+      "type": "url",
+      "id": "button_2_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Button 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_3_enabled",
+      "label": "Enable button 3",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_3_text",
+      "label": "Button text",
+      "default": "Button 3"
+    },
+    {
+      "type": "url",
+      "id": "button_3_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Button 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_4_enabled",
+      "label": "Enable button 4",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_4_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "button_4_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Button 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_5_enabled",
+      "label": "Enable button 5",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_5_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "button_5_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Button 6"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_6_enabled",
+      "label": "Enable button 6",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_6_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "button_6_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Button 7"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_7_enabled",
+      "label": "Enable button 7",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_7_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "button_7_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Button 8"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_8_enabled",
+      "label": "Enable button 8",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_8_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "button_8_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Button 9"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_9_enabled",
+      "label": "Enable button 9",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_9_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "button_9_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Button 10"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_10_enabled",
+      "label": "Enable button 10",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_10_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "button_10_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Button 11"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_11_enabled",
+      "label": "Enable button 11",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_11_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "button_11_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Button 12"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_12_enabled",
+      "label": "Enable button 12",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_12_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "button_12_url",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Button grid"
+    }
+  ]
+}
+{% endschema %}

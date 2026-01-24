@@ -1,0 +1,1892 @@
+{% doc %}
+  @prompt
+    I want a section that is very professional and clear! I want the section to fully breakdown the ingredients in our product. We have about 10 ingredients and i want to be able to say the ammount per serving, what it does its purpose and its benifits and I also want to be able to put organic stamps on certian ingredients, I want tpo be able to change the size and font of the title and the subtitle as well as their alignment on the page, I need to be able to change the colors for everything. Some of the text wont change color, Have no color associated with the theme colors DO NOT MATCH THEME COLORS, I want to be able to put accent text in a gradient that also sparkles white every now and then before the ingredient name. just optional, the white sparkle looks dumb remove it, I need to be able to adjust the size and font weight of the accent text also! I want to be able to switch between the different flavors of my product and it appropriatly change the ingredients based on the flavor selected. I want to be able to select between the flavors using buttons. I want to be able to determine and adjust the number of total flavors, an ingredient needs to be able to be assigned to multiple flavors
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-ingredients-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: {{ block.settings.section_padding }}px 20px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-ingredients-container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.container_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-ingredients-header-{{ ai_gen_id }} {
+    text-align: {{ block.settings.header_alignment }};
+    margin-bottom: 40px;
+  }
+
+  .ai-ingredients-title-{{ ai_gen_id }} {
+    font-family: {{ block.settings.title_font.family }}, {{ block.settings.title_font.fallback_families }};
+    font-weight: {{ block.settings.title_font_weight }};
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.title_color }};
+    margin: 0 0 12px 0;
+    line-height: 1.2;
+  }
+
+  .ai-ingredients-subtitle-{{ ai_gen_id }} {
+    font-family: {{ block.settings.subtitle_font.family }}, {{ block.settings.subtitle_font.fallback_families }};
+    font-weight: {{ block.settings.subtitle_font_weight }};
+    font-size: {{ block.settings.subtitle_size }}px;
+    color: {{ block.settings.subtitle_color }};
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .ai-ingredients-flavor-selector-{{ ai_gen_id }} {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: {{ block.settings.header_alignment }};
+    margin-bottom: 40px;
+  }
+
+  .ai-ingredients-flavor-btn-{{ ai_gen_id }} {
+    padding: {{ block.settings.flavor_button_padding_y }}px {{ block.settings.flavor_button_padding_x }}px;
+    background-color: {{ block.settings.flavor_button_bg }};
+    color: {{ block.settings.flavor_button_text }};
+    border: {{ block.settings.flavor_button_border_width }}px solid {{ block.settings.flavor_button_border }};
+    border-radius: {{ block.settings.flavor_button_radius }}px;
+    font-size: {{ block.settings.flavor_button_font_size }}px;
+    font-weight: {{ block.settings.flavor_button_font_weight }};
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .ai-ingredients-flavor-btn-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.flavor_button_hover_bg }};
+    color: {{ block.settings.flavor_button_hover_text }};
+    border-color: {{ block.settings.flavor_button_hover_border }};
+  }
+
+  .ai-ingredients-flavor-btn-{{ ai_gen_id }}.active {
+    background-color: {{ block.settings.flavor_button_active_bg }};
+    color: {{ block.settings.flavor_button_active_text }};
+    border-color: {{ block.settings.flavor_button_active_border }};
+  }
+
+  .ai-ingredients-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: {{ block.settings.card_gap }}px;
+    margin-bottom: 40px;
+  }
+
+  .ai-ingredients-card-{{ ai_gen_id }} {
+    background-color: {{ block.settings.card_background }};
+    border: {{ block.settings.card_border_width }}px solid {{ block.settings.card_border_color }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    padding: {{ block.settings.card_padding }}px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: none;
+  }
+
+  .ai-ingredients-card-{{ ai_gen_id }}.active {
+    display: block;
+  }
+
+  .ai-ingredients-card-{{ ai_gen_id }}:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .ai-ingredients-card-header-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    gap: 12px;
+    cursor: pointer;
+  }
+
+  .ai-ingredients-name-wrapper-{{ ai_gen_id }} {
+    flex: 1;
+  }
+
+  .ai-ingredients-accent-{{ ai_gen_id }} {
+    background: linear-gradient(135deg, {{ block.settings.accent_gradient_start }}, {{ block.settings.accent_gradient_end }});
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: {{ block.settings.accent_text_size }}px;
+    font-weight: {{ block.settings.accent_text_weight }};
+    display: inline-block;
+    margin-right: 8px;
+    text-transform: uppercase;
+  }
+
+  .ai-ingredients-name-{{ ai_gen_id }} {
+    font-size: {{ block.settings.ingredient_name_size }}px;
+    font-weight: {{ block.settings.ingredient_name_weight }};
+    color: {{ block.settings.ingredient_name_color }};
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .ai-ingredients-badge-{{ ai_gen_id }} {
+    background-color: {{ block.settings.badge_bg_color }};
+    color: {{ block.settings.badge_text_color }};
+    padding: 4px 10px;
+    border-radius: {{ block.settings.badge_border_radius }}px;
+    font-size: {{ block.settings.badge_font_size }}px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .ai-ingredients-amount-{{ ai_gen_id }} {
+    font-size: {{ block.settings.amount_size }}px;
+    color: {{ block.settings.amount_color }};
+    margin: 4px 0 8px 0;
+    font-weight: 500;
+  }
+
+  .ai-ingredients-card-body-{{ ai_gen_id }} {
+    display: none;
+    margin-top: 8px;
+  }
+
+  .ai-ingredients-card-{{ ai_gen_id }}.expanded .ai-ingredients-card-body-{{ ai_gen_id }} {
+    display: block;
+  }
+
+  .ai-ingredients-section-{{ ai_gen_id }} {
+    margin-bottom: 16px;
+  }
+
+  .ai-ingredients-section-{{ ai_gen_id }}:last-child {
+    margin-bottom: 0;
+  }
+
+  .ai-ingredients-label-{{ ai_gen_id }} {
+    font-size: {{ block.settings.label_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.label_color }};
+    margin: 0 0 6px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .ai-ingredients-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.body_text_size }}px;
+    color: {{ block.settings.body_text_color }};
+    line-height: 1.6;
+    margin: 0;
+    padding-left: 1.2em;
+    list-style: disc;
+  }
+
+  .ai-ingredients-text-{{ ai_gen_id }} li {
+    margin-bottom: 4px;
+  }
+
+  .ai-ingredients-disclaimer-{{ ai_gen_id }} {
+    text-align: center;
+    font-size: {{ block.settings.disclaimer_size }}px;
+    color: {{ block.settings.disclaimer_color }};
+    font-style: italic;
+    margin-top: 40px;
+    line-height: 1.5;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-ingredients-grid-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+    }
+
+    .ai-ingredients-flavor-selector-{{ ai_gen_id }} {
+      justify-content: center;
+    }
+  }
+
+  /* DESKTOP: disable accordion, always show body */
+  @media screen and (min-width: 750px) {
+    .ai-ingredients-card-body-{{ ai_gen_id }} {
+      display: block !important;
+    }
+
+    .ai-ingredients-card-header-{{ ai_gen_id }} {
+      cursor: default;
+    }
+  }
+{% endstyle %}
+
+<ingredients-breakdown-{{ ai_gen_id }}
+  class="ai-ingredients-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-ingredients-container-{{ ai_gen_id }}">
+    {% if block.settings.section_title != blank or block.settings.section_subtitle != blank %}
+      <div class="ai-ingredients-header-{{ ai_gen_id }}">
+        {% if block.settings.section_title != blank %}
+          <h2 class="ai-ingredients-title-{{ ai_gen_id }}">{{ block.settings.section_title }}</h2>
+        {% endif %}
+        {% if block.settings.section_subtitle != blank %}
+          <p class="ai-ingredients-subtitle-{{ ai_gen_id }}">{{ block.settings.section_subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if block.settings.enable_flavor_selector %}
+      <div class="ai-ingredients-flavor-selector-{{ ai_gen_id }}">
+        {% for i in (1..block.settings.number_of_flavors) %}
+          {% assign flavor_name_key = 'flavor_' | append: i | append: '_name' %}
+          {% assign flavor_name = block.settings[flavor_name_key] %}
+          {% if flavor_name != blank %}
+            <button
+              class="ai-ingredients-flavor-btn-{{ ai_gen_id }} {% if i == 1 %}active{% endif %}"
+              data-flavor="{{ i }}"
+            >
+              {{ flavor_name }}
+            </button>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="ai-ingredients-grid-{{ ai_gen_id }}">
+      {% for i in (1..10) %}
+        {% assign enabled_key = 'ingredient_' | append: i | append: '_enabled' %}
+        {% assign name_key = 'ingredient_' | append: i | append: '_name' %}
+        {% assign accent_key = 'ingredient_' | append: i | append: '_accent' %}
+        {% assign amount_key = 'ingredient_' | append: i | append: '_amount' %}
+        {% assign purpose_key = 'ingredient_' | append: i | append: '_purpose' %}
+        {% assign benefits_key = 'ingredient_' | append: i | append: '_benefits' %}
+        {% assign organic_key = 'ingredient_' | append: i | append: '_organic' %}
+        
+        {% assign flavor_1_key = 'ingredient_' | append: i | append: '_flavor_1' %}
+        {% assign flavor_2_key = 'ingredient_' | append: i | append: '_flavor_2' %}
+        {% assign flavor_3_key = 'ingredient_' | append: i | append: '_flavor_3' %}
+        {% assign flavor_4_key = 'ingredient_' | append: i | append: '_flavor_4' %}
+        {% assign flavor_5_key = 'ingredient_' | append: i | append: '_flavor_5' %}
+        {% assign flavor_6_key = 'ingredient_' | append: i | append: '_flavor_6' %}
+
+        {% assign enabled = block.settings[enabled_key] %}
+        {% assign name = block.settings[name_key] %}
+        {% assign accent = block.settings[accent_key] %}
+        {% assign amount = block.settings[amount_key] %}
+        {% assign purpose = block.settings[purpose_key] %}
+        {% assign benefits = block.settings[benefits_key] %}
+        {% assign organic = block.settings[organic_key] %}
+        
+        {% assign flavor_1 = block.settings[flavor_1_key] %}
+        {% assign flavor_2 = block.settings[flavor_2_key] %}
+        {% assign flavor_3 = block.settings[flavor_3_key] %}
+        {% assign flavor_4 = block.settings[flavor_4_key] %}
+        {% assign flavor_5 = block.settings[flavor_5_key] %}
+        {% assign flavor_6 = block.settings[flavor_6_key] %}
+
+        {% if enabled and name != blank %}
+          {%- assign flavors_array = '' -%}
+          {% if flavor_1 %}{% assign flavors_array = flavors_array | append: '1,' %}{% endif %}
+          {% if flavor_2 %}{% assign flavors_array = flavors_array | append: '2,' %}{% endif %}
+          {% if flavor_3 %}{% assign flavors_array = flavors_array | append: '3,' %}{% endif %}
+          {% if flavor_4 %}{% assign flavors_array = flavors_array | append: '4,' %}{% endif %}
+          {% if flavor_5 %}{% assign flavors_array = flavors_array | append: '5,' %}{% endif %}
+          {% if flavor_6 %}{% assign flavors_array = flavors_array | append: '6,' %}{% endif %}
+
+          {% if flavors_array == '' %}
+            {% assign flavors_array = 'all,' %}
+          {% endif %}
+
+          {%- assign show_by_default = false -%}
+          {% if block.settings.enable_flavor_selector %}
+            {% if flavor_1 or flavors_array contains 'all,' %}
+              {% assign show_by_default = true %}
+            {% endif %}
+          {% else %}
+            {% assign show_by_default = true %}
+          {% endif %}
+
+          <div
+            class="ai-ingredients-card-{{ ai_gen_id }} {% if show_by_default %}active{% endif %}"
+            data-flavors="{{ flavors_array }}"
+          >
+            <div class="ai-ingredients-card-header-{{ ai_gen_id }}">
+              <div class="ai-ingredients-name-wrapper-{{ ai_gen_id }}">
+                {% if accent != blank %}
+                  <span class="ai-ingredients-accent-{{ ai_gen_id }}">{{ accent }}</span>
+                {% endif %}
+                <h3 class="ai-ingredients-name-{{ ai_gen_id }}">{{ name }}</h3>
+              </div>
+              {% if organic %}
+                <span class="ai-ingredients-badge-{{ ai_gen_id }}">{{ block.settings.badge_text }}</span>
+              {% endif %}
+            </div>
+
+            {% if amount != blank %}
+              <p class="ai-ingredients-amount-{{ ai_gen_id }}">{{ amount }}</p>
+            {% endif %}
+
+            <div class="ai-ingredients-card-body-{{ ai_gen_id }}">
+              {% if purpose != blank %}
+                <div class="ai-ingredients-section-{{ ai_gen_id }}">
+                  <p class="ai-ingredients-label-{{ ai_gen_id }}">Purpose</p>
+                  <p class="ai-ingredients-text-{{ ai_gen_id }}">{{ purpose }}</p>
+                </div>
+              {% endif %}
+
+              {% if benefits != blank %}
+                <div class="ai-ingredients-section-{{ ai_gen_id }}">
+                  <p class="ai-ingredients-label-{{ ai_gen_id }}">Benefits</p>
+                  {%- assign benefits_lines = benefits | newline_to_br | split: '<br />' -%}
+                  <ul class="ai-ingredients-text-{{ ai_gen_id }}">
+                    {% for line in benefits_lines %}
+                      {% assign trimmed = line | strip %}
+                      {% if trimmed != '' %}
+                        <li>{{ trimmed }}</li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if block.settings.disclaimer != blank %}
+      <div class="ai-ingredients-disclaimer-{{ ai_gen_id }}">
+        {{ block.settings.disclaimer }}
+      </div>
+    {% endif %}
+  </div>
+</ingredients-breakdown-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class IngredientsBreakdown{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.flavorButtons = this.querySelectorAll('.ai-ingredients-flavor-btn-{{ ai_gen_id }}');
+        this.ingredientCards = this.querySelectorAll('.ai-ingredients-card-{{ ai_gen_id }}');
+        this.setupEventListeners();
+        this.initializeView();
+      }
+
+      setupEventListeners() {
+        // Flavor buttons
+        this.flavorButtons.forEach((button) => {
+          button.addEventListener('click', () => {
+            const flavor = button.getAttribute('data-flavor');
+            this.switchFlavor(flavor);
+          });
+        });
+
+        // Accordion headers (mobile only in toggle)
+        this.ingredientCards.forEach((card) => {
+          const header = card.querySelector('.ai-ingredients-card-header-{{ ai_gen_id }}');
+          if (header) {
+            header.addEventListener('click', () => {
+              this.toggleAccordion(card);
+            });
+          }
+        });
+      }
+
+      initializeView() {
+        const isMobile = window.innerWidth < 750;
+
+        // No flavor selector: show all
+        if (!this.flavorButtons.length) {
+          this.ingredientCards.forEach((card) => {
+            card.classList.add('active');
+          });
+
+          if (isMobile) {
+            this.collapseAll();
+            this.expandFirstVisible();
+          } else {
+            // desktop: all expanded
+            this.ingredientCards.forEach((card) => {
+              if (card.classList.contains('active')) {
+                card.classList.add('expanded');
+              }
+            });
+          }
+
+          return;
+        }
+
+        const activeButton =
+          this.querySelector('.ai-ingredients-flavor-btn-{{ ai_gen_id }}.active') ||
+          this.flavorButtons[0];
+
+        if (activeButton) {
+          const flavor = activeButton.getAttribute('data-flavor');
+          this.switchFlavor(flavor);
+        }
+      }
+
+      switchFlavor(flavor) {
+        const isMobile = window.innerWidth < 750;
+
+        // Update button state
+        this.flavorButtons.forEach((btn) => {
+          if (btn.getAttribute('data-flavor') === flavor) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+
+        // Show only ingredients that belong to this flavor OR global ones
+        this.ingredientCards.forEach((card) => {
+          const cardFlavors = card.getAttribute('data-flavors') || '';
+          if (cardFlavors.includes('all,') || cardFlavors.includes(flavor + ',')) {
+            card.classList.add('active');
+          } else {
+            card.classList.remove('active');
+          }
+        });
+
+        if (isMobile) {
+          // Mobile: accordion behavior
+          this.collapseAll();
+          this.expandFirstVisible();
+        } else {
+          // Desktop: ensure all visible cards are expanded
+          this.ingredientCards.forEach((card) => {
+            if (card.classList.contains('active')) {
+              card.classList.add('expanded');
+            } else {
+              card.classList.remove('expanded');
+            }
+          });
+        }
+      }
+
+      collapseAll() {
+        this.ingredientCards.forEach((card) => {
+          card.classList.remove('expanded');
+        });
+      }
+
+      expandFirstVisible() {
+        const firstVisible = Array.from(this.ingredientCards).find((card) =>
+          card.classList.contains('active')
+        );
+        if (firstVisible) {
+          firstVisible.classList.add('expanded');
+        }
+      }
+
+      toggleAccordion(card) {
+        // Desktop? no accordion behavior
+        if (window.innerWidth >= 750) return;
+
+        if (!card.classList.contains('active')) return;
+
+        if (card.classList.contains('expanded')) {
+          card.classList.remove('expanded');
+        } else {
+          this.collapseAll();
+          card.classList.add('expanded');
+        }
+      }
+    }
+
+    customElements.define('ingredients-breakdown-{{ ai_gen_id }}', IngredientsBreakdown{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Ingredient breakdown",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Title",
+      "default": "What's Inside"
+    },
+    {
+      "type": "textarea",
+      "id": "section_subtitle",
+      "label": "Subtitle",
+      "default": "Premium ingredients for optimal wellness"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Header alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Title style"
+    },
+    {
+      "type": "font_picker",
+      "id": "title_font",
+      "label": "Title font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "Title weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "header",
+      "content": "Subtitle style"
+    },
+    {
+      "type": "font_picker",
+      "id": "subtitle_font",
+      "label": "Subtitle font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "label": "Subtitle size",
+      "min": 14,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "subtitle_font_weight",
+      "label": "Subtitle weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "header",
+      "content": "Flavor selector"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_flavor_selector",
+      "label": "Enable flavor selector",
+      "default": false,
+      "info": "Allow customers to switch between different product flavors"
+    },
+    {
+      "type": "range",
+      "id": "number_of_flavors",
+      "label": "Number of flavors",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 3,
+      "info": "Total number of flavor options"
+    },
+    {
+      "type": "text",
+      "id": "flavor_1_name",
+      "label": "Flavor 1 name",
+      "default": "Original"
+    },
+    {
+      "type": "text",
+      "id": "flavor_2_name",
+      "label": "Flavor 2 name",
+      "default": "Berry"
+    },
+    {
+      "type": "text",
+      "id": "flavor_3_name",
+      "label": "Flavor 3 name",
+      "default": "Citrus"
+    },
+    {
+      "type": "text",
+      "id": "flavor_4_name",
+      "label": "Flavor 4 name"
+    },
+    {
+      "type": "text",
+      "id": "flavor_5_name",
+      "label": "Flavor 5 name"
+    },
+    {
+      "type": "text",
+      "id": "flavor_6_name",
+      "label": "Flavor 6 name"
+    },
+    {
+      "type": "header",
+      "content": "Flavor button style"
+    },
+    {
+      "type": "range",
+      "id": "flavor_button_padding_y",
+      "label": "Vertical padding",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "flavor_button_padding_x",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "flavor_button_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "flavor_button_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "flavor_button_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "flavor_button_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Flavor button colors"
+    },
+    {
+      "type": "color",
+      "id": "flavor_button_bg",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "flavor_button_text",
+      "label": "Text",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "flavor_button_border",
+      "label": "Border",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "flavor_button_hover_bg",
+      "label": "Hover background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "flavor_button_hover_text",
+      "label": "Hover text",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "flavor_button_hover_border",
+      "label": "Hover border",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "flavor_button_active_bg",
+      "label": "Active background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "flavor_button_active_text",
+      "label": "Active text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "flavor_button_active_border",
+      "label": "Active border",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle",
+      "default": "#4a4a4a"
+    },
+    {
+      "type": "header",
+      "content": "Card colors"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card border",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "header",
+      "content": "Ingredient text colors"
+    },
+    {
+      "type": "color",
+      "id": "ingredient_name_color",
+      "label": "Ingredient name",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "amount_color",
+      "label": "Amount",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Labels",
+      "default": "#888888"
+    },
+    {
+      "type": "color",
+      "id": "body_text_color",
+      "label": "Body text",
+      "default": "#4a4a4a"
+    },
+    {
+      "type": "color",
+      "id": "disclaimer_color",
+      "label": "Disclaimer",
+      "default": "#888888"
+    },
+    {
+      "type": "header",
+      "content": "Accent text (optional)"
+    },
+    {
+      "type": "color",
+      "id": "accent_gradient_start",
+      "label": "Gradient start",
+      "default": "#ff6b9d"
+    },
+    {
+      "type": "color",
+      "id": "accent_gradient_end",
+      "label": "Gradient end",
+      "default": "#ffc107"
+    },
+    {
+      "type": "range",
+      "id": "accent_text_size",
+      "label": "Accent text size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "accent_text_weight",
+      "label": "Accent text weight",
+      "options": [
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "header",
+      "content": "Organic badge"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "Organic"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg_color",
+      "label": "Background",
+      "default": "#28a745"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "badge_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "badge_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "label": "Container width",
+      "min": 800,
+      "max": 1400,
+      "step": 50,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Card gap",
+      "min": 16,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Card padding",
+      "min": 16,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "card_border_width",
+      "label": "Card border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Typography sizes"
+    },
+    {
+      "type": "range",
+      "id": "ingredient_name_size",
+      "label": "Ingredient name",
+      "min": 16,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "ingredient_name_weight",
+      "label": "Ingredient name weight",
+      "options": [
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "amount_size",
+      "label": "Amount",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "label": "Labels",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "body_text_size",
+      "label": "Body text",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "disclaimer_size",
+      "label": "Disclaimer",
+      "min": 11,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Disclaimer"
+    },
+    {
+      "type": "textarea",
+      "id": "disclaimer",
+      "label": "Disclaimer text",
+      "default": "These statements have not been evaluated by the FDA. This product is not intended to diagnose, treat, cure, or prevent any disease."
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_1_enabled",
+      "label": "Enable ingredient 1",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "Select which flavors include this ingredient:"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_1_flavor_1",
+      "label": "Flavor 1",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_1_flavor_2",
+      "label": "Flavor 2",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_1_flavor_3",
+      "label": "Flavor 3",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_1_flavor_4",
+      "label": "Flavor 4",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_1_flavor_5",
+      "label": "Flavor 5",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_1_flavor_6",
+      "label": "Flavor 6",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "ingredient_1_accent",
+      "label": "Accent text (optional)",
+      "info": "e.g., NEW, PREMIUM, BEST"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_1_name",
+      "label": "Ingredient name",
+      "default": "Vitamin C"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_1_amount",
+      "label": "Amount per serving",
+      "default": "500mg per serving"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_1_purpose",
+      "label": "Purpose"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_1_benefits",
+      "label": "Benefits"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_1_organic",
+      "label": "Show organic badge",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_2_enabled",
+      "label": "Enable ingredient 2",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "Select which flavors include this ingredient:"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_2_flavor_1",
+      "label": "Flavor 1",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_2_flavor_2",
+      "label": "Flavor 2",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_2_flavor_3",
+      "label": "Flavor 3",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_2_flavor_4",
+      "label": "Flavor 4",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_2_flavor_5",
+      "label": "Flavor 5",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_2_flavor_6",
+      "label": "Flavor 6",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "ingredient_2_accent",
+      "label": "Accent text (optional)"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_2_name",
+      "label": "Ingredient name",
+      "default": "Magnesium"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_2_amount",
+      "label": "Amount per serving",
+      "default": "200mg per serving"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_2_purpose",
+      "label": "Purpose"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_2_benefits",
+      "label": "Benefits"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_2_organic",
+      "label": "Show organic badge",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_3_enabled",
+      "label": "Enable ingredient 3",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "Select which flavors include this ingredient:"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_3_flavor_1",
+      "label": "Flavor 1",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_3_flavor_2",
+      "label": "Flavor 2",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_3_flavor_3",
+      "label": "Flavor 3",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_3_flavor_4",
+      "label": "Flavor 4",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_3_flavor_5",
+      "label": "Flavor 5",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_3_flavor_6",
+      "label": "Flavor 6",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "ingredient_3_accent",
+      "label": "Accent text (optional)"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_3_name",
+      "label": "Ingredient name"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_3_amount",
+      "label": "Amount per serving"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_3_purpose",
+      "label": "Purpose"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_3_benefits",
+      "label": "Benefits"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_3_organic",
+      "label": "Show organic badge",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_4_enabled",
+      "label": "Enable ingredient 4",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "Select which flavors include this ingredient:"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_4_flavor_1",
+      "label": "Flavor 1",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_4_flavor_2",
+      "label": "Flavor 2",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_4_flavor_3",
+      "label": "Flavor 3",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_4_flavor_4",
+      "label": "Flavor 4",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_4_flavor_5",
+      "label": "Flavor 5",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_4_flavor_6",
+      "label": "Flavor 6",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "ingredient_4_accent",
+      "label": "Accent text (optional)"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_4_name",
+      "label": "Ingredient name"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_4_amount",
+      "label": "Amount per serving"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_4_purpose",
+      "label": "Purpose"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_4_benefits",
+      "label": "Benefits"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_4_organic",
+      "label": "Show organic badge",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_5_enabled",
+      "label": "Enable ingredient 5",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "Select which flavors include this ingredient:"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_5_flavor_1",
+      "label": "Flavor 1",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_5_flavor_2",
+      "label": "Flavor 2",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_5_flavor_3",
+      "label": "Flavor 3",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_5_flavor_4",
+      "label": "Flavor 4",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_5_flavor_5",
+      "label": "Flavor 5",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_5_flavor_6",
+      "label": "Flavor 6",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "ingredient_5_accent",
+      "label": "Accent text (optional)"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_5_name",
+      "label": "Ingredient name"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_5_amount",
+      "label": "Amount per serving"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_5_purpose",
+      "label": "Purpose"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_5_benefits",
+      "label": "Benefits"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_5_organic",
+      "label": "Show organic badge",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 6"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_6_enabled",
+      "label": "Enable ingredient 6",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "Select which flavors include this ingredient:"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_6_flavor_1",
+      "label": "Flavor 1",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_6_flavor_2",
+      "label": "Flavor 2",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_6_flavor_3",
+      "label": "Flavor 3",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_6_flavor_4",
+      "label": "Flavor 4",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_6_flavor_5",
+      "label": "Flavor 5",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_6_flavor_6",
+      "label": "Flavor 6",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "ingredient_6_accent",
+      "label": "Accent text (optional)"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_6_name",
+      "label": "Ingredient name"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_6_amount",
+      "label": "Amount per serving"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_6_purpose",
+      "label": "Purpose"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_6_benefits",
+      "label": "Benefits"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_6_organic",
+      "label": "Show organic badge",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 7"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_7_enabled",
+      "label": "Enable ingredient 7",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "Select which flavors include this ingredient:"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_7_flavor_1",
+      "label": "Flavor 1",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_7_flavor_2",
+      "label": "Flavor 2",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_7_flavor_3",
+      "label": "Flavor 3",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_7_flavor_4",
+      "label": "Flavor 4",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_7_flavor_5",
+      "label": "Flavor 5",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_7_flavor_6",
+      "label": "Flavor 6",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "ingredient_7_accent",
+      "label": "Accent text (optional)"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_7_name",
+      "label": "Ingredient name"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_7_amount",
+      "label": "Amount per serving"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_7_purpose",
+      "label": "Purpose"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_7_benefits",
+      "label": "Benefits"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_7_organic",
+      "label": "Show organic badge",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 8"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_8_enabled",
+      "label": "Enable ingredient 8",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "Select which flavors include this ingredient:"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_8_flavor_1",
+      "label": "Flavor 1",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_8_flavor_2",
+      "label": "Flavor 2",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_8_flavor_3",
+      "label": "Flavor 3",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_8_flavor_4",
+      "label": "Flavor 4",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_8_flavor_5",
+      "label": "Flavor 5",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_8_flavor_6",
+      "label": "Flavor 6",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "ingredient_8_accent",
+      "label": "Accent text (optional)"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_8_name",
+      "label": "Ingredient name"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_8_amount",
+      "label": "Amount per serving"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_8_purpose",
+      "label": "Purpose"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_8_benefits",
+      "label": "Benefits"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_8_organic",
+      "label": "Show organic badge",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 9"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_9_enabled",
+      "label": "Enable ingredient 9",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "Select which flavors include this ingredient:"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_9_flavor_1",
+      "label": "Flavor 1",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_9_flavor_2",
+      "label": "Flavor 2",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_9_flavor_3",
+      "label": "Flavor 3",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_9_flavor_4",
+      "label": "Flavor 4",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_9_flavor_5",
+      "label": "Flavor 5",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_9_flavor_6",
+      "label": "Flavor 6",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "ingredient_9_accent",
+      "label": "Accent text (optional)"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_9_name",
+      "label": "Ingredient name"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_9_amount",
+      "label": "Amount per serving"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_9_purpose",
+      "label": "Purpose"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_9_benefits",
+      "label": "Benefits"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_9_organic",
+      "label": "Show organic badge",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 10"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_10_enabled",
+      "label": "Enable ingredient 10",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "Select which flavors include this ingredient:"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_10_flavor_1",
+      "label": "Flavor 1",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_10_flavor_2",
+      "label": "Flavor 2",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_10_flavor_3",
+      "label": "Flavor 3",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_10_flavor_4",
+      "label": "Flavor 4",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_10_flavor_5",
+      "label": "Flavor 5",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_10_flavor_6",
+      "label": "Flavor 6",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "ingredient_10_accent",
+      "label": "Accent text (optional)"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_10_name",
+      "label": "Ingredient name"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_10_amount",
+      "label": "Amount per serving"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_10_purpose",
+      "label": "Purpose"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_10_benefits",
+      "label": "Benefits"
+    },
+    {
+      "type": "checkbox",
+      "id": "ingredient_10_organic",
+      "label": "Show organic badge",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ingredient breakdown"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}
