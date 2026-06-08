@@ -1,24 +1,25 @@
 {%- assign sid = section.id | replace: '_', '-' -%}
 
-<script>
-(function(){
-  var fonts = [
-    {%- for block in section.blocks -%}
-      {%- if block.settings.font_family != blank -%}"{{ block.settings.font_family | replace: '"', '' }}",{%- endif -%}
-      {%- if block.type == 'heading' and block.settings.accent_font_family != blank -%}"{{ block.settings.accent_font_family | replace: '"', '' }}",{%- endif -%}
-    {%- endfor -%}
-  ];
-  var loaded = {};
-  fonts.forEach(function(f){
-    if(!f || loaded[f]) return;
-    loaded[f] = 1;
-    var l = document.createElement('link');
-    l.rel = 'stylesheet';
-    l.href = 'https://fonts.googleapis.com/css2?family=' + f.replace(/ /g,'+') + ':ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap';
-    document.head.appendChild(l);
-  });
-})();
-</script>
+{%- comment -%}
+  Font loading: @import inside a <style> tag is re-processed every time
+  Shopify re-renders the section HTML in the theme editor, unlike <script> or
+  <link> tags. This means changing the font field instantly loads the new font.
+
+  Class names deliberately avoid "heading" / "subheading" so the theme's
+  [class*="heading"] CSS selector and any theme JS targeting heading classes
+  cannot touch these elements. No theme typography setting controls anything here.
+{%- endcomment -%}
+
+<style>
+{%- for block in section.blocks -%}
+  {%- if block.settings.font_family != blank -%}
+    @import url('https://fonts.googleapis.com/css2?family={{ block.settings.font_family | replace: ' ', '+' }}:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap');
+  {%- endif -%}
+  {%- if block.type == 'heading' and block.settings.accent_font_family != blank -%}
+    @import url('https://fonts.googleapis.com/css2?family={{ block.settings.accent_font_family | replace: ' ', '+' }}:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap');
+  {%- endif -%}
+{%- endfor -%}
+</style>
 
 {% style %}
   .hero-section-{{ sid }} {
@@ -78,12 +79,12 @@
   {% for block in section.blocks %}
     {%- assign bid = block.id | replace: '_', '-' -%}
 
-    .hero-block-wrap-{{ bid }} {
+    .hero-bw-{{ bid }} {
       padding-top: {{ block.settings.padding_top }}px;
       padding-bottom: {{ block.settings.padding_bottom }}px;
     }
     @media (max-width: 768px) {
-      .hero-block-wrap-{{ bid }} {
+      .hero-bw-{{ bid }} {
         padding-top: {{ block.settings.mobile_padding_top }}px !important;
         padding-bottom: {{ block.settings.mobile_padding_bottom }}px !important;
       }
@@ -92,32 +93,33 @@
     {% case block.type %}
 
       {% when 'eyebrow' %}
-        .hero-eyebrow-{{ bid }} {
+        .hero-eb-{{ bid }} {
           font-size: {{ block.settings.font_size }}px;
           text-align: {{ block.settings.text_align }};
         }
         @media (max-width: 768px) {
-          .hero-eyebrow-{{ bid }} {
+          .hero-eb-{{ bid }} {
             font-size: {{ block.settings.mobile_font_size }}px !important;
             text-align: {{ block.settings.mobile_text_align }} !important;
           }
         }
 
       {% when 'heading' %}
-        .hero-heading-{{ bid }} {
+        .hero-hl-{{ bid }} {
           font-size: {{ block.settings.font_size }}px;
           text-align: {{ block.settings.text_align }};
         }
-        .hero-accent-{{ bid }} {
+        .hero-ac-{{ bid }} {
           font-family: '{{ block.settings.accent_font_family }}', sans-serif !important;
           color: {{ block.settings.accent_color }} !important;
           font-style: {{ block.settings.accent_font_style }} !important;
           font-size: inherit !important;
           font-weight: inherit !important;
           line-height: inherit !important;
+          letter-spacing: inherit !important;
         }
         @media (max-width: 768px) {
-          .hero-heading-{{ bid }} {
+          .hero-hl-{{ bid }} {
             font-size: {{ block.settings.mobile_font_size }}px !important;
             line-height: {{ block.settings.mobile_line_height }} !important;
             text-align: {{ block.settings.mobile_text_align }} !important;
@@ -125,12 +127,12 @@
         }
 
       {% when 'subheading' %}
-        .hero-subheading-{{ bid }} {
+        .hero-sl-{{ bid }} {
           font-size: {{ block.settings.font_size }}px;
           text-align: {{ block.settings.text_align }};
         }
         @media (max-width: 768px) {
-          .hero-subheading-{{ bid }} {
+          .hero-sl-{{ bid }} {
             font-size: {{ block.settings.mobile_font_size }}px !important;
             text-align: {{ block.settings.mobile_text_align }} !important;
           }
@@ -151,7 +153,7 @@
         }
 
       {% when 'image' %}
-        .hero-img-wrap-{{ bid }} {
+        .hero-imgw-{{ bid }} {
           width: 100%;
           overflow: hidden;
           border-radius: {{ block.settings.border_radius }}px;
@@ -165,7 +167,7 @@
           display: block;
         }
         @media (max-width: 768px) {
-          .hero-img-wrap-{{ bid }} {
+          .hero-imgw-{{ bid }} {
             height: {{ block.settings.mobile_height }}px !important;
             {% if block.settings.mobile_full_width %}border-radius: 0 !important;{% endif %}
           }
@@ -178,22 +180,22 @@
           gap: {{ block.settings.gap }}px;
           align-items: center;
         }
-        .hero-btn-p-{{ bid }} {
+        .hero-btnp-{{ bid }} {
           font-size: {{ block.settings.primary_font_size }}px;
           transition: opacity 0.2s ease;
           white-space: nowrap;
         }
-        .hero-btn-p-{{ bid }}:hover { opacity: 0.85; }
-        .hero-btn-s-{{ bid }} {
+        .hero-btnp-{{ bid }}:hover { opacity: 0.85; }
+        .hero-btns2-{{ bid }} {
           font-size: {{ block.settings.secondary_font_size }}px;
           transition: opacity 0.2s ease;
           white-space: nowrap;
         }
-        .hero-btn-s-{{ bid }}:hover { opacity: 0.85; }
+        .hero-btns2-{{ bid }}:hover { opacity: 0.85; }
         @media (max-width: 768px) {
           {% if block.settings.mobile_stack %}.hero-btns-{{ bid }} { flex-direction: column; align-items: flex-start; }{% endif %}
-          .hero-btn-p-{{ bid }} { font-size: {{ block.settings.mobile_primary_font_size }}px !important; }
-          .hero-btn-s-{{ bid }} { font-size: {{ block.settings.mobile_secondary_font_size }}px !important; }
+          .hero-btnp-{{ bid }} { font-size: {{ block.settings.mobile_primary_font_size }}px !important; }
+          .hero-btns2-{{ bid }} { font-size: {{ block.settings.mobile_secondary_font_size }}px !important; }
         }
 
       {% when 'pills' %}
@@ -211,7 +213,7 @@
         }
         {% for i in (1..5) %}
           {% assign fs_key = 'pill_' | append: i | append: '_font_size' %}
-          .hero-pill-{{ i }}-{{ bid }} { font-size: {{ block.settings[fs_key] }}px !important; }
+          .hero-pill-{{ i }}-{{ bid }} { font-size: {{ block.settings[fs_key] }}px; }
         {% endfor %}
         @media (max-width: 768px) {
           .hero-pills-{{ bid }} { gap: {{ block.settings.mobile_gap }}px; }
@@ -232,13 +234,13 @@
       {% for block in section.blocks %}
         {%- assign bid = block.id | replace: '_', '-' -%}
         {% unless block.type == 'image' %}
-          <div class="hero-block-wrap-{{ bid }}" {{ block.shopify_attributes }}>
+          <div class="hero-bw-{{ bid }}" {{ block.shopify_attributes }}>
             {% case block.type %}
 
               {% when 'eyebrow' %}
                 {% if block.settings.text != blank %}
                   <span
-                    class="hero-eyebrow-{{ bid }}"
+                    class="hero-eb-{{ bid }}"
                     style="font-family:'{{ block.settings.font_family }}',sans-serif;font-weight:{{ block.settings.font_weight }};color:{{ block.settings.color }};letter-spacing:{{ block.settings.letter_spacing }}px;text-transform:{{ block.settings.text_transform }};line-height:1.4;margin:0;padding:0;display:block;"
                   >{{ block.settings.text }}</span>
                 {% endif %}
@@ -248,14 +250,14 @@
                   {%- assign heading_parts = block.settings.text | split: '|' -%}
                   {%- capture heading_html -%}
                     {%- if heading_parts.size > 1 -%}
-                      {{ heading_parts[0] }}<span class="hero-accent-{{ bid }}">{{ heading_parts[1] }}</span>{% if heading_parts[2] != blank %}{{ heading_parts[2] }}{% endif %}
+                      {{ heading_parts[0] }}<span class="hero-ac-{{ bid }}">{{ heading_parts[1] }}</span>{% if heading_parts[2] != blank %}{{ heading_parts[2] }}{% endif %}
                     {%- else -%}
                       {{ block.settings.text }}
                     {%- endif -%}
                   {%- endcapture -%}
                   {%- assign aria_level = '1' -%}{%- if block.settings.tag == 'h2' -%}{%- assign aria_level = '2' -%}{%- endif -%}{%- if block.settings.tag == 'h3' -%}{%- assign aria_level = '3' -%}{%- endif -%}
                   <div
-                    class="hero-heading-{{ bid }}"
+                    class="hero-hl-{{ bid }}"
                     role="heading"
                     aria-level="{{ aria_level }}"
                     style="font-family:'{{ block.settings.font_family }}',sans-serif;font-weight:{{ block.settings.font_weight }};color:{{ block.settings.color }};letter-spacing:{{ block.settings.letter_spacing }}px;line-height:{{ block.settings.line_height }};word-break:break-word;overflow-wrap:break-word;margin:0;padding:0;"
@@ -266,7 +268,7 @@
                 {% if block.settings.text != blank %}
                   {%- assign sub_level = '2' -%}{%- if block.settings.tag == 'h3' -%}{%- assign sub_level = '3' -%}{%- endif -%}
                   <div
-                    class="hero-subheading-{{ bid }}"
+                    class="hero-sl-{{ bid }}"
                     role="heading"
                     aria-level="{{ sub_level }}"
                     style="font-family:'{{ block.settings.font_family }}',sans-serif;font-weight:{{ block.settings.font_weight }};color:{{ block.settings.color }};letter-spacing:{{ block.settings.letter_spacing }}px;line-height:{{ block.settings.line_height }};word-break:break-word;margin:0;padding:0;"
@@ -286,7 +288,7 @@
                   {% if block.settings.primary_text != blank %}
                     <a
                       href="{{ block.settings.primary_url }}"
-                      class="hero-btn-p-{{ bid }}"
+                      class="hero-btnp-{{ bid }}"
                       style="font-family:'{{ block.settings.font_family }}',sans-serif;font-weight:{{ block.settings.primary_font_weight }};color:{{ block.settings.primary_text_color }};background-color:{{ block.settings.primary_bg_color }};border:{{ block.settings.primary_border_width }}px solid {{ block.settings.primary_border_color }};border-radius:{{ block.settings.primary_border_radius }}px;padding:{{ block.settings.primary_padding_y }}px {{ block.settings.primary_padding_x }}px;text-decoration:none;display:inline-block;line-height:1;white-space:nowrap;cursor:pointer;"
                       {% if block.settings.primary_new_tab %}target="_blank" rel="noopener"{% endif %}
                     >{{ block.settings.primary_text }}</a>
@@ -294,7 +296,7 @@
                   {% if block.settings.secondary_text != blank %}
                     <a
                       href="{{ block.settings.secondary_url }}"
-                      class="hero-btn-s-{{ bid }}"
+                      class="hero-btns2-{{ bid }}"
                       style="font-family:'{{ block.settings.font_family }}',sans-serif;font-weight:{{ block.settings.secondary_font_weight }};color:{{ block.settings.secondary_text_color }};background-color:{{ block.settings.secondary_bg_color }};border:{{ block.settings.secondary_border_width }}px solid {{ block.settings.secondary_border_color }};border-radius:{{ block.settings.secondary_border_radius }}px;padding:{{ block.settings.secondary_padding_y }}px {{ block.settings.secondary_padding_x }}px;text-decoration:none;display:inline-block;line-height:1;white-space:nowrap;cursor:pointer;"
                       {% if block.settings.secondary_new_tab %}target="_blank" rel="noopener"{% endif %}
                     >{{ block.settings.secondary_text }}</a>
@@ -332,8 +334,8 @@
       {% for block in section.blocks %}
         {%- assign bid = block.id | replace: '_', '-' -%}
         {% if block.type == 'image' %}
-          <div class="hero-block-wrap-{{ bid }}" {{ block.shopify_attributes }}>
-            <div class="hero-img-wrap-{{ bid }}">
+          <div class="hero-bw-{{ bid }}" {{ block.shopify_attributes }}>
+            <div class="hero-imgw-{{ bid }}">
               {% if block.settings.image != blank %}
                 <img
                   class="hero-img-{{ bid }}"
@@ -376,7 +378,7 @@
         { "type": "range", "id": "mobile_padding_top", "label": "Padding top — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "range", "id": "mobile_padding_bottom", "label": "Padding bottom — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "header", "content": "Font" },
-        { "type": "text", "id": "font_family", "label": "Font family", "default": "Inter" },
+        { "type": "text", "id": "font_family", "label": "Font family (Google Fonts name)", "default": "Inter" },
         { "type": "range", "id": "font_size", "label": "Size — Desktop (px)", "min": 10, "max": 40, "step": 1, "default": 14 },
         { "type": "range", "id": "mobile_font_size", "label": "Size — Mobile (px)", "min": 8, "max": 40, "step": 1, "default": 12 },
         { "type": "select", "id": "font_weight", "label": "Weight", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra-bold"}], "default": "600" },
@@ -392,7 +394,7 @@
       "type": "heading",
       "name": "Heading",
       "settings": [
-        { "type": "text", "id": "text", "label": "Text", "default": "The headline that sells." },
+        { "type": "text", "id": "text", "label": "Text (use |pipes| for accent)", "default": "The headline that sells." },
         { "type": "select", "id": "tag", "label": "HTML tag", "options": [{"value":"h1","label":"H1"},{"value":"h2","label":"H2"},{"value":"h3","label":"H3"},{"value":"p","label":"Paragraph"}], "default": "h1" },
         { "type": "header", "content": "Spacing" },
         { "type": "range", "id": "padding_top", "label": "Padding top (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
@@ -400,7 +402,7 @@
         { "type": "range", "id": "mobile_padding_top", "label": "Padding top — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "range", "id": "mobile_padding_bottom", "label": "Padding bottom — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "header", "content": "Font" },
-        { "type": "text", "id": "font_family", "label": "Font family", "default": "Playfair Display" },
+        { "type": "text", "id": "font_family", "label": "Font family (Google Fonts name)", "default": "Playfair Display" },
         { "type": "range", "id": "font_size", "label": "Size — Desktop (px)", "min": 16, "max": 120, "step": 2, "default": 64 },
         { "type": "range", "id": "mobile_font_size", "label": "Size — Mobile (px)", "min": 16, "max": 72, "step": 2, "default": 36 },
         { "type": "select", "id": "font_weight", "label": "Weight", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra-bold"},{"value":"900","label":"Black"}], "default": "800" },
@@ -412,10 +414,10 @@
         { "type": "select", "id": "text_align", "label": "Align — Desktop", "options": [{"value":"left","label":"Left"},{"value":"center","label":"Center"},{"value":"right","label":"Right"}], "default": "left" },
         { "type": "select", "id": "mobile_text_align", "label": "Align — Mobile", "options": [{"value":"left","label":"Left"},{"value":"center","label":"Center"},{"value":"right","label":"Right"}], "default": "left" },
         { "type": "header", "content": "Accent Text" },
-        { "type": "paragraph", "content": "Wrap accent words with | pipes | in the text field. Example: Her|dration| or The |best| drink. Size and weight inherit from the heading." },
+        { "type": "paragraph", "content": "Wrap accent words with | pipes | in the text above. Example: Her|dration| or The |best| drink." },
         { "type": "color", "id": "accent_color", "label": "Accent color", "default": "#ff6b35" },
-        { "type": "text", "id": "accent_font_family", "label": "Accent font family", "default": "Playfair Display" },
-        { "type": "select", "id": "accent_font_style", "label": "Accent style", "options": [{"value":"normal","label":"Normal"},{"value":"italic","label":"Italic"}], "default": "normal" }
+        { "type": "text", "id": "accent_font_family", "label": "Accent font family (Google Fonts name)", "default": "Playfair Display" },
+        { "type": "select", "id": "accent_font_style", "label": "Accent style", "options": [{"value":"normal","label":"Normal"},{"value":"italic","label":"Italic"}], "default": "italic" }
       ]
     },
     {
@@ -430,7 +432,7 @@
         { "type": "range", "id": "mobile_padding_top", "label": "Padding top — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "range", "id": "mobile_padding_bottom", "label": "Padding bottom — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "header", "content": "Font" },
-        { "type": "text", "id": "font_family", "label": "Font family", "default": "Inter" },
+        { "type": "text", "id": "font_family", "label": "Font family (Google Fonts name)", "default": "Inter" },
         { "type": "range", "id": "font_size", "label": "Size — Desktop (px)", "min": 12, "max": 60, "step": 1, "default": 24 },
         { "type": "range", "id": "mobile_font_size", "label": "Size — Mobile (px)", "min": 12, "max": 48, "step": 1, "default": 18 },
         { "type": "select", "id": "font_weight", "label": "Weight", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"}], "default": "400" },
@@ -453,7 +455,7 @@
         { "type": "range", "id": "mobile_padding_top", "label": "Padding top — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "range", "id": "mobile_padding_bottom", "label": "Padding bottom — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "header", "content": "Font" },
-        { "type": "text", "id": "font_family", "label": "Font family", "default": "Inter" },
+        { "type": "text", "id": "font_family", "label": "Font family (Google Fonts name)", "default": "Inter" },
         { "type": "range", "id": "font_size", "label": "Size — Desktop (px)", "min": 10, "max": 36, "step": 1, "default": 16 },
         { "type": "range", "id": "mobile_font_size", "label": "Size — Mobile (px)", "min": 10, "max": 28, "step": 1, "default": 14 },
         { "type": "select", "id": "font_weight", "label": "Weight", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"}], "default": "400" },
@@ -525,7 +527,7 @@
         { "type": "range", "id": "mobile_secondary_font_size", "label": "Font size — Mobile (px)", "min": 10, "max": 24, "step": 1, "default": 14 },
         { "type": "select", "id": "secondary_font_weight", "label": "Font weight", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"}], "default": "600" },
         { "type": "header", "content": "Layout" },
-        { "type": "text", "id": "font_family", "label": "Font family", "default": "Inter" },
+        { "type": "text", "id": "font_family", "label": "Font family (Google Fonts name)", "default": "Inter" },
         { "type": "range", "id": "gap", "label": "Gap between buttons (px)", "min": 4, "max": 40, "step": 2, "default": 12 },
         { "type": "checkbox", "id": "mobile_stack", "label": "Stack buttons on mobile", "default": false }
       ]
@@ -540,7 +542,7 @@
         { "type": "range", "id": "mobile_padding_top", "label": "Padding top — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "range", "id": "mobile_padding_bottom", "label": "Padding bottom — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "header", "content": "Global" },
-        { "type": "text", "id": "font_family", "label": "Font family", "default": "Inter" },
+        { "type": "text", "id": "font_family", "label": "Font family (Google Fonts name)", "default": "Inter" },
         { "type": "select", "id": "font_weight", "label": "Font weight", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"}], "default": "500" },
         { "type": "range", "id": "gap", "label": "Gap (px)", "min": 2, "max": 24, "step": 2, "default": 8 },
         { "type": "range", "id": "mobile_gap", "label": "Gap — Mobile (px)", "min": 2, "max": 24, "step": 2, "default": 6 },
