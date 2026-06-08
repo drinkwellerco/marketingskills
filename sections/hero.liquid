@@ -186,35 +186,19 @@
           white-space: nowrap;
         }
         .hero-btnp-{{ bid }}:hover { opacity: 0.85; }
-        .hero-btns2-{{ bid }} {
-          font-size: {{ block.settings.secondary_font_size }}px;
-          transition: opacity 0.2s ease;
-          white-space: nowrap;
-        }
-        .hero-btns2-{{ bid }}:hover { opacity: 0.85; }
-        @media (max-width: 768px) {
-          {% if block.settings.mobile_stack %}.hero-btns-{{ bid }} { flex-direction: column; align-items: flex-start; }{% endif %}
-          .hero-btnp-{{ bid }} { font-size: {{ block.settings.mobile_primary_font_size }}px !important; }
-          .hero-btns2-{{ bid }} { font-size: {{ block.settings.mobile_secondary_font_size }}px !important; }
-        }
-
-      {% when 'ingredients' %}
-        .hero-ing-trigger-{{ bid }} {
-          font-size: {{ block.settings.trigger_font_size }}px;
+        .hero-popup-trigger-{{ bid }} {
+          font-size: {{ block.settings.popup_font_size }}px;
           background: none;
           border: none;
-          border-bottom: 1.5px solid {{ block.settings.trigger_color }};
+          border-bottom: 1.5px solid {{ block.settings.popup_color }};
           padding: 0;
           cursor: pointer;
           display: inline-block;
           line-height: 1.4;
+          transition: opacity 0.2s ease;
         }
-        @media (max-width: 768px) {
-          .hero-ing-trigger-{{ bid }} {
-            font-size: {{ block.settings.mobile_trigger_font_size }}px !important;
-          }
-        }
-        .hero-ing-overlay-{{ bid }} {
+        .hero-popup-trigger-{{ bid }}:hover { opacity: 0.75; }
+        .hero-popup-overlay-{{ bid }} {
           display: none;
           position: fixed;
           inset: 0;
@@ -224,12 +208,12 @@
           justify-content: center;
           padding: 16px;
         }
-        .hero-ing-overlay-{{ bid }}.is-open { display: flex; }
-        .hero-ing-modal-{{ bid }} {
+        .hero-popup-overlay-{{ bid }}.is-open { display: flex; }
+        .hero-popup-modal-{{ bid }} {
           background: {{ block.settings.modal_bg_color }};
           color: {{ block.settings.modal_text_color }};
           border-radius: 12px;
-          max-width: 680px;
+          max-width: 700px;
           width: 100%;
           max-height: 90vh;
           overflow-y: auto;
@@ -237,7 +221,7 @@
           position: relative;
           font-family: '{{ block.settings.modal_font_family }}', sans-serif;
         }
-        .hero-ing-close-{{ bid }} {
+        .hero-popup-close-{{ bid }} {
           position: absolute;
           top: 16px;
           right: 16px;
@@ -250,54 +234,57 @@
           padding: 4px 8px;
           opacity: 0.7;
         }
-        .hero-ing-close-{{ bid }}:hover { opacity: 1; }
-        .hero-ing-title-{{ bid }} {
+        .hero-popup-close-{{ bid }}:hover { opacity: 1; }
+        .hero-popup-title-{{ bid }} {
           font-size: {{ block.settings.modal_title_size }}px;
           font-weight: 700;
           margin: 0 0 8px;
-          padding-right: 40px;
+          padding-right: 48px;
           font-family: '{{ block.settings.modal_font_family }}', sans-serif;
           color: {{ block.settings.modal_text_color }};
         }
-        .hero-ing-intro-{{ bid }} {
+        .hero-popup-intro-{{ bid }} {
           font-size: 14px;
-          opacity: 0.75;
+          opacity: 0.7;
           margin: 0 0 24px;
           line-height: 1.5;
         }
-        .hero-ing-table-{{ bid }} {
+        .hero-popup-table-{{ bid }} {
           width: 100%;
           border-collapse: collapse;
           font-size: 13px;
         }
-        .hero-ing-table-{{ bid }} th {
+        .hero-popup-table-{{ bid }} th {
           text-align: left;
           padding: 8px 10px;
           font-size: 11px;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          opacity: 0.55;
-          border-bottom: 1px solid rgba(255,255,255,0.1);
+          opacity: 0.5;
+          border-bottom: 1px solid rgba(255,255,255,0.12);
           white-space: nowrap;
         }
-        .hero-ing-table-{{ bid }} td {
+        .hero-popup-table-{{ bid }} td {
           padding: 12px 10px;
           border-bottom: 1px solid rgba(255,255,255,0.07);
           vertical-align: top;
           line-height: 1.45;
         }
-        .hero-ing-table-{{ bid }} tr:last-child td { border-bottom: none; }
-        .hero-ing-name-{{ bid }} {
+        .hero-popup-table-{{ bid }} tr:last-child td { border-bottom: none; }
+        .hero-popup-ingname-{{ bid }} {
           font-weight: 600;
           color: {{ block.settings.modal_accent_color }};
           white-space: nowrap;
         }
-        .hero-ing-your-{{ bid }} { font-weight: 600; }
-        @media (max-width: 560px) {
-          .hero-ing-modal-{{ bid }} { padding: 20px 16px; }
-          .hero-ing-table-{{ bid }} { font-size: 12px; }
-          .hero-ing-table-{{ bid }} th,
-          .hero-ing-table-{{ bid }} td { padding: 8px 6px; }
+        .hero-popup-yourdose-{{ bid }} { font-weight: 600; }
+        @media (max-width: 768px) {
+          {% if block.settings.mobile_stack %}.hero-btns-{{ bid }} { flex-direction: column; align-items: flex-start; }{% endif %}
+          .hero-btnp-{{ bid }} { font-size: {{ block.settings.mobile_primary_font_size }}px !important; }
+          .hero-popup-trigger-{{ bid }} { font-size: {{ block.settings.mobile_popup_font_size }}px !important; }
+          .hero-popup-modal-{{ bid }} { padding: 20px 16px; }
+          .hero-popup-table-{{ bid }} { font-size: 12px; }
+          .hero-popup-table-{{ bid }} th,
+          .hero-popup-table-{{ bid }} td { padding: 8px 6px; }
         }
 
       {% when 'pills' %}
@@ -395,60 +382,51 @@
                       {% if block.settings.primary_new_tab %}target="_blank" rel="noopener"{% endif %}
                     >{{ block.settings.primary_text }}</a>
                   {% endif %}
-                  {% if block.settings.secondary_text != blank %}
-                    <a
-                      href="{{ block.settings.secondary_url }}"
-                      class="hero-btns2-{{ bid }}"
-                      style="font-family:'{{ block.settings.font_family }}',sans-serif;font-weight:{{ block.settings.secondary_font_weight }};color:{{ block.settings.secondary_text_color }};background-color:{{ block.settings.secondary_bg_color }};border:{{ block.settings.secondary_border_width }}px solid {{ block.settings.secondary_border_color }};border-radius:{{ block.settings.secondary_border_radius }}px;padding:{{ block.settings.secondary_padding_y }}px {{ block.settings.secondary_padding_x }}px;text-decoration:none;display:inline-block;line-height:1;white-space:nowrap;cursor:pointer;"
-                      {% if block.settings.secondary_new_tab %}target="_blank" rel="noopener"{% endif %}
-                    >{{ block.settings.secondary_text }}</a>
-                  {% endif %}
-                </div>
-
-              {% when 'ingredients' %}
-                <button
-                  class="hero-ing-trigger-{{ bid }}"
-                  style="font-family:'{{ block.settings.trigger_font_family }}',sans-serif;color:{{ block.settings.trigger_color }};font-weight:{{ block.settings.trigger_font_weight }};"
-                  onclick="document.getElementById('hero-ing-{{ bid }}').classList.add('is-open')"
-                  type="button"
-                >{{ block.settings.trigger_text }}</button>
-
-                <div class="hero-ing-overlay-{{ bid }}" id="hero-ing-{{ bid }}" onclick="if(event.target===this)this.classList.remove('is-open')">
-                  <div class="hero-ing-modal-{{ bid }}">
-                    <button class="hero-ing-close-{{ bid }}" onclick="document.getElementById('hero-ing-{{ bid }}').classList.remove('is-open')" type="button" aria-label="Close">&#x2715;</button>
-                    <p class="hero-ing-title-{{ bid }}">{{ block.settings.modal_title }}</p>
-                    {% if block.settings.modal_intro != blank %}<p class="hero-ing-intro-{{ bid }}">{{ block.settings.modal_intro }}</p>{% endif %}
-                    <table class="hero-ing-table-{{ bid }}">
-                      <thead>
-                        <tr>
-                          <th>Ingredient</th>
-                          <th>Our Dose</th>
-                          {% if block.settings.show_clinical %}<th>Clinical Dose</th>{% endif %}
-                          {% if block.settings.show_competitor %}<th>Competitor Dose</th>{% endif %}
-                          <th>What It Does</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for i in (1..6) %}
-                          {%- assign name_key  = 'ing_' | append: i | append: '_name' -%}
-                          {%- assign ing_name  = block.settings[name_key] -%}
-                          {% if ing_name != blank %}
-                            {%- assign your_key  = 'ing_' | append: i | append: '_your_dose' -%}
-                            {%- assign clin_key  = 'ing_' | append: i | append: '_clinical_dose' -%}
-                            {%- assign comp_key  = 'ing_' | append: i | append: '_competitor_dose' -%}
-                            {%- assign desc_key  = 'ing_' | append: i | append: '_description' -%}
+                  {% if block.settings.popup_trigger_text != blank %}
+                    <button
+                      class="hero-popup-trigger-{{ bid }}"
+                      style="font-family:'{{ block.settings.font_family }}',sans-serif;font-weight:{{ block.settings.popup_font_weight }};color:{{ block.settings.popup_color }};"
+                      onclick="document.getElementById('hero-popup-{{ bid }}').classList.add('is-open')"
+                      type="button"
+                    >{{ block.settings.popup_trigger_text }}</button>
+                    <div class="hero-popup-overlay-{{ bid }}" id="hero-popup-{{ bid }}" onclick="if(event.target===this)this.classList.remove('is-open')">
+                      <div class="hero-popup-modal-{{ bid }}">
+                        <button class="hero-popup-close-{{ bid }}" onclick="document.getElementById('hero-popup-{{ bid }}').classList.remove('is-open')" type="button" aria-label="Close">&#x2715;</button>
+                        <p class="hero-popup-title-{{ bid }}">{{ block.settings.modal_title }}</p>
+                        {% if block.settings.modal_intro != blank %}<p class="hero-popup-intro-{{ bid }}">{{ block.settings.modal_intro }}</p>{% endif %}
+                        <table class="hero-popup-table-{{ bid }}">
+                          <thead>
                             <tr>
-                              <td class="hero-ing-name-{{ bid }}">{{ ing_name }}</td>
-                              <td class="hero-ing-your-{{ bid }}">{{ block.settings[your_key] }}</td>
-                              {% if block.settings.show_clinical %}<td>{{ block.settings[clin_key] }}</td>{% endif %}
-                              {% if block.settings.show_competitor %}<td>{{ block.settings[comp_key] }}</td>{% endif %}
-                              <td>{{ block.settings[desc_key] }}</td>
+                              <th>Ingredient</th>
+                              <th>Our Dose</th>
+                              {% if block.settings.show_clinical %}<th>Clinical Dose</th>{% endif %}
+                              {% if block.settings.show_competitor %}<th>Competitor Dose</th>{% endif %}
+                              <th>What It Does</th>
                             </tr>
-                          {% endif %}
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
+                          </thead>
+                          <tbody>
+                            {% for i in (1..6) %}
+                              {%- assign name_key = 'ing_' | append: i | append: '_name' -%}
+                              {%- assign ing_name = block.settings[name_key] -%}
+                              {% if ing_name != blank %}
+                                {%- assign your_key = 'ing_' | append: i | append: '_your_dose' -%}
+                                {%- assign clin_key = 'ing_' | append: i | append: '_clinical_dose' -%}
+                                {%- assign comp_key = 'ing_' | append: i | append: '_competitor_dose' -%}
+                                {%- assign desc_key = 'ing_' | append: i | append: '_description' -%}
+                                <tr>
+                                  <td class="hero-popup-ingname-{{ bid }}">{{ ing_name }}</td>
+                                  <td class="hero-popup-yourdose-{{ bid }}">{{ block.settings[your_key] }}</td>
+                                  {% if block.settings.show_clinical %}<td>{{ block.settings[clin_key] }}</td>{% endif %}
+                                  {% if block.settings.show_competitor %}<td>{{ block.settings[comp_key] }}</td>{% endif %}
+                                  <td>{{ block.settings[desc_key] }}</td>
+                                </tr>
+                              {% endif %}
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  {% endif %}
                 </div>
 
               {% when 'pills' %}
@@ -660,52 +638,23 @@
         { "type": "range", "id": "primary_font_size", "label": "Font size — Desktop (px)", "min": 10, "max": 28, "step": 1, "default": 16 },
         { "type": "range", "id": "mobile_primary_font_size", "label": "Font size — Mobile (px)", "min": 10, "max": 24, "step": 1, "default": 14 },
         { "type": "select", "id": "primary_font_weight", "label": "Font weight", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"}], "default": "600" },
-        { "type": "header", "content": "Secondary Button" },
-        { "type": "text", "id": "secondary_text", "label": "Text", "default": "Learn More" },
-        { "type": "url", "id": "secondary_url", "label": "Link" },
-        { "type": "checkbox", "id": "secondary_new_tab", "label": "Open in new tab", "default": false },
-        { "type": "color", "id": "secondary_bg_color", "label": "Background", "default": "#00000000" },
-        { "type": "color", "id": "secondary_text_color", "label": "Text color", "default": "#ffffff" },
-        { "type": "color", "id": "secondary_border_color", "label": "Border color", "default": "#ffffff" },
-        { "type": "range", "id": "secondary_border_width", "label": "Border width (px)", "min": 0, "max": 6, "step": 1, "default": 2 },
-        { "type": "range", "id": "secondary_border_radius", "label": "Border radius (px)", "min": 0, "max": 60, "step": 2, "default": 8 },
-        { "type": "range", "id": "secondary_padding_x", "label": "Padding horizontal (px)", "min": 8, "max": 80, "step": 2, "default": 28 },
-        { "type": "range", "id": "secondary_padding_y", "label": "Padding vertical (px)", "min": 6, "max": 40, "step": 2, "default": 14 },
-        { "type": "range", "id": "secondary_font_size", "label": "Font size — Desktop (px)", "min": 10, "max": 28, "step": 1, "default": 16 },
-        { "type": "range", "id": "mobile_secondary_font_size", "label": "Font size — Mobile (px)", "min": 10, "max": 24, "step": 1, "default": 14 },
-        { "type": "select", "id": "secondary_font_weight", "label": "Font weight", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"}], "default": "600" },
-        { "type": "header", "content": "Layout" },
-        { "type": "text", "id": "font_family", "label": "Font family (Google Fonts name)", "default": "Inter" },
-        { "type": "range", "id": "gap", "label": "Gap between buttons (px)", "min": 4, "max": 40, "step": 2, "default": 12 },
-        { "type": "checkbox", "id": "mobile_stack", "label": "Stack buttons on mobile", "default": false }
-      ]
-    },
-    {
-      "type": "ingredients",
-      "name": "Ingredients Popup",
-      "settings": [
-        { "type": "header", "content": "Spacing" },
-        { "type": "range", "id": "padding_top", "label": "Padding top (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
-        { "type": "range", "id": "padding_bottom", "label": "Padding bottom (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
-        { "type": "range", "id": "mobile_padding_top", "label": "Padding top — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
-        { "type": "range", "id": "mobile_padding_bottom", "label": "Padding bottom — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
-        { "type": "header", "content": "Trigger Link" },
-        { "type": "text", "id": "trigger_text", "label": "Link text", "default": "How it works?" },
-        { "type": "color", "id": "trigger_color", "label": "Color", "default": "#ffffff" },
-        { "type": "text", "id": "trigger_font_family", "label": "Font family (Google Fonts name)", "default": "Inter" },
-        { "type": "range", "id": "trigger_font_size", "label": "Font size — Desktop (px)", "min": 10, "max": 24, "step": 1, "default": 14 },
-        { "type": "range", "id": "mobile_trigger_font_size", "label": "Font size — Mobile (px)", "min": 10, "max": 22, "step": 1, "default": 13 },
-        { "type": "select", "id": "trigger_font_weight", "label": "Font weight", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"}], "default": "400" },
-        { "type": "header", "content": "Popup" },
+        { "type": "header", "content": "Popup Trigger (\"How it works?\" link)" },
+        { "type": "paragraph", "content": "Leave blank to hide. Renders as underlined text next to the button — clicking opens the ingredient popup." },
+        { "type": "text", "id": "popup_trigger_text", "label": "Trigger text", "default": "How it works?" },
+        { "type": "color", "id": "popup_color", "label": "Text color", "default": "#ffffff" },
+        { "type": "range", "id": "popup_font_size", "label": "Font size — Desktop (px)", "min": 10, "max": 24, "step": 1, "default": 14 },
+        { "type": "range", "id": "mobile_popup_font_size", "label": "Font size — Mobile (px)", "min": 10, "max": 22, "step": 1, "default": 13 },
+        { "type": "select", "id": "popup_font_weight", "label": "Font weight", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"}], "default": "400" },
+        { "type": "header", "content": "Popup: Style" },
         { "type": "text", "id": "modal_title", "label": "Popup title", "default": "What's Inside" },
-        { "type": "textarea", "id": "modal_intro", "label": "Intro text (optional)" },
+        { "type": "textarea", "id": "modal_intro", "label": "Popup intro text (optional)" },
         { "type": "text", "id": "modal_font_family", "label": "Popup font family (Google Fonts name)", "default": "Inter" },
         { "type": "range", "id": "modal_title_size", "label": "Title font size (px)", "min": 16, "max": 40, "step": 1, "default": 24 },
-        { "type": "color", "id": "modal_bg_color", "label": "Background color", "default": "#111111" },
-        { "type": "color", "id": "modal_text_color", "label": "Text color", "default": "#ffffff" },
+        { "type": "color", "id": "modal_bg_color", "label": "Popup background", "default": "#111111" },
+        { "type": "color", "id": "modal_text_color", "label": "Popup text color", "default": "#ffffff" },
         { "type": "color", "id": "modal_accent_color", "label": "Ingredient name color", "default": "#ff6b35" },
-        { "type": "checkbox", "id": "show_clinical", "label": "Show clinical dosage column", "default": true },
-        { "type": "checkbox", "id": "show_competitor", "label": "Show competitor dosage column", "default": true },
+        { "type": "checkbox", "id": "show_clinical", "label": "Show Clinical Dosage column", "default": true },
+        { "type": "checkbox", "id": "show_competitor", "label": "Show Competitor Dosage column", "default": true },
         { "type": "header", "content": "Ingredient 1" },
         { "type": "text", "id": "ing_1_name", "label": "Name", "default": "Magnesium" },
         { "type": "text", "id": "ing_1_your_dose", "label": "Our dosage", "default": "400mg" },
@@ -741,7 +690,11 @@
         { "type": "text", "id": "ing_6_your_dose", "label": "Our dosage" },
         { "type": "text", "id": "ing_6_clinical_dose", "label": "Clinical dosage" },
         { "type": "text", "id": "ing_6_competitor_dose", "label": "Competitor dosage" },
-        { "type": "textarea", "id": "ing_6_description", "label": "What it does" }
+        { "type": "textarea", "id": "ing_6_description", "label": "What it does" },
+        { "type": "header", "content": "Layout" },
+        { "type": "text", "id": "font_family", "label": "Font family (Google Fonts name)", "default": "Inter" },
+        { "type": "range", "id": "gap", "label": "Gap between items (px)", "min": 4, "max": 40, "step": 2, "default": 16 },
+        { "type": "checkbox", "id": "mobile_stack", "label": "Stack on mobile", "default": false }
       ]
     },
     {
