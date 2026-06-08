@@ -1,15 +1,24 @@
 {%- assign sid = section.id | replace: '_', '-' -%}
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-{%- for block in section.blocks -%}
-  {%- if block.settings.font_family != blank -%}
-    <link href="https://fonts.googleapis.com/css2?family={{ block.settings.font_family | replace: ' ', '+' }}:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet">
-  {%- endif -%}
-  {%- if block.type == 'heading' and block.settings.accent_font_family != blank -%}
-    <link href="https://fonts.googleapis.com/css2?family={{ block.settings.accent_font_family | replace: ' ', '+' }}:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet">
-  {%- endif -%}
-{%- endfor -%}
+<script>
+(function(){
+  var fonts = [
+    {%- for block in section.blocks -%}
+      {%- if block.settings.font_family != blank -%}"{{ block.settings.font_family | replace: '"', '' }}",{%- endif -%}
+      {%- if block.type == 'heading' and block.settings.accent_font_family != blank -%}"{{ block.settings.accent_font_family | replace: '"', '' }}",{%- endif -%}
+    {%- endfor -%}
+  ];
+  var loaded = {};
+  fonts.forEach(function(f){
+    if(!f || loaded[f]) return;
+    loaded[f] = 1;
+    var l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = 'https://fonts.googleapis.com/css2?family=' + f.replace(/ /g,'+') + ':ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap';
+    document.head.appendChild(l);
+  });
+})();
+</script>
 
 {% style %}
   .hero-section-{{ sid }} {
@@ -98,6 +107,14 @@
         .hero-heading-{{ bid }} {
           font-size: {{ block.settings.font_size }}px;
           text-align: {{ block.settings.text_align }};
+        }
+        .hero-accent-{{ bid }} {
+          font-family: '{{ block.settings.accent_font_family }}', sans-serif !important;
+          color: {{ block.settings.accent_color }} !important;
+          font-style: {{ block.settings.accent_font_style }} !important;
+          font-size: inherit !important;
+          font-weight: inherit !important;
+          line-height: inherit !important;
         }
         @media (max-width: 768px) {
           .hero-heading-{{ bid }} {
@@ -231,7 +248,7 @@
                   {%- assign heading_parts = block.settings.text | split: '|' -%}
                   {%- capture heading_html -%}
                     {%- if heading_parts.size > 1 -%}
-                      {{ heading_parts[0] }}<span style="font-family:'{{ block.settings.accent_font_family }}',sans-serif;color:{{ block.settings.accent_color }};font-style:{{ block.settings.accent_font_style }};">{{ heading_parts[1] }}</span>{% if heading_parts[2] != blank %}{{ heading_parts[2] }}{% endif %}
+                      {{ heading_parts[0] }}<span class="hero-accent-{{ bid }}">{{ heading_parts[1] }}</span>{% if heading_parts[2] != blank %}{{ heading_parts[2] }}{% endif %}
                     {%- else -%}
                       {{ block.settings.text }}
                     {%- endif -%}
@@ -383,7 +400,7 @@
         { "type": "range", "id": "mobile_padding_top", "label": "Padding top — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "range", "id": "mobile_padding_bottom", "label": "Padding bottom — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "header", "content": "Font" },
-        { "type": "text", "id": "font_family", "label": "Font family", "default": "Inter" },
+        { "type": "text", "id": "font_family", "label": "Font family", "default": "Playfair Display" },
         { "type": "range", "id": "font_size", "label": "Size — Desktop (px)", "min": 16, "max": 120, "step": 2, "default": 64 },
         { "type": "range", "id": "mobile_font_size", "label": "Size — Mobile (px)", "min": 16, "max": 72, "step": 2, "default": 36 },
         { "type": "select", "id": "font_weight", "label": "Weight", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra-bold"},{"value":"900","label":"Black"}], "default": "800" },
@@ -397,7 +414,7 @@
         { "type": "header", "content": "Accent Text" },
         { "type": "paragraph", "content": "Wrap accent words with | pipes | in the text field. Example: Her|dration| or The |best| drink. Size and weight inherit from the heading." },
         { "type": "color", "id": "accent_color", "label": "Accent color", "default": "#ff6b35" },
-        { "type": "text", "id": "accent_font_family", "label": "Accent font family", "default": "Inter" },
+        { "type": "text", "id": "accent_font_family", "label": "Accent font family", "default": "Playfair Display" },
         { "type": "select", "id": "accent_font_style", "label": "Accent style", "options": [{"value":"normal","label":"Normal"},{"value":"italic","label":"Italic"}], "default": "normal" }
       ]
     },
