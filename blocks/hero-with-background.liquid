@@ -1,0 +1,1777 @@
+{% doc %}
+  @prompt
+    Full hero section with two-column layout, mobile stacking, edge padding controls, mobile image centering and full-width option.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% assign all_fonts = '' %}
+{% if block.settings.font_family != blank %}
+  {% assign all_fonts = all_fonts | append: block.settings.font_family | append: ':wght@' | append: block.settings.font_weight %}
+{% endif %}
+{% if block.settings.accent_font_family != blank %}
+  {% unless all_fonts contains block.settings.accent_font_family %}
+    {% if all_fonts != blank %}{% assign all_fonts = all_fonts | append: '&family=' %}{% endif %}
+    {% assign all_fonts = all_fonts | append: block.settings.accent_font_family | append: ':wght@' | append: block.settings.accent_weight %}
+  {% endunless %}
+{% endif %}
+{% if block.settings.eyebrow_font_family != blank %}
+  {% unless all_fonts contains block.settings.eyebrow_font_family %}
+    {% if all_fonts != blank %}{% assign all_fonts = all_fonts | append: '&family=' %}{% endif %}
+    {% assign all_fonts = all_fonts | append: block.settings.eyebrow_font_family | append: ':wght@' | append: block.settings.eyebrow_font_weight %}
+  {% endunless %}
+{% endif %}
+{% if block.settings.subheading_font_family != blank %}
+  {% unless all_fonts contains block.settings.subheading_font_family %}
+    {% if all_fonts != blank %}{% assign all_fonts = all_fonts | append: '&family=' %}{% endif %}
+    {% assign all_fonts = all_fonts | append: block.settings.subheading_font_family | append: ':wght@' | append: block.settings.subheading_font_weight %}
+  {% endunless %}
+{% endif %}
+{% if block.settings.description_font_family != blank %}
+  {% unless all_fonts contains block.settings.description_font_family %}
+    {% if all_fonts != blank %}{% assign all_fonts = all_fonts | append: '&family=' %}{% endif %}
+    {% assign all_fonts = all_fonts | append: block.settings.description_font_family | append: ':wght@' | append: block.settings.description_font_weight %}
+  {% endunless %}
+{% endif %}
+{% if block.settings.primary_button_font_family != blank %}
+  {% unless all_fonts contains block.settings.primary_button_font_family %}
+    {% if all_fonts != blank %}{% assign all_fonts = all_fonts | append: '&family=' %}{% endif %}
+    {% assign all_fonts = all_fonts | append: block.settings.primary_button_font_family | append: ':wght@' | append: block.settings.primary_button_font_weight %}
+  {% endunless %}
+{% endif %}
+{% if block.settings.secondary_button_font_family != blank %}
+  {% unless all_fonts contains block.settings.secondary_button_font_family %}
+    {% if all_fonts != blank %}{% assign all_fonts = all_fonts | append: '&family=' %}{% endif %}
+    {% assign all_fonts = all_fonts | append: block.settings.secondary_button_font_family | append: ':wght@' | append: block.settings.secondary_button_font_weight %}
+  {% endunless %}
+{% endif %}
+
+{% for i in (1..5) %}
+  {% assign pill_font_key = 'pill_' | append: i | append: '_font_family' %}
+  {% assign pill_font = block.settings[pill_font_key] %}
+  {% assign pill_weight_key = 'pill_' | append: i | append: '_font_weight' %}
+  {% assign pill_weight = block.settings[pill_weight_key] %}
+  {% if pill_font != blank %}
+    {% unless all_fonts contains pill_font %}
+      {% if all_fonts != blank %}{% assign all_fonts = all_fonts | append: '&family=' %}{% endif %}
+      {% assign all_fonts = all_fonts | append: pill_font | append: ':wght@' | append: pill_weight %}
+    {% endunless %}
+  {% endif %}
+{% endfor %}
+
+{% if all_fonts != blank %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family={{ all_fonts | replace: ' ', '+' }}&display=swap" rel="stylesheet">
+{% endif %}
+
+{% assign heading_text = block.settings.heading_text %}
+{% assign accent_char = block.settings.accent_character %}
+{% assign accent_color = block.settings.accent_color %}
+{% assign accent_weight = block.settings.accent_weight %}
+{% assign accent_font_family = block.settings.accent_font_family %}
+{% assign overlay_opacity = block.settings.overlay_opacity | divided_by: 100.0 %}
+
+<!-- Outer wrapper: full bleed background -->
+<div style="background-color: {{ block.settings.section_bg_color }} !important; {% if block.settings.section_bg_image %}background-image: url({{ block.settings.section_bg_image | image_url: width: 2000 }}) !important; background-size: cover !important; background-position: center !important;{% endif %} padding-top: {{ block.settings.section_padding_top }}px !important; padding-bottom: {{ block.settings.section_padding_bottom }}px !important; position: relative !important; overflow: hidden !important;" {{ block.shopify_attributes }}>
+
+  {% if block.settings.section_bg_image %}
+    <div style="position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background-color: {{ block.settings.overlay_color }} !important; opacity: {{ overlay_opacity }} !important; z-index: 1 !important;"></div>
+  {% endif %}
+
+  <!-- Desktop inner content wrapper -->
+  <div class="hero-inner-{{ ai_gen_id }}" style="max-width: {{ block.settings.section_max_width }}px !important; margin: 0 auto !important; position: relative !important; z-index: 2 !important; height: {{ block.settings.section_height }}px !important; display: flex !important; align-items: stretch !important; gap: {{ block.settings.image_offset_horizontal }}px !important; padding-left: {{ block.settings.desktop_padding_left }}px !important; padding-right: {{ block.settings.desktop_padding_right }}px !important; box-sizing: border-box !important;">
+
+    <!-- Text column -->
+    <div class="hero-text-col-{{ ai_gen_id }}" style="flex: 1 1 0 !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; justify-content: {{ block.settings.vertical_alignment }} !important; z-index: 2 !important;">
+
+      {% if block.settings.eyebrow_text != blank %}
+        <div style="font-family: {{ block.settings.eyebrow_font_family }}, sans-serif !important; font-size: {{ block.settings.eyebrow_font_size }}px !important; font-weight: {{ block.settings.eyebrow_font_weight }} !important; line-height: {{ block.settings.eyebrow_line_height }} !important; letter-spacing: {{ block.settings.eyebrow_letter_spacing }}px !important; color: {{ block.settings.eyebrow_color }} !important; margin: 0 !important; padding: 0 !important; margin-bottom: {{ block.settings.eyebrow_margin_bottom }}px !important;">
+          {{ block.settings.eyebrow_text }}
+        </div>
+      {% endif %}
+
+      <h1 style="font-family: {{ block.settings.font_family }}, sans-serif !important; font-size: {{ block.settings.font_size }}px !important; font-weight: {{ block.settings.font_weight }} !important; line-height: {{ block.settings.line_height }} !important; letter-spacing: {{ block.settings.letter_spacing }}px !important; color: {{ block.settings.text_color }} !important; margin: 0 !important; padding: 0 !important;">
+        {% for i in (0..heading_text.size) %}
+          {% assign char = heading_text | slice: i %}
+          {% if char == accent_char %}
+            <span style="font-family: {{ accent_font_family }}, sans-serif !important; color: {{ accent_color }} !important; font-weight: {{ accent_weight }} !important;">{{ char }}</span>
+          {% else %}
+            {{ char }}
+          {% endif %}
+        {% endfor %}
+      </h1>
+
+      {% if block.settings.subheading_text != blank %}
+        <h2 style="font-family: {{ block.settings.subheading_font_family }}, sans-serif !important; font-size: {{ block.settings.subheading_font_size }}px !important; font-weight: {{ block.settings.subheading_font_weight }} !important; line-height: {{ block.settings.subheading_line_height }} !important; letter-spacing: {{ block.settings.subheading_letter_spacing }}px !important; color: {{ block.settings.subheading_color }} !important; margin: 0 !important; padding: 0 !important; margin-top: {{ block.settings.subheading_margin_top }}px !important;">
+          {{ block.settings.subheading_text }}
+        </h2>
+      {% endif %}
+
+      {% if block.settings.description_text != blank %}
+        <p style="font-family: {{ block.settings.description_font_family }}, sans-serif !important; font-size: {{ block.settings.description_font_size }}px !important; font-weight: {{ block.settings.description_font_weight }} !important; line-height: {{ block.settings.description_line_height }} !important; letter-spacing: {{ block.settings.description_letter_spacing }}px !important; color: {{ block.settings.description_color }} !important; margin: 0 !important; padding: 0 !important; margin-top: {{ block.settings.description_margin_top }}px !important;">
+          {{ block.settings.description_text }}
+        </p>
+      {% endif %}
+
+      {% if block.settings.primary_button_label != blank or block.settings.secondary_button_label != blank %}
+        <div style="margin-top: {{ block.settings.buttons_margin_top }}px !important; display: flex !important; gap: {{ block.settings.buttons_gap }}px !important; align-items: center !important;">
+          {% if block.settings.primary_button_label != blank %}
+            <a href="{{ block.settings.primary_button_url }}" style="font-family: {{ block.settings.primary_button_font_family }}, sans-serif !important; font-size: {{ block.settings.primary_button_font_size }}px !important; font-weight: {{ block.settings.primary_button_font_weight }} !important; color: {{ block.settings.primary_button_text_color }} !important; background-color: {{ block.settings.primary_button_bg_color }} !important; border: {{ block.settings.primary_button_border_width }}px solid {{ block.settings.primary_button_border_color }} !important; border-radius: {{ block.settings.primary_button_border_radius }}px !important; padding: {{ block.settings.primary_button_padding_y }}px {{ block.settings.primary_button_padding_x }}px !important; text-decoration: none !important; display: inline-block !important; cursor: pointer !important;">
+              {{ block.settings.primary_button_label }}
+            </a>
+          {% endif %}
+          {% if block.settings.secondary_button_label != blank %}
+            <button type="button" class="ai-modal-trigger-{{ ai_gen_id }}" style="font-family: {{ block.settings.secondary_button_font_family }}, sans-serif !important; font-size: {{ block.settings.secondary_button_font_size }}px !important; font-weight: {{ block.settings.secondary_button_font_weight }} !important; color: {{ block.settings.secondary_button_color }} !important; background: none !important; border: none !important; padding: 0 !important; cursor: pointer !important; text-decoration: underline !important;">
+              {{ block.settings.secondary_button_label }}
+            </button>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <div style="display: flex !important; flex-wrap: {% if block.settings.pills_per_row == 'auto' %}wrap{% else %}nowrap{% endif %} !important; gap: {{ block.settings.pills_vertical_gap }}px {{ block.settings.pills_horizontal_gap }}px !important; margin-top: {{ block.settings.pills_margin_top }}px !important;">
+        {% for i in (1..5) %}
+          {% assign pill_label_key = 'pill_' | append: i | append: '_label' %}
+          {% assign pill_label = block.settings[pill_label_key] %}
+          {% if pill_label != blank %}
+            {% assign pill_bg_key = 'pill_' | append: i | append: '_bg_color' %}
+            {% assign pill_border_key = 'pill_' | append: i | append: '_border_color' %}
+            {% assign pill_border_width_key = 'pill_' | append: i | append: '_border_width' %}
+            {% assign pill_border_radius_key = 'pill_' | append: i | append: '_border_radius' %}
+            {% assign pill_font_key = 'pill_' | append: i | append: '_font_family' %}
+            {% assign pill_font_size_key = 'pill_' | append: i | append: '_font_size' %}
+            {% assign pill_font_weight_key = 'pill_' | append: i | append: '_font_weight' %}
+            {% assign pill_text_color_key = 'pill_' | append: i | append: '_text_color' %}
+            {% assign pill_padding_x_key = 'pill_' | append: i | append: '_padding_x' %}
+            {% assign pill_padding_y_key = 'pill_' | append: i | append: '_padding_y' %}
+            <span style="font-family: {{ block.settings[pill_font_key] }}, sans-serif !important; font-size: {{ block.settings[pill_font_size_key] }}px !important; font-weight: {{ block.settings[pill_font_weight_key] }} !important; color: {{ block.settings[pill_text_color_key] }} !important; background-color: {{ block.settings[pill_bg_key] }} !important; border: {{ block.settings[pill_border_width_key] }}px solid {{ block.settings[pill_border_key] }} !important; border-radius: {{ block.settings[pill_border_radius_key] }}px !important; padding: {{ block.settings[pill_padding_y_key] }}px {{ block.settings[pill_padding_x_key] }}px !important; display: inline-block !important; white-space: nowrap !important;">
+              {{ pill_label }}
+            </span>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+    </div>
+
+    <!-- Image column (desktop) -->
+    <div class="hero-img-col-{{ ai_gen_id }}">
+      <div class="hero-img-inner-{{ ai_gen_id }}" style="width: 100% !important; overflow: hidden !important; border-radius: {{ block.settings.image_border_radius }}px !important;">
+        {% if block.settings.hero_image %}
+          <img
+            src="{{ block.settings.hero_image | image_url: width: 1200 }}"
+            alt="{{ block.settings.hero_image.alt | escape }}"
+            loading="lazy"
+            width="{{ block.settings.hero_image.width }}"
+            height="{{ block.settings.hero_image.height }}"
+            style="width: 100% !important; height: 100% !important; object-fit: cover !important; object-position: {{ block.settings.image_x_offset }}% {{ block.settings.image_y_offset }}% !important;"
+          >
+        {% else %}
+          <div style="width: 100%; height: 100%; background: #f4f4f4; display: flex; align-items: center; justify-content: center;">
+            {{ 'image' | placeholder_svg_tag }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% style %}
+  .hero-inner-{{ ai_gen_id }} {
+    box-sizing: border-box;
+  }
+
+  /* Desktop image inner height */
+  .hero-img-inner-{{ ai_gen_id }} {
+    height: {{ block.settings.image_height }}px;
+  }
+
+  /* Desktop image column styles - in stylesheet so mobile can override */
+  .hero-img-col-{{ ai_gen_id }} {
+    flex: 0 0 {{ block.settings.image_width }}px;
+    width: {{ block.settings.image_width }}px;
+    display: flex;
+    align-items: {% if block.settings.image_vertical_position == 'top' %}flex-start{% elsif block.settings.image_vertical_position == 'middle' %}center{% else %}flex-end{% endif %};
+    order: {% if block.settings.image_horizontal_position == 'left' %}1{% else %}2{% endif %};
+  }
+
+  .hero-text-col-{{ ai_gen_id }} {
+    order: {% if block.settings.image_horizontal_position == 'left' %}2{% else %}1{% endif %};
+  }
+
+  @media (max-width: 768px) {
+    .hero-inner-{{ ai_gen_id }} {
+      flex-direction: column !important;
+      height: auto !important;
+      gap: 0 !important;
+      padding-left: {{ block.settings.mobile_padding_left }}px !important;
+      padding-right: {{ block.settings.mobile_padding_right }}px !important;
+    }
+
+    /* Text column mobile */
+    .hero-text-col-{{ ai_gen_id }} {
+      order: {% if block.settings.mobile_image_position == 'bottom' %}1{% else %}2{% endif %} !important;
+      width: 100% !important;
+      flex: none !important;
+      min-width: 0 !important;
+      padding-top: {% if block.settings.mobile_image_position == 'bottom' %}0{% else %}24{% endif %}px !important;
+      padding-bottom: {% if block.settings.mobile_image_position == 'bottom' %}24{% else %}0{% endif %}px !important;
+    }
+
+    /* Image column mobile — always centered horizontally */
+    .hero-img-col-{{ ai_gen_id }} {
+      order: {% if block.settings.mobile_image_position == 'bottom' %}2{% else %}1{% endif %} !important;
+      flex: none !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      {% if block.settings.mobile_image_full_width %}
+        /* Full width: bust out of padded container edge to edge */
+        width: calc(100% + {{ block.settings.mobile_padding_left }}px + {{ block.settings.mobile_padding_right }}px) !important;
+        margin-left: -{{ block.settings.mobile_padding_left }}px !important;
+        margin-right: -{{ block.settings.mobile_padding_right }}px !important;
+      {% else %}
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      {% endif %}
+    }
+
+    /* Image inner div mobile */
+    .hero-img-inner-{{ ai_gen_id }} {
+      {% if block.settings.mobile_image_full_width %}
+        width: 100% !important;
+        border-radius: 0 !important;
+      {% else %}
+        width: {{ block.settings.mobile_image_width }}px !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        border-radius: {{ block.settings.image_border_radius }}px !important;
+      {% endif %}
+      height: {{ block.settings.image_mobile_height }}px !important;
+    }
+
+    /* Mobile font sizes */
+    .hero-text-col-{{ ai_gen_id }} h1 {
+      font-size: {{ block.settings.mobile_font_size }}px !important;
+      word-break: break-word !important;
+      overflow-wrap: break-word !important;
+    }
+    .hero-text-col-{{ ai_gen_id }} h2 {
+      font-size: {{ block.settings.mobile_subheading_font_size }}px !important;
+      word-break: break-word !important;
+    }
+    .hero-text-col-{{ ai_gen_id }} p {
+      font-size: {{ block.settings.mobile_description_font_size }}px !important;
+    }
+  }
+
+  .ai-modal-overlay-{{ ai_gen_id }} {
+    display: none !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: {{ block.settings.modal_overlay_color }} !important;
+    opacity: {{ block.settings.modal_overlay_opacity | divided_by: 100.0 }} !important;
+    z-index: 999 !important;
+  }
+  .ai-modal-overlay-{{ ai_gen_id }}.active { display: block !important; }
+  .ai-modal-container-{{ ai_gen_id }} {
+    display: none !important;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background: white !important;
+    border-radius: 12px !important;
+    padding: 32px !important;
+    max-width: 800px !important;
+    width: 90% !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    z-index: 1000 !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
+  }
+  .ai-modal-container-{{ ai_gen_id }}.active { display: block !important; }
+  .ai-modal-header-{{ ai_gen_id }} { display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 24px !important; }
+  .ai-modal-title-{{ ai_gen_id }} { font-size: 24px !important; font-weight: 700 !important; margin: 0 !important; }
+  .ai-modal-close-{{ ai_gen_id }} { background: none !important; border: none !important; font-size: 28px !important; cursor: pointer !important; padding: 0 !important; width: 32px !important; height: 32px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #666 !important; }
+  .ai-modal-close-{{ ai_gen_id }}:hover { color: #000 !important; }
+  .ai-ingredient-row-{{ ai_gen_id }} { border-bottom: 1px solid #e0e0e0 !important; padding: 20px 0 !important; }
+  .ai-ingredient-row-{{ ai_gen_id }}:last-child { border-bottom: none !important; }
+  .ai-ingredient-name-{{ ai_gen_id }} { font-size: 18px !important; font-weight: 600 !important; margin-bottom: 8px !important; }
+  .ai-ingredient-dosage-{{ ai_gen_id }} { font-size: 14px !important; color: #666 !important; margin-bottom: 8px !important; }
+  .ai-ingredient-description-{{ ai_gen_id }} { font-size: 14px !important; line-height: 1.6 !important; color: #333 !important; margin-bottom: 8px !important; }
+  .ai-ingredient-comparison-{{ ai_gen_id }} { font-size: 13px !important; color: #999 !important; font-style: italic !important; }
+{% endstyle %}
+
+<div class="ai-modal-overlay-{{ ai_gen_id }}"></div>
+<div class="ai-modal-container-{{ ai_gen_id }}">
+  <div class="ai-modal-header-{{ ai_gen_id }}">
+    <h3 class="ai-modal-title-{{ ai_gen_id }}">{{ block.settings.modal_title }}</h3>
+    <button type="button" class="ai-modal-close-{{ ai_gen_id }}" aria-label="Close">&times;</button>
+  </div>
+  <div class="ai-modal-content-{{ ai_gen_id }}">
+    {% for i in (1..5) %}
+      {% assign ing_name_key = 'ingredient_' | append: i | append: '_name' %}
+      {% assign ing_name = block.settings[ing_name_key] %}
+      {% if ing_name != blank %}
+        {% assign ing_dosage_key = 'ingredient_' | append: i | append: '_dosage' %}
+        {% assign ing_desc_key = 'ingredient_' | append: i | append: '_description' %}
+        {% assign ing_comp_key = 'ingredient_' | append: i | append: '_competitor_dosage' %}
+        <div class="ai-ingredient-row-{{ ai_gen_id }}">
+          <div class="ai-ingredient-name-{{ ai_gen_id }}">{{ ing_name }}</div>
+          <div class="ai-ingredient-dosage-{{ ai_gen_id }}">Our dosage: {{ block.settings[ing_dosage_key] }}</div>
+          <div class="ai-ingredient-description-{{ ai_gen_id }}">{{ block.settings[ing_desc_key] }}</div>
+          {% if block.settings[ing_comp_key] != blank %}
+            <div class="ai-ingredient-comparison-{{ ai_gen_id }}">Competitor dosage: {{ block.settings[ing_comp_key] }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  (function() {
+    const trigger = document.querySelector('.ai-modal-trigger-{{ ai_gen_id }}');
+    const overlay = document.querySelector('.ai-modal-overlay-{{ ai_gen_id }}');
+    const modal = document.querySelector('.ai-modal-container-{{ ai_gen_id }}');
+    const closeBtn = document.querySelector('.ai-modal-close-{{ ai_gen_id }}');
+    if (trigger) {
+      trigger.addEventListener('click', function() {
+        overlay.classList.add('active');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+    function closeModal() {
+      overlay.classList.remove('active');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (overlay) overlay.addEventListener('click', closeModal);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Hero with background",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section background"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "image_picker",
+      "id": "section_bg_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_max_width",
+      "label": "Max width",
+      "min": 800,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "header",
+      "content": "Desktop edge padding"
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_left",
+      "label": "Desktop left padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_right",
+      "label": "Desktop right padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Mobile edge padding"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_left",
+      "label": "Mobile left padding",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_right",
+      "label": "Mobile right padding",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "label": "Section height (desktop)",
+      "min": 300,
+      "max": 1000,
+      "step": 20,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Text vertical alignment",
+      "options": [
+        {"value": "flex-start", "label": "Top"},
+        {"value": "center", "label": "Center"},
+        {"value": "flex-end", "label": "Bottom"}
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Image — Desktop"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_horizontal_position",
+      "label": "Horizontal position",
+      "options": [
+        {"value": "left", "label": "Left"},
+        {"value": "right", "label": "Right"}
+      ],
+      "default": "right"
+    },
+    {
+      "type": "range",
+      "id": "image_offset_horizontal",
+      "label": "Gap between columns",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "select",
+      "id": "image_vertical_position",
+      "label": "Vertical position",
+      "options": [
+        {"value": "top", "label": "Top"},
+        {"value": "middle", "label": "Middle"},
+        {"value": "bottom", "label": "Bottom"}
+      ],
+      "default": "middle"
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "label": "Width (desktop)",
+      "min": 200,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "label": "Height (desktop)",
+      "min": 200,
+      "max": 1000,
+      "step": 20,
+      "unit": "px",
+      "default": 500
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "image_x_offset",
+      "label": "X position",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "image_y_offset",
+      "label": "Y position",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Image — Mobile"
+    },
+    {
+      "type": "select",
+      "id": "mobile_image_position",
+      "label": "Image position on mobile",
+      "options": [
+        {"value": "top", "label": "Above text"},
+        {"value": "bottom", "label": "Below text"}
+      ],
+      "default": "top"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_image_full_width",
+      "label": "Full width (edge to edge)",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "mobile_image_width",
+      "label": "Image width (when not full width)",
+      "min": 100,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "image_mobile_height",
+      "label": "Image height (mobile)",
+      "min": 160,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "default": 280
+    },
+    {
+      "type": "header",
+      "content": "Eyebrow label"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow_text",
+      "label": "Eyebrow text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow_font_family",
+      "label": "Google Font name",
+      "default": "Roboto"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_font_weight",
+      "label": "Font weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 500
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_line_height",
+      "label": "Line height",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.4
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_letter_spacing",
+      "label": "Letter spacing",
+      "min": -10,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0.5
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "Text color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_margin_bottom",
+      "label": "Spacing below",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Main heading"
+    },
+    {
+      "type": "text",
+      "id": "heading_text",
+      "label": "Heading text",
+      "default": "We're changing the game"
+    },
+    {
+      "type": "text",
+      "id": "font_family",
+      "label": "Google Font name",
+      "default": "Playfair Display"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "min": 16,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "font_weight",
+      "label": "Font weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 700
+    },
+    {
+      "type": "range",
+      "id": "line_height",
+      "label": "Line height",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing",
+      "label": "Letter spacing",
+      "min": -10,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "mobile_font_size",
+      "label": "Font size (mobile)",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "Accent character"
+    },
+    {
+      "type": "text",
+      "id": "accent_character",
+      "label": "Accent character",
+      "default": "'"
+    },
+    {
+      "type": "text",
+      "id": "accent_font_family",
+      "label": "Google Font name",
+      "default": "Playfair Display"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#ff0000"
+    },
+    {
+      "type": "range",
+      "id": "accent_weight",
+      "label": "Accent weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 900
+    },
+    {
+      "type": "header",
+      "content": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "subheading_text",
+      "label": "Subheading text"
+    },
+    {
+      "type": "text",
+      "id": "subheading_font_family",
+      "label": "Google Font name",
+      "default": "Roboto"
+    },
+    {
+      "type": "range",
+      "id": "subheading_font_size",
+      "label": "Font size",
+      "min": 14,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "subheading_font_weight",
+      "label": "Font weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "subheading_line_height",
+      "label": "Line height",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.4
+    },
+    {
+      "type": "range",
+      "id": "subheading_letter_spacing",
+      "label": "Letter spacing",
+      "min": -10,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Text color",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "mobile_subheading_font_size",
+      "label": "Font size (mobile)",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "subheading_margin_top",
+      "label": "Spacing above",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Description"
+    },
+    {
+      "type": "textarea",
+      "id": "description_text",
+      "label": "Description text"
+    },
+    {
+      "type": "text",
+      "id": "description_font_family",
+      "label": "Google Font name",
+      "default": "Roboto"
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "description_font_weight",
+      "label": "Font weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "description_line_height",
+      "label": "Line height",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.6
+    },
+    {
+      "type": "range",
+      "id": "description_letter_spacing",
+      "label": "Letter spacing",
+      "min": -10,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Text color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_font_size",
+      "label": "Font size (mobile)",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "description_margin_top",
+      "label": "Spacing above",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "range",
+      "id": "buttons_margin_top",
+      "label": "Spacing above buttons",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "buttons_gap",
+      "label": "Gap between buttons",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Primary button"
+    },
+    {
+      "type": "text",
+      "id": "primary_button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "primary_button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "text",
+      "id": "primary_button_font_family",
+      "label": "Google Font name",
+      "default": "Roboto"
+    },
+    {
+      "type": "range",
+      "id": "primary_button_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "primary_button_font_weight",
+      "label": "Font weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 600
+    },
+    {
+      "type": "color",
+      "id": "primary_button_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "primary_button_bg_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "primary_button_border_color",
+      "label": "Border color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "primary_button_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "primary_button_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "primary_button_padding_y",
+      "label": "Vertical padding",
+      "min": 4,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "primary_button_padding_x",
+      "label": "Horizontal padding",
+      "min": 8,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Secondary button"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_font_family",
+      "label": "Google Font name",
+      "default": "Roboto"
+    },
+    {
+      "type": "range",
+      "id": "secondary_button_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "secondary_button_font_weight",
+      "label": "Font weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 400
+    },
+    {
+      "type": "color",
+      "id": "secondary_button_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Pills layout"
+    },
+    {
+      "type": "select",
+      "id": "pills_per_row",
+      "label": "Pills per row",
+      "options": [
+        {"value": "1", "label": "1"},
+        {"value": "2", "label": "2"},
+        {"value": "3", "label": "3"},
+        {"value": "4", "label": "4"},
+        {"value": "5", "label": "5"},
+        {"value": "auto", "label": "Auto wrap"}
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "pills_horizontal_gap",
+      "label": "Horizontal gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "pills_vertical_gap",
+      "label": "Vertical gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "pills_margin_top",
+      "label": "Spacing above pills",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Pill 1"
+    },
+    {
+      "type": "text",
+      "id": "pill_1_label",
+      "label": "Label"
+    },
+    {
+      "type": "text",
+      "id": "pill_1_font_family",
+      "label": "Google Font name",
+      "default": "Roboto"
+    },
+    {
+      "type": "range",
+      "id": "pill_1_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "pill_1_font_weight",
+      "label": "Font weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 400
+    },
+    {
+      "type": "color",
+      "id": "pill_1_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "pill_1_bg_color",
+      "label": "Background color",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "pill_1_border_color",
+      "label": "Border color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "pill_1_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "pill_1_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "pill_1_padding_x",
+      "label": "Horizontal padding",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "pill_1_padding_y",
+      "label": "Vertical padding",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Pill 2"
+    },
+    {
+      "type": "text",
+      "id": "pill_2_label",
+      "label": "Label"
+    },
+    {
+      "type": "text",
+      "id": "pill_2_font_family",
+      "label": "Google Font name",
+      "default": "Roboto"
+    },
+    {
+      "type": "range",
+      "id": "pill_2_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "pill_2_font_weight",
+      "label": "Font weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 400
+    },
+    {
+      "type": "color",
+      "id": "pill_2_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "pill_2_bg_color",
+      "label": "Background color",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "pill_2_border_color",
+      "label": "Border color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "pill_2_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "pill_2_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "pill_2_padding_x",
+      "label": "Horizontal padding",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "pill_2_padding_y",
+      "label": "Vertical padding",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Pill 3"
+    },
+    {
+      "type": "text",
+      "id": "pill_3_label",
+      "label": "Label"
+    },
+    {
+      "type": "text",
+      "id": "pill_3_font_family",
+      "label": "Google Font name",
+      "default": "Roboto"
+    },
+    {
+      "type": "range",
+      "id": "pill_3_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "pill_3_font_weight",
+      "label": "Font weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 400
+    },
+    {
+      "type": "color",
+      "id": "pill_3_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "pill_3_bg_color",
+      "label": "Background color",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "pill_3_border_color",
+      "label": "Border color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "pill_3_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "pill_3_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "pill_3_padding_x",
+      "label": "Horizontal padding",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "pill_3_padding_y",
+      "label": "Vertical padding",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Pill 4"
+    },
+    {
+      "type": "text",
+      "id": "pill_4_label",
+      "label": "Label"
+    },
+    {
+      "type": "text",
+      "id": "pill_4_font_family",
+      "label": "Google Font name",
+      "default": "Roboto"
+    },
+    {
+      "type": "range",
+      "id": "pill_4_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "pill_4_font_weight",
+      "label": "Font weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 400
+    },
+    {
+      "type": "color",
+      "id": "pill_4_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "pill_4_bg_color",
+      "label": "Background color",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "pill_4_border_color",
+      "label": "Border color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "pill_4_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "pill_4_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "pill_4_padding_x",
+      "label": "Horizontal padding",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "pill_4_padding_y",
+      "label": "Vertical padding",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Pill 5"
+    },
+    {
+      "type": "text",
+      "id": "pill_5_label",
+      "label": "Label"
+    },
+    {
+      "type": "text",
+      "id": "pill_5_font_family",
+      "label": "Google Font name",
+      "default": "Roboto"
+    },
+    {
+      "type": "range",
+      "id": "pill_5_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "pill_5_font_weight",
+      "label": "Font weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 400
+    },
+    {
+      "type": "color",
+      "id": "pill_5_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "pill_5_bg_color",
+      "label": "Background color",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "pill_5_border_color",
+      "label": "Border color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "pill_5_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "pill_5_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "pill_5_padding_x",
+      "label": "Horizontal padding",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "pill_5_padding_y",
+      "label": "Vertical padding",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Modal"
+    },
+    {
+      "type": "text",
+      "id": "modal_title",
+      "label": "Modal title",
+      "default": "Ingredient Breakdown"
+    },
+    {
+      "type": "color",
+      "id": "modal_overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "modal_overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 1"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_1_name",
+      "label": "Name"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_1_dosage",
+      "label": "Our dosage"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_1_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_1_competitor_dosage",
+      "label": "Competitor dosage"
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 2"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_2_name",
+      "label": "Name"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_2_dosage",
+      "label": "Our dosage"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_2_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_2_competitor_dosage",
+      "label": "Competitor dosage"
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 3"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_3_name",
+      "label": "Name"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_3_dosage",
+      "label": "Our dosage"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_3_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_3_competitor_dosage",
+      "label": "Competitor dosage"
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 4"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_4_name",
+      "label": "Name"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_4_dosage",
+      "label": "Our dosage"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_4_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_4_competitor_dosage",
+      "label": "Competitor dosage"
+    },
+    {
+      "type": "header",
+      "content": "Ingredient 5"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_5_name",
+      "label": "Name"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_5_dosage",
+      "label": "Our dosage"
+    },
+    {
+      "type": "textarea",
+      "id": "ingredient_5_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_5_competitor_dosage",
+      "label": "Competitor dosage"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero with background"
+    }
+  ]
+}
+{% endschema %}
