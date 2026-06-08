@@ -298,21 +298,14 @@
                       {{ block.settings.text }}
                     {%- endif -%}
                   {%- endcapture -%}
-                  {% case block.settings.tag %}
-                    {% when 'h1' %}<h1 class="hero-heading-{{ bid }}">{{ heading_html }}</h1>
-                    {% when 'h2' %}<h2 class="hero-heading-{{ bid }}">{{ heading_html }}</h2>
-                    {% when 'h3' %}<h3 class="hero-heading-{{ bid }}">{{ heading_html }}</h3>
-                    {% else %}<p class="hero-heading-{{ bid }}">{{ heading_html }}</p>
-                  {% endcase %}
+                  {%- assign aria_level = '1' -%}{%- if block.settings.tag == 'h2' -%}{%- assign aria_level = '2' -%}{%- endif -%}{%- if block.settings.tag == 'h3' -%}{%- assign aria_level = '3' -%}{%- endif -%}
+                  <div class="hero-heading-{{ bid }}" role="heading" aria-level="{{ aria_level }}">{{ heading_html }}</div>
                 {% endif %}
 
               {% when 'subheading' %}
                 {% if block.settings.text != blank %}
-                  {% case block.settings.tag %}
-                    {% when 'h2' %}<h2 class="hero-subheading-{{ bid }}">{{ block.settings.text }}</h2>
-                    {% when 'h3' %}<h3 class="hero-subheading-{{ bid }}">{{ block.settings.text }}</h3>
-                    {% else %}<p class="hero-subheading-{{ bid }}">{{ block.settings.text }}</p>
-                  {% endcase %}
+                  {%- assign sub_level = '2' -%}{%- if block.settings.tag == 'h3' -%}{%- assign sub_level = '3' -%}{%- endif -%}
+                  <div class="hero-subheading-{{ bid }}" role="heading" aria-level="{{ sub_level }}">{{ block.settings.text }}</div>
                 {% endif %}
 
               {% when 'description' %}
