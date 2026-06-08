@@ -198,6 +198,108 @@
           .hero-btns2-{{ bid }} { font-size: {{ block.settings.mobile_secondary_font_size }}px !important; }
         }
 
+      {% when 'ingredients' %}
+        .hero-ing-trigger-{{ bid }} {
+          font-size: {{ block.settings.trigger_font_size }}px;
+          background: none;
+          border: none;
+          border-bottom: 1.5px solid {{ block.settings.trigger_color }};
+          padding: 0;
+          cursor: pointer;
+          display: inline-block;
+          line-height: 1.4;
+        }
+        @media (max-width: 768px) {
+          .hero-ing-trigger-{{ bid }} {
+            font-size: {{ block.settings.mobile_trigger_font_size }}px !important;
+          }
+        }
+        .hero-ing-overlay-{{ bid }} {
+          display: none;
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.75);
+          z-index: 9999;
+          align-items: center;
+          justify-content: center;
+          padding: 16px;
+        }
+        .hero-ing-overlay-{{ bid }}.is-open { display: flex; }
+        .hero-ing-modal-{{ bid }} {
+          background: {{ block.settings.modal_bg_color }};
+          color: {{ block.settings.modal_text_color }};
+          border-radius: 12px;
+          max-width: 680px;
+          width: 100%;
+          max-height: 90vh;
+          overflow-y: auto;
+          padding: 32px;
+          position: relative;
+          font-family: '{{ block.settings.modal_font_family }}', sans-serif;
+        }
+        .hero-ing-close-{{ bid }} {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          background: none;
+          border: none;
+          color: {{ block.settings.modal_text_color }};
+          font-size: 24px;
+          cursor: pointer;
+          line-height: 1;
+          padding: 4px 8px;
+          opacity: 0.7;
+        }
+        .hero-ing-close-{{ bid }}:hover { opacity: 1; }
+        .hero-ing-title-{{ bid }} {
+          font-size: {{ block.settings.modal_title_size }}px;
+          font-weight: 700;
+          margin: 0 0 8px;
+          padding-right: 40px;
+          font-family: '{{ block.settings.modal_font_family }}', sans-serif;
+          color: {{ block.settings.modal_text_color }};
+        }
+        .hero-ing-intro-{{ bid }} {
+          font-size: 14px;
+          opacity: 0.75;
+          margin: 0 0 24px;
+          line-height: 1.5;
+        }
+        .hero-ing-table-{{ bid }} {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 13px;
+        }
+        .hero-ing-table-{{ bid }} th {
+          text-align: left;
+          padding: 8px 10px;
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          opacity: 0.55;
+          border-bottom: 1px solid rgba(255,255,255,0.1);
+          white-space: nowrap;
+        }
+        .hero-ing-table-{{ bid }} td {
+          padding: 12px 10px;
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+          vertical-align: top;
+          line-height: 1.45;
+        }
+        .hero-ing-table-{{ bid }} tr:last-child td { border-bottom: none; }
+        .hero-ing-name-{{ bid }} {
+          font-weight: 600;
+          color: {{ block.settings.modal_accent_color }};
+          white-space: nowrap;
+        }
+        .hero-ing-your-{{ bid }} { font-weight: 600; }
+        @media (max-width: 560px) {
+          .hero-ing-modal-{{ bid }} { padding: 20px 16px; }
+          .hero-ing-table-{{ bid }} { font-size: 12px; }
+          .hero-ing-table-{{ bid }} th,
+          .hero-ing-table-{{ bid }} td { padding: 8px 6px; }
+        }
+
       {% when 'pills' %}
         .hero-pills-{{ bid }} {
           display: flex;
@@ -301,6 +403,52 @@
                       {% if block.settings.secondary_new_tab %}target="_blank" rel="noopener"{% endif %}
                     >{{ block.settings.secondary_text }}</a>
                   {% endif %}
+                </div>
+
+              {% when 'ingredients' %}
+                <button
+                  class="hero-ing-trigger-{{ bid }}"
+                  style="font-family:'{{ block.settings.trigger_font_family }}',sans-serif;color:{{ block.settings.trigger_color }};font-weight:{{ block.settings.trigger_font_weight }};"
+                  onclick="document.getElementById('hero-ing-{{ bid }}').classList.add('is-open')"
+                  type="button"
+                >{{ block.settings.trigger_text }}</button>
+
+                <div class="hero-ing-overlay-{{ bid }}" id="hero-ing-{{ bid }}" onclick="if(event.target===this)this.classList.remove('is-open')">
+                  <div class="hero-ing-modal-{{ bid }}">
+                    <button class="hero-ing-close-{{ bid }}" onclick="document.getElementById('hero-ing-{{ bid }}').classList.remove('is-open')" type="button" aria-label="Close">&#x2715;</button>
+                    <p class="hero-ing-title-{{ bid }}">{{ block.settings.modal_title }}</p>
+                    {% if block.settings.modal_intro != blank %}<p class="hero-ing-intro-{{ bid }}">{{ block.settings.modal_intro }}</p>{% endif %}
+                    <table class="hero-ing-table-{{ bid }}">
+                      <thead>
+                        <tr>
+                          <th>Ingredient</th>
+                          <th>Our Dose</th>
+                          {% if block.settings.show_clinical %}<th>Clinical Dose</th>{% endif %}
+                          {% if block.settings.show_competitor %}<th>Competitor Dose</th>{% endif %}
+                          <th>What It Does</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for i in (1..6) %}
+                          {%- assign name_key  = 'ing_' | append: i | append: '_name' -%}
+                          {%- assign ing_name  = block.settings[name_key] -%}
+                          {% if ing_name != blank %}
+                            {%- assign your_key  = 'ing_' | append: i | append: '_your_dose' -%}
+                            {%- assign clin_key  = 'ing_' | append: i | append: '_clinical_dose' -%}
+                            {%- assign comp_key  = 'ing_' | append: i | append: '_competitor_dose' -%}
+                            {%- assign desc_key  = 'ing_' | append: i | append: '_description' -%}
+                            <tr>
+                              <td class="hero-ing-name-{{ bid }}">{{ ing_name }}</td>
+                              <td class="hero-ing-your-{{ bid }}">{{ block.settings[your_key] }}</td>
+                              {% if block.settings.show_clinical %}<td>{{ block.settings[clin_key] }}</td>{% endif %}
+                              {% if block.settings.show_competitor %}<td>{{ block.settings[comp_key] }}</td>{% endif %}
+                              <td>{{ block.settings[desc_key] }}</td>
+                            </tr>
+                          {% endif %}
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
 
               {% when 'pills' %}
@@ -530,6 +678,70 @@
         { "type": "text", "id": "font_family", "label": "Font family (Google Fonts name)", "default": "Inter" },
         { "type": "range", "id": "gap", "label": "Gap between buttons (px)", "min": 4, "max": 40, "step": 2, "default": 12 },
         { "type": "checkbox", "id": "mobile_stack", "label": "Stack buttons on mobile", "default": false }
+      ]
+    },
+    {
+      "type": "ingredients",
+      "name": "Ingredients Popup",
+      "settings": [
+        { "type": "header", "content": "Spacing" },
+        { "type": "range", "id": "padding_top", "label": "Padding top (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
+        { "type": "range", "id": "padding_bottom", "label": "Padding bottom (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
+        { "type": "range", "id": "mobile_padding_top", "label": "Padding top — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
+        { "type": "range", "id": "mobile_padding_bottom", "label": "Padding bottom — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
+        { "type": "header", "content": "Trigger Link" },
+        { "type": "text", "id": "trigger_text", "label": "Link text", "default": "How it works?" },
+        { "type": "color", "id": "trigger_color", "label": "Color", "default": "#ffffff" },
+        { "type": "text", "id": "trigger_font_family", "label": "Font family (Google Fonts name)", "default": "Inter" },
+        { "type": "range", "id": "trigger_font_size", "label": "Font size — Desktop (px)", "min": 10, "max": 24, "step": 1, "default": 14 },
+        { "type": "range", "id": "mobile_trigger_font_size", "label": "Font size — Mobile (px)", "min": 10, "max": 22, "step": 1, "default": 13 },
+        { "type": "select", "id": "trigger_font_weight", "label": "Font weight", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"}], "default": "400" },
+        { "type": "header", "content": "Popup" },
+        { "type": "text", "id": "modal_title", "label": "Popup title", "default": "What's Inside" },
+        { "type": "textarea", "id": "modal_intro", "label": "Intro text (optional)" },
+        { "type": "text", "id": "modal_font_family", "label": "Popup font family (Google Fonts name)", "default": "Inter" },
+        { "type": "range", "id": "modal_title_size", "label": "Title font size (px)", "min": 16, "max": 40, "step": 1, "default": 24 },
+        { "type": "color", "id": "modal_bg_color", "label": "Background color", "default": "#111111" },
+        { "type": "color", "id": "modal_text_color", "label": "Text color", "default": "#ffffff" },
+        { "type": "color", "id": "modal_accent_color", "label": "Ingredient name color", "default": "#ff6b35" },
+        { "type": "checkbox", "id": "show_clinical", "label": "Show clinical dosage column", "default": true },
+        { "type": "checkbox", "id": "show_competitor", "label": "Show competitor dosage column", "default": true },
+        { "type": "header", "content": "Ingredient 1" },
+        { "type": "text", "id": "ing_1_name", "label": "Name", "default": "Magnesium" },
+        { "type": "text", "id": "ing_1_your_dose", "label": "Our dosage", "default": "400mg" },
+        { "type": "text", "id": "ing_1_clinical_dose", "label": "Clinical dosage", "default": "310–420mg" },
+        { "type": "text", "id": "ing_1_competitor_dose", "label": "Competitor dosage", "default": "100mg" },
+        { "type": "textarea", "id": "ing_1_description", "label": "What it does", "default": "Supports muscle recovery and sleep quality." },
+        { "type": "header", "content": "Ingredient 2" },
+        { "type": "text", "id": "ing_2_name", "label": "Name" },
+        { "type": "text", "id": "ing_2_your_dose", "label": "Our dosage" },
+        { "type": "text", "id": "ing_2_clinical_dose", "label": "Clinical dosage" },
+        { "type": "text", "id": "ing_2_competitor_dose", "label": "Competitor dosage" },
+        { "type": "textarea", "id": "ing_2_description", "label": "What it does" },
+        { "type": "header", "content": "Ingredient 3" },
+        { "type": "text", "id": "ing_3_name", "label": "Name" },
+        { "type": "text", "id": "ing_3_your_dose", "label": "Our dosage" },
+        { "type": "text", "id": "ing_3_clinical_dose", "label": "Clinical dosage" },
+        { "type": "text", "id": "ing_3_competitor_dose", "label": "Competitor dosage" },
+        { "type": "textarea", "id": "ing_3_description", "label": "What it does" },
+        { "type": "header", "content": "Ingredient 4" },
+        { "type": "text", "id": "ing_4_name", "label": "Name" },
+        { "type": "text", "id": "ing_4_your_dose", "label": "Our dosage" },
+        { "type": "text", "id": "ing_4_clinical_dose", "label": "Clinical dosage" },
+        { "type": "text", "id": "ing_4_competitor_dose", "label": "Competitor dosage" },
+        { "type": "textarea", "id": "ing_4_description", "label": "What it does" },
+        { "type": "header", "content": "Ingredient 5" },
+        { "type": "text", "id": "ing_5_name", "label": "Name" },
+        { "type": "text", "id": "ing_5_your_dose", "label": "Our dosage" },
+        { "type": "text", "id": "ing_5_clinical_dose", "label": "Clinical dosage" },
+        { "type": "text", "id": "ing_5_competitor_dose", "label": "Competitor dosage" },
+        { "type": "textarea", "id": "ing_5_description", "label": "What it does" },
+        { "type": "header", "content": "Ingredient 6" },
+        { "type": "text", "id": "ing_6_name", "label": "Name" },
+        { "type": "text", "id": "ing_6_your_dose", "label": "Our dosage" },
+        { "type": "text", "id": "ing_6_clinical_dose", "label": "Clinical dosage" },
+        { "type": "text", "id": "ing_6_competitor_dose", "label": "Competitor dosage" },
+        { "type": "textarea", "id": "ing_6_description", "label": "What it does" }
       ]
     },
     {
