@@ -177,13 +177,13 @@
         display: block;
       }
       {% if block.settings.badge_enabled %}
-        {%- assign badge_ray = block.settings.badge_size | divided_by: 2 | plus: 14 -%}
+        {%- assign badge_ray  = block.settings.badge_size | divided_by: 2 | plus: 14 -%}
         {%- assign badge_diag = block.settings.badge_size | divided_by: 3 | plus: 4 -%}
-        {%- assign rot_total = block.settings.badge_rotate_glow_size | times: 2 | plus: block.settings.badge_size -%}
-        {%- assign rot_oy = block.settings.badge_offset_y | minus: block.settings.badge_rotate_glow_size -%}
-        {%- assign rot_ox = block.settings.badge_offset_x | minus: block.settings.badge_rotate_glow_size -%}
+        {%- assign rot_total  = block.settings.badge_rotate_glow_size | times: 2 | plus: block.settings.badge_size -%}
+        {%- assign rot_oy     = block.settings.badge_offset_y | minus: block.settings.badge_rotate_glow_size -%}
+        {%- assign rot_ox     = block.settings.badge_offset_x | minus: block.settings.badge_rotate_glow_size -%}
 
-        /* rotating glow: separate element, always sits behind the badge */
+        /* rotating glow: sibling div, z-index 9 so badge (z-index 10) covers center */
         {% if block.settings.badge_effect_rotate_glow %}
           .hero-badge-rot-{{ bid }} {
             position: absolute;
@@ -192,15 +192,36 @@
             border-radius: 50%;
             {% if block.settings.badge_corner_v == 'top' %}top: {{ rot_oy }}px;{% else %}bottom: {{ rot_oy }}px;{% endif %}
             {% if block.settings.badge_corner_h == 'left' %}left: {{ rot_ox }}px;{% else %}right: {{ rot_ox }}px;{% endif %}
-            background: conic-gradient(from 0deg, transparent 0%, {{ block.settings.badge_rotate_glow_color }} 25%, {{ block.settings.badge_rotate_glow_color }} 42%, transparent 65%);
+            background: conic-gradient(from 0deg, transparent 0%, {{ block.settings.badge_rotate_glow_color }} 10%, {{ block.settings.badge_rotate_glow_color }} 60%, transparent 80%);
             animation: hero-rot-{{ bid }} {{ block.settings.badge_rotate_speed }}s linear infinite {{ block.settings.badge_rotate_dir }};
             z-index: 9;
-            filter: blur({{ block.settings.badge_rotate_glow_size | divided_by: 2 }}px);
+            filter: blur(3px);
             pointer-events: none;
           }
           @keyframes hero-rot-{{ bid }} {
             from { transform: rotate(0deg); }
             to   { transform: rotate(360deg); }
+          }
+        {% endif %}
+
+        /* pulse glow: sibling div, z-index 9 so badge (z-index 10) covers center;
+           starts at badge size (hidden behind badge), expands + fades outward */
+        {% if block.settings.badge_effect_pulse %}
+          .hero-badge-pulse-{{ bid }} {
+            position: absolute;
+            width: {{ block.settings.badge_size }}px;
+            height: {{ block.settings.badge_size }}px;
+            border-radius: 50%;
+            background: {{ block.settings.badge_pulse_color }};
+            {% if block.settings.badge_corner_v == 'top' %}top: {{ block.settings.badge_offset_y }}px;{% else %}bottom: {{ block.settings.badge_offset_y }}px;{% endif %}
+            {% if block.settings.badge_corner_h == 'left' %}left: {{ block.settings.badge_offset_x }}px;{% else %}right: {{ block.settings.badge_offset_x }}px;{% endif %}
+            animation: hero-pulse-{{ bid }} {{ block.settings.badge_pulse_speed }}s ease-out infinite;
+            z-index: 9;
+            pointer-events: none;
+          }
+          @keyframes hero-pulse-{{ bid }} {
+            0%   { transform: scale(1);   opacity: 0.75; }
+            100% { transform: scale(2);   opacity: 0; }
           }
         {% endif %}
 
@@ -231,24 +252,6 @@
           {% if block.settings.badge_corner_v == 'top' %}top: {{ block.settings.badge_offset_y }}px;{% else %}bottom: {{ block.settings.badge_offset_y }}px;{% endif %}
           {% if block.settings.badge_corner_h == 'left' %}left: {{ block.settings.badge_offset_x }}px;{% else %}right: {{ block.settings.badge_offset_x }}px;{% endif %}
         }
-
-        /* pulse glow: ::before expands outward and fades */
-        {% if block.settings.badge_effect_pulse %}
-          .hero-badge-{{ bid }}::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: {{ block.settings.badge_pulse_color }};
-            animation: hero-pulse-{{ bid }} {{ block.settings.badge_pulse_speed }}s ease-in-out infinite;
-            z-index: -1;
-            pointer-events: none;
-          }
-          @keyframes hero-pulse-{{ bid }} {
-            0%, 100% { transform: scale(1);   opacity: 0.8; filter: blur(3px); }
-            50%       { transform: scale(1.5); opacity: 0;   filter: blur(14px); }
-          }
-        {% endif %}
 
         /* twinkle: 8-ray starburst that flashes then disappears */
         {% if block.settings.badge_effect_shine %}
@@ -572,6 +575,9 @@
               {% if block.settings.badge_enabled %}
                 {% if block.settings.badge_effect_rotate_glow %}
                   <div class="hero-badge-rot-{{ bid }}"></div>
+                {% endif %}
+                {% if block.settings.badge_effect_pulse %}
+                  <div class="hero-badge-pulse-{{ bid }}"></div>
                 {% endif %}
                 <div class="hero-badge-{{ bid }}">{{ block.settings.badge_text }}</div>
               {% endif %}
