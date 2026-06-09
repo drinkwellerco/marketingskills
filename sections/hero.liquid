@@ -416,9 +416,10 @@
                       {% assign br_key  = 'pill_' | append: i | append: '_border_radius' %}
                       {% assign px_key  = 'pill_' | append: i | append: '_padding_x' %}
                       {% assign py_key  = 'pill_' | append: i | append: '_padding_y' %}
+                      {% assign op_key  = 'pill_' | append: i | append: '_bg_opacity' %}
                       <span
                         class="hero-pill-{{ bid }} hero-pill-{{ i }}-{{ bid }}"
-                        style="font-family:'{{ block.settings.font_family }}',sans-serif;font-weight:{{ block.settings.font_weight }};background-color:{{ block.settings[bg_key] }};color:{{ block.settings[tc_key] }};border:{{ block.settings[bw_key] }}px solid {{ block.settings[bc_key] }};border-radius:{{ block.settings[br_key] }}px;padding:{{ block.settings[py_key] }}px {{ block.settings[px_key] }}px;"
+                        style="font-family:'{{ block.settings.font_family }}',sans-serif;font-weight:{{ block.settings.font_weight }};background-color:color-mix(in srgb, {{ block.settings[bg_key] }} {{ block.settings[op_key] }}%, transparent);color:{{ block.settings[tc_key] }};border:{{ block.settings[bw_key] }}px solid {{ block.settings[bc_key] }};border-radius:{{ block.settings[br_key] }}px;padding:{{ block.settings[py_key] }}px {{ block.settings[px_key] }}px;"
                       >{{ label }}</span>
                     {% endif %}
                   {% endfor %}
@@ -686,6 +687,7 @@
         { "type": "header", "content": "Pill 1" },
         { "type": "text", "id": "pill_1_label", "label": "Label", "default": "Ingredient" },
         { "type": "color", "id": "pill_1_bg", "label": "Background", "default": "#1a1a1a" },
+        { "type": "range", "id": "pill_1_bg_opacity", "label": "Background opacity (%)", "min": 0, "max": 100, "step": 5, "default": 100 },
         { "type": "color", "id": "pill_1_text_color", "label": "Text color", "default": "#ffffff" },
         { "type": "color", "id": "pill_1_border_color", "label": "Border color", "default": "#444444" },
         { "type": "range", "id": "pill_1_border_width", "label": "Border width (px)", "min": 0, "max": 4, "step": 1, "default": 1 },
@@ -697,6 +699,7 @@
         { "type": "header", "content": "Pill 2" },
         { "type": "text", "id": "pill_2_label", "label": "Label" },
         { "type": "color", "id": "pill_2_bg", "label": "Background", "default": "#1a1a1a" },
+        { "type": "range", "id": "pill_2_bg_opacity", "label": "Background opacity (%)", "min": 0, "max": 100, "step": 5, "default": 100 },
         { "type": "color", "id": "pill_2_text_color", "label": "Text color", "default": "#ffffff" },
         { "type": "color", "id": "pill_2_border_color", "label": "Border color", "default": "#444444" },
         { "type": "range", "id": "pill_2_border_width", "label": "Border width (px)", "min": 0, "max": 4, "step": 1, "default": 1 },
@@ -708,6 +711,7 @@
         { "type": "header", "content": "Pill 3" },
         { "type": "text", "id": "pill_3_label", "label": "Label" },
         { "type": "color", "id": "pill_3_bg", "label": "Background", "default": "#1a1a1a" },
+        { "type": "range", "id": "pill_3_bg_opacity", "label": "Background opacity (%)", "min": 0, "max": 100, "step": 5, "default": 100 },
         { "type": "color", "id": "pill_3_text_color", "label": "Text color", "default": "#ffffff" },
         { "type": "color", "id": "pill_3_border_color", "label": "Border color", "default": "#444444" },
         { "type": "range", "id": "pill_3_border_width", "label": "Border width (px)", "min": 0, "max": 4, "step": 1, "default": 1 },
@@ -719,6 +723,7 @@
         { "type": "header", "content": "Pill 4" },
         { "type": "text", "id": "pill_4_label", "label": "Label" },
         { "type": "color", "id": "pill_4_bg", "label": "Background", "default": "#1a1a1a" },
+        { "type": "range", "id": "pill_4_bg_opacity", "label": "Background opacity (%)", "min": 0, "max": 100, "step": 5, "default": 100 },
         { "type": "color", "id": "pill_4_text_color", "label": "Text color", "default": "#ffffff" },
         { "type": "color", "id": "pill_4_border_color", "label": "Border color", "default": "#444444" },
         { "type": "range", "id": "pill_4_border_width", "label": "Border width (px)", "min": 0, "max": 4, "step": 1, "default": 1 },
@@ -730,6 +735,7 @@
         { "type": "header", "content": "Pill 5" },
         { "type": "text", "id": "pill_5_label", "label": "Label" },
         { "type": "color", "id": "pill_5_bg", "label": "Background", "default": "#1a1a1a" },
+        { "type": "range", "id": "pill_5_bg_opacity", "label": "Background opacity (%)", "min": 0, "max": 100, "step": 5, "default": 100 },
         { "type": "color", "id": "pill_5_text_color", "label": "Text color", "default": "#ffffff" },
         { "type": "color", "id": "pill_5_border_color", "label": "Border color", "default": "#444444" },
         { "type": "range", "id": "pill_5_border_width", "label": "Border width (px)", "min": 0, "max": 4, "step": 1, "default": 1 },
