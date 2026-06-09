@@ -94,7 +94,10 @@
 
       {% when 'eyebrow' %}
         .hero-eb-{{ bid }} {
+          font-family: '{{ block.settings.font_family }}', sans-serif !important;
           font-size: {{ block.settings.font_size }}px;
+          font-weight: {{ block.settings.font_weight }} !important;
+          color: {{ block.settings.color }} !important;
           text-align: {{ block.settings.text_align }};
         }
         @media (max-width: 768px) {
@@ -106,7 +109,10 @@
 
       {% when 'heading' %}
         .hero-hl-{{ bid }} {
+          font-family: '{{ block.settings.font_family }}', sans-serif !important;
           font-size: {{ block.settings.font_size }}px;
+          font-weight: {{ block.settings.font_weight }} !important;
+          color: {{ block.settings.color }} !important;
           text-align: {{ block.settings.text_align }};
         }
         .hero-ac-{{ bid }} {
@@ -128,7 +134,10 @@
 
       {% when 'subheading' %}
         .hero-sl-{{ bid }} {
+          font-family: '{{ block.settings.font_family }}', sans-serif !important;
           font-size: {{ block.settings.font_size }}px;
+          font-weight: {{ block.settings.font_weight }} !important;
+          color: {{ block.settings.color }} !important;
           text-align: {{ block.settings.text_align }};
         }
         @media (max-width: 768px) {
@@ -140,7 +149,10 @@
 
       {% when 'description' %}
         .hero-desc-{{ bid }} {
+          font-family: '{{ block.settings.font_family }}', sans-serif !important;
           font-size: {{ block.settings.font_size }}px;
+          font-weight: {{ block.settings.font_weight }} !important;
+          color: {{ block.settings.color }} !important;
           text-align: {{ block.settings.text_align }};
           max-width: {{ block.settings.max_width }}px;
         }
@@ -181,12 +193,14 @@
           align-items: center;
         }
         .hero-btnp-{{ bid }} {
+          font-family: '{{ block.settings.font_family }}', sans-serif !important;
           font-size: {{ block.settings.primary_font_size }}px;
           transition: opacity 0.2s ease;
           white-space: nowrap;
         }
         .hero-btnp-{{ bid }}:hover { opacity: 0.85; }
         .hero-popup-trigger-{{ bid }} {
+          font-family: '{{ block.settings.font_family }}', sans-serif !important;
           font-size: {{ block.settings.popup_font_size }}px;
           background: none;
           border: none;
@@ -295,6 +309,7 @@
           align-items: center;
         }
         .hero-pill-{{ bid }} {
+          font-family: '{{ block.settings.font_family }}', sans-serif !important;
           display: inline-flex;
           align-items: center;
           line-height: 1.2;
@@ -799,3 +814,4 @@
   ]
 }
 {% endschema %}
+
