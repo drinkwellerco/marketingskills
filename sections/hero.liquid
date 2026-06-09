@@ -160,6 +160,7 @@
       }
     {% elsif block.type == 'image' %}
       .hero-imgw-{{ bid }} {
+        position: relative;
         width: 100%;
         overflow: hidden;
         border-radius: {{ block.settings.border_radius }}px;
@@ -172,6 +173,42 @@
         object-position: {{ block.settings.object_position }};
         display: block;
       }
+      {% if block.settings.badge_enabled %}
+        .hero-badge-{{ bid }} {
+          position: absolute;
+          width: {{ block.settings.badge_size }}px;
+          height: {{ block.settings.badge_size }}px;
+          border-radius: 50%;
+          background-color: {{ block.settings.badge_bg_color }};
+          color: {{ block.settings.badge_text_color }};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          font-family: '{{ block.settings.badge_font_family }}', sans-serif;
+          font-size: {{ block.settings.badge_font_size }}px;
+          font-weight: 700;
+          line-height: 1.25;
+          letter-spacing: 0.03em;
+          text-transform: uppercase;
+          padding: 10px;
+          box-sizing: border-box;
+          box-shadow: inset 0 0 0 3px rgba(255,255,255,0.25), 0 4px 16px rgba(0,0,0,0.3);
+          z-index: 10;
+          pointer-events: none;
+          user-select: none;
+          {% if block.settings.badge_corner_v == 'top' %}
+            top: {{ block.settings.badge_offset_y }}px;
+          {% else %}
+            bottom: {{ block.settings.badge_offset_y }}px;
+          {% endif %}
+          {% if block.settings.badge_corner_h == 'left' %}
+            left: {{ block.settings.badge_offset_x }}px;
+          {% else %}
+            right: {{ block.settings.badge_offset_x }}px;
+          {% endif %}
+        }
+      {% endif %}
       @media (max-width: 768px) {
         .hero-imgw-{{ bid }} {
           height: {{ block.settings.mobile_height }}px !important;
@@ -453,6 +490,9 @@
                   <span style="color:rgba(255,255,255,0.3);font-size:14px;">Select an image</span>
                 </div>
               {% endif %}
+              {% if block.settings.badge_enabled %}
+                <div class="hero-badge-{{ bid }}">{{ block.settings.badge_text }}</div>
+              {% endif %}
             </div>
           </div>
         {% endif %}
@@ -585,7 +625,19 @@
         { "type": "header", "content": "Fit" },
         { "type": "select", "id": "object_fit", "label": "Fit", "options": [{"value":"cover","label":"Cover"},{"value":"contain","label":"Contain"},{"value":"fill","label":"Stretch"}], "default": "cover" },
         { "type": "select", "id": "object_position", "label": "Focal point", "options": [{"value":"center center","label":"Center"},{"value":"top center","label":"Top"},{"value":"bottom center","label":"Bottom"},{"value":"left center","label":"Left"},{"value":"right center","label":"Right"}], "default": "center center" },
-        { "type": "select", "id": "loading", "label": "Loading", "options": [{"value":"lazy","label":"Lazy"},{"value":"eager","label":"Eager (above fold)"}], "default": "lazy" }
+        { "type": "select", "id": "loading", "label": "Loading", "options": [{"value":"lazy","label":"Lazy"},{"value":"eager","label":"Eager (above fold)"}], "default": "lazy" },
+        { "type": "header", "content": "Guarantee Badge" },
+        { "type": "checkbox", "id": "badge_enabled", "label": "Show badge", "default": false },
+        { "type": "text", "id": "badge_text", "label": "Badge text", "default": "Empty Tub Money Back Guarantee" },
+        { "type": "select", "id": "badge_corner_v", "label": "Vertical position", "options": [{"value":"top","label":"Top"},{"value":"bottom","label":"Bottom"}], "default": "bottom" },
+        { "type": "select", "id": "badge_corner_h", "label": "Horizontal position", "options": [{"value":"left","label":"Left"},{"value":"right","label":"Right"}], "default": "right" },
+        { "type": "range", "id": "badge_size", "label": "Badge size (px)", "min": 40, "max": 200, "step": 4, "default": 96 },
+        { "type": "range", "id": "badge_font_size", "label": "Font size (px)", "min": 7, "max": 22, "step": 1, "default": 10 },
+        { "type": "range", "id": "badge_offset_x", "label": "Offset horizontal (px, + = inward)", "min": -100, "max": 100, "step": 4, "default": 16 },
+        { "type": "range", "id": "badge_offset_y", "label": "Offset vertical (px, + = inward)", "min": -100, "max": 100, "step": 4, "default": 16 },
+        { "type": "color", "id": "badge_bg_color", "label": "Badge background", "default": "#0f1f0f" },
+        { "type": "color", "id": "badge_text_color", "label": "Badge text color", "default": "#ffffff" },
+        { "type": "text", "id": "badge_font_family", "label": "Badge font (Google Fonts name)", "default": "Inter" }
       ]
     },
     {
@@ -777,4 +829,3 @@
   ]
 }
 {% endschema %}
-
