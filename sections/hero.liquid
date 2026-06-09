@@ -21,7 +21,7 @@
 {%- endfor -%}
 </style>
 
-{% style %}
+<style>
   .hero-section-{{ sid }} {
     position: relative;
     background-color: {{ section.settings.bg_color }};
@@ -329,7 +329,7 @@
 
     {% endcase %}
   {% endfor %}
-{% endstyle %}
+</style>
 
 <div class="hero-section-{{ sid }}">
   <div class="hero-inner-{{ sid }}">
@@ -345,7 +345,7 @@
                 {% if block.settings.text != blank %}
                   <span
                     class="hero-eb-{{ bid }}"
-                    style="font-family:'{{ block.settings.font_family }}',sans-serif;font-weight:{{ block.settings.font_weight }};color:{{ block.settings.color }};letter-spacing:{{ block.settings.letter_spacing }}px;text-transform:{{ block.settings.text_transform }};line-height:1.4;margin:0;padding:0;display:block;"
+                    style="letter-spacing:{{ block.settings.letter_spacing }}px;text-transform:{{ block.settings.text_transform }};line-height:1.4;margin:0;padding:0;display:block;"
                   >{{ block.settings.text }}</span>
                 {% endif %}
 
@@ -359,23 +359,17 @@
                       {{ block.settings.text }}
                     {%- endif -%}
                   {%- endcapture -%}
-                  {%- assign aria_level = '1' -%}{%- if block.settings.tag == 'h2' -%}{%- assign aria_level = '2' -%}{%- endif -%}{%- if block.settings.tag == 'h3' -%}{%- assign aria_level = '3' -%}{%- endif -%}
                   <div
                     class="hero-hl-{{ bid }}"
-                    role="heading"
-                    aria-level="{{ aria_level }}"
-                    style="font-family:'{{ block.settings.font_family }}',sans-serif;font-weight:{{ block.settings.font_weight }};color:{{ block.settings.color }};letter-spacing:{{ block.settings.letter_spacing }}px;line-height:{{ block.settings.line_height }};word-break:break-word;overflow-wrap:break-word;margin:0;padding:0;"
+                    style="letter-spacing:{{ block.settings.letter_spacing }}px;line-height:{{ block.settings.line_height }};word-break:break-word;overflow-wrap:break-word;margin:0;padding:0;"
                   >{{ heading_html }}</div>
                 {% endif %}
 
               {% when 'subheading' %}
                 {% if block.settings.text != blank %}
-                  {%- assign sub_level = '2' -%}{%- if block.settings.tag == 'h3' -%}{%- assign sub_level = '3' -%}{%- endif -%}
                   <div
                     class="hero-sl-{{ bid }}"
-                    role="heading"
-                    aria-level="{{ sub_level }}"
-                    style="font-family:'{{ block.settings.font_family }}',sans-serif;font-weight:{{ block.settings.font_weight }};color:{{ block.settings.color }};letter-spacing:{{ block.settings.letter_spacing }}px;line-height:{{ block.settings.line_height }};word-break:break-word;margin:0;padding:0;"
+                    style="letter-spacing:{{ block.settings.letter_spacing }}px;line-height:{{ block.settings.line_height }};word-break:break-word;margin:0;padding:0;"
                   >{{ block.settings.text }}</div>
                 {% endif %}
 
@@ -383,7 +377,7 @@
                 {% if block.settings.text != blank %}
                   <p
                     class="hero-desc-{{ bid }}"
-                    style="font-family:'{{ block.settings.font_family }}',sans-serif;font-weight:{{ block.settings.font_weight }};color:{{ block.settings.color }};line-height:{{ block.settings.line_height }};max-width:{{ block.settings.max_width }}px;margin:0;padding:0;word-break:break-word;"
+                    style="line-height:{{ block.settings.line_height }};max-width:{{ block.settings.max_width }}px;margin:0;padding:0;word-break:break-word;"
                   >{{ block.settings.text }}</p>
                 {% endif %}
 
@@ -536,7 +530,6 @@
       "name": "Heading",
       "settings": [
         { "type": "text", "id": "text", "label": "Text (use |pipes| for accent)", "default": "The headline that sells." },
-        { "type": "select", "id": "tag", "label": "HTML tag", "options": [{"value":"h1","label":"H1"},{"value":"h2","label":"H2"},{"value":"h3","label":"H3"},{"value":"p","label":"Paragraph"}], "default": "h1" },
         { "type": "header", "content": "Spacing" },
         { "type": "range", "id": "padding_top", "label": "Padding top (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "range", "id": "padding_bottom", "label": "Padding bottom (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
@@ -566,7 +559,6 @@
       "name": "Subheading",
       "settings": [
         { "type": "text", "id": "text", "label": "Text", "default": "A supporting line that adds context." },
-        { "type": "select", "id": "tag", "label": "HTML tag", "options": [{"value":"h2","label":"H2"},{"value":"h3","label":"H3"},{"value":"p","label":"Paragraph"}], "default": "h3" },
         { "type": "header", "content": "Spacing" },
         { "type": "range", "id": "padding_top", "label": "Padding top (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "range", "id": "padding_bottom", "label": "Padding bottom (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
