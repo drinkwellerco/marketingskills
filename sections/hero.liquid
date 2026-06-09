@@ -159,8 +159,11 @@
         }
       }
     {% elsif block.type == 'image' %}
-      .hero-imgw-{{ bid }} {
+      .hero-imgc-{{ bid }} {
         position: relative;
+        width: 100%;
+      }
+      .hero-imgw-{{ bid }} {
         width: 100%;
         overflow: hidden;
         border-radius: {{ block.settings.border_radius }}px;
@@ -176,6 +179,7 @@
       {% if block.settings.badge_enabled %}
         .hero-badge-{{ bid }} {
           position: absolute;
+          overflow: visible;
           width: {{ block.settings.badge_size }}px;
           height: {{ block.settings.badge_size }}px;
           border-radius: 50%;
@@ -193,7 +197,7 @@
           text-transform: uppercase;
           padding: 10px;
           box-sizing: border-box;
-          box-shadow: inset 0 0 0 3px rgba(255,255,255,0.25), 0 4px 16px rgba(0,0,0,0.3);
+          box-shadow: inset 0 0 0 3px rgba(255,255,255,0.25){% if block.settings.badge_effect_glow %}, 0 0 {{ block.settings.badge_glow_size }}px {{ block.settings.badge_glow_size | divided_by: 2 }}px {{ block.settings.badge_glow_color }}{% endif %};
           z-index: 10;
           pointer-events: none;
           user-select: none;
@@ -208,6 +212,42 @@
             right: {{ block.settings.badge_offset_x }}px;
           {% endif %}
         }
+        {% if block.settings.badge_effect_shine %}
+          .hero-badge-{{ bid }}::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, transparent 20%, rgba(255,255,255,0.65) 50%, transparent 80%);
+            background-size: 300% 300%;
+            animation: hero-shine-{{ bid }} 3s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 2;
+          }
+          @keyframes hero-shine-{{ bid }} {
+            0%   { background-position: 200% 200%; opacity: 0; }
+            42%  { opacity: 0; }
+            50%  { background-position: -50% -50%; opacity: 1; }
+            58%  { opacity: 0; }
+            100% { background-position: -50% -50%; opacity: 0; }
+          }
+        {% endif %}
+        {% if block.settings.badge_effect_rotate_glow %}
+          .hero-badge-{{ bid }}::before {
+            content: '';
+            position: absolute;
+            inset: -{{ block.settings.badge_rotate_glow_size }}px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 0%, {{ block.settings.badge_rotate_glow_color }} 25%, {{ block.settings.badge_rotate_glow_color }} 40%, transparent 65%);
+            animation: hero-rot-{{ bid }} {{ block.settings.badge_rotate_speed }}s linear infinite {{ block.settings.badge_rotate_dir }};
+            z-index: -1;
+            filter: blur({{ block.settings.badge_rotate_glow_size | divided_by: 2 }}px);
+          }
+          @keyframes hero-rot-{{ bid }} {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+          }
+        {% endif %}
       {% endif %}
       @media (max-width: 768px) {
         .hero-imgw-{{ bid }} {
@@ -473,23 +513,25 @@
         {%- assign bid = block.id | replace: '_', '-' -%}
         {% if block.type == 'image' %}
           <div class="hero-bw-{{ bid }}" {{ block.shopify_attributes }}>
-            <div class="hero-imgw-{{ bid }}">
-              {% if block.settings.image != blank %}
-                <img
-                  class="hero-img-{{ bid }}"
-                  src="{{ block.settings.image | image_url: width: 1200 }}"
-                  srcset="{{ block.settings.image | image_url: width: 400 }} 400w, {{ block.settings.image | image_url: width: 800 }} 800w, {{ block.settings.image | image_url: width: 1200 }} 1200w"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  alt="{{ block.settings.image.alt | default: block.settings.alt | escape }}"
-                  loading="{{ block.settings.loading }}"
-                  width="{{ block.settings.image.width }}"
-                  height="{{ block.settings.image.height }}"
-                >
-              {% else %}
-                <div class="hero-img-{{ bid }}" style="background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;height:100%;">
-                  <span style="color:rgba(255,255,255,0.3);font-size:14px;">Select an image</span>
-                </div>
-              {% endif %}
+            <div class="hero-imgc-{{ bid }}">
+              <div class="hero-imgw-{{ bid }}">
+                {% if block.settings.image != blank %}
+                  <img
+                    class="hero-img-{{ bid }}"
+                    src="{{ block.settings.image | image_url: width: 1200 }}"
+                    srcset="{{ block.settings.image | image_url: width: 400 }} 400w, {{ block.settings.image | image_url: width: 800 }} 800w, {{ block.settings.image | image_url: width: 1200 }} 1200w"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    alt="{{ block.settings.image.alt | default: block.settings.alt | escape }}"
+                    loading="{{ block.settings.loading }}"
+                    width="{{ block.settings.image.width }}"
+                    height="{{ block.settings.image.height }}"
+                  >
+                {% else %}
+                  <div class="hero-img-{{ bid }}" style="background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;height:100%;">
+                    <span style="color:rgba(255,255,255,0.3);font-size:14px;">Select an image</span>
+                  </div>
+                {% endif %}
+              </div>
               {% if block.settings.badge_enabled %}
                 <div class="hero-badge-{{ bid }}">{{ block.settings.badge_text }}</div>
               {% endif %}
@@ -637,7 +679,17 @@
         { "type": "range", "id": "badge_offset_y", "label": "Offset vertical (px, + = inward)", "min": -100, "max": 100, "step": 4, "default": 16 },
         { "type": "color", "id": "badge_bg_color", "label": "Badge background", "default": "#0f1f0f" },
         { "type": "color", "id": "badge_text_color", "label": "Badge text color", "default": "#ffffff" },
-        { "type": "text", "id": "badge_font_family", "label": "Badge font (Google Fonts name)", "default": "Inter" }
+        { "type": "text", "id": "badge_font_family", "label": "Badge font (Google Fonts name)", "default": "Inter" },
+        { "type": "header", "content": "Badge Effects" },
+        { "type": "checkbox", "id": "badge_effect_shine", "label": "Shine / twinkle sweep", "default": false },
+        { "type": "checkbox", "id": "badge_effect_glow", "label": "Steady outer glow", "default": false },
+        { "type": "color", "id": "badge_glow_color", "label": "Glow color", "default": "#ffffff" },
+        { "type": "range", "id": "badge_glow_size", "label": "Glow size (px)", "min": 4, "max": 60, "step": 2, "default": 16 },
+        { "type": "checkbox", "id": "badge_effect_rotate_glow", "label": "Rotating glow", "default": false },
+        { "type": "color", "id": "badge_rotate_glow_color", "label": "Rotating glow color", "default": "#ffdd00" },
+        { "type": "range", "id": "badge_rotate_glow_size", "label": "Rotating glow spread (px)", "min": 4, "max": 40, "step": 2, "default": 14 },
+        { "type": "range", "id": "badge_rotate_speed", "label": "Rotation speed (seconds per turn)", "min": 1, "max": 20, "step": 1, "default": 4 },
+        { "type": "select", "id": "badge_rotate_dir", "label": "Rotation direction", "options": [{"value":"normal","label":"Clockwise"},{"value":"reverse","label":"Counterclockwise"}], "default": "normal" }
       ]
     },
     {
