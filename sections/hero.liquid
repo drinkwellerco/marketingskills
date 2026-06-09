@@ -90,251 +90,209 @@
       }
     }
 
-    {% case block.type %}
-
-      {% when 'eyebrow' %}
+    {% if block.type == 'eyebrow' %}
+      .hero-eb-{{ bid }} {
+        font-family: '{{ block.settings.font_family }}', sans-serif !important;
+        font-size: {{ block.settings.font_size }}px;
+        font-weight: {{ block.settings.font_weight }} !important;
+        color: {{ block.settings.color }} !important;
+        text-align: {{ block.settings.text_align }};
+      }
+      @media (max-width: 768px) {
         .hero-eb-{{ bid }} {
-          font-family: '{{ block.settings.font_family }}', sans-serif !important;
-          font-size: {{ block.settings.font_size }}px;
-          font-weight: {{ block.settings.font_weight }} !important;
-          color: {{ block.settings.color }} !important;
-          text-align: {{ block.settings.text_align }};
+          font-size: {{ block.settings.mobile_font_size }}px !important;
+          text-align: {{ block.settings.mobile_text_align }} !important;
         }
-        @media (max-width: 768px) {
-          .hero-eb-{{ bid }} {
-            font-size: {{ block.settings.mobile_font_size }}px !important;
-            text-align: {{ block.settings.mobile_text_align }} !important;
-          }
-        }
-
-      {% when 'heading' %}
+      }
+    {% elsif block.type == 'heading' %}
+      .hero-hl-{{ bid }} {
+        font-family: '{{ block.settings.font_family }}', sans-serif !important;
+        font-size: {{ block.settings.font_size }}px;
+        font-weight: {{ block.settings.font_weight }} !important;
+        color: {{ block.settings.color }} !important;
+        text-align: {{ block.settings.text_align }};
+      }
+      .hero-ac-{{ bid }} {
+        font-family: '{{ block.settings.accent_font_family }}', sans-serif !important;
+        color: {{ block.settings.accent_color }} !important;
+        font-style: {{ block.settings.accent_font_style }} !important;
+        font-size: inherit !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+        letter-spacing: inherit !important;
+      }
+      @media (max-width: 768px) {
         .hero-hl-{{ bid }} {
-          font-family: '{{ block.settings.font_family }}', sans-serif !important;
-          font-size: {{ block.settings.font_size }}px;
-          font-weight: {{ block.settings.font_weight }} !important;
-          color: {{ block.settings.color }} !important;
-          text-align: {{ block.settings.text_align }};
+          font-size: {{ block.settings.mobile_font_size }}px !important;
+          line-height: {{ block.settings.mobile_line_height }} !important;
+          text-align: {{ block.settings.mobile_text_align }} !important;
         }
-        .hero-ac-{{ bid }} {
-          font-family: '{{ block.settings.accent_font_family }}', sans-serif !important;
-          color: {{ block.settings.accent_color }} !important;
-          font-style: {{ block.settings.accent_font_style }} !important;
-          font-size: inherit !important;
-          font-weight: inherit !important;
-          line-height: inherit !important;
-          letter-spacing: inherit !important;
-        }
-        @media (max-width: 768px) {
-          .hero-hl-{{ bid }} {
-            font-size: {{ block.settings.mobile_font_size }}px !important;
-            line-height: {{ block.settings.mobile_line_height }} !important;
-            text-align: {{ block.settings.mobile_text_align }} !important;
-          }
-        }
-
-      {% when 'subheading' %}
+      }
+    {% elsif block.type == 'subheading' %}
+      .hero-sl-{{ bid }} {
+        font-family: '{{ block.settings.font_family }}', sans-serif !important;
+        font-size: {{ block.settings.font_size }}px;
+        font-weight: {{ block.settings.font_weight }} !important;
+        color: {{ block.settings.color }} !important;
+        text-align: {{ block.settings.text_align }};
+      }
+      @media (max-width: 768px) {
         .hero-sl-{{ bid }} {
-          font-family: '{{ block.settings.font_family }}', sans-serif !important;
-          font-size: {{ block.settings.font_size }}px;
-          font-weight: {{ block.settings.font_weight }} !important;
-          color: {{ block.settings.color }} !important;
-          text-align: {{ block.settings.text_align }};
+          font-size: {{ block.settings.mobile_font_size }}px !important;
+          text-align: {{ block.settings.mobile_text_align }} !important;
         }
-        @media (max-width: 768px) {
-          .hero-sl-{{ bid }} {
-            font-size: {{ block.settings.mobile_font_size }}px !important;
-            text-align: {{ block.settings.mobile_text_align }} !important;
-          }
-        }
-
-      {% when 'description' %}
+      }
+    {% elsif block.type == 'description' %}
+      .hero-desc-{{ bid }} {
+        font-family: '{{ block.settings.font_family }}', sans-serif !important;
+        font-size: {{ block.settings.font_size }}px;
+        font-weight: {{ block.settings.font_weight }} !important;
+        color: {{ block.settings.color }} !important;
+        text-align: {{ block.settings.text_align }};
+        max-width: {{ block.settings.max_width }}px;
+      }
+      @media (max-width: 768px) {
         .hero-desc-{{ bid }} {
-          font-family: '{{ block.settings.font_family }}', sans-serif !important;
-          font-size: {{ block.settings.font_size }}px;
-          font-weight: {{ block.settings.font_weight }} !important;
-          color: {{ block.settings.color }} !important;
-          text-align: {{ block.settings.text_align }};
-          max-width: {{ block.settings.max_width }}px;
+          font-size: {{ block.settings.mobile_font_size }}px !important;
+          text-align: {{ block.settings.mobile_text_align }} !important;
+          max-width: 100% !important;
         }
-        @media (max-width: 768px) {
-          .hero-desc-{{ bid }} {
-            font-size: {{ block.settings.mobile_font_size }}px !important;
-            text-align: {{ block.settings.mobile_text_align }} !important;
-            max-width: 100% !important;
-          }
-        }
-
-      {% when 'image' %}
+      }
+    {% elsif block.type == 'image' %}
+      .hero-imgw-{{ bid }} {
+        width: 100%;
+        overflow: hidden;
+        border-radius: {{ block.settings.border_radius }}px;
+        height: {{ block.settings.height }}px;
+        line-height: 0;
+      }
+      .hero-img-{{ bid }} {
+        width: 100%; height: 100%;
+        object-fit: {{ block.settings.object_fit }};
+        object-position: {{ block.settings.object_position }};
+        display: block;
+      }
+      @media (max-width: 768px) {
         .hero-imgw-{{ bid }} {
-          width: 100%;
-          overflow: hidden;
-          border-radius: {{ block.settings.border_radius }}px;
-          height: {{ block.settings.height }}px;
-          line-height: 0;
+          height: {{ block.settings.mobile_height }}px !important;
+          {% if block.settings.mobile_full_width %}border-radius: 0 !important;{% endif %}
         }
-        .hero-img-{{ bid }} {
-          width: 100%; height: 100%;
-          object-fit: {{ block.settings.object_fit }};
-          object-position: {{ block.settings.object_position }};
-          display: block;
-        }
-        @media (max-width: 768px) {
-          .hero-imgw-{{ bid }} {
-            height: {{ block.settings.mobile_height }}px !important;
-            {% if block.settings.mobile_full_width %}border-radius: 0 !important;{% endif %}
-          }
-        }
-
-      {% when 'buttons' %}
-        .hero-btns-{{ bid }} {
-          display: flex;
-          flex-wrap: wrap;
-          gap: {{ block.settings.gap }}px;
-          align-items: center;
-        }
-        .hero-btnp-{{ bid }} {
-          font-family: '{{ block.settings.font_family }}', sans-serif !important;
-          font-size: {{ block.settings.primary_font_size }}px;
-          transition: opacity 0.2s ease;
-          white-space: nowrap;
-        }
-        .hero-btnp-{{ bid }}:hover { opacity: 0.85; }
-        .hero-popup-trigger-{{ bid }} {
-          font-family: '{{ block.settings.font_family }}', sans-serif !important;
-          font-size: {{ block.settings.popup_font_size }}px !important;
-          background: none !important;
-          border: none !important;
-          border-bottom: 1.5px solid {{ block.settings.popup_color }} !important;
-          border-radius: 0 !important;
-          box-shadow: none !important;
-          outline: none !important;
-          padding: 0 !important;
-          margin: 0 !important;
-          cursor: pointer !important;
-          display: inline !important;
-          line-height: 1.4 !important;
-          text-decoration: none !important;
-          transition: opacity 0.2s ease;
-          -webkit-appearance: none !important;
-          appearance: none !important;
-        }
-        .hero-popup-trigger-{{ bid }}:hover { opacity: 0.75; }
-        .hero-popup-overlay-{{ bid }} {
-          display: none;
-          position: fixed;
-          inset: 0;
-          background: rgba(0,0,0,0.75);
-          z-index: 9999;
-          align-items: center;
-          justify-content: center;
-          padding: 16px;
-        }
-        .hero-popup-overlay-{{ bid }}.is-open { display: flex; }
-        .hero-popup-modal-{{ bid }} {
-          background: {{ block.settings.modal_bg_color }};
-          color: {{ block.settings.modal_text_color }};
-          border-radius: 12px;
-          max-width: 700px;
-          width: 100%;
-          max-height: 90vh;
-          overflow-y: auto;
-          padding: 32px;
-          position: relative;
-          font-family: '{{ block.settings.modal_font_family }}', sans-serif;
-        }
-        .hero-popup-close-{{ bid }} {
-          position: absolute;
-          top: 16px;
-          right: 16px;
-          background: none;
-          border: none;
-          color: {{ block.settings.modal_text_color }};
-          font-size: 24px;
-          cursor: pointer;
-          line-height: 1;
-          padding: 4px 8px;
-          opacity: 0.7;
-        }
-        .hero-popup-close-{{ bid }}:hover { opacity: 1; }
-        .hero-popup-title-{{ bid }} {
-          font-size: {{ block.settings.modal_title_size }}px;
-          font-weight: 700;
-          margin: 0 0 8px;
-          padding-right: 48px;
-          font-family: '{{ block.settings.modal_font_family }}', sans-serif;
-          color: {{ block.settings.modal_text_color }};
-        }
-        .hero-popup-intro-{{ bid }} {
-          font-size: 14px;
-          opacity: 0.7;
-          margin: 0 0 24px;
-          line-height: 1.5;
-        }
-        .hero-popup-table-{{ bid }} {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: 13px;
-        }
-        .hero-popup-table-{{ bid }} th {
-          text-align: left;
-          padding: 8px 10px;
-          font-size: 11px;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          opacity: 0.5;
-          border-bottom: 1px solid rgba(255,255,255,0.12);
-          white-space: nowrap;
-        }
-        .hero-popup-table-{{ bid }} td {
-          padding: 12px 10px;
-          border-bottom: 1px solid rgba(255,255,255,0.07);
-          vertical-align: top;
-          line-height: 1.45;
-        }
-        .hero-popup-table-{{ bid }} tr:last-child td { border-bottom: none; }
-        .hero-popup-ingname-{{ bid }} {
-          font-weight: 600;
-          color: {{ block.settings.modal_accent_color }};
-          white-space: nowrap;
-        }
-        .hero-popup-yourdose-{{ bid }} { font-weight: 600; }
-        @media (max-width: 768px) {
-          {% if block.settings.mobile_stack %}.hero-btns-{{ bid }} { flex-direction: column; align-items: flex-start; }{% endif %}
-          .hero-btnp-{{ bid }} { font-size: {{ block.settings.mobile_primary_font_size }}px !important; }
-          .hero-popup-trigger-{{ bid }} { font-size: {{ block.settings.mobile_popup_font_size }}px !important; }
-          .hero-popup-modal-{{ bid }} { padding: 20px 16px; }
-          .hero-popup-table-{{ bid }} { font-size: 12px; }
-          .hero-popup-table-{{ bid }} th,
-          .hero-popup-table-{{ bid }} td { padding: 8px 6px; }
-        }
-
-      {% when 'pills' %}
-        .hero-pills-{{ bid }} {
-          display: flex;
-          flex-wrap: wrap;
-          gap: {{ block.settings.gap }}px;
-          align-items: center;
-        }
-        .hero-pill-{{ bid }} {
-          font-family: '{{ block.settings.font_family }}', sans-serif !important;
-          display: inline-flex;
-          align-items: center;
-          line-height: 1.2;
-          white-space: nowrap;
-        }
+      }
+    {% elsif block.type == 'buttons' %}
+      .hero-btns-{{ bid }} {
+        display: flex;
+        flex-wrap: wrap;
+        gap: {{ block.settings.gap }}px;
+        align-items: center;
+      }
+      .hero-btnp-{{ bid }} {
+        font-family: '{{ block.settings.font_family }}', sans-serif !important;
+        font-size: {{ block.settings.primary_font_size }}px;
+        transition: opacity 0.2s ease;
+        white-space: nowrap;
+      }
+      .hero-btnp-{{ bid }}:hover { opacity: 0.85; }
+      .hero-popup-trigger-{{ bid }} {
+        font-family: '{{ block.settings.font_family }}', sans-serif !important;
+        font-size: {{ block.settings.popup_font_size }}px !important;
+        background: none !important;
+        border: none !important;
+        border-bottom: 1.5px solid {{ block.settings.popup_color }} !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        cursor: pointer !important;
+        display: inline !important;
+        line-height: 1.4 !important;
+        text-decoration: none !important;
+        transition: opacity 0.2s ease;
+        -webkit-appearance: none !important;
+        appearance: none !important;
+      }
+      .hero-popup-trigger-{{ bid }}:hover { opacity: 0.75; }
+      .hero-popup-overlay-{{ bid }} {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.75);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      .hero-popup-overlay-{{ bid }}.is-open { display: flex; }
+      .hero-popup-modal-{{ bid }} {
+        background: {{ block.settings.modal_bg_color }};
+        color: {{ block.settings.modal_text_color }};
+        border-radius: 12px;
+        max-width: 700px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 32px;
+        position: relative;
+        font-family: '{{ block.settings.modal_font_family }}', sans-serif;
+      }
+      .hero-popup-close-{{ bid }} {
+        position: absolute;
+        top: 16px; right: 16px;
+        background: none; border: none;
+        color: {{ block.settings.modal_text_color }};
+        font-size: 24px; cursor: pointer;
+        line-height: 1; padding: 4px 8px; opacity: 0.7;
+      }
+      .hero-popup-close-{{ bid }}:hover { opacity: 1; }
+      .hero-popup-title-{{ bid }} {
+        font-size: {{ block.settings.modal_title_size }}px;
+        font-weight: 700; margin: 0 0 8px; padding-right: 48px;
+        font-family: '{{ block.settings.modal_font_family }}', sans-serif;
+        color: {{ block.settings.modal_text_color }};
+      }
+      .hero-popup-intro-{{ bid }} { font-size: 14px; opacity: 0.7; margin: 0 0 24px; line-height: 1.5; }
+      .hero-popup-table-{{ bid }} { width: 100%; border-collapse: collapse; font-size: 13px; }
+      .hero-popup-table-{{ bid }} th {
+        text-align: left; padding: 8px 10px; font-size: 11px;
+        text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.5;
+        border-bottom: 1px solid rgba(255,255,255,0.12); white-space: nowrap;
+      }
+      .hero-popup-table-{{ bid }} td {
+        padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.07);
+        vertical-align: top; line-height: 1.45;
+      }
+      .hero-popup-table-{{ bid }} tr:last-child td { border-bottom: none; }
+      .hero-popup-ingname-{{ bid }} { font-weight: 600; color: {{ block.settings.modal_accent_color }}; white-space: nowrap; }
+      .hero-popup-yourdose-{{ bid }} { font-weight: 600; }
+      @media (max-width: 768px) {
+        {% if block.settings.mobile_stack %}.hero-btns-{{ bid }} { flex-direction: column; align-items: flex-start; }{% endif %}
+        .hero-btnp-{{ bid }} { font-size: {{ block.settings.mobile_primary_font_size }}px !important; }
+        .hero-popup-trigger-{{ bid }} { font-size: {{ block.settings.mobile_popup_font_size }}px !important; }
+        .hero-popup-modal-{{ bid }} { padding: 20px 16px; }
+        .hero-popup-table-{{ bid }} { font-size: 12px; }
+        .hero-popup-table-{{ bid }} th, .hero-popup-table-{{ bid }} td { padding: 8px 6px; }
+      }
+    {% elsif block.type == 'pills' %}
+      .hero-pills-{{ bid }} {
+        display: flex; flex-wrap: wrap;
+        gap: {{ block.settings.gap }}px; align-items: center;
+      }
+      .hero-pill-{{ bid }} {
+        font-family: '{{ block.settings.font_family }}', sans-serif !important;
+        display: inline-flex; align-items: center; line-height: 1.2; white-space: nowrap;
+      }
+      {% for i in (1..5) %}
+        {% assign fs_key = 'pill_' | append: i | append: '_font_size' %}
+        .hero-pill-{{ i }}-{{ bid }} { font-size: {{ block.settings[fs_key] }}px; }
+      {% endfor %}
+      @media (max-width: 768px) {
+        .hero-pills-{{ bid }} { gap: {{ block.settings.mobile_gap }}px; }
         {% for i in (1..5) %}
-          {% assign fs_key = 'pill_' | append: i | append: '_font_size' %}
-          .hero-pill-{{ i }}-{{ bid }} { font-size: {{ block.settings[fs_key] }}px; }
+          {% assign mfs_key = 'pill_' | append: i | append: '_mobile_font_size' %}
+          .hero-pill-{{ i }}-{{ bid }} { font-size: {{ block.settings[mfs_key] }}px !important; }
         {% endfor %}
-        @media (max-width: 768px) {
-          .hero-pills-{{ bid }} { gap: {{ block.settings.mobile_gap }}px; }
-          {% for i in (1..5) %}
-            {% assign mfs_key = 'pill_' | append: i | append: '_mobile_font_size' %}
-            .hero-pill-{{ i }}-{{ bid }} { font-size: {{ block.settings[mfs_key] }}px !important; }
-          {% endfor %}
-        }
-
-    {% endcase %}
+      }
+    {% endif %}
   {% endfor %}
 </style>
 
