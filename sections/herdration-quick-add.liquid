@@ -60,9 +60,9 @@
         {%- if prod != blank -%}
           {%- assign pv = prod.selected_or_first_available_variant | default: prod.variants.first -%}
           {%- if block.settings.variant_id != blank -%}
-            {%- assign target_vid = block.settings.variant_id | plus: 0 -%}
             {%- for v in prod.variants -%}
-              {%- if v.id == target_vid -%}{%- assign pv = v -%}{%- endif -%}
+              {%- assign vid_str = v.id | append: '' -%}
+              {%- if vid_str == block.settings.variant_id -%}{%- assign pv = v -%}{%- endif -%}
             {%- endfor -%}
           {%- endif -%}
           {%- assign flavor = block.settings.label | default: prod.title -%}
