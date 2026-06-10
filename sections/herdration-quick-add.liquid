@@ -47,16 +47,6 @@
         <p class="qa-lead">{{ section.settings.lead }}</p>
       {%- endif -%}
 
-      <div class="qa-sub-badge">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        <span class="qa-sub-label">{{ section.settings.subscription_label | default: 'Subscribe & Save' }}</span>
-        {%- if section.settings.subscription_discount != blank -%}
-          <span class="qa-sub-pill">{{ section.settings.subscription_discount }}</span>
-        {%- endif -%}
-      </div>
-
       {%- if section.settings.show_swap -%}
         <button class="qa-swap" type="button" data-qa-swap aria-label="Swap sides">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
@@ -173,21 +163,6 @@
   #qa-{{ section.id }} .qa-title{ font-family:var(--qa-serif); font-weight:900; font-size:clamp(28px,2.6vw,38px); line-height:1.1; letter-spacing:-.02em; color:var(--qa-navy); margin:0 0 14px; }
   #qa-{{ section.id }} .qa-accent{ color:var(--qa-rose); display:block; }
   #qa-{{ section.id }} .qa-lead{ font-family:var(--qa-display); font-weight:300; font-size:clamp(16px,1.5vw,19px); letter-spacing:.02em; line-height:1.4; color:rgba(27,58,92,.72); margin:0 0 18px; }
-
-  #qa-{{ section.id }} .qa-sub-badge{
-    display:inline-flex; align-items:center; gap:7px; flex-wrap:wrap;
-    padding:10px 16px; border-radius:12px; margin-bottom:18px;
-    background:{{ section.settings.subscription_bg }};
-    border:2px solid {{ section.settings.subscription_border }};
-  }
-  #qa-{{ section.id }} .qa-sub-badge svg{ width:18px; height:18px; flex-shrink:0; color:{{ section.settings.subscription_accent }}; }
-  #qa-{{ section.id }} .qa-sub-label{ font-size:14px; font-weight:600; color:var(--qa-navy); }
-  #qa-{{ section.id }} .qa-sub-pill{
-    font-size:12px; font-weight:700;
-    color:{{ section.settings.subscription_accent }};
-    background:{{ section.settings.subscription_discount_bg }};
-    padding:3px 8px; border-radius:6px;
-  }
 
   #qa-{{ section.id }} .qa-swap{
     margin-top:4px; display:inline-flex; align-items:center; gap:7px;
