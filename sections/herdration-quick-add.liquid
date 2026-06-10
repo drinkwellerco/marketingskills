@@ -82,9 +82,10 @@
               {%- endif -%}
             </div>
             <span class="qa-strip-brand">{{ bp[0] }}{%- if bp.size > 1 -%}<span class="qa-strip-apos">'</span>{{ bp[1] }}{%- endif -%}</span>
+            {%- assign lkey = 'label_' | append: i -%}
             <span class="qa-strip-name">
-              {%- if section.settings['label_' | append: i] != blank -%}
-                {{ section.settings['label_' | append: i] }}
+              {%- if section.settings[lkey] != blank -%}
+                {{ section.settings[lkey] }}
               {%- else -%}
                 {{ prod.title }}
               {%- endif -%}
