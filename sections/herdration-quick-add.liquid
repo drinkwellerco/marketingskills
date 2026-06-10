@@ -51,18 +51,18 @@
             {%- endfor -%}
           {%- endif -%}
 
-          {%- comment -%} Subscription pricing {%- endcomment -%}
+          {%- comment -%} Subscription pricing — compare as strings to avoid integer type mismatch {%- endcomment -%}
           {%- assign display_price   = pv.price -%}
           {%- assign display_compare = pv.compare_at_price -%}
-          {%- if section.settings.selling_plan_id != blank -%}
-            {%- assign sp_id_num = section.settings.selling_plan_id | plus: 0 -%}
-            {%- for alloc in pv.selling_plan_allocations -%}
-              {%- if alloc.selling_plan.id == sp_id_num -%}
-                {%- assign display_price   = alloc.price -%}
-                {%- assign display_compare = alloc.compare_at_price -%}
-              {%- endif -%}
-            {%- endfor -%}
-          {%- endif -%}
+          {%- assign sp_id_str = section.settings.selling_plan_id | strip -%}
+          {%- if sp_id_str == blank -%}{%- assign sp_id_str = '5713658087' -%}{%- endif -%}
+          {%- for alloc in pv.selling_plan_allocations -%}
+            {%- assign alloc_id_str = alloc.selling_plan.id | append: '' -%}
+            {%- if alloc_id_str == sp_id_str -%}
+              {%- assign display_price   = alloc.price -%}
+              {%- assign display_compare = alloc.compare_at_price -%}
+            {%- endif -%}
+          {%- endfor -%}
 
           {%- comment -%} Container settings — block overrides section if toggled on {%- endcomment -%}
           {%- if block.settings.con_override -%}
@@ -426,8 +426,8 @@
       "settings": [
         { "type": "product", "id": "product", "label": "Product" },
         { "type": "text", "id": "variant_title", "label": "Variant title", "info": "Exact variant name, e.g. 'Raspberry Refresher'. Leave blank for first available." },
-        { "type": "image_picker", "id": "custom_image", "label": "Custom image", "info": "Overrides the product/variant image." },
-        { "type": "text", "id": "label", "label": "Flavor name override", "info": "Defaults to variant title then product title." },
+        { "type": "image_picker", "id": "custom_image", "label": "Custom image", "info": "Overrides the product image. CLEAR THIS when switching products or the old photo will stay." },
+        { "type": "text", "id": "label", "label": "Flavor name override", "info": "Overrides the flavor name. CLEAR THIS when switching products or the old name will stay." },
 
         { "type": "header", "content": "Container override" },
         { "type": "checkbox", "id": "con_override", "label": "Override section container for this tile", "default": false },
