@@ -262,13 +262,13 @@
 
   var tiles = Array.prototype.slice.call(root.querySelectorAll('[data-qa-prod]'));
 
-  // Parse selling plan ID once — must be a valid integer or null
+  // Parse selling plan ID — fall back to hardcoded Monthly 10% off ID if field is blank
   var rawSP = '{{ section.settings.selling_plan_id | strip }}';
+  if(rawSP === '') rawSP = '5713658087';
   var spNum = null;
-  if(rawSP !== '') {
-    var parsed = parseInt(rawSP, 10);
-    if(!isNaN(parsed) && parsed > 0) spNum = parsed;
-  }
+  var parsed = parseInt(rawSP, 10);
+  if(!isNaN(parsed) && parsed > 0) spNum = parsed;
+  console.log('[Her\'dration Quick-Add] selling plan ID:', spNum);
 
   function setTile(tile, qty){
     qty = Math.max(0, qty|0);
@@ -327,16 +327,8 @@
     .then(function(r){
       if(!r.ok){
         return r.json().then(function(e){
-          console.error('Her\'dration Quick-Add: cart/add.js failed', e);
-          // Retry without selling plan if it caused the failure
-          if(spNum !== null && (r.status === 422 || r.status === 400)){
-            console.warn('Her\'dration Quick-Add: selling plan', spNum, 'rejected — adding without subscription. Check your Selling Plan ID in section settings.');
-            return fetch('/cart/add.js', {
-              method: 'POST',
-              headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
-              body: JSON.stringify({ items: [{ id: parseInt(id,10), quantity: 1 }] })
-            }).then(function(r2){ return r2.json(); });
-          }
+          console.error('[Her\'dration Quick-Add] cart/add.js failed — status:', r.status, '— response:', e);
+          console.error('[Her\'dration Quick-Add] payload sent:', JSON.stringify({ id: parseInt(id,10), quantity: 1, selling_plan: spNum }));
           throw e;
         });
       }
