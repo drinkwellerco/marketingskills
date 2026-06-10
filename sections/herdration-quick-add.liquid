@@ -128,7 +128,12 @@
             </span>
 
             <span class="qa-name">
-              {{ flavor_parts[0] }}{%- if flavor_parts.size > 1 -%}<span class="qa-accent">{{ flavor_parts[1] }}</span>{%- endif -%}
+              {%- assign fp0_words = flavor_parts[0] | split: ' ' -%}
+              {{ fp0_words | join: '<br>' }}
+              {%- if flavor_parts.size > 1 -%}
+                {%- assign fp1_words = flavor_parts[1] | split: ' ' -%}
+                <br><span class="qa-accent">{{ fp1_words | join: '<br>' }}</span>
+              {%- endif -%}
             </span>
 
             <span class="qa-price">
@@ -196,7 +201,7 @@
   #qa-{{ section.id }} .qa-swap:hover{ background:rgba(232,96,122,.12); border-color:var(--qa-rose); color:var(--qa-rose); }
   #qa-{{ section.id }} .qa-swap svg{ width:14px; height:14px; }
 
-  #qa-{{ section.id }} .qa-shop{ display:grid; grid-template-columns:repeat({{ section.blocks.size | at_least: 1 }},1fr); gap:12px; }
+  #qa-{{ section.id }} .qa-shop{ display:grid; grid-template-columns:repeat({{ section.blocks.size | at_least: 1 }},{{ section.settings.tile_size }}px); gap:{{ section.settings.tile_gap }}px; justify-content:center; }
   #qa-{{ section.id }} .qa-prod{
     position:relative; display:flex; flex-direction:column; align-items:center; gap:7px;
     padding:0; border:none; background:none; cursor:pointer; text-align:center;
@@ -264,7 +269,7 @@
     color:{{ section.settings.flavor_color }};
   }
   #qa-{{ section.id }} .qa-price{
-    margin-top:-2px; display:inline-flex; align-items:baseline; gap:5px; justify-content:center;
+    margin-top:-2px; display:flex; flex-direction:column; align-items:center; gap:1px;
   }
   #qa-{{ section.id }} .qa-was{
     font-family:'{{ section.settings.price_orig_font }}','Playfair Display','Georgia',serif;
@@ -287,7 +292,7 @@
     #qa-{{ section.id }} .qa-inner.swapped .qa-shop{ order:2; }
   }
   @media (max-width:560px){
-    #qa-{{ section.id }} .qa-shop{ grid-template-columns:repeat(3,1fr); gap:10px; }
+    #qa-{{ section.id }} .qa-shop{ grid-template-columns:repeat(3,{{ section.settings.tile_size }}px); gap:{{ section.settings.tile_gap }}px; }
     #qa-{{ section.id }} .qa-add{ display:none; }
   }
 </style>
@@ -444,6 +449,8 @@
     { "type": "range", "id": "section_pad_bottom", "label": "Section padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 36 },
     { "type": "range", "id": "inner_pad", "label": "Inner container padding", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 28 },
     { "type": "range", "id": "inner_min_height", "label": "Inner container min height", "min": 0, "max": 600, "step": 10, "unit": "px", "default": 0, "info": "0 = auto height." },
+    { "type": "range", "id": "tile_size", "label": "Tile size (photo + container width)", "min": 50, "max": 240, "step": 10, "unit": "px", "default": 120, "info": "Controls the width of each product tile including its photo container." },
+    { "type": "range", "id": "tile_gap", "label": "Spacing between tiles", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 12 },
     { "type": "checkbox", "id": "products_on_left", "label": "Products on the left", "default": false },
     { "type": "checkbox", "id": "show_swap", "label": "Show swap sides button", "default": true },
     { "type": "text", "id": "swap_label", "label": "Swap button label", "default": "Swap sides" },
