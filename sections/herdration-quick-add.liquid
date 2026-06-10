@@ -1,24 +1,6 @@
 {%- comment -%}
   ============================================================
   WELLER CO. — Her'dration Quick-Add Strip  (Shopify Section)
-  ------------------------------------------------------------
-  A condensed "Subscribe & Save" band that sits below a hero:
-    promo copy on one side, a row of tappable flavor tiles on
-    the other. Tap a tile -> AJAX adds 1 to cart with the
-    configured selling plan (subscribe & save always on).
-    A minus badge removes one; a quantity badge shows cart count.
-
-  • Products  -> "Flavor tile" blocks (one variant each).
-  • Variant   -> matched by title text, falls back to first available.
-  • Image     -> custom image picker per block, falls back to product image.
-  • Subscribe -> selling_plan_id applied to every add — no opt-out.
-  • Pricing   -> shows subscription price from selling_plan_allocations.
-  • Add/remove -> /cart/add.js + /cart/change.js (no reload).
-  • Counts    -> hydrated live from /cart.js on load.
-  • Optimistic UI -> tile updates instantly on click, reverts on error.
-
-  Styles + JS are inlined and namespaced under #qa-{{ section.id }}
-  so nothing leaks into (or breaks against) your theme.
   ============================================================
 {%- endcomment -%}
 
@@ -61,7 +43,7 @@
         {%- assign prod = block.settings.product -%}
         {%- if prod != blank -%}
 
-          {%- comment -%} Variant selection by title, fallback to first available {%- endcomment -%}
+          {%- comment -%} Variant by title, fallback to first available {%- endcomment -%}
           {%- assign pv = prod.selected_or_first_available_variant | default: prod.variants.first -%}
           {%- if block.settings.variant_title != blank -%}
             {%- for v in prod.variants -%}
@@ -69,17 +51,24 @@
             {%- endfor -%}
           {%- endif -%}
 
-          {%- comment -%} Subscription pricing via selling_plan_allocations {%- endcomment -%}
-          {%- assign display_price = pv.price -%}
+          {%- comment -%} Subscription pricing — pull from selling_plan_allocations {%- endcomment -%}
+          {%- assign display_price   = pv.price -%}
           {%- assign display_compare = pv.compare_at_price -%}
           {%- if section.settings.selling_plan_id != blank -%}
             {%- assign sp_id_num = section.settings.selling_plan_id | plus: 0 -%}
             {%- for alloc in pv.selling_plan_allocations -%}
               {%- if alloc.selling_plan.id == sp_id_num -%}
-                {%- assign display_price = alloc.price -%}
+                {%- assign display_price   = alloc.price -%}
                 {%- assign display_compare = alloc.compare_at_price -%}
               {%- endif -%}
             {%- endfor -%}
+          {%- endif -%}
+
+          {%- comment -%} Tile photo background — solid or gradient {%- endcomment -%}
+          {%- if block.settings.use_gradient -%}
+            {%- assign pbg = 'linear-gradient(' | append: block.settings.bg_angle | append: 'deg, ' | append: block.settings.bg_color_1 | append: ', ' | append: block.settings.bg_color_2 | append: ')' -%}
+          {%- else -%}
+            {%- assign pbg = block.settings.bg_color_1 -%}
           {%- endif -%}
 
           {%- assign flavor = block.settings.label | default: pv.title | default: prod.title -%}
@@ -91,10 +80,8 @@
                data-product-url="{{ prod.url }}"
                role="button" tabindex="0"
                aria-label="Add {{ flavor | escape }} to cart"
-               style="--pc:{{ block.settings.color_primary }};--pc2:{{ block.settings.color_secondary }};">
+               style="--pbg:{{ pbg }};">
             <span class="qa-photo">
-              <span class="qa-blob"></span>
-              <span class="qa-blob b2"></span>
               {%- if block.settings.custom_image != blank -%}
                 {{ block.settings.custom_image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flavor, loading: 'lazy' }}
               {%- elsif pv.image -%}
@@ -132,10 +119,9 @@
   </div>
 </section>
 
-{%- comment -%} ============ STYLES (namespaced) ============ {%- endcomment -%}
 <style>
   #qa-{{ section.id }}{
-    --qa-blush:#F2C4CE; --qa-peach:#E8A87C; --qa-sage:#8A9B6E;
+    --qa-blush:#F2C4CE; --qa-peach:#E8A87C;
     --qa-navy:#1B3A5C; --qa-rose:#E8607A; --qa-cream:#FAF5F0;
     --qa-mist:#E8DDD5; --qa-stone:#8A7E76;
     --qa-serif:'Playfair Display','Georgia',serif;
@@ -162,10 +148,10 @@
   #qa-{{ section.id }} .qa-eyebrow{ display:inline-block; font-size:11px; font-weight:600; letter-spacing:.26em; text-transform:uppercase; color:var(--qa-rose); margin-bottom:12px; }
   #qa-{{ section.id }} .qa-title{ font-family:var(--qa-serif); font-weight:900; font-size:clamp(28px,2.6vw,38px); line-height:1.1; letter-spacing:-.02em; color:var(--qa-navy); margin:0 0 14px; }
   #qa-{{ section.id }} .qa-accent{ color:var(--qa-rose); display:block; }
-  #qa-{{ section.id }} .qa-lead{ font-family:var(--qa-display); font-weight:300; font-size:clamp(16px,1.5vw,19px); letter-spacing:.02em; line-height:1.4; color:rgba(27,58,92,.72); margin:0 0 18px; }
+  #qa-{{ section.id }} .qa-lead{ font-family:var(--qa-display); font-weight:300; font-size:clamp(16px,1.5vw,19px); letter-spacing:.02em; line-height:1.4; color:rgba(27,58,92,.72); margin:0; }
 
   #qa-{{ section.id }} .qa-swap{
-    margin-top:4px; display:inline-flex; align-items:center; gap:7px;
+    margin-top:18px; display:inline-flex; align-items:center; gap:7px;
     padding:7px 14px; border-radius:999px;
     background:rgba(27,58,92,.04); border:1px solid rgba(27,58,92,.18);
     color:var(--qa-navy); font-family:var(--qa-sans);
@@ -183,15 +169,16 @@
   }
   #qa-{{ section.id }} .qa-prod:hover{ transform:translateY(-3px); }
   #qa-{{ section.id }} .qa-photo{
-    position:relative; width:100%; aspect-ratio:1/1; border-radius:18px; overflow:hidden;
-    background:#fff; display:flex; align-items:center; justify-content:center;
+    position:relative; width:100%; aspect-ratio:1/1;
+    border-radius:{{ section.settings.photo_radius }}px;
+    overflow:hidden;
+    background:var(--pbg, var(--qa-blush));
+    display:flex; align-items:center; justify-content:center;
     box-shadow:var(--qa-shadow-md); transition:box-shadow .18s,outline-color .18s;
     outline:2px solid transparent; outline-offset:2px;
   }
   #qa-{{ section.id }} .qa-prod.in-cart .qa-photo{ outline-color:var(--qa-rose); }
   #qa-{{ section.id }} .qa-prod:hover .qa-photo{ box-shadow:var(--qa-shadow-lg); }
-  #qa-{{ section.id }} .qa-blob{ position:absolute; width:132%; height:132%; border-radius:50%; background:var(--pc,var(--qa-blush)); opacity:.9; top:-34%; left:-16%; }
-  #qa-{{ section.id }} .qa-blob.b2{ width:70%; height:70%; top:auto; bottom:-22%; right:-14%; left:auto; background:var(--pc2,var(--qa-peach)); opacity:.8; }
   #qa-{{ section.id }} .qa-img{ position:relative; z-index:1; width:78%; height:78%; object-fit:contain; filter:drop-shadow(0 6px 12px rgba(27,58,92,.20)); }
   #qa-{{ section.id }} .qa-mark{ position:relative; z-index:1; width:58%; height:auto; filter:drop-shadow(0 4px 8px rgba(27,58,92,.18)); }
   #qa-{{ section.id }} .qa-add{
@@ -237,7 +224,6 @@
   }
 </style>
 
-{%- comment -%} ============ BEHAVIOUR ============ {%- endcomment -%}
 <script>
 (function(){
   var root = document.getElementById('qa-{{ section.id }}');
@@ -248,8 +234,14 @@
   if(swapBtn){ swapBtn.addEventListener('click', function(){ inner.classList.toggle('swapped'); }); }
 
   var tiles = Array.prototype.slice.call(root.querySelectorAll('[data-qa-prod]'));
-  var sellingPlan = '{{ section.settings.selling_plan_id | strip }}';
-  var spNum = (sellingPlan !== '') ? parseInt(sellingPlan, 10) : null;
+
+  // Parse selling plan ID once — must be a valid integer or null
+  var rawSP = '{{ section.settings.selling_plan_id | strip }}';
+  var spNum = null;
+  if(rawSP !== '') {
+    var parsed = parseInt(rawSP, 10);
+    if(!isNaN(parsed) && parsed > 0) spNum = parsed;
+  }
 
   function setTile(tile, qty){
     qty = Math.max(0, qty|0);
@@ -260,23 +252,23 @@
   }
 
   function notifyTheme(cart){
-    document.querySelectorAll('.cart-count-bubble span:first-child, [data-cart-count]').forEach(function(el){
-      if(cart && typeof cart.item_count === 'number') el.textContent = cart.item_count;
-    });
-    document.dispatchEvent(new CustomEvent('qa:cart-updated', { detail: cart, bubbles: true }));
-    if(window.Shopify && Shopify.onCartUpdate){ try{ Shopify.onCartUpdate(cart); }catch(e){} }
+    try {
+      document.querySelectorAll('.cart-count-bubble span:first-child, [data-cart-count]').forEach(function(el){
+        if(typeof cart.item_count === 'number') el.textContent = cart.item_count;
+      });
+      document.dispatchEvent(new CustomEvent('qa:cart-updated', { detail: cart, bubbles: true }));
+      if(window.Shopify && Shopify.onCartUpdate) Shopify.onCartUpdate(cart);
+    } catch(e){}
   }
 
   function refreshCounts(){
     fetch('/cart.js', { headers: { 'Accept':'application/json' } })
       .then(function(r){ return r.json(); })
       .then(function(cart){
-        var counts = {};
-        var lineKeys = {};
+        var counts = {}, lineKeys = {};
         (cart.items || []).forEach(function(it){
-          var vid = it.variant_id;
-          counts[vid] = (counts[vid]||0) + it.quantity;
-          lineKeys[vid] = it.key;
+          counts[it.variant_id] = (counts[it.variant_id]||0) + it.quantity;
+          lineKeys[it.variant_id] = it.key;
         });
         tiles.forEach(function(t){
           var vid = parseInt(t.dataset.variantId, 10);
@@ -285,20 +277,20 @@
         });
         notifyTheme(cart);
       })
-      .catch(function(){});
+      .catch(function(e){ console.warn('qa refreshCounts error', e); });
   }
 
   function addOne(tile){
     var id = tile.dataset.variantId;
     if(!id) return;
 
-    // Optimistic update — show number/minus immediately, no waiting for network
+    // ---- Optimistic update: instant feedback, no waiting ----
     var prevQty = parseInt(tile.dataset.qty, 10) || 0;
     setTile(tile, prevQty + 1);
     tile.classList.add('is-busy');
 
     var item = { id: parseInt(id, 10), quantity: 1 };
-    if(spNum) item.selling_plan = spNum;
+    if(spNum !== null) item.selling_plan = spNum;
 
     fetch('/cart/add.js', {
       method: 'POST',
@@ -306,30 +298,39 @@
       body: JSON.stringify({ items: [item] })
     })
     .then(function(r){
-      if(!r.ok) return r.json().then(function(e){ throw e; });
+      if(!r.ok){
+        return r.json().then(function(e){
+          console.error('Her\'dration Quick-Add: cart/add.js failed', e);
+          // If selling plan caused failure, retry without it so item still gets added
+          if(spNum !== null && (r.status === 422 || r.status === 400)){
+            console.warn('Her\'dration Quick-Add: selling plan', spNum, 'rejected — adding without subscription. Check your Selling Plan ID in section settings.');
+            return fetch('/cart/add.js', {
+              method: 'POST',
+              headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
+              body: JSON.stringify({ items: [{ id: parseInt(id,10), quantity: 1 }] })
+            }).then(function(r2){ return r2.json(); });
+          }
+          throw e;
+        });
+      }
       return r.json();
     })
-    .then(function(){
-      refreshCounts();
-    })
+    .then(function(){ refreshCounts(); })
     .catch(function(err){
-      console.error('qa add error:', err);
-      setTile(tile, prevQty); // revert on error
+      console.error('Her\'dration Quick-Add: add failed completely', err);
+      setTile(tile, prevQty); // revert optimistic update
     })
-    .finally(function(){
-      tile.classList.remove('is-busy');
-    });
+    .then(function(){ tile.classList.remove('is-busy'); });
   }
 
   function removeOne(tile){
     var current = parseInt(tile.dataset.qty, 10) || 0;
     if(current <= 0) return;
 
-    // Optimistic update — show change immediately
     setTile(tile, current - 1);
     tile.classList.add('is-busy');
 
-    // Use line key (required when selling plan is involved — variant ID alone won't match)
+    // Use line key when available — required for subscription line items
     var lineId = tile.dataset.lineKey || tile.dataset.variantId;
 
     fetch('/cart/change.js', {
@@ -341,16 +342,12 @@
       if(!r.ok) return r.json().then(function(e){ throw e; });
       return r.json();
     })
-    .then(function(){
-      refreshCounts();
-    })
+    .then(function(){ refreshCounts(); })
     .catch(function(err){
-      console.error('qa remove error:', err);
-      setTile(tile, current); // revert on error
+      console.error('Her\'dration Quick-Add: remove failed', err);
+      setTile(tile, current);
     })
-    .finally(function(){
-      tile.classList.remove('is-busy');
-    });
+    .then(function(){ tile.classList.remove('is-busy'); });
   }
 
   tiles.forEach(function(tile){
@@ -366,7 +363,6 @@
 })();
 </script>
 
-{%- comment -%} ============ THEME EDITOR SCHEMA ============ {%- endcomment -%}
 {% schema %}
 {
   "name": "Her'dration Quick Add",
@@ -382,25 +378,20 @@
     { "type": "text", "id": "brand_text", "label": "Product name on tiles", "info": "The apostrophe is shown in coral.", "default": "Her'dration" },
 
     { "type": "header", "content": "Subscribe & Save" },
-    { "type": "text", "id": "subscription_label", "label": "Badge label", "default": "Subscribe & Save" },
-    { "type": "text", "id": "subscription_discount", "label": "Discount pill text", "default": "Save 15%" },
-    { "type": "text", "id": "selling_plan_id", "label": "Selling plan ID", "info": "Numeric ID of your subscription selling plan. Applied to every add. Leave blank for one-time purchase." },
+    { "type": "text", "id": "selling_plan_id", "label": "Selling plan ID", "info": "Numeric ID only (e.g. 1234567890). Every add applies this plan. Leave blank for one-time purchase. If wrong, items still add without subscription and a warning appears in the browser console." },
 
     { "type": "header", "content": "Layout" },
-    { "type": "color", "id": "bg_color", "label": "Background", "info": "Match your hero background.", "default": "#FAF5F0" },
+    { "type": "color", "id": "bg_color", "label": "Section background", "default": "#FAF5F0" },
     { "type": "checkbox", "id": "products_on_left", "label": "Products on the left", "default": false },
     { "type": "checkbox", "id": "show_swap", "label": "Show 'Swap sides' button", "default": true },
     { "type": "text", "id": "swap_label", "label": "Swap button label", "default": "Swap sides" },
 
+    { "type": "header", "content": "Photo style" },
+    { "type": "range", "id": "photo_radius", "label": "Photo corner radius", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 18 },
+
     { "type": "header", "content": "Tile labels" },
     { "type": "text", "id": "add_label", "label": "Add hover label", "default": "+ Add" },
-    { "type": "image_picker", "id": "mark_image", "label": "Fallback mark image", "info": "Shown on tiles with no product image or custom image." },
-
-    { "type": "header", "content": "Subscribe badge colors" },
-    { "type": "color", "id": "subscription_bg", "label": "Badge background", "default": "#fef3c7" },
-    { "type": "color", "id": "subscription_border", "label": "Badge border", "default": "#fbbf24" },
-    { "type": "color", "id": "subscription_accent", "label": "Badge accent", "default": "#d97706" },
-    { "type": "color", "id": "subscription_discount_bg", "label": "Discount pill background", "default": "#ffffff" }
+    { "type": "image_picker", "id": "mark_image", "label": "Fallback mark image", "info": "Shown on tiles with no product or custom image." }
   ],
   "blocks": [
     {
@@ -408,11 +399,14 @@
       "name": "Flavor tile",
       "settings": [
         { "type": "product", "id": "product", "label": "Product" },
-        { "type": "text", "id": "variant_title", "label": "Variant title", "info": "Exact variant name, e.g. 'Raspberry Refresher'. Leave blank for first available variant." },
+        { "type": "text", "id": "variant_title", "label": "Variant title", "info": "Exact variant name, e.g. 'Raspberry Refresher'. Leave blank for first available." },
         { "type": "image_picker", "id": "custom_image", "label": "Custom image", "info": "Overrides the product/variant image." },
-        { "type": "text", "id": "label", "label": "Flavor name override", "info": "Defaults to the variant title, then product title." },
-        { "type": "color", "id": "color_primary", "label": "Tile color — primary blob", "default": "#D64C6F" },
-        { "type": "color", "id": "color_secondary", "label": "Tile color — secondary blob", "default": "#F2C4CE" }
+        { "type": "text", "id": "label", "label": "Flavor name override", "info": "Defaults to variant title then product title." },
+        { "type": "header", "content": "Photo background" },
+        { "type": "color", "id": "bg_color_1", "label": "Background color", "default": "#F2C4CE" },
+        { "type": "checkbox", "id": "use_gradient", "label": "Use gradient", "default": false },
+        { "type": "color", "id": "bg_color_2", "label": "Gradient end color", "default": "#E8A87C", "info": "Only used when 'Use gradient' is on." },
+        { "type": "range", "id": "bg_angle", "label": "Gradient angle", "min": 0, "max": 360, "step": 15, "unit": "°", "default": 135, "info": "Only used when 'Use gradient' is on." }
       ]
     }
   ],
@@ -420,11 +414,11 @@
     {
       "name": "Her'dration Quick Add",
       "blocks": [
-        { "type": "flavor", "settings": { "label": "Raspberry Refresher", "color_primary": "#D64C6F", "color_secondary": "#F2C4CE" } },
-        { "type": "flavor", "settings": { "label": "Lime Margarita", "color_primary": "#7DB642", "color_secondary": "#E8A87C" } },
-        { "type": "flavor", "settings": { "label": "Coconut Strawberry", "color_primary": "#E8607A", "color_secondary": "#C4A882" } },
-        { "type": "flavor", "settings": { "label": "Hot Chocolate", "color_primary": "#7A5240", "color_secondary": "#B07A52" } },
-        { "type": "flavor", "settings": { "label": "Unflavored", "color_primary": "#E8DDD5", "color_secondary": "#4A90B8" } }
+        { "type": "flavor", "settings": { "label": "Raspberry Refresher", "bg_color_1": "#F2C4CE" } },
+        { "type": "flavor", "settings": { "label": "Lime Margarita",       "bg_color_1": "#D4EDAA" } },
+        { "type": "flavor", "settings": { "label": "Coconut Strawberry",   "bg_color_1": "#FADADD" } },
+        { "type": "flavor", "settings": { "label": "Hot Chocolate",        "bg_color_1": "#C4A882" } },
+        { "type": "flavor", "settings": { "label": "Unflavored",           "bg_color_1": "#E8DDD5" } }
       ]
     }
   ]
