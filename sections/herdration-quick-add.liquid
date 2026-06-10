@@ -100,7 +100,7 @@
                data-product-url="{{ prod.url }}"
                role="button" tabindex="0"
                aria-label="Add {{ flavor_raw | escape }} to cart"
-               style="--con-bg:{{ con_bg }};--con-radius:{{ block.settings.img_radius }}px;--con-size:{{ block.settings.img_size }}%;">
+               style="--con-bg:{{ con_bg }};--con-radius:{{ block.settings.img_radius }}px;--con-size:{{ block.settings.img_size }}%;--img-x:{{ block.settings.img_x }}px;--img-y:{{ block.settings.img_y }}px;">
 
             <span class="qa-photo">
               {%- if block.settings.custom_image != blank -%}
@@ -219,7 +219,7 @@
   #qa-{{ section.id }} .qa-prod:hover .qa-photo{ box-shadow:var(--qa-shadow-lg); }
   #qa-{{ section.id }} .qa-prod.con-off:hover .qa-photo{ box-shadow:none; }
 
-  #qa-{{ section.id }} .qa-img{ position:relative; z-index:1; width:var(--con-size,78%); height:var(--con-size,78%); object-fit:contain; filter:drop-shadow(0 6px 12px rgba(27,58,92,.20)); }
+  #qa-{{ section.id }} .qa-img{ position:relative; z-index:1; width:var(--con-size,78%); height:var(--con-size,78%); object-fit:contain; filter:drop-shadow(0 6px 12px rgba(27,58,92,.20)); transform:translateX(var(--img-x,0px)) translateY(var(--img-y,0px)); }
   #qa-{{ section.id }} .qa-mark{ position:relative; z-index:1; width:58%; height:auto; filter:drop-shadow(0 4px 8px rgba(27,58,92,.18)); }
 
   #qa-{{ section.id }} .qa-add{
@@ -492,7 +492,9 @@
         { "type": "text", "id": "label", "label": "Flavor name override", "info": "Leave blank to use variant title. Use || for accent e.g. Raspberry||Refresher. CLEAR when switching products." },
 
         { "type": "header", "content": "Image size & shape" },
-        { "type": "range", "id": "img_size", "label": "Image size in container", "min": 40, "max": 100, "step": 2, "unit": "%", "default": 78 },
+        { "type": "range", "id": "img_size", "label": "Image size", "min": 20, "max": 200, "step": 2, "unit": "%", "default": 78 },
+        { "type": "range", "id": "img_x", "label": "Image offset X (left/right)", "min": -200, "max": 200, "step": 2, "unit": "px", "default": 0 },
+        { "type": "range", "id": "img_y", "label": "Image offset Y (up/down)", "min": -200, "max": 200, "step": 2, "unit": "px", "default": 0 },
         { "type": "range", "id": "img_radius", "label": "Container corner radius", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 18 },
 
         { "type": "header", "content": "Container color override" },
