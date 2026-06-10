@@ -174,7 +174,7 @@
   #qa-{{ section.id }} *{ box-sizing:border-box; }
   #qa-{{ section.id }} .qa-inner{
     max-width:1180px; margin:0 auto;
-    display:grid; grid-template-columns:.82fr 1.18fr; gap:44px; align-items:center;
+    display:grid; grid-template-columns:{{ section.settings.col_split }}fr {{ 100 | minus: section.settings.col_split }}fr; gap:{{ section.settings.col_gap }}px; align-items:center;
     padding:{{ section.settings.inner_pad }}px 32px;
     {%- if section.settings.inner_min_height > 0 %} min-height:{{ section.settings.inner_min_height }}px;{%- endif %}
     background:rgba(255,255,255,.55);
@@ -184,11 +184,11 @@
   #qa-{{ section.id }} .qa-inner.swapped .qa-copy{ order:2; }
   #qa-{{ section.id }} .qa-inner.swapped .qa-shop{ order:1; }
 
-  #qa-{{ section.id }} .qa-eyebrow{ display:inline-block; font-size:11px; font-weight:600; letter-spacing:.26em; text-transform:uppercase; color:var(--qa-rose); margin-bottom:12px; }
-  #qa-{{ section.id }} .qa-title{ font-family:var(--qa-serif); font-weight:900; font-size:clamp(28px,2.6vw,38px); line-height:1.1; letter-spacing:-.02em; color:var(--qa-navy); margin:0 0 14px; }
+  #qa-{{ section.id }} .qa-eyebrow{ display:inline-block; font-size:{{ section.settings.eyebrow_size }}px; font-weight:600; letter-spacing:{{ section.settings.eyebrow_ls }}px; text-transform:uppercase; color:var(--qa-rose); margin-bottom:{{ section.settings.eyebrow_mb }}px; }
+  #qa-{{ section.id }} .qa-title{ font-family:var(--qa-serif); font-weight:900; font-size:{{ section.settings.heading_size }}px; line-height:{{ section.settings.heading_lh }}%; letter-spacing:-.02em; color:var(--qa-navy); margin:0 0 {{ section.settings.heading_mb }}px; }
   #qa-{{ section.id }} .qa-accent{ color:var(--qa-rose); }
   #qa-{{ section.id }} .qa-title .qa-accent{ display:block; }
-  #qa-{{ section.id }} .qa-lead{ font-family:var(--qa-display); font-weight:300; font-size:clamp(16px,1.5vw,19px); letter-spacing:.02em; line-height:1.4; color:rgba(27,58,92,.72); margin:0; }
+  #qa-{{ section.id }} .qa-lead{ font-family:var(--qa-display); font-weight:300; font-size:{{ section.settings.lead_size }}px; letter-spacing:.02em; line-height:{{ section.settings.lead_lh }}%; color:rgba(27,58,92,.72); margin:0; }
 
   #qa-{{ section.id }} .qa-swap{
     margin-top:18px; display:inline-flex; align-items:center; gap:7px;
@@ -451,9 +451,25 @@
     { "type": "range", "id": "inner_min_height", "label": "Inner container min height", "min": 0, "max": 600, "step": 10, "unit": "px", "default": 0, "info": "0 = auto height." },
     { "type": "range", "id": "tile_size", "label": "Tile size (photo + container width)", "min": 50, "max": 240, "step": 10, "unit": "px", "default": 120, "info": "Controls the width of each product tile including its photo container." },
     { "type": "range", "id": "tile_gap", "label": "Spacing between tiles", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 12 },
+    { "type": "range", "id": "col_split", "label": "Copy column width", "min": 1, "max": 99, "step": 1, "default": 41, "info": "How much of the inner container the copy (text) side takes. The rest goes to products. e.g. 50 = 50/50, 41 = default, 10 = narrow copy wide products." },
+    { "type": "range", "id": "col_gap", "label": "Gap between copy and products", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 44 },
     { "type": "checkbox", "id": "products_on_left", "label": "Products on the left", "default": false },
     { "type": "checkbox", "id": "show_swap", "label": "Show swap sides button", "default": true },
     { "type": "text", "id": "swap_label", "label": "Swap button label", "default": "Swap sides" },
+
+    { "type": "header", "content": "Copy text — Eyebrow" },
+    { "type": "range", "id": "eyebrow_size", "label": "Font size", "min": 8, "max": 28, "step": 1, "unit": "px", "default": 11 },
+    { "type": "range", "id": "eyebrow_ls", "label": "Letter spacing", "min": 0, "max": 10, "step": 1, "unit": "px", "default": 3 },
+    { "type": "range", "id": "eyebrow_mb", "label": "Space below eyebrow", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 12 },
+
+    { "type": "header", "content": "Copy text — Heading" },
+    { "type": "range", "id": "heading_size", "label": "Font size", "min": 16, "max": 80, "step": 2, "unit": "px", "default": 36 },
+    { "type": "range", "id": "heading_lh", "label": "Line height", "min": 80, "max": 160, "step": 5, "unit": "%", "default": 110 },
+    { "type": "range", "id": "heading_mb", "label": "Space below heading", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 14 },
+
+    { "type": "header", "content": "Copy text — Lead line" },
+    { "type": "range", "id": "lead_size", "label": "Font size", "min": 10, "max": 36, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "lead_lh", "label": "Line height", "min": 80, "max": 200, "step": 5, "unit": "%", "default": 140 },
 
     { "type": "header", "content": "Photo container color — all tiles" },
     { "type": "paragraph", "content": "Controls background color for all tile containers. Image size and radius are set independently per tile in each block." },
