@@ -4,9 +4,6 @@
   ============================================================
 {%- endcomment -%}
 
-{%- assign brand = section.settings.brand_text | default: "Her'dration" -%}
-{%- assign bp = brand | split: "'" -%}
-
 <section
   id="qa-{{ section.id }}"
   class="qa"
@@ -64,26 +61,22 @@
             {%- endif -%}
           {%- endfor -%}
 
-          {%- comment -%} Container settings — block overrides section if toggled on {%- endcomment -%}
+          {%- comment -%} Container color — block overrides section if toggled {%- endcomment -%}
           {%- if block.settings.con_override -%}
-            {%- assign tile_enabled = block.settings.con_enabled -%}
-            {%- assign tile_color1  = block.settings.con_color -%}
-            {%- assign tile_grad    = block.settings.con_gradient -%}
-            {%- assign tile_color2  = block.settings.con_color2 -%}
-            {%- assign tile_angle   = block.settings.con_angle -%}
-            {%- assign tile_radius  = block.settings.con_radius -%}
-            {%- assign tile_size    = block.settings.con_size -%}
+            {%- assign tile_con_enabled = block.settings.con_enabled -%}
+            {%- assign tile_color1      = block.settings.con_color -%}
+            {%- assign tile_grad        = block.settings.con_gradient -%}
+            {%- assign tile_color2      = block.settings.con_color2 -%}
+            {%- assign tile_angle       = block.settings.con_angle -%}
           {%- else -%}
-            {%- assign tile_enabled = section.settings.con_enabled -%}
-            {%- assign tile_color1  = section.settings.con_color -%}
-            {%- assign tile_grad    = section.settings.con_gradient -%}
-            {%- assign tile_color2  = section.settings.con_color2 -%}
-            {%- assign tile_angle   = section.settings.con_angle -%}
-            {%- assign tile_radius  = section.settings.con_radius -%}
-            {%- assign tile_size    = section.settings.con_size -%}
+            {%- assign tile_con_enabled = section.settings.con_enabled -%}
+            {%- assign tile_color1      = section.settings.con_color -%}
+            {%- assign tile_grad        = section.settings.con_gradient -%}
+            {%- assign tile_color2      = section.settings.con_color2 -%}
+            {%- assign tile_angle       = section.settings.con_angle -%}
           {%- endif -%}
 
-          {%- if tile_enabled -%}
+          {%- if tile_con_enabled -%}
             {%- if tile_grad -%}
               {%- assign con_bg = 'linear-gradient(' | append: tile_angle | append: 'deg, ' | append: tile_color1 | append: ', ' | append: tile_color2 | append: ')' -%}
             {%- else -%}
@@ -93,48 +86,64 @@
             {%- assign con_bg = 'transparent' -%}
           {%- endif -%}
 
-          {%- assign flavor = block.settings.label | default: pv.title | default: prod.title -%}
-          {%- assign tile_brand_raw = prod.title -%}
-          {%- assign tile_bp = tile_brand_raw | split: "'" -%}
+          {%- comment -%} Flavor label — || splits normal text from accent text {%- endcomment -%}
+          {%- assign flavor_raw   = block.settings.label | default: pv.title | default: prod.title -%}
+          {%- assign flavor_parts = flavor_raw | split: '||' -%}
 
-          <div class="qa-prod{% unless tile_enabled %} con-off{% endunless %}"
+          {%- comment -%} Brand name from product title — apostrophe gets coral accent {%- endcomment -%}
+          {%- assign brand_parts = prod.title | split: "'" -%}
+
+          <div class="qa-prod{% unless tile_con_enabled %} con-off{% endunless %}"
                {{ block.shopify_attributes }}
                data-qa-prod
                data-variant-id="{{ pv.id }}"
                data-product-url="{{ prod.url }}"
                role="button" tabindex="0"
-               aria-label="Add {{ flavor | escape }} to cart"
-               style="--con-bg:{{ con_bg }};--con-radius:{{ tile_radius }}px;--con-size:{{ tile_size }}%;">
+               aria-label="Add {{ flavor_raw | escape }} to cart"
+               style="--con-bg:{{ con_bg }};--con-radius:{{ block.settings.img_radius }}px;--con-size:{{ block.settings.img_size }}%;">
+
             <span class="qa-photo">
               {%- if block.settings.custom_image != blank -%}
-                {{ block.settings.custom_image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flavor, loading: 'lazy' }}
+                {{ block.settings.custom_image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flavor_raw, loading: 'lazy' }}
               {%- elsif pv.image -%}
-                {{ pv.image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flavor, loading: 'lazy' }}
+                {{ pv.image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flavor_raw, loading: 'lazy' }}
               {%- elsif prod.featured_media -%}
-                {{ prod.featured_media | image_url: width: 300 | image_tag: class: 'qa-img', alt: flavor, loading: 'lazy' }}
+                {{ prod.featured_media | image_url: width: 300 | image_tag: class: 'qa-img', alt: flavor_raw, loading: 'lazy' }}
               {%- elsif section.settings.mark_image != blank -%}
                 {{ section.settings.mark_image | image_url: width: 240 | image_tag: class: 'qa-mark', alt: '' }}
               {%- endif -%}
-              <button class="qa-remove" type="button" data-qa-remove aria-label="Remove one {{ flavor | escape }}">
+              <button class="qa-remove" type="button" data-qa-remove aria-label="Remove one {{ flavor_raw | escape }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg>
               </button>
               <span class="qa-qty" data-qa-qty>0</span>
               <span class="qa-add">{{ section.settings.add_label | default: '+ Add' }}</span>
             </span>
-            <span class="qa-brand">{{ tile_bp[0] }}{%- if tile_bp.size > 1 -%}<span class="qa-apos">'</span>{{ tile_bp[1] }}{%- endif -%}</span>
-            <span class="qa-name">{{ flavor }}</span>
+
+            <span class="qa-brand">
+              {%- if brand_parts.size > 1 -%}
+                {{ brand_parts[0] }}<span class="qa-apos">'</span>{{ brand_parts[1] }}
+              {%- else -%}
+                {{ prod.title }}
+              {%- endif -%}
+            </span>
+
+            <span class="qa-name">
+              {{ flavor_parts[0] }}{%- if flavor_parts.size > 1 -%}<span class="qa-accent">{{ flavor_parts[1] }}</span>{%- endif -%}
+            </span>
+
             <span class="qa-price">
               {%- if display_compare and display_compare > display_price -%}
                 <span class="qa-was">{{ display_compare | money }}</span>
               {%- endif -%}
               <span class="qa-now">{{ display_price | money }}</span>
             </span>
+
           </div>
         {%- endif -%}
       {%- endfor -%}
 
       {%- if section.blocks.size == 0 -%}
-        <p style="grid-column:1/-1;text-align:center;color:var(--qa-stone);font-size:13px;">
+        <p style="grid-column:1/-1;text-align:center;color:#8A7E76;font-size:13px;">
           Add "Flavor tile" blocks in the theme editor to populate this strip.
         </p>
       {%- endif -%}
@@ -145,7 +154,7 @@
 
 <style>
   #qa-{{ section.id }}{
-    --qa-navy:#1B3A5C; --qa-rose:#E8607A; --qa-cream:#FAF5F0;
+    --qa-navy:#1B3A5C; --qa-rose:{{ section.settings.accent_color }}; --qa-cream:#FAF5F0;
     --qa-mist:#E8DDD5; --qa-stone:#8A7E76;
     --qa-serif:'Playfair Display','Georgia',serif;
     --qa-display:'Cormorant Garamond','Georgia',serif;
@@ -154,13 +163,15 @@
     --qa-shadow-md:0 4px 24px rgba(27,58,92,.10);
     --qa-shadow-lg:0 8px 40px rgba(27,58,92,.12);
     background:{{ section.settings.bg_color }}; color:var(--qa-navy);
-    font-family:var(--qa-sans); display:block; padding:20px 32px 36px;
+    font-family:var(--qa-sans); display:block;
+    padding:{{ section.settings.section_pad_top }}px 32px {{ section.settings.section_pad_bottom }}px;
   }
   #qa-{{ section.id }} *{ box-sizing:border-box; }
   #qa-{{ section.id }} .qa-inner{
     max-width:1180px; margin:0 auto;
     display:grid; grid-template-columns:.82fr 1.18fr; gap:44px; align-items:center;
-    padding:26px 32px;
+    padding:{{ section.settings.inner_pad }}px 32px;
+    {%- if section.settings.inner_min_height > 0 %} min-height:{{ section.settings.inner_min_height }}px;{%- endif %}
     background:rgba(255,255,255,.55);
     border:1.5px solid var(--qa-mist); border-radius:28px;
     box-shadow:var(--qa-shadow-sm);
@@ -170,7 +181,8 @@
 
   #qa-{{ section.id }} .qa-eyebrow{ display:inline-block; font-size:11px; font-weight:600; letter-spacing:.26em; text-transform:uppercase; color:var(--qa-rose); margin-bottom:12px; }
   #qa-{{ section.id }} .qa-title{ font-family:var(--qa-serif); font-weight:900; font-size:clamp(28px,2.6vw,38px); line-height:1.1; letter-spacing:-.02em; color:var(--qa-navy); margin:0 0 14px; }
-  #qa-{{ section.id }} .qa-accent{ color:var(--qa-rose); display:block; }
+  #qa-{{ section.id }} .qa-accent{ color:var(--qa-rose); }
+  #qa-{{ section.id }} .qa-title .qa-accent{ display:block; }
   #qa-{{ section.id }} .qa-lead{ font-family:var(--qa-display); font-weight:300; font-size:clamp(16px,1.5vw,19px); letter-spacing:.02em; line-height:1.4; color:rgba(27,58,92,.72); margin:0; }
 
   #qa-{{ section.id }} .qa-swap{
@@ -202,7 +214,6 @@
     box-shadow:var(--qa-shadow-md); transition:box-shadow .18s,outline-color .18s;
     outline:2px solid transparent; outline-offset:2px;
   }
-  /* No shadow when container is off */
   #qa-{{ section.id }} .qa-prod.con-off .qa-photo{ box-shadow:none; }
   #qa-{{ section.id }} .qa-prod.in-cart .qa-photo{ outline-color:var(--qa-rose); }
   #qa-{{ section.id }} .qa-prod:hover .qa-photo{ box-shadow:var(--qa-shadow-lg); }
@@ -210,6 +221,7 @@
 
   #qa-{{ section.id }} .qa-img{ position:relative; z-index:1; width:var(--con-size,78%); height:var(--con-size,78%); object-fit:contain; filter:drop-shadow(0 6px 12px rgba(27,58,92,.20)); }
   #qa-{{ section.id }} .qa-mark{ position:relative; z-index:1; width:58%; height:auto; filter:drop-shadow(0 4px 8px rgba(27,58,92,.18)); }
+
   #qa-{{ section.id }} .qa-add{
     position:absolute; z-index:2; bottom:8px; left:50%; transform:translateX(-50%);
     display:inline-flex; align-items:center; gap:4px; padding:4px 11px; border-radius:999px;
@@ -233,16 +245,43 @@
   }
   #qa-{{ section.id }} .qa-prod.in-cart .qa-remove,
   #qa-{{ section.id }} .qa-prod.in-cart .qa-qty{ display:inline-flex; }
-  #qa-{{ section.id }} .qa-brand{ font-family:var(--qa-serif); font-weight:800; font-size:14px; line-height:1.1; color:var(--qa-navy); margin-bottom:-2px; }
+
+  /* ---- Tile typography ---- */
+  #qa-{{ section.id }} .qa-brand{
+    font-family:'{{ section.settings.brand_font }}','Playfair Display','Georgia',serif;
+    font-weight:800;
+    font-size:{{ section.settings.brand_size }}px;
+    line-height:1.1;
+    color:{{ section.settings.brand_color }};
+    margin-bottom:-2px;
+  }
   #qa-{{ section.id }} .qa-apos{ color:var(--qa-rose); }
-  #qa-{{ section.id }} .qa-name{ font-size:11px; font-weight:500; line-height:1.2; color:var(--qa-stone); }
-  #qa-{{ section.id }} .qa-price{ font-size:11px; margin-top:-2px; display:inline-flex; align-items:baseline; gap:5px; justify-content:center; }
-  #qa-{{ section.id }} .qa-was{ color:var(--qa-stone); text-decoration:line-through; }
-  #qa-{{ section.id }} .qa-now{ color:var(--qa-rose); font-weight:700; }
+  #qa-{{ section.id }} .qa-name{
+    font-family:'{{ section.settings.flavor_font }}','Playfair Display','Georgia',serif;
+    font-size:{{ section.settings.flavor_size }}px;
+    font-weight:500;
+    line-height:1.2;
+    color:{{ section.settings.flavor_color }};
+  }
+  #qa-{{ section.id }} .qa-price{
+    margin-top:-2px; display:inline-flex; align-items:baseline; gap:5px; justify-content:center;
+  }
+  #qa-{{ section.id }} .qa-was{
+    font-family:'{{ section.settings.price_orig_font }}','Playfair Display','Georgia',serif;
+    font-size:{{ section.settings.price_orig_size }}px;
+    color:{{ section.settings.price_orig_color }};
+    text-decoration:line-through;
+  }
+  #qa-{{ section.id }} .qa-now{
+    font-family:'{{ section.settings.price_sale_font }}','Playfair Display','Georgia',serif;
+    font-size:{{ section.settings.price_sale_size }}px;
+    color:{{ section.settings.price_sale_color }};
+    font-weight:700;
+  }
   #qa-{{ section.id }} .qa-prod.is-busy{ opacity:.6; pointer-events:none; }
 
   @media (max-width:900px){
-    #qa-{{ section.id }}{ padding:16px 16px 28px; }
+    #qa-{{ section.id }}{ padding:16px 16px {{ section.settings.section_pad_bottom }}px; }
     #qa-{{ section.id }} .qa-inner{ grid-template-columns:1fr; gap:28px; padding:22px 20px; }
     #qa-{{ section.id }} .qa-inner.swapped .qa-copy{ order:1; }
     #qa-{{ section.id }} .qa-inner.swapped .qa-shop{ order:2; }
@@ -313,7 +352,6 @@
     var id = tile.dataset.variantId;
     if(!id) return;
 
-    // Optimistic update: instant feedback, no waiting
     var prevQty = parseInt(tile.dataset.qty, 10) || 0;
     setTile(tile, prevQty + 1);
     tile.classList.add('is-busy');
@@ -338,7 +376,7 @@
     })
     .then(function(){ refreshCounts(); })
     .catch(function(err){
-      console.error('Her\'dration Quick-Add: add failed completely', err);
+      console.error('[Her\'dration Quick-Add] add failed completely', err);
       setTile(tile, prevQty);
     })
     .then(function(){ tile.classList.remove('is-busy'); });
@@ -351,7 +389,6 @@
     setTile(tile, current - 1);
     tile.classList.add('is-busy');
 
-    // Use line key when available — required for subscription line items
     var lineId = tile.dataset.lineKey || tile.dataset.variantId;
 
     fetch('/cart/change.js', {
@@ -365,7 +402,7 @@
     })
     .then(function(){ refreshCounts(); })
     .catch(function(err){
-      console.error('Her\'dration Quick-Add: remove failed', err);
+      console.error('[Her\'dration Quick-Add] remove failed', err);
       setTile(tile, current);
     })
     .then(function(){ tile.classList.remove('is-busy'); });
@@ -394,32 +431,55 @@
     { "type": "header", "content": "Copy" },
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Subscribe & Save" },
     { "type": "text", "id": "heading_lead", "label": "Heading (line 1)", "default": "10% OFF" },
-    { "type": "text", "id": "heading_accent", "label": "Heading accent (coral, line 2)", "default": "+ Free Shipping, Always" },
+    { "type": "text", "id": "heading_accent", "label": "Heading accent (line 2, coral)", "default": "+ Free Shipping, Always" },
     { "type": "text", "id": "lead", "label": "Lead line", "default": "Quick add to cart — tap a flavor to drop it in." },
-    { "type": "text", "id": "brand_text", "label": "Product name on tiles", "info": "The apostrophe is shown in coral.", "default": "Her'dration" },
 
     { "type": "header", "content": "Subscribe & Save" },
-    { "type": "text", "id": "selling_plan_id", "label": "Selling plan ID", "default": "5713658087", "info": "Katching Monthly 10% off plan. If the wrong plan applies at checkout, try 5842731239 instead. Leave blank for one-time purchase only." },
+    { "type": "text", "id": "selling_plan_id", "label": "Selling plan ID", "default": "5713658087", "info": "Katching Monthly 10% off plan. If wrong plan applies, try 5842731239. Leave blank to use default." },
 
-    { "type": "header", "content": "Layout" },
+    { "type": "header", "content": "Layout & Spacing" },
     { "type": "color", "id": "bg_color", "label": "Section background", "default": "#FAF5F0" },
+    { "type": "color", "id": "accent_color", "label": "Accent / coral color", "default": "#E8607A" },
+    { "type": "range", "id": "section_pad_top", "label": "Section padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 20 },
+    { "type": "range", "id": "section_pad_bottom", "label": "Section padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 36 },
+    { "type": "range", "id": "inner_pad", "label": "Inner container padding", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 26 },
+    { "type": "range", "id": "inner_min_height", "label": "Inner container min height", "min": 0, "max": 600, "step": 10, "unit": "px", "default": 0, "info": "0 = auto height." },
     { "type": "checkbox", "id": "products_on_left", "label": "Products on the left", "default": false },
-    { "type": "checkbox", "id": "show_swap", "label": "Show 'Swap sides' button", "default": true },
+    { "type": "checkbox", "id": "show_swap", "label": "Show swap sides button", "default": true },
     { "type": "text", "id": "swap_label", "label": "Swap button label", "default": "Swap sides" },
 
-    { "type": "header", "content": "Photo container — all tiles" },
-    { "type": "paragraph", "content": "These are the defaults for every tile. You can override per tile in each block." },
+    { "type": "header", "content": "Photo container color — all tiles" },
+    { "type": "paragraph", "content": "Controls background color for all tile containers. Image size and radius are set independently per tile in each block." },
     { "type": "checkbox", "id": "con_enabled", "label": "Show container", "default": true },
     { "type": "color", "id": "con_color", "label": "Container color", "default": "#F2C4CE" },
     { "type": "checkbox", "id": "con_gradient", "label": "Use gradient", "default": false },
-    { "type": "color", "id": "con_color2", "label": "Gradient end color", "default": "#E8A87C", "info": "Only used when gradient is on." },
-    { "type": "range", "id": "con_angle", "label": "Gradient angle", "min": 0, "max": 360, "step": 15, "unit": "°", "default": 135, "info": "Only used when gradient is on." },
-    { "type": "range", "id": "con_radius", "label": "Container corner radius", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 18 },
-    { "type": "range", "id": "con_size", "label": "Image size in container", "min": 40, "max": 100, "step": 2, "unit": "%", "default": 78, "info": "How much of the container the product image fills." },
+    { "type": "color", "id": "con_color2", "label": "Gradient end color", "default": "#E8A87C" },
+    { "type": "range", "id": "con_angle", "label": "Gradient angle", "min": 0, "max": 360, "step": 15, "unit": "°", "default": 135 },
 
-    { "type": "header", "content": "Tile labels" },
+    { "type": "header", "content": "Typography — Product name" },
+    { "type": "text", "id": "brand_font", "label": "Font family", "default": "Playfair Display", "info": "Must be loaded in your theme. e.g. Playfair Display, DM Sans, Georgia" },
+    { "type": "range", "id": "brand_size", "label": "Font size", "min": 8, "max": 32, "step": 1, "unit": "px", "default": 14 },
+    { "type": "color", "id": "brand_color", "label": "Color", "default": "#1B3A5C" },
+
+    { "type": "header", "content": "Typography — Flavor name" },
+    { "type": "paragraph", "content": "Use || in the flavor name override field to add accent color text. e.g. Raspberry||Refresher makes Refresher appear in the accent color." },
+    { "type": "text", "id": "flavor_font", "label": "Font family", "default": "Playfair Display" },
+    { "type": "range", "id": "flavor_size", "label": "Font size", "min": 8, "max": 28, "step": 1, "unit": "px", "default": 11 },
+    { "type": "color", "id": "flavor_color", "label": "Color", "default": "#8A7E76" },
+
+    { "type": "header", "content": "Typography — Original price" },
+    { "type": "text", "id": "price_orig_font", "label": "Font family", "default": "Playfair Display" },
+    { "type": "range", "id": "price_orig_size", "label": "Font size", "min": 8, "max": 24, "step": 1, "unit": "px", "default": 11 },
+    { "type": "color", "id": "price_orig_color", "label": "Color", "default": "#8A7E76" },
+
+    { "type": "header", "content": "Typography — Sale price" },
+    { "type": "text", "id": "price_sale_font", "label": "Font family", "default": "Playfair Display" },
+    { "type": "range", "id": "price_sale_size", "label": "Font size", "min": 8, "max": 24, "step": 1, "unit": "px", "default": 11 },
+    { "type": "color", "id": "price_sale_color", "label": "Color", "default": "#E8607A" },
+
+    { "type": "header", "content": "Misc" },
     { "type": "text", "id": "add_label", "label": "Add hover label", "default": "+ Add" },
-    { "type": "image_picker", "id": "mark_image", "label": "Fallback mark image", "info": "Shown on tiles with no product or custom image." }
+    { "type": "image_picker", "id": "mark_image", "label": "Fallback mark image" }
   ],
   "blocks": [
     {
@@ -427,19 +487,21 @@
       "name": "Flavor tile",
       "settings": [
         { "type": "product", "id": "product", "label": "Product" },
-        { "type": "text", "id": "variant_title", "label": "Variant title", "info": "Exact variant name, e.g. 'Raspberry Refresher'. Leave blank for first available." },
-        { "type": "image_picker", "id": "custom_image", "label": "Custom image", "info": "Overrides the product image. CLEAR THIS when switching products or the old photo will stay." },
-        { "type": "text", "id": "label", "label": "Flavor name override", "info": "Overrides the flavor name. CLEAR THIS when switching products or the old name will stay." },
+        { "type": "text", "id": "variant_title", "label": "Variant title", "info": "Exact variant name e.g. Raspberry Refresher. Leave blank for first available." },
+        { "type": "image_picker", "id": "custom_image", "label": "Custom image", "info": "Overrides the product image. CLEAR THIS when switching products." },
+        { "type": "text", "id": "label", "label": "Flavor name override", "info": "Leave blank to use variant title. Use || for accent e.g. Raspberry||Refresher. CLEAR when switching products." },
 
-        { "type": "header", "content": "Container override" },
-        { "type": "checkbox", "id": "con_override", "label": "Override section container for this tile", "default": false },
+        { "type": "header", "content": "Image size & shape" },
+        { "type": "range", "id": "img_size", "label": "Image size in container", "min": 40, "max": 100, "step": 2, "unit": "%", "default": 78 },
+        { "type": "range", "id": "img_radius", "label": "Container corner radius", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 18 },
+
+        { "type": "header", "content": "Container color override" },
+        { "type": "checkbox", "id": "con_override", "label": "Override section container color for this tile", "default": false },
         { "type": "checkbox", "id": "con_enabled", "label": "Show container", "default": true, "info": "Only applies when override is on." },
         { "type": "color", "id": "con_color", "label": "Container color", "default": "#F2C4CE", "info": "Only applies when override is on." },
         { "type": "checkbox", "id": "con_gradient", "label": "Use gradient", "default": false, "info": "Only applies when override is on." },
-        { "type": "color", "id": "con_color2", "label": "Gradient end color", "default": "#E8A87C", "info": "Only applies when override is on and gradient is on." },
-        { "type": "range", "id": "con_angle", "label": "Gradient angle", "min": 0, "max": 360, "step": 15, "unit": "°", "default": 135, "info": "Only applies when override is on and gradient is on." },
-        { "type": "range", "id": "con_radius", "label": "Container corner radius", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 18, "info": "Only applies when override is on." },
-        { "type": "range", "id": "con_size", "label": "Image size in container", "min": 40, "max": 100, "step": 2, "unit": "%", "default": 78, "info": "Only applies when override is on." }
+        { "type": "color", "id": "con_color2", "label": "Gradient end color", "default": "#E8A87C", "info": "Only applies when override + gradient are on." },
+        { "type": "range", "id": "con_angle", "label": "Gradient angle", "min": 0, "max": 360, "step": 15, "unit": "°", "default": 135, "info": "Only applies when override + gradient are on." }
       ]
     }
   ],
@@ -447,11 +509,11 @@
     {
       "name": "Her'dration Quick Add",
       "blocks": [
-        { "type": "flavor", "settings": { "label": "Raspberry Refresher" } },
-        { "type": "flavor", "settings": { "label": "Lime Margarita" } },
-        { "type": "flavor", "settings": { "label": "Coconut Strawberry" } },
-        { "type": "flavor", "settings": { "label": "Hot Chocolate" } },
-        { "type": "flavor", "settings": { "label": "Unflavored" } }
+        { "type": "flavor", "settings": { "variant_title": "Raspberry Refresher" } },
+        { "type": "flavor", "settings": { "variant_title": "Lime Margarita" } },
+        { "type": "flavor", "settings": { "variant_title": "Coconut Strawberry" } },
+        { "type": "flavor", "settings": { "variant_title": "Hot Chocolate" } },
+        { "type": "flavor", "settings": { "variant_title": "Unflavored" } }
       ]
     }
   ]
