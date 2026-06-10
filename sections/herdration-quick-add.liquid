@@ -51,7 +51,7 @@
             {%- endfor -%}
           {%- endif -%}
 
-          {%- comment -%} Subscription pricing — pull from selling_plan_allocations {%- endcomment -%}
+          {%- comment -%} Subscription pricing {%- endcomment -%}
           {%- assign display_price   = pv.price -%}
           {%- assign display_compare = pv.compare_at_price -%}
           {%- if section.settings.selling_plan_id != blank -%}
@@ -64,23 +64,45 @@
             {%- endfor -%}
           {%- endif -%}
 
-          {%- comment -%} Tile photo background — solid or gradient {%- endcomment -%}
-          {%- if block.settings.use_gradient -%}
-            {%- assign pbg = 'linear-gradient(' | append: block.settings.bg_angle | append: 'deg, ' | append: block.settings.bg_color_1 | append: ', ' | append: block.settings.bg_color_2 | append: ')' -%}
+          {%- comment -%} Container settings — block overrides section if toggled on {%- endcomment -%}
+          {%- if block.settings.con_override -%}
+            {%- assign tile_enabled = block.settings.con_enabled -%}
+            {%- assign tile_color1  = block.settings.con_color -%}
+            {%- assign tile_grad    = block.settings.con_gradient -%}
+            {%- assign tile_color2  = block.settings.con_color2 -%}
+            {%- assign tile_angle   = block.settings.con_angle -%}
+            {%- assign tile_radius  = block.settings.con_radius -%}
+            {%- assign tile_size    = block.settings.con_size -%}
           {%- else -%}
-            {%- assign pbg = block.settings.bg_color_1 -%}
+            {%- assign tile_enabled = section.settings.con_enabled -%}
+            {%- assign tile_color1  = section.settings.con_color -%}
+            {%- assign tile_grad    = section.settings.con_gradient -%}
+            {%- assign tile_color2  = section.settings.con_color2 -%}
+            {%- assign tile_angle   = section.settings.con_angle -%}
+            {%- assign tile_radius  = section.settings.con_radius -%}
+            {%- assign tile_size    = section.settings.con_size -%}
+          {%- endif -%}
+
+          {%- if tile_enabled -%}
+            {%- if tile_grad -%}
+              {%- assign con_bg = 'linear-gradient(' | append: tile_angle | append: 'deg, ' | append: tile_color1 | append: ', ' | append: tile_color2 | append: ')' -%}
+            {%- else -%}
+              {%- assign con_bg = tile_color1 -%}
+            {%- endif -%}
+          {%- else -%}
+            {%- assign con_bg = 'transparent' -%}
           {%- endif -%}
 
           {%- assign flavor = block.settings.label | default: pv.title | default: prod.title -%}
 
-          <div class="qa-prod"
+          <div class="qa-prod{% unless tile_enabled %} con-off{% endunless %}"
                {{ block.shopify_attributes }}
                data-qa-prod
                data-variant-id="{{ pv.id }}"
                data-product-url="{{ prod.url }}"
                role="button" tabindex="0"
                aria-label="Add {{ flavor | escape }} to cart"
-               style="--pbg:{{ pbg }};">
+               style="--con-bg:{{ con_bg }};--con-radius:{{ tile_radius }}px;--con-size:{{ tile_size }}%;">
             <span class="qa-photo">
               {%- if block.settings.custom_image != blank -%}
                 {{ block.settings.custom_image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flavor, loading: 'lazy' }}
@@ -121,7 +143,6 @@
 
 <style>
   #qa-{{ section.id }}{
-    --qa-blush:#F2C4CE; --qa-peach:#E8A87C;
     --qa-navy:#1B3A5C; --qa-rose:#E8607A; --qa-cream:#FAF5F0;
     --qa-mist:#E8DDD5; --qa-stone:#8A7E76;
     --qa-serif:'Playfair Display','Georgia',serif;
@@ -168,18 +189,24 @@
     font-family:var(--qa-sans); transition:transform .18s;
   }
   #qa-{{ section.id }} .qa-prod:hover{ transform:translateY(-3px); }
+
+  /* ---- Photo container ---- */
   #qa-{{ section.id }} .qa-photo{
     position:relative; width:100%; aspect-ratio:1/1;
-    border-radius:{{ section.settings.photo_radius }}px;
+    border-radius:var(--con-radius,18px);
     overflow:hidden;
-    background:var(--pbg, var(--qa-blush));
+    background:var(--con-bg,transparent);
     display:flex; align-items:center; justify-content:center;
     box-shadow:var(--qa-shadow-md); transition:box-shadow .18s,outline-color .18s;
     outline:2px solid transparent; outline-offset:2px;
   }
+  /* No shadow when container is off */
+  #qa-{{ section.id }} .qa-prod.con-off .qa-photo{ box-shadow:none; }
   #qa-{{ section.id }} .qa-prod.in-cart .qa-photo{ outline-color:var(--qa-rose); }
   #qa-{{ section.id }} .qa-prod:hover .qa-photo{ box-shadow:var(--qa-shadow-lg); }
-  #qa-{{ section.id }} .qa-img{ position:relative; z-index:1; width:78%; height:78%; object-fit:contain; filter:drop-shadow(0 6px 12px rgba(27,58,92,.20)); }
+  #qa-{{ section.id }} .qa-prod.con-off:hover .qa-photo{ box-shadow:none; }
+
+  #qa-{{ section.id }} .qa-img{ position:relative; z-index:1; width:var(--con-size,78%); height:var(--con-size,78%); object-fit:contain; filter:drop-shadow(0 6px 12px rgba(27,58,92,.20)); }
   #qa-{{ section.id }} .qa-mark{ position:relative; z-index:1; width:58%; height:auto; filter:drop-shadow(0 4px 8px rgba(27,58,92,.18)); }
   #qa-{{ section.id }} .qa-add{
     position:absolute; z-index:2; bottom:8px; left:50%; transform:translateX(-50%);
@@ -284,7 +311,7 @@
     var id = tile.dataset.variantId;
     if(!id) return;
 
-    // ---- Optimistic update: instant feedback, no waiting ----
+    // Optimistic update: instant feedback, no waiting
     var prevQty = parseInt(tile.dataset.qty, 10) || 0;
     setTile(tile, prevQty + 1);
     tile.classList.add('is-busy');
@@ -301,7 +328,7 @@
       if(!r.ok){
         return r.json().then(function(e){
           console.error('Her\'dration Quick-Add: cart/add.js failed', e);
-          // If selling plan caused failure, retry without it so item still gets added
+          // Retry without selling plan if it caused the failure
           if(spNum !== null && (r.status === 422 || r.status === 400)){
             console.warn('Her\'dration Quick-Add: selling plan', spNum, 'rejected — adding without subscription. Check your Selling Plan ID in section settings.');
             return fetch('/cart/add.js', {
@@ -318,7 +345,7 @@
     .then(function(){ refreshCounts(); })
     .catch(function(err){
       console.error('Her\'dration Quick-Add: add failed completely', err);
-      setTile(tile, prevQty); // revert optimistic update
+      setTile(tile, prevQty);
     })
     .then(function(){ tile.classList.remove('is-busy'); });
   }
@@ -386,8 +413,15 @@
     { "type": "checkbox", "id": "show_swap", "label": "Show 'Swap sides' button", "default": true },
     { "type": "text", "id": "swap_label", "label": "Swap button label", "default": "Swap sides" },
 
-    { "type": "header", "content": "Photo style" },
-    { "type": "range", "id": "photo_radius", "label": "Photo corner radius", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 18 },
+    { "type": "header", "content": "Photo container — all tiles" },
+    { "type": "paragraph", "content": "These are the defaults for every tile. You can override per tile in each block." },
+    { "type": "checkbox", "id": "con_enabled", "label": "Show container", "default": true },
+    { "type": "color", "id": "con_color", "label": "Container color", "default": "#F2C4CE" },
+    { "type": "checkbox", "id": "con_gradient", "label": "Use gradient", "default": false },
+    { "type": "color", "id": "con_color2", "label": "Gradient end color", "default": "#E8A87C", "info": "Only used when gradient is on." },
+    { "type": "range", "id": "con_angle", "label": "Gradient angle", "min": 0, "max": 360, "step": 15, "unit": "°", "default": 135, "info": "Only used when gradient is on." },
+    { "type": "range", "id": "con_radius", "label": "Container corner radius", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "con_size", "label": "Image size in container", "min": 40, "max": 100, "step": 2, "unit": "%", "default": 78, "info": "How much of the container the product image fills." },
 
     { "type": "header", "content": "Tile labels" },
     { "type": "text", "id": "add_label", "label": "Add hover label", "default": "+ Add" },
@@ -402,11 +436,16 @@
         { "type": "text", "id": "variant_title", "label": "Variant title", "info": "Exact variant name, e.g. 'Raspberry Refresher'. Leave blank for first available." },
         { "type": "image_picker", "id": "custom_image", "label": "Custom image", "info": "Overrides the product/variant image." },
         { "type": "text", "id": "label", "label": "Flavor name override", "info": "Defaults to variant title then product title." },
-        { "type": "header", "content": "Photo background" },
-        { "type": "color", "id": "bg_color_1", "label": "Background color", "default": "#F2C4CE" },
-        { "type": "checkbox", "id": "use_gradient", "label": "Use gradient", "default": false },
-        { "type": "color", "id": "bg_color_2", "label": "Gradient end color", "default": "#E8A87C", "info": "Only used when 'Use gradient' is on." },
-        { "type": "range", "id": "bg_angle", "label": "Gradient angle", "min": 0, "max": 360, "step": 15, "unit": "°", "default": 135, "info": "Only used when 'Use gradient' is on." }
+
+        { "type": "header", "content": "Container override" },
+        { "type": "checkbox", "id": "con_override", "label": "Override section container for this tile", "default": false },
+        { "type": "checkbox", "id": "con_enabled", "label": "Show container", "default": true, "info": "Only applies when override is on." },
+        { "type": "color", "id": "con_color", "label": "Container color", "default": "#F2C4CE", "info": "Only applies when override is on." },
+        { "type": "checkbox", "id": "con_gradient", "label": "Use gradient", "default": false, "info": "Only applies when override is on." },
+        { "type": "color", "id": "con_color2", "label": "Gradient end color", "default": "#E8A87C", "info": "Only applies when override is on and gradient is on." },
+        { "type": "range", "id": "con_angle", "label": "Gradient angle", "min": 0, "max": 360, "step": 15, "unit": "°", "default": 135, "info": "Only applies when override is on and gradient is on." },
+        { "type": "range", "id": "con_radius", "label": "Container corner radius", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 18, "info": "Only applies when override is on." },
+        { "type": "range", "id": "con_size", "label": "Image size in container", "min": 40, "max": 100, "step": 2, "unit": "%", "default": 78, "info": "Only applies when override is on." }
       ]
     }
   ],
@@ -414,11 +453,11 @@
     {
       "name": "Her'dration Quick Add",
       "blocks": [
-        { "type": "flavor", "settings": { "label": "Raspberry Refresher", "bg_color_1": "#F2C4CE" } },
-        { "type": "flavor", "settings": { "label": "Lime Margarita",       "bg_color_1": "#D4EDAA" } },
-        { "type": "flavor", "settings": { "label": "Coconut Strawberry",   "bg_color_1": "#FADADD" } },
-        { "type": "flavor", "settings": { "label": "Hot Chocolate",        "bg_color_1": "#C4A882" } },
-        { "type": "flavor", "settings": { "label": "Unflavored",           "bg_color_1": "#E8DDD5" } }
+        { "type": "flavor", "settings": { "label": "Raspberry Refresher" } },
+        { "type": "flavor", "settings": { "label": "Lime Margarita" } },
+        { "type": "flavor", "settings": { "label": "Coconut Strawberry" } },
+        { "type": "flavor", "settings": { "label": "Hot Chocolate" } },
+        { "type": "flavor", "settings": { "label": "Unflavored" } }
       ]
     }
   ]
