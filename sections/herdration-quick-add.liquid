@@ -94,6 +94,8 @@
           {%- endif -%}
 
           {%- assign flavor = block.settings.label | default: pv.title | default: prod.title -%}
+          {%- assign tile_brand_raw = prod.title -%}
+          {%- assign tile_bp = tile_brand_raw | split: "'" -%}
 
           <div class="qa-prod{% unless tile_enabled %} con-off{% endunless %}"
                {{ block.shopify_attributes }}
@@ -119,7 +121,7 @@
               <span class="qa-qty" data-qa-qty>0</span>
               <span class="qa-add">{{ section.settings.add_label | default: '+ Add' }}</span>
             </span>
-            <span class="qa-brand">{{ bp[0] }}{%- if bp.size > 1 -%}<span class="qa-apos">'</span>{{ bp[1] }}{%- endif -%}</span>
+            <span class="qa-brand">{{ tile_bp[0] }}{%- if tile_bp.size > 1 -%}<span class="qa-apos">'</span>{{ tile_bp[1] }}{%- endif -%}</span>
             <span class="qa-name">{{ flavor }}</span>
             <span class="qa-price">
               {%- if display_compare and display_compare > display_price -%}
