@@ -2,133 +2,129 @@
   ============================================================
   WELLER CO. — Her'dration Quick-Add Strip  (Shopify Section)
   ------------------------------------------------------------
-  A condensed "Subscribe & Save" band that sits below a hero:
-    promo copy on one side, a row of tappable flavor tiles on
-    the other. Tap a tile -> AJAX adds 1 to cart. A minus badge
-    (top-left of each photo) removes one; a quantity badge
-    (top-right) shows how many are in the cart. A "Swap sides"
-    pill flips copy <-> products.
-
-  • Products  -> "Flavor tile" blocks (one product each).
-  • Add/remove -> /cart/add.js  +  /cart/change.js (no reload).
-  • Counts    -> hydrated live from /cart.js on load.
-  • Pricing   -> variant price + compare_at_price, so any
-                 discount (e.g. 10% off) shows as struck "was".
-
-  Styles + JS are inlined and namespaced under #qa-{{ section.id }}
-  so nothing leaks into (or breaks against) your theme.
+  Up to 5 product+variant slots. Each slot has a product picker,
+  variant title field, and custom image picker. Subscribe & Save
+  is always applied via a selling plan ID — there is no opt-out.
+  One "Add all to cart" button adds every configured item at once.
   ============================================================
 {%- endcomment -%}
 
+{%- assign sid = section.id | replace: '_', '-' -%}
 {%- assign brand = section.settings.brand_text | default: "Her'dration" -%}
 {%- assign bp = brand | split: "'" -%}
 
-<section
-  id="qa-{{ section.id }}"
-  class="qa"
-  data-section-id="{{ section.id }}">
+<section id="qa-{{ sid }}" class="qa-strip" data-section-id="{{ section.id }}">
+  <div class="qa-strip-inner{% if section.settings.products_on_left %} swapped{% endif %}">
 
-  <div class="qa-inner{% if section.settings.products_on_left %} swapped{% endif %}" data-qa-inner>
-
-    <!-- ============ COPY ============ -->
-    <div class="qa-copy">
+    <!-- COPY -->
+    <div class="qa-strip-copy">
       {%- if section.settings.eyebrow != blank -%}
-        <span class="qa-eyebrow">{{ section.settings.eyebrow }}</span>
+        <span class="qa-strip-eyebrow">{{ section.settings.eyebrow }}</span>
       {%- endif -%}
-      <h2 class="qa-title">
+      <h2 class="qa-strip-title">
         {{ section.settings.heading_lead }}
         {%- if section.settings.heading_accent != blank -%}
-          <span class="qa-accent">{{ section.settings.heading_accent }}</span>
+          <span class="qa-strip-accent">{{ section.settings.heading_accent }}</span>
         {%- endif -%}
       </h2>
       {%- if section.settings.lead != blank -%}
-        <p class="qa-lead">{{ section.settings.lead }}</p>
+        <p class="qa-strip-lead">{{ section.settings.lead }}</p>
       {%- endif -%}
 
-      {%- if section.settings.show_swap -%}
-        <button class="qa-swap" type="button" data-qa-swap aria-label="Swap sides">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
-          {{ section.settings.swap_label | default: 'Swap sides' }}
-        </button>
-      {%- endif -%}
+      <!-- Subscribe & Save badge (always shown) -->
+      <div class="qa-strip-sub-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span class="qa-strip-sub-label">{{ section.settings.subscription_label | default: 'Subscribe & Save' }}</span>
+        {%- if section.settings.subscription_discount != blank -%}
+          <span class="qa-strip-sub-pill">{{ section.settings.subscription_discount }}</span>
+        {%- endif -%}
+      </div>
+
+      <button type="button" class="qa-strip-btn" id="qa-strip-btn-{{ sid }}">
+        {{ section.settings.button_text | default: 'Add all to cart' }}
+      </button>
     </div>
 
-    <!-- ============ PRODUCT TILES ============ -->
-    <div class="qa-shop" data-qa-shop>
-      {%- for block in section.blocks -%}
-        {%- assign prod = block.settings.product -%}
+    <!-- PRODUCT TILES -->
+    <div class="qa-strip-tiles" id="qa-strip-tiles-{{ sid }}">
+      {%- assign has_items = false -%}
+      {%- for i in (1..5) -%}
+        {%- assign pkey = 'product_' | append: i -%}
+        {%- assign vkey = 'variant_' | append: i -%}
+        {%- assign ikey = 'image_'   | append: i -%}
+        {%- assign prod         = section.settings[pkey] -%}
+        {%- assign variant_title = section.settings[vkey] -%}
+        {%- assign custom_image  = section.settings[ikey] -%}
+
         {%- if prod != blank -%}
+          {%- assign has_items = true -%}
           {%- assign pv = prod.selected_or_first_available_variant | default: prod.variants.first -%}
-          {%- if block.settings.variant_id != blank -%}
+          {%- if variant_title != blank -%}
             {%- for v in prod.variants -%}
-              {%- assign vid_str = v.id | append: '' -%}
-              {%- if vid_str == block.settings.variant_id -%}{%- assign pv = v -%}{%- endif -%}
+              {%- if v.title == variant_title -%}{%- assign pv = v -%}{%- endif -%}
             {%- endfor -%}
           {%- endif -%}
-          {%- assign flavor = block.settings.label | default: prod.title -%}
-          {%- assign now_price = pv.price -%}
-          {%- assign was_price = pv.compare_at_price -%}
-          <div class="qa-prod"
-               {{ block.shopify_attributes }}
-               data-qa-prod
-               data-variant-id="{{ pv.id }}"
-               data-product-url="{{ prod.url }}"
-               role="button" tabindex="0"
-               aria-label="Add {{ flavor | escape }} to cart"
-               style="--pc:{{ block.settings.color_primary }};--pc2:{{ block.settings.color_secondary }};">
-            <span class="qa-photo">
-              <span class="qa-blob"></span>
-              <span class="qa-blob b2"></span>
-              {%- if prod.featured_media -%}
-                {{ prod.featured_media | image_url: width: 300 | image_tag: class: 'qa-img', alt: flavor, loading: 'lazy' }}
-              {%- elsif section.settings.mark_image != blank -%}
-                {{ section.settings.mark_image | image_url: width: 240 | image_tag: class: 'qa-mark', alt: '' }}
+
+          <div class="qa-strip-tile" data-variant-id="{{ pv.id }}">
+            <div class="qa-strip-tile-photo">
+              <span class="qa-strip-blob"></span>
+              <span class="qa-strip-blob b2"></span>
+              {%- if custom_image != blank -%}
+                {{ custom_image | image_url: width: 240 | image_tag: class: 'qa-strip-img', alt: prod.title, loading: 'lazy' }}
+              {%- elsif pv.image -%}
+                {{ pv.image | image_url: width: 240 | image_tag: class: 'qa-strip-img', alt: prod.title, loading: 'lazy' }}
+              {%- elsif prod.featured_media -%}
+                {{ prod.featured_media | image_url: width: 240 | image_tag: class: 'qa-strip-img', alt: prod.title, loading: 'lazy' }}
+              {%- else -%}
+                <div class="qa-strip-img-placeholder">{{ 'product-1' | placeholder_svg_tag }}</div>
               {%- endif -%}
-              <button class="qa-remove" type="button" data-qa-remove aria-label="Remove one {{ flavor | escape }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg>
-              </button>
-              <span class="qa-qty" data-qa-qty>0</span>
-              <span class="qa-add">{{ section.settings.add_label | default: '+ Add' }}</span>
+            </div>
+            <span class="qa-strip-brand">{{ bp[0] }}{%- if bp.size > 1 -%}<span class="qa-strip-apos">'</span>{{ bp[1] }}{%- endif -%}</span>
+            <span class="qa-strip-name">
+              {%- if section.settings['label_' | append: i] != blank -%}
+                {{ section.settings['label_' | append: i] }}
+              {%- else -%}
+                {{ prod.title }}
+              {%- endif -%}
             </span>
-            <span class="qa-brand">{{ bp[0] }}{%- if bp.size > 1 -%}<span class="qa-apos">'</span>{{ bp[1] }}{%- endif -%}</span>
-            <span class="qa-name">{{ flavor }}</span>
-            <span class="qa-price">
-              {%- if was_price and was_price > now_price -%}
-                <span class="qa-was">{{ was_price | money }}</span>
+            {%- if pv.title != 'Default Title' -%}
+              <span class="qa-strip-variant">{{ pv.title }}</span>
+            {%- endif -%}
+            <span class="qa-strip-price">
+              {%- if pv.compare_at_price and pv.compare_at_price > pv.price -%}
+                <s class="qa-strip-was">{{ pv.compare_at_price | money }}</s>
               {%- endif -%}
-              <span class="qa-now">{{ now_price | money }}</span>
+              <span class="qa-strip-now">{{ pv.price | money }}</span>
             </span>
           </div>
         {%- endif -%}
       {%- endfor -%}
 
-      {%- if section.blocks.size == 0 -%}
-        <p style="grid-column:1/-1;text-align:center;color:var(--qa-stone);font-size:13px;">
-          Add “Flavor tile” blocks in the theme editor to populate this strip.
-        </p>
-      {%- endif -%}
+      {%- unless has_items -%}
+        <p class="qa-strip-empty">Select up to 5 products in the section settings to get started.</p>
+      {%- endunless -%}
     </div>
 
   </div>
 </section>
 
-{%- comment -%} ============ STYLES (namespaced) ============ {%- endcomment -%}
 <style>
-  #qa-{{ section.id }}{
-    --qa-blush:#F2C4CE; --qa-peach:#E8A87C; --qa-sage:#8A9B6E;
+  #qa-{{ sid }}{
     --qa-navy:#1B3A5C; --qa-rose:#E8607A; --qa-cream:#FAF5F0;
-    --qa-mist:#E8DDD5; --qa-stone:#8A7E76;
-    --qa-serif:'Playfair Display','Georgia',serif;
-    --qa-display:'Cormorant Garamond','Georgia',serif;
-    --qa-sans:'DM Sans','Helvetica Neue',sans-serif;
+    --qa-mist:#E8DDD5; --qa-stone:#8A7E76; --qa-blush:#F2C4CE; --qa-peach:#E8A87C;
     --qa-shadow-sm:0 2px 12px rgba(27,58,92,.08);
     --qa-shadow-md:0 4px 24px rgba(27,58,92,.10);
     --qa-shadow-lg:0 8px 40px rgba(27,58,92,.12);
+    --qa-serif:'Playfair Display','Georgia',serif;
+    --qa-display:'Cormorant Garamond','Georgia',serif;
+    --qa-sans:'DM Sans','Helvetica Neue',sans-serif;
     background:{{ section.settings.bg_color }}; color:var(--qa-navy);
     font-family:var(--qa-sans); display:block; padding:20px 32px 36px;
   }
-  #qa-{{ section.id }} *{ box-sizing:border-box; }
-  #qa-{{ section.id }} .qa-inner{
+  #qa-{{ sid }} *{ box-sizing:border-box; }
+  #qa-{{ sid }} .qa-strip-inner{
     max-width:1180px; margin:0 auto;
     display:grid; grid-template-columns:.82fr 1.18fr; gap:44px; align-items:center;
     padding:26px 32px;
@@ -136,224 +132,188 @@
     border:1.5px solid var(--qa-mist); border-radius:28px;
     box-shadow:var(--qa-shadow-sm);
   }
-  #qa-{{ section.id }} .qa-inner.swapped .qa-copy{ order:2; }
-  #qa-{{ section.id }} .qa-inner.swapped .qa-shop{ order:1; }
+  #qa-{{ sid }} .qa-strip-inner.swapped .qa-strip-copy{ order:2; }
+  #qa-{{ sid }} .qa-strip-inner.swapped .qa-strip-tiles{ order:1; }
 
-  #qa-{{ section.id }} .qa-eyebrow{ display:inline-block; font-size:11px; font-weight:600; letter-spacing:.26em; text-transform:uppercase; color:var(--qa-rose); margin-bottom:12px; }
-  #qa-{{ section.id }} .qa-title{ font-family:var(--qa-serif); font-weight:900; font-size:clamp(28px,2.6vw,38px); line-height:1.1; letter-spacing:-.02em; color:var(--qa-navy); margin:0 0 14px; }
-  #qa-{{ section.id }} .qa-accent{ color:var(--qa-rose); display:block; }
-  #qa-{{ section.id }} .qa-lead{ font-family:var(--qa-display); font-weight:300; font-size:clamp(16px,1.5vw,19px); letter-spacing:.02em; line-height:1.4; color:rgba(27,58,92,.72); margin:0; }
+  /* COPY */
+  #qa-{{ sid }} .qa-strip-eyebrow{ display:inline-block; font-size:11px; font-weight:600; letter-spacing:.26em; text-transform:uppercase; color:var(--qa-rose); margin-bottom:12px; }
+  #qa-{{ sid }} .qa-strip-title{ font-family:var(--qa-serif); font-weight:900; font-size:clamp(28px,2.6vw,38px); line-height:1.1; letter-spacing:-.02em; color:var(--qa-navy); margin:0 0 14px; }
+  #qa-{{ sid }} .qa-strip-accent{ color:var(--qa-rose); display:block; }
+  #qa-{{ sid }} .qa-strip-lead{ font-family:var(--qa-display); font-weight:300; font-size:clamp(15px,1.4vw,18px); letter-spacing:.02em; line-height:1.45; color:rgba(27,58,92,.72); margin:0 0 18px; }
 
-  #qa-{{ section.id }} .qa-swap{
-    margin-top:18px; display:inline-flex; align-items:center; gap:7px;
-    padding:7px 14px; border-radius:999px;
-    background:rgba(27,58,92,.04); border:1px solid rgba(27,58,92,.18);
-    color:var(--qa-navy); font-family:var(--qa-sans);
-    font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
-    cursor:pointer; transition:background .15s,border-color .15s,color .15s;
+  /* Subscribe badge */
+  #qa-{{ sid }} .qa-strip-sub-badge{
+    display:inline-flex; align-items:center; gap:7px; flex-wrap:wrap;
+    padding:10px 16px; border-radius:12px; margin-bottom:20px;
+    background:{{ section.settings.subscription_bg }};
+    border:2px solid {{ section.settings.subscription_border }};
   }
-  #qa-{{ section.id }} .qa-swap:hover{ background:rgba(232,96,122,.12); border-color:var(--qa-rose); color:var(--qa-rose); }
-  #qa-{{ section.id }} .qa-swap svg{ width:14px; height:14px; }
-
-  #qa-{{ section.id }} .qa-shop{ display:grid; grid-template-columns:repeat({{ section.blocks.size | at_least: 1 }},1fr); gap:12px; }
-  #qa-{{ section.id }} .qa-prod{
-    position:relative; display:flex; flex-direction:column; align-items:center; gap:7px;
-    padding:0; border:none; background:none; cursor:pointer; text-align:center;
-    font-family:var(--qa-sans); transition:transform .18s;
+  #qa-{{ sid }} .qa-strip-sub-badge svg{ width:18px; height:18px; flex-shrink:0; color:{{ section.settings.subscription_accent }}; }
+  #qa-{{ sid }} .qa-strip-sub-label{ font-size:14px; font-weight:600; color:var(--qa-navy); }
+  #qa-{{ sid }} .qa-strip-sub-pill{
+    font-size:12px; font-weight:700; color:{{ section.settings.subscription_accent }};
+    background:{{ section.settings.subscription_discount_bg }}; padding:3px 8px; border-radius:6px;
   }
-  #qa-{{ section.id }} .qa-prod:hover{ transform:translateY(-3px); }
-  #qa-{{ section.id }} .qa-photo{
-    position:relative; width:100%; aspect-ratio:1/1; border-radius:18px; overflow:hidden;
+
+  /* Button */
+  #qa-{{ sid }} .qa-strip-btn{
+    width:100%; padding:15px 20px;
+    background:var(--qa-rose); color:#fff;
+    border:none; border-radius:14px;
+    font-family:var(--qa-sans); font-size:15px; font-weight:700; letter-spacing:.04em;
+    cursor:pointer; transition:background .2s,opacity .2s;
+  }
+  #qa-{{ sid }} .qa-strip-btn:hover{ background:#d14d66; }
+  #qa-{{ sid }} .qa-strip-btn:disabled{ opacity:.55; cursor:not-allowed; }
+
+  /* Tiles grid */
+  #qa-{{ sid }} .qa-strip-tiles{
+    display:grid;
+    grid-template-columns:repeat({{ section.settings.columns | default: 5 }},1fr);
+    gap:12px;
+  }
+  #qa-{{ sid }} .qa-strip-tile{
+    display:flex; flex-direction:column; align-items:center; gap:5px;
+    text-align:center;
+  }
+  #qa-{{ sid }} .qa-strip-tile-photo{
+    position:relative; width:100%; aspect-ratio:1/1; border-radius:16px; overflow:hidden;
     background:#fff; display:flex; align-items:center; justify-content:center;
-    box-shadow:var(--qa-shadow-md); transition:box-shadow .18s,outline-color .18s;
-    outline:2px solid transparent; outline-offset:2px;
+    box-shadow:var(--qa-shadow-md);
   }
-  #qa-{{ section.id }} .qa-prod.in-cart .qa-photo{ outline-color:var(--qa-rose); }
-  #qa-{{ section.id }} .qa-prod:hover .qa-photo{ box-shadow:var(--qa-shadow-lg); }
-  #qa-{{ section.id }} .qa-blob{ position:absolute; width:132%; height:132%; border-radius:50%; background:var(--pc,var(--qa-blush)); opacity:.9; top:-34%; left:-16%; }
-  #qa-{{ section.id }} .qa-blob.b2{ width:70%; height:70%; top:auto; bottom:-22%; right:-14%; left:auto; background:var(--pc2,var(--qa-peach)); opacity:.8; }
-  #qa-{{ section.id }} .qa-img{ position:relative; z-index:1; width:78%; height:78%; object-fit:contain; filter:drop-shadow(0 6px 12px rgba(27,58,92,.20)); }
-  #qa-{{ section.id }} .qa-mark{ position:relative; z-index:1; width:58%; height:auto; filter:drop-shadow(0 4px 8px rgba(27,58,92,.18)); }
-  #qa-{{ section.id }} .qa-add{
-    position:absolute; z-index:2; bottom:8px; left:50%; transform:translateX(-50%);
-    display:inline-flex; align-items:center; gap:4px; padding:4px 11px; border-radius:999px;
-    background:var(--qa-navy); color:var(--qa-cream);
-    font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
-    opacity:0; transition:opacity .18s; white-space:nowrap;
-  }
-  #qa-{{ section.id }} .qa-prod:hover .qa-add{ opacity:1; }
-  #qa-{{ section.id }} .qa-remove{
-    position:absolute; top:7px; left:7px; z-index:4; width:24px; height:24px; border-radius:50%;
-    border:none; cursor:pointer; background:#fff; color:var(--qa-navy);
-    box-shadow:0 3px 8px rgba(0,0,0,.22); display:none; align-items:center; justify-content:center;
-    font-size:16px; line-height:1; padding:0;
-  }
-  #qa-{{ section.id }} .qa-remove svg{ width:12px; height:12px; }
-  #qa-{{ section.id }} .qa-remove:hover{ background:var(--qa-navy); color:#fff; }
-  #qa-{{ section.id }} .qa-qty{
-    position:absolute; top:7px; right:7px; z-index:4; min-width:24px; height:24px; padding:0 6px;
-    border-radius:999px; background:var(--qa-rose); color:#fff; font-size:12px; font-weight:700;
-    display:none; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(232,96,122,.4);
-  }
-  #qa-{{ section.id }} .qa-prod.in-cart .qa-remove,
-  #qa-{{ section.id }} .qa-prod.in-cart .qa-qty{ display:inline-flex; }
-  #qa-{{ section.id }} .qa-brand{ font-family:var(--qa-serif); font-weight:800; font-size:14px; line-height:1.1; color:var(--qa-navy); margin-bottom:-2px; }
-  #qa-{{ section.id }} .qa-apos{ color:var(--qa-rose); }
-  #qa-{{ section.id }} .qa-name{ font-size:11px; font-weight:500; line-height:1.2; color:var(--qa-stone); }
-  #qa-{{ section.id }} .qa-price{ font-size:11px; margin-top:-2px; display:inline-flex; align-items:baseline; gap:5px; justify-content:center; }
-  #qa-{{ section.id }} .qa-was{ color:var(--qa-stone); text-decoration:line-through; }
-  #qa-{{ section.id }} .qa-now{ color:var(--qa-rose); font-weight:700; }
-  #qa-{{ section.id }} .qa-prod.is-busy{ opacity:.6; pointer-events:none; }
+  #qa-{{ sid }} .qa-strip-blob{ position:absolute; width:130%; height:130%; border-radius:50%; background:var(--qa-blush); opacity:.85; top:-33%; left:-15%; }
+  #qa-{{ sid }} .qa-strip-blob.b2{ width:68%; height:68%; top:auto; bottom:-20%; right:-13%; left:auto; background:var(--qa-peach); opacity:.75; }
+  #qa-{{ sid }} .qa-strip-img{ position:relative; z-index:1; width:76%; height:76%; object-fit:contain; filter:drop-shadow(0 5px 10px rgba(27,58,92,.20)); }
+  #qa-{{ sid }} .qa-strip-img-placeholder{ position:relative; z-index:1; width:55%; opacity:.4; }
+  #qa-{{ sid }} .qa-strip-brand{ font-family:var(--qa-serif); font-weight:800; font-size:12px; line-height:1.1; color:var(--qa-navy); margin-top:4px; }
+  #qa-{{ sid }} .qa-strip-apos{ color:var(--qa-rose); }
+  #qa-{{ sid }} .qa-strip-name{ font-size:10px; font-weight:500; line-height:1.3; color:var(--qa-stone); }
+  #qa-{{ sid }} .qa-strip-variant{ font-size:10px; font-weight:400; color:var(--qa-stone); opacity:.8; }
+  #qa-{{ sid }} .qa-strip-price{ font-size:11px; display:inline-flex; align-items:baseline; gap:4px; flex-wrap:wrap; justify-content:center; }
+  #qa-{{ sid }} .qa-strip-was{ color:var(--qa-stone); text-decoration:line-through; font-size:10px; }
+  #qa-{{ sid }} .qa-strip-now{ color:var(--qa-rose); font-weight:700; }
+  #qa-{{ sid }} .qa-strip-empty{ grid-column:1/-1; text-align:center; padding:30px; color:var(--qa-stone); font-style:italic; font-size:13px; }
 
   @media (max-width:900px){
-    #qa-{{ section.id }}{ padding:16px 16px 28px; }
-    #qa-{{ section.id }} .qa-inner{ grid-template-columns:1fr; gap:28px; padding:22px 20px; }
-    #qa-{{ section.id }} .qa-inner.swapped .qa-copy{ order:1; }
-    #qa-{{ section.id }} .qa-inner.swapped .qa-shop{ order:2; }
+    #qa-{{ sid }}{ padding:16px 16px 28px; }
+    #qa-{{ sid }} .qa-strip-inner{ grid-template-columns:1fr; gap:28px; padding:22px 20px; }
+    #qa-{{ sid }} .qa-strip-tiles{ grid-template-columns:repeat(3,1fr); }
   }
   @media (max-width:560px){
-    #qa-{{ section.id }} .qa-shop{ grid-template-columns:repeat(3,1fr); gap:10px; }
-    #qa-{{ section.id }} .qa-add{ display:none; }
+    #qa-{{ sid }} .qa-strip-tiles{ grid-template-columns:repeat(3,1fr); gap:8px; }
+    #qa-{{ sid }} .qa-strip-brand{ font-size:10px; }
+    #qa-{{ sid }} .qa-strip-name{ font-size:9px; }
   }
 </style>
 
-{%- comment -%} ============ BEHAVIOUR ============ {%- endcomment -%}
 <script>
 (function(){
-  var root = document.getElementById('qa-{{ section.id }}');
-  if(!root) return;
+  var btn   = document.getElementById('qa-strip-btn-{{ sid }}');
+  var tiles = document.querySelectorAll('#qa-strip-tiles-{{ sid }} [data-variant-id]');
+  if(!btn || !tiles.length) return;
 
-  var inner = root.querySelector('[data-qa-inner]');
-  var swapBtn = root.querySelector('[data-qa-swap]');
-  if(swapBtn){ swapBtn.addEventListener('click', function(){ inner.classList.toggle('swapped'); }); }
+  var sellingPlan = '{{ section.settings.selling_plan_id | strip }}';
 
-  var tiles = Array.prototype.slice.call(root.querySelectorAll('[data-qa-prod]'));
+  btn.addEventListener('click', function(){
+    btn.disabled = true;
+    var origText = btn.textContent;
+    btn.textContent = 'Adding…';
 
-  function setTile(tile, qty){
-    qty = Math.max(0, qty|0);
-    tile.dataset.qty = qty;
-    tile.classList.toggle('in-cart', qty > 0);
-    var b = tile.querySelector('[data-qa-qty]');
-    if(b) b.textContent = qty;
-  }
-
-  function busy(tile, on){ tile.classList.toggle('is-busy', !!on); }
-
-  // Tell the theme its cart UI should refresh (covers most themes).
-  function notifyTheme(cart){
-    document.querySelectorAll('.cart-count-bubble span:first-child, [data-cart-count]').forEach(function(el){
-      if(cart && typeof cart.item_count === 'number') el.textContent = cart.item_count;
+    var items = [];
+    tiles.forEach(function(t){
+      var vid = t.dataset.variantId;
+      if(!vid) return;
+      var item = { id: parseInt(vid, 10), quantity: 1 };
+      if(sellingPlan && sellingPlan !== '') item.selling_plan = parseInt(sellingPlan, 10);
+      items.push(item);
     });
-    document.dispatchEvent(new CustomEvent('qa:cart-updated', { detail: cart, bubbles: true }));
-    // Common theme pub/sub hooks (no-ops if not present)
-    if(window.Shopify && Shopify.onCartUpdate){ try{ Shopify.onCartUpdate(cart); }catch(e){} }
-  }
 
-  function refreshCounts(){
-    fetch('/cart.js', { headers: { 'Accept':'application/json' } })
-      .then(function(r){ return r.json(); })
-      .then(function(cart){
-        var counts = {};
-        (cart.items || []).forEach(function(it){ counts[it.variant_id] = (counts[it.variant_id]||0) + it.quantity; });
-        tiles.forEach(function(t){ setTile(t, counts[t.dataset.variantId] || 0); });
-        notifyTheme(cart);
-      })
-      .catch(function(){});
-  }
+    if(!items.length){ btn.disabled = false; btn.textContent = origText; return; }
 
-  function addOne(tile){
-    var id = tile.dataset.variantId;
-    if(!id) return;
-    busy(tile, true);
     fetch('/cart/add.js', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
-      body: JSON.stringify({ items: [{ id: Number(id), quantity: 1 }] })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ items: items })
     })
-    .then(function(r){ return r.json(); })
-    .then(function(){ setTile(tile, (parseInt(tile.dataset.qty,10)||0) + 1); refreshCounts(); })
-    .catch(function(){ busy(tile, false); })
-    .then(function(){ busy(tile, false); });
-  }
-
-  function removeOne(tile){
-    var id = tile.dataset.variantId;
-    var current = parseInt(tile.dataset.qty, 10) || 0;
-    if(!id || current <= 0) return;
-    busy(tile, true);
-    fetch('/cart/change.js', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
-      body: JSON.stringify({ id: String(id), quantity: current - 1 })
+    .then(function(r){
+      if(!r.ok) throw new Error('cart/add failed');
+      return r.json();
     })
-    .then(function(r){ return r.json(); })
-    .then(function(){ setTile(tile, current - 1); refreshCounts(); })
-    .catch(function(){ busy(tile, false); })
-    .then(function(){ busy(tile, false); });
-  }
-
-  tiles.forEach(function(tile){
-    tile.addEventListener('click', function(){ addOne(tile); });
-    tile.addEventListener('keydown', function(e){
-      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); addOne(tile); }
+    .then(function(){
+      window.location.href = '/cart';
+    })
+    .catch(function(err){
+      console.error(err);
+      alert('There was an error adding items to your cart. Please try again.');
+      btn.disabled = false;
+      btn.textContent = origText;
     });
-    var rm = tile.querySelector('[data-qa-remove]');
-    if(rm){ rm.addEventListener('click', function(e){ e.stopPropagation(); removeOne(tile); }); }
   });
-
-  refreshCounts();
 })();
 </script>
 
-{%- comment -%} ============ THEME EDITOR SCHEMA ============ {%- endcomment -%}
 {% schema %}
 {
   "name": "Her'dration Quick Add",
   "tag": "section",
   "class": "shopify-section--herdration-quickadd",
-  "max_blocks": 6,
   "settings": [
     { "type": "header", "content": "Copy" },
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Subscribe & Save" },
     { "type": "text", "id": "heading_lead", "label": "Heading (line 1)", "default": "10% OFF" },
     { "type": "text", "id": "heading_accent", "label": "Heading accent (coral, line 2)", "default": "+ Free Shipping, Always" },
-    { "type": "text", "id": "lead", "label": "Lead line", "default": "Quick add to cart — tap a flavor to drop it in." },
-    { "type": "text", "id": "brand_text", "label": "Product name on tiles", "info": "The apostrophe is shown in coral.", "default": "Her'dration" },
+    { "type": "text", "id": "lead", "label": "Lead line", "default": "Pick your flavors — we'll add them all as a subscription." },
+    { "type": "text", "id": "brand_text", "label": "Brand name on tiles", "info": "The apostrophe is shown in coral.", "default": "Her'dration" },
+    { "type": "text", "id": "button_text", "label": "Button text", "default": "Add all to cart" },
+
+    { "type": "header", "content": "Subscribe & Save" },
+    { "type": "text", "id": "subscription_label", "label": "Badge label", "default": "Subscribe & Save" },
+    { "type": "text", "id": "subscription_discount", "label": "Discount pill text", "default": "Save 15%" },
+    { "type": "text", "id": "selling_plan_id", "label": "Selling plan ID", "info": "Numeric ID from Shopify. Found in Admin → Products → Subscriptions, or via the Storefront API. Leave blank to add as one-time purchase." },
 
     { "type": "header", "content": "Layout" },
-    { "type": "color", "id": "bg_color", "label": "Background", "info": "Match your hero background.", "default": "#FAF5F0" },
+    { "type": "color", "id": "bg_color", "label": "Section background", "default": "#FAF5F0" },
     { "type": "checkbox", "id": "products_on_left", "label": "Products on the left", "default": false },
-    { "type": "checkbox", "id": "show_swap", "label": "Show ‘Swap sides’ button", "default": true },
-    { "type": "text", "id": "swap_label", "label": "Swap button label", "default": "Swap sides" },
+    { "type": "range", "id": "columns", "label": "Tile columns (desktop)", "min": 3, "max": 5, "step": 1, "default": 5 },
 
-    { "type": "header", "content": "Tile labels" },
-    { "type": "text", "id": "add_label", "label": "Add hover label", "default": "+ Add" },
-    { "type": "image_picker", "id": "mark_image", "label": "Fallback mark image", "info": "Shown on tiles whose product has no featured image (e.g. the droplet logo)." }
-  ],
-  "blocks": [
-    {
-      "type": "flavor",
-      "name": "Flavor tile",
-      "settings": [
-        { "type": "product", "id": "product", "label": "Product" },
-        { "type": "text", "id": "variant_id", "label": "Variant ID", "info": "Optional. Paste the numeric variant ID to pin a specific variant (e.g. a flavor/size). Find it in Shopify Admin → Products → [product] → click the variant → copy the number from the URL." },
-        { "type": "text", "id": "label", "label": "Flavor name override", "info": "Defaults to the product title." },
-        { "type": "color", "id": "color_primary", "label": "Tile color — primary blob", "default": "#D64C6F" },
-        { "type": "color", "id": "color_secondary", "label": "Tile color — secondary blob", "default": "#F2C4CE" }
-      ]
-    }
+    { "type": "header", "content": "Product 1" },
+    { "type": "product", "id": "product_1", "label": "Product" },
+    { "type": "text", "id": "variant_1", "label": "Variant title", "info": "Exact variant name, e.g. 'Raspberry Refresher'. Leave blank for first available." },
+    { "type": "text", "id": "label_1", "label": "Display name override" },
+    { "type": "image_picker", "id": "image_1", "label": "Custom image" },
+
+    { "type": "header", "content": "Product 2" },
+    { "type": "product", "id": "product_2", "label": "Product" },
+    { "type": "text", "id": "variant_2", "label": "Variant title" },
+    { "type": "text", "id": "label_2", "label": "Display name override" },
+    { "type": "image_picker", "id": "image_2", "label": "Custom image" },
+
+    { "type": "header", "content": "Product 3" },
+    { "type": "product", "id": "product_3", "label": "Product" },
+    { "type": "text", "id": "variant_3", "label": "Variant title" },
+    { "type": "text", "id": "label_3", "label": "Display name override" },
+    { "type": "image_picker", "id": "image_3", "label": "Custom image" },
+
+    { "type": "header", "content": "Product 4" },
+    { "type": "product", "id": "product_4", "label": "Product" },
+    { "type": "text", "id": "variant_4", "label": "Variant title" },
+    { "type": "text", "id": "label_4", "label": "Display name override" },
+    { "type": "image_picker", "id": "image_4", "label": "Custom image" },
+
+    { "type": "header", "content": "Product 5" },
+    { "type": "product", "id": "product_5", "label": "Product" },
+    { "type": "text", "id": "variant_5", "label": "Variant title" },
+    { "type": "text", "id": "label_5", "label": "Display name override" },
+    { "type": "image_picker", "id": "image_5", "label": "Custom image" },
+
+    { "type": "header", "content": "Subscribe badge colors" },
+    { "type": "color", "id": "subscription_bg", "label": "Badge background", "default": "#fef3c7" },
+    { "type": "color", "id": "subscription_border", "label": "Badge border", "default": "#fbbf24" },
+    { "type": "color", "id": "subscription_accent", "label": "Badge accent", "default": "#d97706" },
+    { "type": "color", "id": "subscription_discount_bg", "label": "Discount pill background", "default": "#ffffff" }
   ],
   "presets": [
-    {
-      "name": "Her'dration Quick Add",
-      "blocks": [
-        { "type": "flavor", "settings": { "label": "Raspberry Refresher", "color_primary": "#D64C6F", "color_secondary": "#F2C4CE" } },
-        { "type": "flavor", "settings": { "label": "Lime Margarita", "color_primary": "#7DB642", "color_secondary": "#E8A87C" } },
-        { "type": "flavor", "settings": { "label": "Coconut Strawberry", "color_primary": "#E8607A", "color_secondary": "#C4A882" } },
-        { "type": "flavor", "settings": { "label": "Hot Chocolate", "color_primary": "#7A5240", "color_secondary": "#B07A52" } },
-        { "type": "flavor", "settings": { "label": "Unflavored", "color_primary": "#E8DDD5", "color_secondary": "#4A90B8" } }
-      ]
-    }
+    { "name": "Her'dration Quick Add" }
   ]
 }
 {% endschema %}
