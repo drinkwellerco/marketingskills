@@ -12,8 +12,10 @@
   • Variant   -> matched by title text, falls back to first available.
   • Image     -> custom image picker per block, falls back to product image.
   • Subscribe -> selling_plan_id applied to every add — no opt-out.
-  • Add/remove -> /cart/add.js  +  /cart/change.js (no reload).
+  • Pricing   -> shows subscription price from selling_plan_allocations.
+  • Add/remove -> /cart/add.js + /cart/change.js (no reload).
   • Counts    -> hydrated live from /cart.js on load.
+  • Optimistic UI -> tile updates instantly on click, reverts on error.
 
   Styles + JS are inlined and namespaced under #qa-{{ section.id }}
   so nothing leaks into (or breaks against) your theme.
@@ -77,9 +79,20 @@
             {%- endfor -%}
           {%- endif -%}
 
+          {%- comment -%} Subscription pricing via selling_plan_allocations {%- endcomment -%}
+          {%- assign display_price = pv.price -%}
+          {%- assign display_compare = pv.compare_at_price -%}
+          {%- if section.settings.selling_plan_id != blank -%}
+            {%- assign sp_id_num = section.settings.selling_plan_id | plus: 0 -%}
+            {%- for alloc in pv.selling_plan_allocations -%}
+              {%- if alloc.selling_plan.id == sp_id_num -%}
+                {%- assign display_price = alloc.price -%}
+                {%- assign display_compare = alloc.compare_at_price -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+
           {%- assign flavor = block.settings.label | default: pv.title | default: prod.title -%}
-          {%- assign now_price = pv.price -%}
-          {%- assign was_price = pv.compare_at_price -%}
 
           <div class="qa-prod"
                {{ block.shopify_attributes }}
@@ -110,10 +123,10 @@
             <span class="qa-brand">{{ bp[0] }}{%- if bp.size > 1 -%}<span class="qa-apos">'</span>{{ bp[1] }}{%- endif -%}</span>
             <span class="qa-name">{{ flavor }}</span>
             <span class="qa-price">
-              {%- if was_price and was_price > now_price -%}
-                <span class="qa-was">{{ was_price | money }}</span>
+              {%- if display_compare and display_compare > display_price -%}
+                <span class="qa-was">{{ display_compare | money }}</span>
               {%- endif -%}
-              <span class="qa-now">{{ now_price | money }}</span>
+              <span class="qa-now">{{ display_price | money }}</span>
             </span>
           </div>
         {%- endif -%}
@@ -261,6 +274,7 @@
 
   var tiles = Array.prototype.slice.call(root.querySelectorAll('[data-qa-prod]'));
   var sellingPlan = '{{ section.settings.selling_plan_id | strip }}';
+  var spNum = (sellingPlan !== '') ? parseInt(sellingPlan, 10) : null;
 
   function setTile(tile, qty){
     qty = Math.max(0, qty|0);
@@ -269,8 +283,6 @@
     var b = tile.querySelector('[data-qa-qty]');
     if(b) b.textContent = qty;
   }
-
-  function busy(tile, on){ tile.classList.toggle('is-busy', !!on); }
 
   function notifyTheme(cart){
     document.querySelectorAll('.cart-count-bubble span:first-child, [data-cart-count]').forEach(function(el){
@@ -285,8 +297,17 @@
       .then(function(r){ return r.json(); })
       .then(function(cart){
         var counts = {};
-        (cart.items || []).forEach(function(it){ counts[it.variant_id] = (counts[it.variant_id]||0) + it.quantity; });
-        tiles.forEach(function(t){ setTile(t, counts[parseInt(t.dataset.variantId,10)] || 0); });
+        var lineKeys = {};
+        (cart.items || []).forEach(function(it){
+          var vid = it.variant_id;
+          counts[vid] = (counts[vid]||0) + it.quantity;
+          lineKeys[vid] = it.key;
+        });
+        tiles.forEach(function(t){
+          var vid = parseInt(t.dataset.variantId, 10);
+          setTile(t, counts[vid] || 0);
+          if(lineKeys[vid]) t.dataset.lineKey = lineKeys[vid];
+        });
         notifyTheme(cart);
       })
       .catch(function(){});
@@ -295,34 +316,66 @@
   function addOne(tile){
     var id = tile.dataset.variantId;
     if(!id) return;
-    busy(tile, true);
-    var item = { id: Number(id), quantity: 1 };
-    if(sellingPlan && sellingPlan !== '') item.selling_plan = Number(sellingPlan);
+
+    // Optimistic update — show number/minus immediately, no waiting for network
+    var prevQty = parseInt(tile.dataset.qty, 10) || 0;
+    setTile(tile, prevQty + 1);
+    tile.classList.add('is-busy');
+
+    var item = { id: parseInt(id, 10), quantity: 1 };
+    if(spNum) item.selling_plan = spNum;
+
     fetch('/cart/add.js', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
       body: JSON.stringify({ items: [item] })
     })
-    .then(function(r){ return r.json(); })
-    .then(function(){ setTile(tile, (parseInt(tile.dataset.qty,10)||0) + 1); refreshCounts(); })
-    .catch(function(){ busy(tile, false); })
-    .then(function(){ busy(tile, false); });
+    .then(function(r){
+      if(!r.ok) return r.json().then(function(e){ throw e; });
+      return r.json();
+    })
+    .then(function(){
+      refreshCounts();
+    })
+    .catch(function(err){
+      console.error('qa add error:', err);
+      setTile(tile, prevQty); // revert on error
+    })
+    .finally(function(){
+      tile.classList.remove('is-busy');
+    });
   }
 
   function removeOne(tile){
-    var id = tile.dataset.variantId;
     var current = parseInt(tile.dataset.qty, 10) || 0;
-    if(!id || current <= 0) return;
-    busy(tile, true);
+    if(current <= 0) return;
+
+    // Optimistic update — show change immediately
+    setTile(tile, current - 1);
+    tile.classList.add('is-busy');
+
+    // Use line key (required when selling plan is involved — variant ID alone won't match)
+    var lineId = tile.dataset.lineKey || tile.dataset.variantId;
+
     fetch('/cart/change.js', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
-      body: JSON.stringify({ id: String(id), quantity: current - 1 })
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
+      body: JSON.stringify({ id: lineId, quantity: current - 1 })
     })
-    .then(function(r){ return r.json(); })
-    .then(function(){ setTile(tile, current - 1); refreshCounts(); })
-    .catch(function(){ busy(tile, false); })
-    .then(function(){ busy(tile, false); });
+    .then(function(r){
+      if(!r.ok) return r.json().then(function(e){ throw e; });
+      return r.json();
+    })
+    .then(function(){
+      refreshCounts();
+    })
+    .catch(function(err){
+      console.error('qa remove error:', err);
+      setTile(tile, current); // revert on error
+    })
+    .finally(function(){
+      tile.classList.remove('is-busy');
+    });
   }
 
   tiles.forEach(function(tile){
@@ -356,7 +409,7 @@
     { "type": "header", "content": "Subscribe & Save" },
     { "type": "text", "id": "subscription_label", "label": "Badge label", "default": "Subscribe & Save" },
     { "type": "text", "id": "subscription_discount", "label": "Discount pill text", "default": "Save 15%" },
-    { "type": "text", "id": "selling_plan_id", "label": "Selling plan ID", "info": "Numeric ID of your subscription selling plan. Every tile add will use this plan. Leave blank to add as one-time purchase." },
+    { "type": "text", "id": "selling_plan_id", "label": "Selling plan ID", "info": "Numeric ID of your subscription selling plan. Applied to every add. Leave blank for one-time purchase." },
 
     { "type": "header", "content": "Layout" },
     { "type": "color", "id": "bg_color", "label": "Background", "info": "Match your hero background.", "default": "#FAF5F0" },
