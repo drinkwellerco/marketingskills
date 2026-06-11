@@ -417,7 +417,7 @@
     <div class="hero-text-col-{{ sid }}">
       {% for block in section.blocks %}
         {%- assign bid = block.id | replace: '_', '-' -%}
-        {% unless block.type == 'image' %}
+        {% unless block.type == 'image' or block.type == 'flavor' %}
           <div class="hero-bw-{{ bid }}" {{ block.shopify_attributes }}>
             {% case block.type %}
 
