@@ -185,7 +185,7 @@
     {%- else -%}
       background: {{ inner_bg_rgba }};
     {%- endif -%}
-    border:1.5px solid var(--qa-mist); border-radius:28px;
+    border:{{ section.settings.inner_border_width }}px {{ section.settings.inner_border_style }} {{ section.settings.inner_border_color }}; border-radius:28px;
     box-shadow:var(--qa-shadow-sm);
   }
   #qa-{{ section.id }} .qa-inner.swapped .qa-copy{ order:2; }
@@ -469,6 +469,11 @@
     { "type": "range", "id": "mobile_lead_size", "label": "Lead line font size (mobile)", "min": 10, "max": 28, "step": 1, "unit": "px", "default": 14 },
     { "type": "range", "id": "inner_pad", "label": "Inner container padding", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 28 },
     { "type": "range", "id": "inner_min_height", "label": "Inner container min height", "min": 0, "max": 600, "step": 10, "unit": "px", "default": 0, "info": "0 = auto height." },
+
+    { "type": "header", "content": "Inner container border" },
+    { "type": "range", "id": "inner_border_width", "label": "Border thickness", "min": 0, "max": 12, "step": 1, "unit": "px", "default": 2 },
+    { "type": "color", "id": "inner_border_color", "label": "Border color", "default": "#E8DDD5" },
+    { "type": "select", "id": "inner_border_style", "label": "Border style", "default": "solid", "options": [{ "value": "solid", "label": "Solid" }, { "value": "dashed", "label": "Dashed" }, { "value": "dotted", "label": "Dotted" }, { "value": "none", "label": "None" }] },
 
     { "type": "header", "content": "Inner container background" },
     { "type": "color", "id": "inner_bg_color", "label": "Background color", "default": "#ffffff" },
