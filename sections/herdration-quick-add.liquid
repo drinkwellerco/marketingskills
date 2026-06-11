@@ -168,8 +168,8 @@
     --qa-shadow-md:0 4px 24px rgba(27,58,92,.10);
     --qa-shadow-lg:0 8px 40px rgba(27,58,92,.12);
     background:{{ section.settings.bg_color }}; color:var(--qa-navy);
-    font-family:var(--qa-sans); display:block;
-    padding:{{ section.settings.section_pad_top }}px 32px {{ section.settings.section_pad_bottom }}px;
+    font-family:var(--qa-sans); display:block; overflow-x:hidden;
+    padding:{{ section.settings.section_pad_top }}px {{ section.settings.section_pad_lr }}px {{ section.settings.section_pad_bottom }}px;
   }
   #qa-{{ section.id }} *{ box-sizing:border-box; }
   #qa-{{ section.id }} .qa-inner{
@@ -285,14 +285,16 @@
   }
   #qa-{{ section.id }} .qa-prod.is-busy{ opacity:.6; pointer-events:none; }
 
+  #qa-{{ section.id }} .qa-copy{ text-align:{{ section.settings.copy_align }}; }
+
   @media (max-width:900px){
-    #qa-{{ section.id }}{ padding:16px 16px {{ section.settings.section_pad_bottom }}px; }
-    #qa-{{ section.id }} .qa-inner{ grid-template-columns:1fr; gap:28px; padding:22px 20px; }
+    #qa-{{ section.id }}{ padding:{{ section.settings.section_pad_top }}px {{ section.settings.mobile_pad_lr }}px {{ section.settings.section_pad_bottom }}px; }
+    #qa-{{ section.id }} .qa-inner{ grid-template-columns:1fr; gap:28px; padding:22px {{ section.settings.mobile_pad_lr }}px; }
     #qa-{{ section.id }} .qa-inner.swapped .qa-copy{ order:1; }
     #qa-{{ section.id }} .qa-inner.swapped .qa-shop{ order:2; }
   }
   @media (max-width:560px){
-    #qa-{{ section.id }} .qa-shop{ grid-template-columns:repeat(3,{{ section.settings.tile_size }}px); gap:{{ section.settings.tile_gap }}px; }
+    #qa-{{ section.id }} .qa-shop{ grid-template-columns:repeat(3,1fr); gap:{{ section.settings.tile_gap }}px; }
     #qa-{{ section.id }} .qa-add{ display:none; }
   }
 </style>
@@ -434,6 +436,7 @@
   "max_blocks": 6,
   "settings": [
     { "type": "header", "content": "Copy" },
+    { "type": "select", "id": "copy_align", "label": "Text alignment", "default": "left", "options": [{ "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" }] },
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Subscribe & Save" },
     { "type": "text", "id": "heading_lead", "label": "Heading (line 1)", "default": "10% OFF" },
     { "type": "text", "id": "heading_accent", "label": "Heading accent (line 2, coral)", "default": "+ Free Shipping, Always" },
@@ -447,6 +450,8 @@
     { "type": "color", "id": "accent_color", "label": "Accent / coral color", "default": "#E8607A" },
     { "type": "range", "id": "section_pad_top", "label": "Section padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 20 },
     { "type": "range", "id": "section_pad_bottom", "label": "Section padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 36 },
+    { "type": "range", "id": "section_pad_lr", "label": "Section padding left & right (desktop)", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 32 },
+    { "type": "range", "id": "mobile_pad_lr", "label": "Section padding left & right (mobile)", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 16 },
     { "type": "range", "id": "inner_pad", "label": "Inner container padding", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 28 },
     { "type": "range", "id": "inner_min_height", "label": "Inner container min height", "min": 0, "max": 600, "step": 10, "unit": "px", "default": 0, "info": "0 = auto height." },
     { "type": "range", "id": "tile_size", "label": "Tile size (photo + container width)", "min": 50, "max": 240, "step": 10, "unit": "px", "default": 120, "info": "Controls the width of each product tile including its photo container." },
