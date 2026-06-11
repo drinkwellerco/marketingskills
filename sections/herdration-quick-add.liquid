@@ -171,7 +171,7 @@
     --qa-shadow-md:0 4px 24px rgba(27,58,92,.10);
     --qa-shadow-lg:0 8px 40px rgba(27,58,92,.12);
     background:{{ section.settings.bg_color }}; color:var(--qa-navy);
-    font-family:var(--qa-sans); display:block; overflow-x:hidden;
+    font-family:var(--qa-sans); display:block; overflow-x:clip;
     padding:{{ section.settings.section_pad_top }}px {{ section.settings.section_pad_lr }}px {{ section.settings.section_pad_bottom }}px;
   }
   #qa-{{ section.id }} *{ box-sizing:border-box; }
