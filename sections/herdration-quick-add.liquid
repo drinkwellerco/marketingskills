@@ -191,7 +191,7 @@
   #qa-{{ section.id }} .qa-inner.swapped .qa-copy{ order:2; }
   #qa-{{ section.id }} .qa-inner.swapped .qa-shop{ order:1; }
 
-  #qa-{{ section.id }} .qa-eyebrow{ display:inline-block; font-size:{{ section.settings.eyebrow_size }}px; font-weight:600; letter-spacing:{{ section.settings.eyebrow_ls }}px; text-transform:uppercase; color:var(--qa-rose); margin-bottom:{{ section.settings.eyebrow_mb }}px; }
+  #qa-{{ section.id }} .qa-eyebrow{ display:inline-block; font-size:{{ section.settings.eyebrow_size }}px; font-weight:600; letter-spacing:{{ section.settings.eyebrow_ls }}px; text-transform:uppercase; color:{{ section.settings.eyebrow_color }}; margin-bottom:{{ section.settings.eyebrow_mb }}px; }
   #qa-{{ section.id }} .qa-title{ font-family:var(--qa-serif); font-weight:900; font-size:{{ section.settings.heading_size }}px; line-height:{{ section.settings.heading_lh }}%; letter-spacing:-.02em; color:var(--qa-navy); margin:0 0 {{ section.settings.heading_mb }}px; }
   #qa-{{ section.id }} .qa-accent{ color:var(--qa-rose); }
   #qa-{{ section.id }} .qa-title .qa-accent{ display:block; }
@@ -487,6 +487,7 @@
     { "type": "text", "id": "swap_label", "label": "Swap button label", "default": "Swap sides" },
 
     { "type": "header", "content": "Copy text — Eyebrow" },
+    { "type": "color", "id": "eyebrow_color", "label": "Eyebrow color", "default": "#E8607A" },
     { "type": "range", "id": "eyebrow_size", "label": "Font size", "min": 8, "max": 28, "step": 1, "unit": "px", "default": 11 },
     { "type": "range", "id": "eyebrow_ls", "label": "Letter spacing", "min": 0, "max": 10, "step": 1, "unit": "px", "default": 3 },
     { "type": "range", "id": "eyebrow_mb", "label": "Space below eyebrow", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 12 },
