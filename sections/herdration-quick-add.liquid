@@ -294,7 +294,7 @@
     #qa-{{ section.id }} .qa-inner{ width:100%; max-width:100%; box-sizing:border-box; grid-template-columns:1fr; gap:28px; padding:22px {{ section.settings.mobile_pad_lr }}px; }
     #qa-{{ section.id }} .qa-inner.swapped .qa-copy{ order:1; }
     #qa-{{ section.id }} .qa-inner.swapped .qa-shop{ order:2; }
-    #qa-{{ section.id }} .qa-shop{ grid-template-columns:repeat(2,1fr); gap:{{ section.settings.tile_gap }}px; }
+    #qa-{{ section.id }} .qa-shop{ grid-template-columns:repeat(2,1fr); column-gap:{{ section.settings.mobile_col_gap }}px; row-gap:{{ section.settings.mobile_row_gap }}px; }
     #qa-{{ section.id }} .qa-title{ font-size:{{ section.settings.mobile_heading_size }}px; }
     #qa-{{ section.id }} .qa-eyebrow{ font-size:{{ section.settings.mobile_eyebrow_size }}px; }
     #qa-{{ section.id }} .qa-lead{ font-size:{{ section.settings.mobile_lead_size }}px; }
@@ -463,7 +463,9 @@
     { "type": "range", "id": "inner_pad", "label": "Inner container padding", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 28 },
     { "type": "range", "id": "inner_min_height", "label": "Inner container min height", "min": 0, "max": 600, "step": 10, "unit": "px", "default": 0, "info": "0 = auto height." },
     { "type": "range", "id": "tile_size", "label": "Tile size (photo + container width)", "min": 50, "max": 240, "step": 10, "unit": "px", "default": 120, "info": "Controls the width of each product tile including its photo container." },
-    { "type": "range", "id": "tile_gap", "label": "Spacing between tiles", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 12 },
+    { "type": "range", "id": "tile_gap", "label": "Spacing between tiles (desktop)", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 12 },
+    { "type": "range", "id": "mobile_col_gap", "label": "Tile spacing left & right (mobile)", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 10 },
+    { "type": "range", "id": "mobile_row_gap", "label": "Tile spacing top & bottom (mobile)", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 10 },
     { "type": "range", "id": "col_split", "label": "Copy column width", "min": 1, "max": 99, "step": 1, "default": 41, "info": "How much of the inner container the copy (text) side takes. The rest goes to products. e.g. 50 = 50/50, 41 = default, 10 = narrow copy wide products." },
     { "type": "range", "id": "col_gap", "label": "Gap between copy and products", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 44 },
     { "type": "checkbox", "id": "products_on_left", "label": "Products on the left", "default": false },
