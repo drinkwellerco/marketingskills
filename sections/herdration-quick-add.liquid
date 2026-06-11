@@ -192,10 +192,10 @@
   #qa-{{ section.id }} .qa-inner.swapped .qa-shop{ order:1; }
 
   #qa-{{ section.id }} .qa-eyebrow{ display:inline-block; font-size:{{ section.settings.eyebrow_size }}px; font-weight:600; letter-spacing:{{ section.settings.eyebrow_ls }}px; text-transform:uppercase; color:{{ section.settings.eyebrow_color }}; margin-bottom:{{ section.settings.eyebrow_mb }}px; }
-  #qa-{{ section.id }} .qa-title{ font-family:var(--qa-serif); font-weight:900; font-size:{{ section.settings.heading_size }}px; line-height:{{ section.settings.heading_lh }}%; letter-spacing:-.02em; color:var(--qa-navy); margin:0 0 {{ section.settings.heading_mb }}px; }
-  #qa-{{ section.id }} .qa-accent{ color:var(--qa-rose); }
+  #qa-{{ section.id }} .qa-title{ font-family:var(--qa-serif); font-weight:900; font-size:{{ section.settings.heading_size }}px; line-height:{{ section.settings.heading_lh }}%; letter-spacing:-.02em; color:{{ section.settings.heading_color }}; margin:0 0 {{ section.settings.heading_mb }}px; }
+  #qa-{{ section.id }} .qa-accent{ color:{{ section.settings.heading_accent_color }}; }
   #qa-{{ section.id }} .qa-title .qa-accent{ display:block; }
-  #qa-{{ section.id }} .qa-lead{ font-family:var(--qa-display); font-weight:300; font-size:{{ section.settings.lead_size }}px; letter-spacing:.02em; line-height:{{ section.settings.lead_lh }}%; color:rgba(27,58,92,.72); margin:0; }
+  #qa-{{ section.id }} .qa-lead{ font-family:var(--qa-display); font-weight:300; font-size:{{ section.settings.lead_size }}px; letter-spacing:.02em; line-height:{{ section.settings.lead_lh }}%; color:{{ section.settings.lead_color }}; margin:0; }
 
   #qa-{{ section.id }} .qa-swap{
     margin-top:18px; display:inline-flex; align-items:center; gap:7px;
@@ -492,17 +492,22 @@
     { "type": "text", "id": "swap_label", "label": "Swap button label", "default": "Swap sides" },
 
     { "type": "header", "content": "Copy text — Eyebrow" },
-    { "type": "color", "id": "eyebrow_color", "label": "Eyebrow color", "default": "#E8607A" },
+    { "type": "color", "id": "eyebrow_color", "label": "Color", "default": "#E8607A" },
     { "type": "range", "id": "eyebrow_size", "label": "Font size", "min": 8, "max": 28, "step": 1, "unit": "px", "default": 11 },
     { "type": "range", "id": "eyebrow_ls", "label": "Letter spacing", "min": 0, "max": 10, "step": 1, "unit": "px", "default": 3 },
     { "type": "range", "id": "eyebrow_mb", "label": "Space below eyebrow", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 12 },
 
-    { "type": "header", "content": "Copy text — Heading" },
+    { "type": "header", "content": "Copy text — Heading (line 1)" },
+    { "type": "color", "id": "heading_color", "label": "Color", "default": "#1B3A5C" },
     { "type": "range", "id": "heading_size", "label": "Font size", "min": 16, "max": 80, "step": 2, "unit": "px", "default": 36 },
     { "type": "range", "id": "heading_lh", "label": "Line height", "min": 80, "max": 160, "step": 5, "unit": "%", "default": 110 },
     { "type": "range", "id": "heading_mb", "label": "Space below heading", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 14 },
 
+    { "type": "header", "content": "Copy text — Heading accent (line 2)" },
+    { "type": "color", "id": "heading_accent_color", "label": "Color", "default": "#E8607A" },
+
     { "type": "header", "content": "Copy text — Lead line" },
+    { "type": "color", "id": "lead_color", "label": "Color", "default": "#1B3A5C" },
     { "type": "range", "id": "lead_size", "label": "Font size", "min": 10, "max": 36, "step": 1, "unit": "px", "default": 18 },
     { "type": "range", "id": "lead_lh", "label": "Line height", "min": 80, "max": 200, "step": 5, "unit": "%", "default": 140 },
 
