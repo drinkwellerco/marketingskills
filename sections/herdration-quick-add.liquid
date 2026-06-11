@@ -157,6 +157,9 @@
   </div>
 </section>
 
+{%- assign inner_alpha = section.settings.inner_bg_opacity | times: 0.01 -%}
+{%- assign inner_bg_rgba = section.settings.inner_bg_color | color_modify: 'alpha', inner_alpha -%}
+
 <style>
   #qa-{{ section.id }}{
     --qa-navy:#1B3A5C; --qa-rose:{{ section.settings.accent_color }}; --qa-cream:#FAF5F0;
@@ -177,7 +180,11 @@
     display:grid; grid-template-columns:{{ section.settings.col_split }}fr {{ 100 | minus: section.settings.col_split }}fr; gap:{{ section.settings.col_gap }}px; align-items:center;
     padding:{{ section.settings.inner_pad }}px 32px;
     {%- if section.settings.inner_min_height > 0 %} min-height:{{ section.settings.inner_min_height }}px;{%- endif %}
-    background:rgba(255,255,255,.55);
+    {%- if section.settings.inner_bg_image != blank -%}
+      background: linear-gradient({{ inner_bg_rgba }},{{ inner_bg_rgba }}), url('{{ section.settings.inner_bg_image | image_url: width: 1600 }}') {{ section.settings.inner_bg_position }}/{{ section.settings.inner_bg_size }} no-repeat;
+    {%- else -%}
+      background: {{ inner_bg_rgba }};
+    {%- endif -%}
     border:1.5px solid var(--qa-mist); border-radius:28px;
     box-shadow:var(--qa-shadow-sm);
   }
@@ -462,6 +469,13 @@
     { "type": "range", "id": "mobile_lead_size", "label": "Lead line font size (mobile)", "min": 10, "max": 28, "step": 1, "unit": "px", "default": 14 },
     { "type": "range", "id": "inner_pad", "label": "Inner container padding", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 28 },
     { "type": "range", "id": "inner_min_height", "label": "Inner container min height", "min": 0, "max": 600, "step": 10, "unit": "px", "default": 0, "info": "0 = auto height." },
+
+    { "type": "header", "content": "Inner container background" },
+    { "type": "color", "id": "inner_bg_color", "label": "Background color", "default": "#ffffff" },
+    { "type": "range", "id": "inner_bg_opacity", "label": "Background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 55, "info": "0 = fully transparent, 100 = fully solid." },
+    { "type": "image_picker", "id": "inner_bg_image", "label": "Background image", "info": "Optional. The color above overlays on top of the image — use opacity to blend them." },
+    { "type": "select", "id": "inner_bg_size", "label": "Image size", "default": "cover", "options": [{ "value": "cover", "label": "Cover (fill, crop edges)" }, { "value": "contain", "label": "Contain (fit, show all)" }, { "value": "auto", "label": "Auto (original size)" }] },
+    { "type": "select", "id": "inner_bg_position", "label": "Image position", "default": "center center", "options": [{ "value": "center center", "label": "Center" }, { "value": "top center", "label": "Top" }, { "value": "bottom center", "label": "Bottom" }, { "value": "center left", "label": "Left" }, { "value": "center right", "label": "Right" }] },
     { "type": "range", "id": "tile_size", "label": "Tile size (photo + container width)", "min": 50, "max": 240, "step": 10, "unit": "px", "default": 120, "info": "Controls the width of each product tile including its photo container." },
     { "type": "range", "id": "tile_gap", "label": "Spacing between tiles (desktop)", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 12 },
     { "type": "range", "id": "mobile_col_gap", "label": "Tile spacing left & right (mobile)", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 10 },
