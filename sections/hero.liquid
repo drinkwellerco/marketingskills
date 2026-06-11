@@ -32,7 +32,7 @@
       background-repeat: no-repeat;
     {% endif %}
     padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;
-    overflow: hidden;
+    overflow: clip;
   }
 
   .hero-inner-{{ sid }} {
@@ -498,7 +498,7 @@
     <div class="hero-text-col-{{ sid }}">
       {% for block in section.blocks %}
         {%- assign bid = block.id | replace: '_', '-' -%}
-        {% unless block.type == 'image' or block.type == 'flavor' %}
+        {% unless block.type == 'image' or block.type == 'flavor' or block.type == 'quick_add_strip' %}
           <div class="hero-bw-{{ bid }}" {{ block.shopify_attributes }}>
             {% case block.type %}
 
@@ -599,123 +599,6 @@
                   {% endif %}
                 </div>
 
-              {% when 'quick_add_strip' %}
-                {%- assign qa_flavor_blocks = section.blocks | where: 'type', 'flavor' -%}
-                {%- assign qa_bid = block.id | replace: '_', '-' -%}
-                <div class="qa-sb-{{ qa_bid }}" {{ block.shopify_attributes }}>
-                  <div class="qa-inner{% if block.settings.products_on_left %} swapped{% endif %}" data-qa-inner="{{ qa_bid }}">
-                    <div class="qa-copy">
-                      {%- if block.settings.eyebrow != blank -%}
-                        <span class="qa-eyebrow">{{ block.settings.eyebrow }}</span>
-                      {%- endif -%}
-                      <h2 class="qa-title">
-                        {{ block.settings.heading_lead }}
-                        {%- if block.settings.heading_accent != blank -%}
-                          <span class="qa-acc">{{ block.settings.heading_accent }}</span>
-                        {%- endif -%}
-                      </h2>
-                      {%- if block.settings.lead != blank -%}
-                        <p class="qa-lead">{{ block.settings.lead }}</p>
-                      {%- endif -%}
-                      {%- if block.settings.show_swap -%}
-                        <button class="qa-swap" type="button" data-qa-swap="{{ qa_bid }}" aria-label="Swap sides">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
-                          {{ block.settings.swap_label | default: 'Swap sides' }}
-                        </button>
-                      {%- endif -%}
-                    </div>
-                    <div class="qa-shop" data-qa-shop="{{ qa_bid }}">
-                      {%- for fb in qa_flavor_blocks -%}
-                        {%- assign prod = fb.settings.product -%}
-                        {%- if prod != blank -%}
-                          {%- assign pv = prod.selected_or_first_available_variant | default: prod.variants.first -%}
-                          {%- if fb.settings.variant_title != blank -%}
-                            {%- for v in prod.variants -%}
-                              {%- if v.title == fb.settings.variant_title -%}{%- assign pv = v -%}{%- endif -%}
-                            {%- endfor -%}
-                          {%- endif -%}
-                          {%- assign dp = pv.price -%}
-                          {%- assign dc = pv.compare_at_price -%}
-                          {%- assign sp_str = block.settings.selling_plan_id | strip -%}
-                          {%- if sp_str == blank -%}{%- assign sp_str = '5713658087' -%}{%- endif -%}
-                          {%- for alloc in pv.selling_plan_allocations -%}
-                            {%- assign a_str = alloc.selling_plan.id | append: '' -%}
-                            {%- if a_str == sp_str -%}{%- assign dp = alloc.price -%}{%- assign dc = alloc.compare_at_price -%}{%- endif -%}
-                          {%- endfor -%}
-                          {%- if fb.settings.con_override -%}
-                            {%- assign t_on = fb.settings.con_enabled -%}{%- assign t_c1 = fb.settings.con_color -%}{%- assign t_gr = fb.settings.con_gradient -%}{%- assign t_c2 = fb.settings.con_color2 -%}{%- assign t_ag = fb.settings.con_angle -%}
-                          {%- else -%}
-                            {%- assign t_on = block.settings.con_enabled -%}{%- assign t_c1 = block.settings.con_color -%}{%- assign t_gr = block.settings.con_gradient -%}{%- assign t_c2 = block.settings.con_color2 -%}{%- assign t_ag = block.settings.con_angle -%}
-                          {%- endif -%}
-                          {%- if t_on -%}
-                            {%- if t_gr -%}{%- assign con_bg = 'linear-gradient(' | append: t_ag | append: 'deg, ' | append: t_c1 | append: ', ' | append: t_c2 | append: ')' -%}
-                            {%- else -%}{%- assign con_bg = t_c1 -%}{%- endif -%}
-                          {%- else -%}{%- assign con_bg = 'transparent' -%}{%- endif -%}
-                          {%- assign flav_raw = fb.settings.label | default: pv.title | default: prod.title -%}
-                          {%- assign flav_parts = flav_raw | split: '||' -%}
-                          {%- assign bparts = prod.title | split: "'" -%}
-                          <div class="qa-prod{% unless t_on %} con-off{% endunless %}"
-                               {{ fb.shopify_attributes }}
-                               data-qa-prod="{{ qa_bid }}"
-                               data-variant-id="{{ pv.id }}"
-                               role="button" tabindex="0"
-                               aria-label="Add {{ flav_raw | escape }} to cart"
-                               style="--con-bg:{{ con_bg }};--con-radius:{{ fb.settings.img_radius }}px;--con-size:{{ fb.settings.img_size }}%;--img-x:{{ fb.settings.img_x }}px;--img-y:{{ fb.settings.img_y }}px;">
-                            <span class="qa-photo">
-                              {%- if fb.settings.custom_image != blank -%}
-                                {{ fb.settings.custom_image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flav_raw, loading: 'lazy' }}
-                              {%- elsif pv.image -%}
-                                {{ pv.image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flav_raw, loading: 'lazy' }}
-                              {%- elsif prod.featured_media -%}
-                                {{ prod.featured_media | image_url: width: 300 | image_tag: class: 'qa-img', alt: flav_raw, loading: 'lazy' }}
-                              {%- endif -%}
-                              <button class="qa-remove" type="button" data-qa-remove aria-label="Remove">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg>
-                              </button>
-                              <span class="qa-qty" data-qa-qty>0</span>
-                              <span class="qa-add">{{ block.settings.add_label | default: '+ Add' }}</span>
-                            </span>
-                            <span class="qa-brand">
-                              {%- if bparts.size > 1 -%}{{ bparts[0] }}<span class="qa-apos">'</span>{{ bparts[1] }}{%- else -%}{{ prod.title }}{%- endif -%}
-                            </span>
-                            <span class="qa-name">
-                              {%- assign fw = flav_parts[0] | split: ' ' -%}{{ fw | join: '<br>' }}
-                              {%- if flav_parts.size > 1 -%}{%- assign sw = flav_parts[1] | split: ' ' -%}<br><span class="qa-acc">{{ sw | join: '<br>' }}</span>{%- endif -%}
-                            </span>
-                            <span class="qa-price">
-                              {%- if dc and dc > dp -%}<span class="qa-was">{{ dc | money }}</span>{%- endif -%}
-                              <span class="qa-now">{{ dp | money }}</span>
-                            </span>
-                          </div>
-                        {%- endif -%}
-                      {%- endfor -%}
-                      {%- if qa_flavor_blocks.size == 0 -%}
-                        <p style="grid-column:1/-1;text-align:center;color:#8A7E76;font-size:13px;">Add "Flavor tile" blocks to populate this strip.</p>
-                      {%- endif -%}
-                    </div>
-                  </div>
-                </div>
-                <script>
-                (function(){
-                  var root = document.querySelector('[data-qa-shop="{{ qa_bid }}"]');
-                  if(!root) return;
-                  var inner = document.querySelector('[data-qa-inner="{{ qa_bid }}"]');
-                  var swapBtn = document.querySelector('[data-qa-swap="{{ qa_bid }}"]');
-                  if(swapBtn){ swapBtn.addEventListener('click', function(){ inner.classList.toggle('swapped'); }); }
-                  var tiles = Array.prototype.slice.call(root.querySelectorAll('[data-qa-prod="{{ qa_bid }}"]'));
-                  var rawSP = '{{ block.settings.selling_plan_id | strip }}';
-                  if(rawSP === '') rawSP = '5713658087';
-                  var spNum = null; var parsed = parseInt(rawSP,10);
-                  if(!isNaN(parsed) && parsed > 0) spNum = parsed;
-                  function setTile(t,q){ q=Math.max(0,q|0); t.dataset.qty=q; t.classList.toggle('in-cart',q>0); var b=t.querySelector('[data-qa-qty]'); if(b) b.textContent=q; }
-                  function notifyTheme(cart){ try{ document.querySelectorAll('.cart-count-bubble span:first-child,[data-cart-count]').forEach(function(el){ if(typeof cart.item_count==='number') el.textContent=cart.item_count; }); document.dispatchEvent(new CustomEvent('qa:cart-updated',{detail:cart,bubbles:true})); if(window.Shopify&&Shopify.onCartUpdate) Shopify.onCartUpdate(cart); }catch(e){} }
-                  function refreshCounts(){ fetch('/cart.js',{headers:{'Accept':'application/json'}}).then(function(r){return r.json();}).then(function(cart){ var counts={},keys={}; (cart.items||[]).forEach(function(it){ counts[it.variant_id]=(counts[it.variant_id]||0)+it.quantity; keys[it.variant_id]=it.key; }); tiles.forEach(function(t){ var vid=parseInt(t.dataset.variantId,10); setTile(t,counts[vid]||0); if(keys[vid]) t.dataset.lineKey=keys[vid]; }); notifyTheme(cart); }).catch(function(e){ console.warn('qa error',e); }); }
-                  function addOne(t){ var id=t.dataset.variantId; if(!id) return; var prev=parseInt(t.dataset.qty,10)||0; setTile(t,prev+1); t.classList.add('is-busy'); var item={id:parseInt(id,10),quantity:1}; if(spNum!==null) item.selling_plan=spNum; fetch('/cart/add.js',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({items:[item]})}).then(function(r){if(!r.ok){return r.json().then(function(e){throw e;});}return r.json();}).then(function(){refreshCounts();}).catch(function(err){console.error('[QA] add failed',err);setTile(t,prev);}).then(function(){t.classList.remove('is-busy');}); }
-                  function removeOne(t){ var cur=parseInt(t.dataset.qty,10)||0; if(cur<=0) return; setTile(t,cur-1); t.classList.add('is-busy'); var lid=t.dataset.lineKey||t.dataset.variantId; fetch('/cart/change.js',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({id:lid,quantity:cur-1})}).then(function(r){if(!r.ok) return r.json().then(function(e){throw e;}); return r.json();}).then(function(){refreshCounts();}).catch(function(err){console.error('[QA] remove failed',err);setTile(t,cur);}).then(function(){t.classList.remove('is-busy');}); }
-                  tiles.forEach(function(t){ t.addEventListener('click',function(){addOne(t);}); t.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();addOne(t);}}); var rm=t.querySelector('[data-qa-remove]'); if(rm){rm.addEventListener('click',function(e){e.stopPropagation();removeOne(t);});} });
-                  refreshCounts();
-                })();
-                </script>
 
               {% when 'pills' %}
                 <div class="hero-pills-{{ bid }}">
@@ -780,6 +663,114 @@
 
   </div>
 
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'quick_add_strip' -%}
+      {%- assign qa_flavor_blocks = section.blocks | where: 'type', 'flavor' -%}
+      {%- assign qa_bid = block.id | replace: '_', '-' -%}
+      {%- assign _qa_alpha = block.settings.inner_bg_opacity | times: 0.01 -%}
+      {%- assign _qa_bg_rgba = block.settings.inner_bg_color | color_modify: 'alpha', _qa_alpha -%}
+      <div class="qa-sb-{{ qa_bid }}" {{ block.shopify_attributes }}>
+        <div class="qa-inner{% if block.settings.products_on_left %} swapped{% endif %}" data-qa-inner="{{ qa_bid }}">
+          <div class="qa-copy">
+            {%- if block.settings.eyebrow != blank -%}<span class="qa-eyebrow">{{ block.settings.eyebrow }}</span>{%- endif -%}
+            <h2 class="qa-title">
+              {{ block.settings.heading_lead }}
+              {%- if block.settings.heading_accent != blank -%}<span class="qa-acc">{{ block.settings.heading_accent }}</span>{%- endif -%}
+            </h2>
+            {%- if block.settings.lead != blank -%}<p class="qa-lead">{{ block.settings.lead }}</p>{%- endif -%}
+            {%- if block.settings.show_swap -%}
+              <button class="qa-swap" type="button" data-qa-swap="{{ qa_bid }}" aria-label="Swap sides">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                {{ block.settings.swap_label | default: 'Swap sides' }}
+              </button>
+            {%- endif -%}
+          </div>
+          <div class="qa-shop" data-qa-shop="{{ qa_bid }}">
+            {%- for fb in qa_flavor_blocks -%}
+              {%- assign prod = fb.settings.product -%}
+              {%- if prod != blank -%}
+                {%- assign pv = prod.selected_or_first_available_variant | default: prod.variants.first -%}
+                {%- if fb.settings.variant_title != blank -%}
+                  {%- for v in prod.variants -%}
+                    {%- if v.title == fb.settings.variant_title -%}{%- assign pv = v -%}{%- endif -%}
+                  {%- endfor -%}
+                {%- endif -%}
+                {%- assign dp = pv.price -%}
+                {%- assign dc = pv.compare_at_price -%}
+                {%- assign sp_str = block.settings.selling_plan_id | strip -%}
+                {%- if sp_str == blank -%}{%- assign sp_str = '5713658087' -%}{%- endif -%}
+                {%- for alloc in pv.selling_plan_allocations -%}
+                  {%- assign a_str = alloc.selling_plan.id | append: '' -%}
+                  {%- if a_str == sp_str -%}{%- assign dp = alloc.price -%}{%- assign dc = alloc.compare_at_price -%}{%- endif -%}
+                {%- endfor -%}
+                {%- if fb.settings.con_override -%}
+                  {%- assign t_on = fb.settings.con_enabled -%}{%- assign t_c1 = fb.settings.con_color -%}{%- assign t_gr = fb.settings.con_gradient -%}{%- assign t_c2 = fb.settings.con_color2 -%}{%- assign t_ag = fb.settings.con_angle -%}
+                {%- else -%}
+                  {%- assign t_on = block.settings.con_enabled -%}{%- assign t_c1 = block.settings.con_color -%}{%- assign t_gr = block.settings.con_gradient -%}{%- assign t_c2 = block.settings.con_color2 -%}{%- assign t_ag = block.settings.con_angle -%}
+                {%- endif -%}
+                {%- if t_on -%}
+                  {%- if t_gr -%}{%- assign con_bg = 'linear-gradient(' | append: t_ag | append: 'deg, ' | append: t_c1 | append: ', ' | append: t_c2 | append: ')' -%}
+                  {%- else -%}{%- assign con_bg = t_c1 -%}{%- endif -%}
+                {%- else -%}{%- assign con_bg = 'transparent' -%}{%- endif -%}
+                {%- assign flav_raw = fb.settings.label | default: pv.title | default: prod.title -%}
+                {%- assign flav_parts = flav_raw | split: '||' -%}
+                {%- assign bparts = prod.title | split: "'" -%}
+                <div class="qa-prod{% unless t_on %} con-off{% endunless %}"
+                     {{ fb.shopify_attributes }}
+                     data-qa-prod="{{ qa_bid }}"
+                     data-variant-id="{{ pv.id }}"
+                     role="button" tabindex="0"
+                     aria-label="Add {{ flav_raw | escape }} to cart"
+                     style="--con-bg:{{ con_bg }};--con-radius:{{ fb.settings.img_radius }}px;--con-size:{{ fb.settings.img_size }}%;--img-x:{{ fb.settings.img_x }}px;--img-y:{{ fb.settings.img_y }}px;">
+                  <span class="qa-photo">
+                    {%- if fb.settings.custom_image != blank -%}{{ fb.settings.custom_image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flav_raw, loading: 'lazy' }}
+                    {%- elsif pv.image -%}{{ pv.image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flav_raw, loading: 'lazy' }}
+                    {%- elsif prod.featured_media -%}{{ prod.featured_media | image_url: width: 300 | image_tag: class: 'qa-img', alt: flav_raw, loading: 'lazy' }}{%- endif -%}
+                    <button class="qa-remove" type="button" data-qa-remove aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+                    <span class="qa-qty" data-qa-qty>0</span>
+                    <span class="qa-add">{{ block.settings.add_label | default: '+ Add' }}</span>
+                  </span>
+                  <span class="qa-brand">{%- if bparts.size > 1 -%}{{ bparts[0] }}<span class="qa-apos">'</span>{{ bparts[1] }}{%- else -%}{{ prod.title }}{%- endif -%}</span>
+                  <span class="qa-name">
+                    {%- assign fw = flav_parts[0] | split: ' ' -%}{{ fw | join: '<br>' }}
+                    {%- if flav_parts.size > 1 -%}{%- assign sw = flav_parts[1] | split: ' ' -%}<br><span class="qa-acc">{{ sw | join: '<br>' }}</span>{%- endif -%}
+                  </span>
+                  <span class="qa-price">
+                    {%- if dc and dc > dp -%}<span class="qa-was">{{ dc | money }}</span>{%- endif -%}
+                    <span class="qa-now">{{ dp | money }}</span>
+                  </span>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+            {%- if qa_flavor_blocks.size == 0 -%}
+              <p style="grid-column:1/-1;text-align:center;color:#8A7E76;font-size:13px;">Add Flavor tile blocks to populate this strip.</p>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+      <script>
+      (function(){
+        var root=document.querySelector('[data-qa-shop="{{ qa_bid }}"]');
+        if(!root) return;
+        var inner=document.querySelector('[data-qa-inner="{{ qa_bid }}"]');
+        var swapBtn=document.querySelector('[data-qa-swap="{{ qa_bid }}"]');
+        if(swapBtn){swapBtn.addEventListener('click',function(){inner.classList.toggle('swapped');});}
+        var tiles=Array.prototype.slice.call(root.querySelectorAll('[data-qa-prod="{{ qa_bid }}"]'));
+        var rawSP='{{ block.settings.selling_plan_id | strip }}';
+        if(rawSP==='')rawSP='5713658087';
+        var spNum=null,parsed=parseInt(rawSP,10);
+        if(!isNaN(parsed)&&parsed>0)spNum=parsed;
+        function setTile(t,q){q=Math.max(0,q|0);t.dataset.qty=q;t.classList.toggle('in-cart',q>0);var b=t.querySelector('[data-qa-qty]');if(b)b.textContent=q;}
+        function notifyTheme(cart){try{document.querySelectorAll('.cart-count-bubble span:first-child,[data-cart-count]').forEach(function(el){if(typeof cart.item_count==='number')el.textContent=cart.item_count;});document.dispatchEvent(new CustomEvent('qa:cart-updated',{detail:cart,bubbles:true}));if(window.Shopify&&Shopify.onCartUpdate)Shopify.onCartUpdate(cart);}catch(e){}}
+        function refreshCounts(){fetch('/cart.js',{headers:{'Accept':'application/json'}}).then(function(r){return r.json();}).then(function(cart){var counts={},keys={};(cart.items||[]).forEach(function(it){counts[it.variant_id]=(counts[it.variant_id]||0)+it.quantity;keys[it.variant_id]=it.key;});tiles.forEach(function(t){var vid=parseInt(t.dataset.variantId,10);setTile(t,counts[vid]||0);if(keys[vid])t.dataset.lineKey=keys[vid];});notifyTheme(cart);}).catch(function(e){console.warn('qa error',e);});}
+        function addOne(t){var id=t.dataset.variantId;if(!id)return;var prev=parseInt(t.dataset.qty,10)||0;setTile(t,prev+1);t.classList.add('is-busy');var item={id:parseInt(id,10),quantity:1};if(spNum!==null)item.selling_plan=spNum;fetch('/cart/add.js',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({items:[item]})}).then(function(r){if(!r.ok){return r.json().then(function(e){throw e;});}return r.json();}).then(function(){refreshCounts();}).catch(function(err){console.error('[QA] add failed',err);setTile(t,prev);}).then(function(){t.classList.remove('is-busy');});}
+        function removeOne(t){var cur=parseInt(t.dataset.qty,10)||0;if(cur<=0)return;setTile(t,cur-1);t.classList.add('is-busy');var lid=t.dataset.lineKey||t.dataset.variantId;fetch('/cart/change.js',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({id:lid,quantity:cur-1})}).then(function(r){if(!r.ok)return r.json().then(function(e){throw e;});return r.json();}).then(function(){refreshCounts();}).catch(function(err){console.error('[QA] remove failed',err);setTile(t,cur);}).then(function(){t.classList.remove('is-busy');});}
+        tiles.forEach(function(t){t.addEventListener('click',function(){addOne(t);});t.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();addOne(t);}});var rm=t.querySelector('[data-qa-remove]');if(rm){rm.addEventListener('click',function(e){e.stopPropagation();removeOne(t);});}});
+        refreshCounts();
+      })();
+      </script>
+    {%- endif -%}
+  {%- endfor -%}
 
 </div>
 
