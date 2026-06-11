@@ -291,16 +291,14 @@
 
   @media (max-width:900px){
     #qa-{{ section.id }}{ padding:{{ section.settings.section_pad_top }}px {{ section.settings.mobile_pad_lr }}px {{ section.settings.section_pad_bottom }}px; }
-    #qa-{{ section.id }} .qa-inner{ grid-template-columns:1fr; gap:28px; padding:22px {{ section.settings.mobile_pad_lr }}px; }
+    #qa-{{ section.id }} .qa-inner{ width:100%; max-width:100%; box-sizing:border-box; grid-template-columns:1fr; gap:28px; padding:22px {{ section.settings.mobile_pad_lr }}px; }
     #qa-{{ section.id }} .qa-inner.swapped .qa-copy{ order:1; }
     #qa-{{ section.id }} .qa-inner.swapped .qa-shop{ order:2; }
+    #qa-{{ section.id }} .qa-shop{ grid-template-columns:repeat(2,1fr); gap:{{ section.settings.tile_gap }}px; }
     #qa-{{ section.id }} .qa-title{ font-size:{{ section.settings.mobile_heading_size }}px; }
     #qa-{{ section.id }} .qa-eyebrow{ font-size:{{ section.settings.mobile_eyebrow_size }}px; }
     #qa-{{ section.id }} .qa-lead{ font-size:{{ section.settings.mobile_lead_size }}px; }
     #qa-{{ section.id }} .qa-prod{ max-width:{{ section.settings.mobile_tile_size }}px; }
-  }
-  @media (max-width:560px){
-    #qa-{{ section.id }} .qa-shop{ grid-template-columns:repeat(3,1fr); gap:{{ section.settings.tile_gap }}px; }
     #qa-{{ section.id }} .qa-add{ display:none; }
   }
 </style>
