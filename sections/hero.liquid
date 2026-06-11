@@ -408,6 +408,87 @@
         {% endfor %}
       }
     {% endif %}
+
+    {% if block.type == 'quick_add_strip' %}
+      {%- assign qa_flavor_blocks = section.blocks | where: 'type', 'flavor' -%}
+      {%- assign qa_bid = block.id | replace: '_', '-' -%}
+      {%- assign _qa_alpha = block.settings.inner_bg_opacity | times: 0.01 -%}
+      {%- assign _qa_bg_rgba = block.settings.inner_bg_color | color_modify: 'alpha', _qa_alpha -%}
+      .qa-sb-{{ qa_bid }} {
+        --qa-navy:#1B3A5C; --qa-rose:{{ block.settings.accent_color }}; --qa-cream:#FAF5F0;
+        --qa-mist:#E8DDD5;
+        --qa-serif:'Playfair Display','Georgia',serif;
+        --qa-display:'Cormorant Garamond','Georgia',serif;
+        --qa-sans:'DM Sans','Helvetica Neue',sans-serif;
+        --qa-shadow-sm:0 2px 12px rgba(27,58,92,.08);
+        --qa-shadow-md:0 4px 24px rgba(27,58,92,.10);
+        --qa-shadow-lg:0 8px 40px rgba(27,58,92,.12);
+        display:block; overflow-x:clip;
+        padding:{{ block.settings.section_pad_top }}px {{ block.settings.section_pad_lr }}px {{ block.settings.section_pad_bottom }}px;
+        padding-top: {{ block.settings.padding_top }}px;
+        padding-bottom: {{ block.settings.padding_bottom }}px;
+      }
+      .qa-sb-{{ qa_bid }} * { box-sizing:border-box; }
+      .qa-sb-{{ qa_bid }} .qa-inner {
+        max-width:1180px; margin:0 auto;
+        display:grid;
+        grid-template-columns:{{ block.settings.col_split }}fr {{ 100 | minus: block.settings.col_split }}fr;
+        gap:{{ block.settings.col_gap }}px; align-items:center;
+        padding:{{ block.settings.inner_pad }}px 32px;
+        {% if block.settings.inner_min_height > 0 %}min-height:{{ block.settings.inner_min_height }}px;{% endif %}
+        {% if block.settings.inner_bg_image != blank %}
+          background: linear-gradient({{ _qa_bg_rgba }},{{ _qa_bg_rgba }}), url('{{ block.settings.inner_bg_image | image_url: width: 1600 }}') {{ block.settings.inner_bg_position }}/{{ block.settings.inner_bg_size }} no-repeat;
+        {% else %}
+          background: {{ _qa_bg_rgba }};
+        {% endif %}
+        border:{{ block.settings.inner_border_width }}px {{ block.settings.inner_border_style }} {{ block.settings.inner_border_color }};
+        border-radius:28px; box-shadow:var(--qa-shadow-sm);
+      }
+      .qa-sb-{{ qa_bid }} .qa-inner.swapped .qa-copy { order:2; }
+      .qa-sb-{{ qa_bid }} .qa-inner.swapped .qa-shop { order:1; }
+      .qa-sb-{{ qa_bid }} .qa-eyebrow { display:inline-block; font-size:{{ block.settings.eyebrow_size }}px; font-weight:600; letter-spacing:{{ block.settings.eyebrow_ls }}px; text-transform:uppercase; color:{{ block.settings.eyebrow_color }}; margin-bottom:{{ block.settings.eyebrow_mb }}px; }
+      .qa-sb-{{ qa_bid }} .qa-title { font-family:var(--qa-serif); font-weight:900; font-size:{{ block.settings.heading_size }}px; line-height:{{ block.settings.heading_lh }}%; letter-spacing:-.02em; color:{{ block.settings.heading_color }}; margin:0 0 {{ block.settings.heading_mb }}px; overflow-wrap:break-word; word-break:break-word; }
+      .qa-sb-{{ qa_bid }} .qa-acc { color:{{ block.settings.heading_accent_color }}; }
+      .qa-sb-{{ qa_bid }} .qa-title .qa-acc { display:block; }
+      .qa-sb-{{ qa_bid }} .qa-lead { font-family:var(--qa-display); font-weight:300; font-size:{{ block.settings.lead_size }}px; letter-spacing:.02em; line-height:{{ block.settings.lead_lh }}%; color:{{ block.settings.lead_color }}; margin:0; }
+      .qa-sb-{{ qa_bid }} .qa-copy { text-align:{{ block.settings.copy_align }}; }
+      .qa-sb-{{ qa_bid }} .qa-swap { margin-top:18px; display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:999px; background:rgba(27,58,92,.04); border:1px solid rgba(27,58,92,.18); color:var(--qa-navy); font-family:var(--qa-sans); font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; }
+      .qa-sb-{{ qa_bid }} .qa-swap svg { width:14px; height:14px; }
+      .qa-sb-{{ qa_bid }} .qa-shop { display:grid; grid-template-columns:repeat({{ qa_flavor_blocks.size | at_least: 1 }},1fr); gap:{{ block.settings.tile_gap }}px; align-items:start; }
+      .qa-sb-{{ qa_bid }} .qa-prod { position:relative; display:flex; flex-direction:column; align-items:center; gap:7px; border:none; background:none; cursor:pointer; text-align:center; font-family:var(--qa-sans); transition:transform .18s; width:100%; max-width:{{ block.settings.tile_size }}px; margin:0 auto; }
+      .qa-sb-{{ qa_bid }} .qa-prod:hover { transform:translateY(-3px); }
+      .qa-sb-{{ qa_bid }} .qa-photo { position:relative; width:100%; aspect-ratio:1/1; border-radius:var(--con-radius,18px); overflow:hidden; background:var(--con-bg,transparent); display:flex; align-items:center; justify-content:center; box-shadow:var(--qa-shadow-md); transition:box-shadow .18s,outline-color .18s; outline:2px solid transparent; outline-offset:2px; }
+      .qa-sb-{{ qa_bid }} .qa-prod.con-off .qa-photo { box-shadow:none; }
+      .qa-sb-{{ qa_bid }} .qa-prod.in-cart .qa-photo { outline-color:var(--qa-rose); }
+      .qa-sb-{{ qa_bid }} .qa-prod:hover .qa-photo { box-shadow:var(--qa-shadow-lg); }
+      .qa-sb-{{ qa_bid }} .qa-img { position:relative; z-index:1; width:var(--con-size,78%); height:var(--con-size,78%); object-fit:contain; filter:drop-shadow(0 6px 12px rgba(27,58,92,.20)); transform:translateX(var(--img-x,0px)) translateY(var(--img-y,0px)); }
+      .qa-sb-{{ qa_bid }} .qa-add { position:absolute; z-index:2; bottom:8px; left:50%; transform:translateX(-50%); display:inline-flex; align-items:center; padding:4px 11px; border-radius:999px; background:var(--qa-navy); color:var(--qa-cream); font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; opacity:0; transition:opacity .18s; white-space:nowrap; }
+      .qa-sb-{{ qa_bid }} .qa-prod:hover .qa-add { opacity:1; }
+      .qa-sb-{{ qa_bid }} .qa-remove { position:absolute; top:7px; left:7px; z-index:4; width:24px; height:24px; border-radius:50%; border:none; cursor:pointer; background:#fff; color:var(--qa-navy); box-shadow:0 3px 8px rgba(0,0,0,.22); display:none; align-items:center; justify-content:center; padding:0; }
+      .qa-sb-{{ qa_bid }} .qa-remove svg { width:12px; height:12px; }
+      .qa-sb-{{ qa_bid }} .qa-qty { position:absolute; top:7px; right:7px; z-index:4; min-width:24px; height:24px; padding:0 6px; border-radius:999px; background:var(--qa-rose); color:#fff; font-size:12px; font-weight:700; display:none; align-items:center; justify-content:center; }
+      .qa-sb-{{ qa_bid }} .qa-prod.in-cart .qa-remove,
+      .qa-sb-{{ qa_bid }} .qa-prod.in-cart .qa-qty { display:inline-flex; }
+      .qa-sb-{{ qa_bid }} .qa-brand { font-family:'{{ block.settings.brand_font }}','Playfair Display',serif; font-weight:800; font-size:{{ block.settings.brand_size }}px; line-height:1.1; color:{{ block.settings.brand_color }}; margin-bottom:-2px; }
+      .qa-sb-{{ qa_bid }} .qa-apos { color:var(--qa-rose); }
+      .qa-sb-{{ qa_bid }} .qa-name { font-family:'{{ block.settings.flavor_font }}','Playfair Display',serif; font-size:{{ block.settings.flavor_size }}px; font-weight:500; line-height:1.2; color:{{ block.settings.flavor_color }}; }
+      .qa-sb-{{ qa_bid }} .qa-price { margin-top:-2px; display:flex; flex-direction:column; align-items:center; gap:1px; }
+      .qa-sb-{{ qa_bid }} .qa-was { font-size:{{ block.settings.price_orig_size }}px; color:{{ block.settings.price_orig_color }}; text-decoration:line-through; }
+      .qa-sb-{{ qa_bid }} .qa-now { font-size:{{ block.settings.price_sale_size }}px; color:{{ block.settings.price_sale_color }}; font-weight:700; }
+      .qa-sb-{{ qa_bid }} .qa-prod.is-busy { opacity:.6; pointer-events:none; }
+      @media (max-width:900px) {
+        .qa-sb-{{ qa_bid }} { padding-left:{{ block.settings.mobile_pad_lr }}px !important; padding-right:{{ block.settings.mobile_pad_lr }}px !important; }
+        .qa-sb-{{ qa_bid }} .qa-inner { grid-template-columns:1fr; gap:28px; padding:22px {{ block.settings.mobile_pad_lr }}px; }
+        .qa-sb-{{ qa_bid }} .qa-inner.swapped .qa-copy { order:1; }
+        .qa-sb-{{ qa_bid }} .qa-inner.swapped .qa-shop { order:2; }
+        .qa-sb-{{ qa_bid }} .qa-shop { grid-template-columns:repeat(2,1fr); column-gap:{{ block.settings.mobile_col_gap }}px; row-gap:{{ block.settings.mobile_row_gap }}px; }
+        .qa-sb-{{ qa_bid }} .qa-title { font-size:{{ block.settings.mobile_heading_size }}px !important; }
+        .qa-sb-{{ qa_bid }} .qa-eyebrow { font-size:{{ block.settings.mobile_eyebrow_size }}px !important; }
+        .qa-sb-{{ qa_bid }} .qa-lead { font-size:{{ block.settings.mobile_lead_size }}px !important; }
+        .qa-sb-{{ qa_bid }} .qa-prod { max-width:{{ block.settings.mobile_tile_size }}px; }
+        .qa-sb-{{ qa_bid }} .qa-add { display:none; }
+      }
+    {% endif %}
   {% endfor %}
 </style>
 
@@ -518,6 +599,124 @@
                   {% endif %}
                 </div>
 
+              {% when 'quick_add_strip' %}
+                {%- assign qa_flavor_blocks = section.blocks | where: 'type', 'flavor' -%}
+                {%- assign qa_bid = block.id | replace: '_', '-' -%}
+                <div class="qa-sb-{{ qa_bid }}" {{ block.shopify_attributes }}>
+                  <div class="qa-inner{% if block.settings.products_on_left %} swapped{% endif %}" data-qa-inner="{{ qa_bid }}">
+                    <div class="qa-copy">
+                      {%- if block.settings.eyebrow != blank -%}
+                        <span class="qa-eyebrow">{{ block.settings.eyebrow }}</span>
+                      {%- endif -%}
+                      <h2 class="qa-title">
+                        {{ block.settings.heading_lead }}
+                        {%- if block.settings.heading_accent != blank -%}
+                          <span class="qa-acc">{{ block.settings.heading_accent }}</span>
+                        {%- endif -%}
+                      </h2>
+                      {%- if block.settings.lead != blank -%}
+                        <p class="qa-lead">{{ block.settings.lead }}</p>
+                      {%- endif -%}
+                      {%- if block.settings.show_swap -%}
+                        <button class="qa-swap" type="button" data-qa-swap="{{ qa_bid }}" aria-label="Swap sides">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                          {{ block.settings.swap_label | default: 'Swap sides' }}
+                        </button>
+                      {%- endif -%}
+                    </div>
+                    <div class="qa-shop" data-qa-shop="{{ qa_bid }}">
+                      {%- for fb in qa_flavor_blocks -%}
+                        {%- assign prod = fb.settings.product -%}
+                        {%- if prod != blank -%}
+                          {%- assign pv = prod.selected_or_first_available_variant | default: prod.variants.first -%}
+                          {%- if fb.settings.variant_title != blank -%}
+                            {%- for v in prod.variants -%}
+                              {%- if v.title == fb.settings.variant_title -%}{%- assign pv = v -%}{%- endif -%}
+                            {%- endfor -%}
+                          {%- endif -%}
+                          {%- assign dp = pv.price -%}
+                          {%- assign dc = pv.compare_at_price -%}
+                          {%- assign sp_str = block.settings.selling_plan_id | strip -%}
+                          {%- if sp_str == blank -%}{%- assign sp_str = '5713658087' -%}{%- endif -%}
+                          {%- for alloc in pv.selling_plan_allocations -%}
+                            {%- assign a_str = alloc.selling_plan.id | append: '' -%}
+                            {%- if a_str == sp_str -%}{%- assign dp = alloc.price -%}{%- assign dc = alloc.compare_at_price -%}{%- endif -%}
+                          {%- endfor -%}
+                          {%- if fb.settings.con_override -%}
+                            {%- assign t_on = fb.settings.con_enabled -%}{%- assign t_c1 = fb.settings.con_color -%}{%- assign t_gr = fb.settings.con_gradient -%}{%- assign t_c2 = fb.settings.con_color2 -%}{%- assign t_ag = fb.settings.con_angle -%}
+                          {%- else -%}
+                            {%- assign t_on = block.settings.con_enabled -%}{%- assign t_c1 = block.settings.con_color -%}{%- assign t_gr = block.settings.con_gradient -%}{%- assign t_c2 = block.settings.con_color2 -%}{%- assign t_ag = block.settings.con_angle -%}
+                          {%- endif -%}
+                          {%- if t_on -%}
+                            {%- if t_gr -%}{%- assign con_bg = 'linear-gradient(' | append: t_ag | append: 'deg, ' | append: t_c1 | append: ', ' | append: t_c2 | append: ')' -%}
+                            {%- else -%}{%- assign con_bg = t_c1 -%}{%- endif -%}
+                          {%- else -%}{%- assign con_bg = 'transparent' -%}{%- endif -%}
+                          {%- assign flav_raw = fb.settings.label | default: pv.title | default: prod.title -%}
+                          {%- assign flav_parts = flav_raw | split: '||' -%}
+                          {%- assign bparts = prod.title | split: "'" -%}
+                          <div class="qa-prod{% unless t_on %} con-off{% endunless %}"
+                               {{ fb.shopify_attributes }}
+                               data-qa-prod="{{ qa_bid }}"
+                               data-variant-id="{{ pv.id }}"
+                               role="button" tabindex="0"
+                               aria-label="Add {{ flav_raw | escape }} to cart"
+                               style="--con-bg:{{ con_bg }};--con-radius:{{ fb.settings.img_radius }}px;--con-size:{{ fb.settings.img_size }}%;--img-x:{{ fb.settings.img_x }}px;--img-y:{{ fb.settings.img_y }}px;">
+                            <span class="qa-photo">
+                              {%- if fb.settings.custom_image != blank -%}
+                                {{ fb.settings.custom_image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flav_raw, loading: 'lazy' }}
+                              {%- elsif pv.image -%}
+                                {{ pv.image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flav_raw, loading: 'lazy' }}
+                              {%- elsif prod.featured_media -%}
+                                {{ prod.featured_media | image_url: width: 300 | image_tag: class: 'qa-img', alt: flav_raw, loading: 'lazy' }}
+                              {%- endif -%}
+                              <button class="qa-remove" type="button" data-qa-remove aria-label="Remove">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg>
+                              </button>
+                              <span class="qa-qty" data-qa-qty>0</span>
+                              <span class="qa-add">{{ block.settings.add_label | default: '+ Add' }}</span>
+                            </span>
+                            <span class="qa-brand">
+                              {%- if bparts.size > 1 -%}{{ bparts[0] }}<span class="qa-apos">'</span>{{ bparts[1] }}{%- else -%}{{ prod.title }}{%- endif -%}
+                            </span>
+                            <span class="qa-name">
+                              {%- assign fw = flav_parts[0] | split: ' ' -%}{{ fw | join: '<br>' }}
+                              {%- if flav_parts.size > 1 -%}{%- assign sw = flav_parts[1] | split: ' ' -%}<br><span class="qa-acc">{{ sw | join: '<br>' }}</span>{%- endif -%}
+                            </span>
+                            <span class="qa-price">
+                              {%- if dc and dc > dp -%}<span class="qa-was">{{ dc | money }}</span>{%- endif -%}
+                              <span class="qa-now">{{ dp | money }}</span>
+                            </span>
+                          </div>
+                        {%- endif -%}
+                      {%- endfor -%}
+                      {%- if qa_flavor_blocks.size == 0 -%}
+                        <p style="grid-column:1/-1;text-align:center;color:#8A7E76;font-size:13px;">Add "Flavor tile" blocks to populate this strip.</p>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                </div>
+                <script>
+                (function(){
+                  var root = document.querySelector('[data-qa-shop="{{ qa_bid }}"]');
+                  if(!root) return;
+                  var inner = document.querySelector('[data-qa-inner="{{ qa_bid }}"]');
+                  var swapBtn = document.querySelector('[data-qa-swap="{{ qa_bid }}"]');
+                  if(swapBtn){ swapBtn.addEventListener('click', function(){ inner.classList.toggle('swapped'); }); }
+                  var tiles = Array.prototype.slice.call(root.querySelectorAll('[data-qa-prod="{{ qa_bid }}"]'));
+                  var rawSP = '{{ block.settings.selling_plan_id | strip }}';
+                  if(rawSP === '') rawSP = '5713658087';
+                  var spNum = null; var parsed = parseInt(rawSP,10);
+                  if(!isNaN(parsed) && parsed > 0) spNum = parsed;
+                  function setTile(t,q){ q=Math.max(0,q|0); t.dataset.qty=q; t.classList.toggle('in-cart',q>0); var b=t.querySelector('[data-qa-qty]'); if(b) b.textContent=q; }
+                  function notifyTheme(cart){ try{ document.querySelectorAll('.cart-count-bubble span:first-child,[data-cart-count]').forEach(function(el){ if(typeof cart.item_count==='number') el.textContent=cart.item_count; }); document.dispatchEvent(new CustomEvent('qa:cart-updated',{detail:cart,bubbles:true})); if(window.Shopify&&Shopify.onCartUpdate) Shopify.onCartUpdate(cart); }catch(e){} }
+                  function refreshCounts(){ fetch('/cart.js',{headers:{'Accept':'application/json'}}).then(function(r){return r.json();}).then(function(cart){ var counts={},keys={}; (cart.items||[]).forEach(function(it){ counts[it.variant_id]=(counts[it.variant_id]||0)+it.quantity; keys[it.variant_id]=it.key; }); tiles.forEach(function(t){ var vid=parseInt(t.dataset.variantId,10); setTile(t,counts[vid]||0); if(keys[vid]) t.dataset.lineKey=keys[vid]; }); notifyTheme(cart); }).catch(function(e){ console.warn('qa error',e); }); }
+                  function addOne(t){ var id=t.dataset.variantId; if(!id) return; var prev=parseInt(t.dataset.qty,10)||0; setTile(t,prev+1); t.classList.add('is-busy'); var item={id:parseInt(id,10),quantity:1}; if(spNum!==null) item.selling_plan=spNum; fetch('/cart/add.js',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({items:[item]})}).then(function(r){if(!r.ok){return r.json().then(function(e){throw e;});}return r.json();}).then(function(){refreshCounts();}).catch(function(err){console.error('[QA] add failed',err);setTile(t,prev);}).then(function(){t.classList.remove('is-busy');}); }
+                  function removeOne(t){ var cur=parseInt(t.dataset.qty,10)||0; if(cur<=0) return; setTile(t,cur-1); t.classList.add('is-busy'); var lid=t.dataset.lineKey||t.dataset.variantId; fetch('/cart/change.js',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({id:lid,quantity:cur-1})}).then(function(r){if(!r.ok) return r.json().then(function(e){throw e;}); return r.json();}).then(function(){refreshCounts();}).catch(function(err){console.error('[QA] remove failed',err);setTile(t,cur);}).then(function(){t.classList.remove('is-busy');}); }
+                  tiles.forEach(function(t){ t.addEventListener('click',function(){addOne(t);}); t.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();addOne(t);}}); var rm=t.querySelector('[data-qa-remove]'); if(rm){rm.addEventListener('click',function(e){e.stopPropagation();removeOne(t);});} });
+                  refreshCounts();
+                })();
+                </script>
+
               {% when 'pills' %}
                 <div class="hero-pills-{{ bid }}">
                   {% for i in (1..5) %}
@@ -581,316 +780,6 @@
 
   </div>
 
-  {%- comment -%} ============ QUICK-ADD STRIP ============ {%- endcomment -%}
-  {%- if section.settings.qa_enabled -%}
-    {%- assign qa_flavor_blocks = section.blocks | where: 'type', 'flavor' -%}
-    {%- assign qa_inner_alpha = section.settings.qa_inner_bg_opacity | times: 0.01 -%}
-    {%- assign qa_inner_bg_rgba = section.settings.qa_inner_bg_color | color_modify: 'alpha', qa_inner_alpha -%}
-
-    <div id="qa-strip-{{ section.id }}" class="qa" data-section-id="{{ section.id }}">
-      <div class="qa-inner{% if section.settings.qa_products_on_left %} swapped{% endif %}" data-qa-inner>
-
-        <div class="qa-copy">
-          {%- if section.settings.qa_eyebrow != blank -%}
-            <span class="qa-eyebrow">{{ section.settings.qa_eyebrow }}</span>
-          {%- endif -%}
-          <h2 class="qa-title">
-            {{ section.settings.qa_heading_lead }}
-            {%- if section.settings.qa_heading_accent != blank -%}
-              <span class="qa-accent">{{ section.settings.qa_heading_accent }}</span>
-            {%- endif -%}
-          </h2>
-          {%- if section.settings.qa_lead != blank -%}
-            <p class="qa-lead">{{ section.settings.qa_lead }}</p>
-          {%- endif -%}
-          {%- if section.settings.qa_show_swap -%}
-            <button class="qa-swap" type="button" data-qa-swap aria-label="Swap sides">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
-              {{ section.settings.qa_swap_label | default: 'Swap sides' }}
-            </button>
-          {%- endif -%}
-        </div>
-
-        <div class="qa-shop" data-qa-shop>
-          {%- for block in qa_flavor_blocks -%}
-            {%- assign prod = block.settings.product -%}
-            {%- if prod != blank -%}
-              {%- assign pv = prod.selected_or_first_available_variant | default: prod.variants.first -%}
-              {%- if block.settings.variant_title != blank -%}
-                {%- for v in prod.variants -%}
-                  {%- if v.title == block.settings.variant_title -%}{%- assign pv = v -%}{%- endif -%}
-                {%- endfor -%}
-              {%- endif -%}
-              {%- assign display_price   = pv.price -%}
-              {%- assign display_compare = pv.compare_at_price -%}
-              {%- assign sp_id_str = section.settings.qa_selling_plan_id | strip -%}
-              {%- if sp_id_str == blank -%}{%- assign sp_id_str = '5713658087' -%}{%- endif -%}
-              {%- for alloc in pv.selling_plan_allocations -%}
-                {%- assign alloc_id_str = alloc.selling_plan.id | append: '' -%}
-                {%- if alloc_id_str == sp_id_str -%}
-                  {%- assign display_price   = alloc.price -%}
-                  {%- assign display_compare = alloc.compare_at_price -%}
-                {%- endif -%}
-              {%- endfor -%}
-              {%- if block.settings.con_override -%}
-                {%- assign tile_con_enabled = block.settings.con_enabled -%}
-                {%- assign tile_color1      = block.settings.con_color -%}
-                {%- assign tile_grad        = block.settings.con_gradient -%}
-                {%- assign tile_color2      = block.settings.con_color2 -%}
-                {%- assign tile_angle       = block.settings.con_angle -%}
-              {%- else -%}
-                {%- assign tile_con_enabled = section.settings.qa_con_enabled -%}
-                {%- assign tile_color1      = section.settings.qa_con_color -%}
-                {%- assign tile_grad        = section.settings.qa_con_gradient -%}
-                {%- assign tile_color2      = section.settings.qa_con_color2 -%}
-                {%- assign tile_angle       = section.settings.qa_con_angle -%}
-              {%- endif -%}
-              {%- if tile_con_enabled -%}
-                {%- if tile_grad -%}
-                  {%- assign con_bg = 'linear-gradient(' | append: tile_angle | append: 'deg, ' | append: tile_color1 | append: ', ' | append: tile_color2 | append: ')' -%}
-                {%- else -%}
-                  {%- assign con_bg = tile_color1 -%}
-                {%- endif -%}
-              {%- else -%}
-                {%- assign con_bg = 'transparent' -%}
-              {%- endif -%}
-              {%- assign flavor_raw   = block.settings.label | default: pv.title | default: prod.title -%}
-              {%- assign flavor_parts = flavor_raw | split: '||' -%}
-              {%- assign brand_parts  = prod.title | split: "'" -%}
-
-              <div class="qa-prod{% unless tile_con_enabled %} con-off{% endunless %}"
-                   {{ block.shopify_attributes }}
-                   data-qa-prod
-                   data-variant-id="{{ pv.id }}"
-                   data-product-url="{{ prod.url }}"
-                   role="button" tabindex="0"
-                   aria-label="Add {{ flavor_raw | escape }} to cart"
-                   style="--con-bg:{{ con_bg }};--con-radius:{{ block.settings.img_radius }}px;--con-size:{{ block.settings.img_size }}%;--img-x:{{ block.settings.img_x }}px;--img-y:{{ block.settings.img_y }}px;">
-                <span class="qa-photo">
-                  {%- if block.settings.custom_image != blank -%}
-                    {{ block.settings.custom_image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flavor_raw, loading: 'lazy' }}
-                  {%- elsif pv.image -%}
-                    {{ pv.image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flavor_raw, loading: 'lazy' }}
-                  {%- elsif prod.featured_media -%}
-                    {{ prod.featured_media | image_url: width: 300 | image_tag: class: 'qa-img', alt: flavor_raw, loading: 'lazy' }}
-                  {%- elsif section.settings.qa_mark_image != blank -%}
-                    {{ section.settings.qa_mark_image | image_url: width: 240 | image_tag: class: 'qa-mark', alt: '' }}
-                  {%- endif -%}
-                  <button class="qa-remove" type="button" data-qa-remove aria-label="Remove one {{ flavor_raw | escape }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg>
-                  </button>
-                  <span class="qa-qty" data-qa-qty>0</span>
-                  <span class="qa-add">{{ section.settings.qa_add_label | default: '+ Add' }}</span>
-                </span>
-                <span class="qa-brand">
-                  {%- if brand_parts.size > 1 -%}
-                    {{ brand_parts[0] }}<span class="qa-apos">'</span>{{ brand_parts[1] }}
-                  {%- else -%}
-                    {{ prod.title }}
-                  {%- endif -%}
-                </span>
-                <span class="qa-name">
-                  {%- assign fp0_words = flavor_parts[0] | split: ' ' -%}
-                  {{ fp0_words | join: '<br>' }}
-                  {%- if flavor_parts.size > 1 -%}
-                    {%- assign fp1_words = flavor_parts[1] | split: ' ' -%}
-                    <br><span class="qa-accent">{{ fp1_words | join: '<br>' }}</span>
-                  {%- endif -%}
-                </span>
-                <span class="qa-price">
-                  {%- if display_compare and display_compare > display_price -%}
-                    <span class="qa-was">{{ display_compare | money }}</span>
-                  {%- endif -%}
-                  <span class="qa-now">{{ display_price | money }}</span>
-                </span>
-              </div>
-            {%- endif -%}
-          {%- endfor -%}
-          {%- if qa_flavor_blocks.size == 0 -%}
-            <p style="grid-column:1/-1;text-align:center;color:#8A7E76;font-size:13px;">Add "Flavor tile" blocks in the theme editor to populate this strip.</p>
-          {%- endif -%}
-        </div>
-
-      </div>
-    </div>
-
-    <style>
-      #qa-strip-{{ section.id }}{
-        --qa-navy:#1B3A5C; --qa-rose:{{ section.settings.qa_accent_color }}; --qa-cream:#FAF5F0;
-        --qa-mist:#E8DDD5; --qa-stone:#8A7E76;
-        --qa-serif:'Playfair Display','Georgia',serif;
-        --qa-display:'Cormorant Garamond','Georgia',serif;
-        --qa-sans:'DM Sans','Helvetica Neue',sans-serif;
-        --qa-shadow-sm:0 2px 12px rgba(27,58,92,.08);
-        --qa-shadow-md:0 4px 24px rgba(27,58,92,.10);
-        --qa-shadow-lg:0 8px 40px rgba(27,58,92,.12);
-        background:{{ section.settings.qa_bg_color }}; color:var(--qa-navy);
-        font-family:var(--qa-sans); display:block; overflow-x:clip;
-        padding:{{ section.settings.qa_section_pad_top }}px {{ section.settings.qa_section_pad_lr }}px {{ section.settings.qa_section_pad_bottom }}px;
-      }
-      #qa-strip-{{ section.id }} *{ box-sizing:border-box; }
-      #qa-strip-{{ section.id }} .qa-inner{
-        max-width:1180px; margin:0 auto;
-        display:grid; grid-template-columns:{{ section.settings.qa_col_split }}fr {{ 100 | minus: section.settings.qa_col_split }}fr; gap:{{ section.settings.qa_col_gap }}px; align-items:center;
-        padding:{{ section.settings.qa_inner_pad }}px 32px;
-        {%- if section.settings.qa_inner_min_height > 0 %} min-height:{{ section.settings.qa_inner_min_height }}px;{%- endif %}
-        {%- if section.settings.qa_inner_bg_image != blank -%}
-          background: linear-gradient({{ qa_inner_bg_rgba }},{{ qa_inner_bg_rgba }}), url('{{ section.settings.qa_inner_bg_image | image_url: width: 1600 }}') {{ section.settings.qa_inner_bg_position }}/{{ section.settings.qa_inner_bg_size }} no-repeat;
-        {%- else -%}
-          background: {{ qa_inner_bg_rgba }};
-        {%- endif -%}
-        border:{{ section.settings.qa_inner_border_width }}px {{ section.settings.qa_inner_border_style }} {{ section.settings.qa_inner_border_color }}; border-radius:28px;
-        box-shadow:var(--qa-shadow-sm);
-      }
-      #qa-strip-{{ section.id }} .qa-inner.swapped .qa-copy{ order:2; }
-      #qa-strip-{{ section.id }} .qa-inner.swapped .qa-shop{ order:1; }
-      #qa-strip-{{ section.id }} .qa-eyebrow{ display:inline-block; font-size:{{ section.settings.qa_eyebrow_size }}px; font-weight:600; letter-spacing:{{ section.settings.qa_eyebrow_ls }}px; text-transform:uppercase; color:{{ section.settings.qa_eyebrow_color }}; margin-bottom:{{ section.settings.qa_eyebrow_mb }}px; }
-      #qa-strip-{{ section.id }} .qa-title{ font-family:var(--qa-serif); font-weight:900; font-size:{{ section.settings.qa_heading_size }}px; line-height:{{ section.settings.qa_heading_lh }}%; letter-spacing:-.02em; color:{{ section.settings.qa_heading_color }}; margin:0 0 {{ section.settings.qa_heading_mb }}px; overflow-wrap:break-word; word-break:break-word; }
-      #qa-strip-{{ section.id }} .qa-accent{ color:{{ section.settings.qa_heading_accent_color }}; }
-      #qa-strip-{{ section.id }} .qa-title .qa-accent{ display:block; }
-      #qa-strip-{{ section.id }} .qa-lead{ font-family:var(--qa-display); font-weight:300; font-size:{{ section.settings.qa_lead_size }}px; letter-spacing:.02em; line-height:{{ section.settings.qa_lead_lh }}%; color:{{ section.settings.qa_lead_color }}; margin:0; }
-      #qa-strip-{{ section.id }} .qa-swap{ margin-top:18px; display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:999px; background:rgba(27,58,92,.04); border:1px solid rgba(27,58,92,.18); color:var(--qa-navy); font-family:var(--qa-sans); font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:background .15s,border-color .15s,color .15s; }
-      #qa-strip-{{ section.id }} .qa-swap:hover{ background:rgba(232,96,122,.12); border-color:var(--qa-rose); color:var(--qa-rose); }
-      #qa-strip-{{ section.id }} .qa-swap svg{ width:14px; height:14px; }
-      #qa-strip-{{ section.id }} .qa-shop{ display:grid; grid-template-columns:repeat({{ qa_flavor_blocks.size | at_least: 1 }},1fr); gap:{{ section.settings.qa_tile_gap }}px; align-items:start; }
-      #qa-strip-{{ section.id }} .qa-prod{ position:relative; display:flex; flex-direction:column; align-items:center; gap:7px; padding:0; border:none; background:none; cursor:pointer; text-align:center; font-family:var(--qa-sans); transition:transform .18s; width:100%; max-width:{{ section.settings.qa_tile_size }}px; margin:0 auto; }
-      #qa-strip-{{ section.id }} .qa-prod:hover{ transform:translateY(-3px); }
-      #qa-strip-{{ section.id }} .qa-photo{ position:relative; width:100%; aspect-ratio:1/1; border-radius:var(--con-radius,18px); overflow:hidden; background:var(--con-bg,transparent); display:flex; align-items:center; justify-content:center; box-shadow:var(--qa-shadow-md); transition:box-shadow .18s,outline-color .18s; outline:2px solid transparent; outline-offset:2px; }
-      #qa-strip-{{ section.id }} .qa-prod.con-off .qa-photo{ box-shadow:none; }
-      #qa-strip-{{ section.id }} .qa-prod.in-cart .qa-photo{ outline-color:var(--qa-rose); }
-      #qa-strip-{{ section.id }} .qa-prod:hover .qa-photo{ box-shadow:var(--qa-shadow-lg); }
-      #qa-strip-{{ section.id }} .qa-prod.con-off:hover .qa-photo{ box-shadow:none; }
-      #qa-strip-{{ section.id }} .qa-img{ position:relative; z-index:1; width:var(--con-size,78%); height:var(--con-size,78%); object-fit:contain; filter:drop-shadow(0 6px 12px rgba(27,58,92,.20)); transform:translateX(var(--img-x,0px)) translateY(var(--img-y,0px)); }
-      #qa-strip-{{ section.id }} .qa-mark{ position:relative; z-index:1; width:58%; height:auto; filter:drop-shadow(0 4px 8px rgba(27,58,92,.18)); }
-      #qa-strip-{{ section.id }} .qa-add{ position:absolute; z-index:2; bottom:8px; left:50%; transform:translateX(-50%); display:inline-flex; align-items:center; gap:4px; padding:4px 11px; border-radius:999px; background:var(--qa-navy); color:var(--qa-cream); font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; opacity:0; transition:opacity .18s; white-space:nowrap; }
-      #qa-strip-{{ section.id }} .qa-prod:hover .qa-add{ opacity:1; }
-      #qa-strip-{{ section.id }} .qa-remove{ position:absolute; top:7px; left:7px; z-index:4; width:24px; height:24px; border-radius:50%; border:none; cursor:pointer; background:#fff; color:var(--qa-navy); box-shadow:0 3px 8px rgba(0,0,0,.22); display:none; align-items:center; justify-content:center; font-size:16px; line-height:1; padding:0; }
-      #qa-strip-{{ section.id }} .qa-remove svg{ width:12px; height:12px; }
-      #qa-strip-{{ section.id }} .qa-remove:hover{ background:var(--qa-navy); color:#fff; }
-      #qa-strip-{{ section.id }} .qa-qty{ position:absolute; top:7px; right:7px; z-index:4; min-width:24px; height:24px; padding:0 6px; border-radius:999px; background:var(--qa-rose); color:#fff; font-size:12px; font-weight:700; display:none; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(232,96,122,.4); }
-      #qa-strip-{{ section.id }} .qa-prod.in-cart .qa-remove,
-      #qa-strip-{{ section.id }} .qa-prod.in-cart .qa-qty{ display:inline-flex; }
-      #qa-strip-{{ section.id }} .qa-brand{ font-family:'{{ section.settings.qa_brand_font }}','Playfair Display','Georgia',serif; font-weight:800; font-size:{{ section.settings.qa_brand_size }}px; line-height:1.1; color:{{ section.settings.qa_brand_color }}; margin-bottom:-2px; }
-      #qa-strip-{{ section.id }} .qa-apos{ color:var(--qa-rose); }
-      #qa-strip-{{ section.id }} .qa-name{ font-family:'{{ section.settings.qa_flavor_font }}','Playfair Display','Georgia',serif; font-size:{{ section.settings.qa_flavor_size }}px; font-weight:500; line-height:1.2; color:{{ section.settings.qa_flavor_color }}; }
-      #qa-strip-{{ section.id }} .qa-price{ margin-top:-2px; display:flex; flex-direction:column; align-items:center; gap:1px; }
-      #qa-strip-{{ section.id }} .qa-was{ font-family:'{{ section.settings.qa_price_orig_font }}','Playfair Display','Georgia',serif; font-size:{{ section.settings.qa_price_orig_size }}px; color:{{ section.settings.qa_price_orig_color }}; text-decoration:line-through; }
-      #qa-strip-{{ section.id }} .qa-now{ font-family:'{{ section.settings.qa_price_sale_font }}','Playfair Display','Georgia',serif; font-size:{{ section.settings.qa_price_sale_size }}px; color:{{ section.settings.qa_price_sale_color }}; font-weight:700; }
-      #qa-strip-{{ section.id }} .qa-prod.is-busy{ opacity:.6; pointer-events:none; }
-      #qa-strip-{{ section.id }} .qa-copy{ text-align:{{ section.settings.qa_copy_align }}; }
-      @media (max-width:900px){
-        #qa-strip-{{ section.id }}{ padding:{{ section.settings.qa_section_pad_top }}px {{ section.settings.qa_mobile_pad_lr }}px {{ section.settings.qa_section_pad_bottom }}px; }
-        #qa-strip-{{ section.id }} .qa-inner{ width:100%; max-width:100%; box-sizing:border-box; grid-template-columns:1fr; gap:28px; padding:22px {{ section.settings.qa_mobile_pad_lr }}px; }
-        #qa-strip-{{ section.id }} .qa-inner.swapped .qa-copy{ order:1; }
-        #qa-strip-{{ section.id }} .qa-inner.swapped .qa-shop{ order:2; }
-        #qa-strip-{{ section.id }} .qa-shop{ grid-template-columns:repeat(2,1fr); column-gap:{{ section.settings.qa_mobile_col_gap }}px; row-gap:{{ section.settings.qa_mobile_row_gap }}px; }
-        #qa-strip-{{ section.id }} .qa-title{ font-size:{{ section.settings.qa_mobile_heading_size }}px; }
-        #qa-strip-{{ section.id }} .qa-eyebrow{ font-size:{{ section.settings.qa_mobile_eyebrow_size }}px; }
-        #qa-strip-{{ section.id }} .qa-lead{ font-size:{{ section.settings.qa_mobile_lead_size }}px; }
-        #qa-strip-{{ section.id }} .qa-prod{ max-width:{{ section.settings.qa_mobile_tile_size }}px; }
-        #qa-strip-{{ section.id }} .qa-add{ display:none; }
-      }
-    </style>
-
-    <script>
-    (function(){
-      var root = document.getElementById('qa-strip-{{ section.id }}');
-      if(!root) return;
-      var inner = root.querySelector('[data-qa-inner]');
-      var swapBtn = root.querySelector('[data-qa-swap]');
-      if(swapBtn){ swapBtn.addEventListener('click', function(){ inner.classList.toggle('swapped'); }); }
-      var tiles = Array.prototype.slice.call(root.querySelectorAll('[data-qa-prod]'));
-      var rawSP = '{{ section.settings.qa_selling_plan_id | strip }}';
-      if(rawSP === '') rawSP = '5713658087';
-      var spNum = null;
-      var parsed = parseInt(rawSP, 10);
-      if(!isNaN(parsed) && parsed > 0) spNum = parsed;
-      function setTile(tile, qty){
-        qty = Math.max(0, qty|0);
-        tile.dataset.qty = qty;
-        tile.classList.toggle('in-cart', qty > 0);
-        var b = tile.querySelector('[data-qa-qty]');
-        if(b) b.textContent = qty;
-      }
-      function notifyTheme(cart){
-        try {
-          document.querySelectorAll('.cart-count-bubble span:first-child, [data-cart-count]').forEach(function(el){
-            if(typeof cart.item_count === 'number') el.textContent = cart.item_count;
-          });
-          document.dispatchEvent(new CustomEvent('qa:cart-updated', { detail: cart, bubbles: true }));
-          if(window.Shopify && Shopify.onCartUpdate) Shopify.onCartUpdate(cart);
-        } catch(e){}
-      }
-      function refreshCounts(){
-        fetch('/cart.js', { headers: { 'Accept':'application/json' } })
-          .then(function(r){ return r.json(); })
-          .then(function(cart){
-            var counts = {}, lineKeys = {};
-            (cart.items || []).forEach(function(it){
-              counts[it.variant_id] = (counts[it.variant_id]||0) + it.quantity;
-              lineKeys[it.variant_id] = it.key;
-            });
-            tiles.forEach(function(t){
-              var vid = parseInt(t.dataset.variantId, 10);
-              setTile(t, counts[vid] || 0);
-              if(lineKeys[vid]) t.dataset.lineKey = lineKeys[vid];
-            });
-            notifyTheme(cart);
-          })
-          .catch(function(e){ console.warn('qa refreshCounts error', e); });
-      }
-      function addOne(tile){
-        var id = tile.dataset.variantId;
-        if(!id) return;
-        var prevQty = parseInt(tile.dataset.qty, 10) || 0;
-        setTile(tile, prevQty + 1);
-        tile.classList.add('is-busy');
-        var item = { id: parseInt(id, 10), quantity: 1 };
-        if(spNum !== null) item.selling_plan = spNum;
-        fetch('/cart/add.js', {
-          method: 'POST',
-          headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
-          body: JSON.stringify({ items: [item] })
-        })
-        .then(function(r){
-          if(!r.ok){ return r.json().then(function(e){ throw e; }); }
-          return r.json();
-        })
-        .then(function(){ refreshCounts(); })
-        .catch(function(err){ console.error('[QA] add failed', err); setTile(tile, prevQty); })
-        .then(function(){ tile.classList.remove('is-busy'); });
-      }
-      function removeOne(tile){
-        var current = parseInt(tile.dataset.qty, 10) || 0;
-        if(current <= 0) return;
-        setTile(tile, current - 1);
-        tile.classList.add('is-busy');
-        var lineId = tile.dataset.lineKey || tile.dataset.variantId;
-        fetch('/cart/change.js', {
-          method: 'POST',
-          headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
-          body: JSON.stringify({ id: lineId, quantity: current - 1 })
-        })
-        .then(function(r){
-          if(!r.ok) return r.json().then(function(e){ throw e; });
-          return r.json();
-        })
-        .then(function(){ refreshCounts(); })
-        .catch(function(err){ console.error('[QA] remove failed', err); setTile(tile, current); })
-        .then(function(){ tile.classList.remove('is-busy'); });
-      }
-      tiles.forEach(function(tile){
-        tile.addEventListener('click', function(){ addOne(tile); });
-        tile.addEventListener('keydown', function(e){
-          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); addOne(tile); }
-        });
-        var rm = tile.querySelector('[data-qa-remove]');
-        if(rm){ rm.addEventListener('click', function(e){ e.stopPropagation(); removeOne(tile); }); }
-      });
-      refreshCounts();
-    })();
-    </script>
-  {%- endif -%}
 
 </div>
 
@@ -1206,6 +1095,92 @@
       ]
     },
     {
+      "type": "quick_add_strip",
+      "name": "Quick-Add Strip",
+      "settings": [
+        { "type": "header", "content": "Copy" },
+        { "type": "select", "id": "copy_align", "label": "Text alignment", "default": "left", "options": [{ "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" }] },
+        { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Subscribe & Save" },
+        { "type": "text", "id": "heading_lead", "label": "Heading (line 1)", "default": "10% OFF" },
+        { "type": "text", "id": "heading_accent", "label": "Heading accent (line 2)", "default": "+ Free Shipping, Always" },
+        { "type": "text", "id": "lead", "label": "Lead line", "default": "Quick add to cart — tap a flavor to drop it in." },
+        { "type": "header", "content": "Subscribe & Save" },
+        { "type": "text", "id": "selling_plan_id", "label": "Selling plan ID", "default": "5713658087", "info": "Katching Monthly 10% off. Alternate: 5842731239." },
+        { "type": "header", "content": "Spacing" },
+        { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 80, "step": 2, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 80, "step": 2, "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_pad_top", "label": "Strip padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 20 },
+        { "type": "range", "id": "section_pad_bottom", "label": "Strip padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 36 },
+        { "type": "range", "id": "section_pad_lr", "label": "Strip padding left & right", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 32 },
+        { "type": "range", "id": "mobile_pad_lr", "label": "Strip padding left & right (mobile)", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 16 },
+        { "type": "range", "id": "inner_pad", "label": "Inner container padding", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 28 },
+        { "type": "range", "id": "inner_min_height", "label": "Inner container min height", "min": 0, "max": 600, "step": 10, "unit": "px", "default": 0 },
+        { "type": "range", "id": "col_split", "label": "Copy column width", "min": 1, "max": 99, "step": 1, "default": 41 },
+        { "type": "range", "id": "col_gap", "label": "Gap between copy and products", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 44 },
+        { "type": "range", "id": "tile_size", "label": "Tile width", "min": 50, "max": 240, "step": 10, "unit": "px", "default": 120 },
+        { "type": "range", "id": "tile_gap", "label": "Tile spacing (desktop)", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 12 },
+        { "type": "range", "id": "mobile_col_gap", "label": "Tile spacing left & right (mobile)", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 10 },
+        { "type": "range", "id": "mobile_row_gap", "label": "Tile spacing top & bottom (mobile)", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 10 },
+        { "type": "range", "id": "mobile_tile_size", "label": "Tile max size (mobile)", "min": 40, "max": 160, "step": 10, "unit": "px", "default": 80 },
+        { "type": "checkbox", "id": "products_on_left", "label": "Products on the left", "default": false },
+        { "type": "checkbox", "id": "show_swap", "label": "Show swap sides button", "default": true },
+        { "type": "text", "id": "swap_label", "label": "Swap button label", "default": "Swap sides" },
+        { "type": "header", "content": "Colors" },
+        { "type": "color", "id": "accent_color", "label": "Accent color", "default": "#E8607A" },
+        { "type": "header", "content": "Inner container border" },
+        { "type": "range", "id": "inner_border_width", "label": "Border thickness", "min": 0, "max": 12, "step": 1, "unit": "px", "default": 2 },
+        { "type": "color", "id": "inner_border_color", "label": "Border color", "default": "#E8DDD5" },
+        { "type": "select", "id": "inner_border_style", "label": "Border style", "default": "solid", "options": [{ "value": "solid", "label": "Solid" }, { "value": "dashed", "label": "Dashed" }, { "value": "dotted", "label": "Dotted" }, { "value": "none", "label": "None" }] },
+        { "type": "header", "content": "Inner container background" },
+        { "type": "color", "id": "inner_bg_color", "label": "Background color", "default": "#ffffff" },
+        { "type": "range", "id": "inner_bg_opacity", "label": "Background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 55 },
+        { "type": "image_picker", "id": "inner_bg_image", "label": "Background image" },
+        { "type": "select", "id": "inner_bg_size", "label": "Image size", "default": "cover", "options": [{ "value": "cover", "label": "Cover" }, { "value": "contain", "label": "Contain" }, { "value": "auto", "label": "Auto" }] },
+        { "type": "select", "id": "inner_bg_position", "label": "Image position", "default": "center center", "options": [{ "value": "center center", "label": "Center" }, { "value": "top center", "label": "Top" }, { "value": "bottom center", "label": "Bottom" }, { "value": "center left", "label": "Left" }, { "value": "center right", "label": "Right" }] },
+        { "type": "header", "content": "Eyebrow text" },
+        { "type": "color", "id": "eyebrow_color", "label": "Color", "default": "#E8607A" },
+        { "type": "range", "id": "eyebrow_size", "label": "Font size", "min": 8, "max": 28, "step": 1, "unit": "px", "default": 11 },
+        { "type": "range", "id": "eyebrow_ls", "label": "Letter spacing", "min": 0, "max": 10, "step": 1, "unit": "px", "default": 3 },
+        { "type": "range", "id": "eyebrow_mb", "label": "Space below eyebrow", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 12 },
+        { "type": "header", "content": "Heading (line 1)" },
+        { "type": "color", "id": "heading_color", "label": "Color", "default": "#1B3A5C" },
+        { "type": "range", "id": "heading_size", "label": "Font size", "min": 16, "max": 80, "step": 2, "unit": "px", "default": 36 },
+        { "type": "range", "id": "heading_lh", "label": "Line height", "min": 80, "max": 160, "step": 5, "unit": "%", "default": 110 },
+        { "type": "range", "id": "heading_mb", "label": "Space below heading", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 14 },
+        { "type": "header", "content": "Heading accent (line 2)" },
+        { "type": "color", "id": "heading_accent_color", "label": "Color", "default": "#E8607A" },
+        { "type": "range", "id": "mobile_heading_size", "label": "Heading font size (mobile)", "min": 12, "max": 60, "step": 2, "unit": "px", "default": 24 },
+        { "type": "header", "content": "Lead line" },
+        { "type": "color", "id": "lead_color", "label": "Color", "default": "#1B3A5C" },
+        { "type": "range", "id": "lead_size", "label": "Font size", "min": 10, "max": 36, "step": 1, "unit": "px", "default": 18 },
+        { "type": "range", "id": "lead_lh", "label": "Line height", "min": 80, "max": 200, "step": 5, "unit": "%", "default": 140 },
+        { "type": "range", "id": "mobile_eyebrow_size", "label": "Eyebrow font size (mobile)", "min": 8, "max": 20, "step": 1, "unit": "px", "default": 10 },
+        { "type": "range", "id": "mobile_lead_size", "label": "Lead line font size (mobile)", "min": 10, "max": 28, "step": 1, "unit": "px", "default": 14 },
+        { "type": "header", "content": "Photo container" },
+        { "type": "checkbox", "id": "con_enabled", "label": "Show container", "default": true },
+        { "type": "color", "id": "con_color", "label": "Container color", "default": "#F2C4CE" },
+        { "type": "checkbox", "id": "con_gradient", "label": "Use gradient", "default": false },
+        { "type": "color", "id": "con_color2", "label": "Gradient end color", "default": "#E8A87C" },
+        { "type": "range", "id": "con_angle", "label": "Gradient angle", "min": 0, "max": 360, "step": 15, "unit": "°", "default": 135 },
+        { "type": "header", "content": "Typography — Product name" },
+        { "type": "text", "id": "brand_font", "label": "Font family", "default": "Playfair Display" },
+        { "type": "range", "id": "brand_size", "label": "Font size", "min": 8, "max": 32, "step": 1, "unit": "px", "default": 14 },
+        { "type": "color", "id": "brand_color", "label": "Color", "default": "#1B3A5C" },
+        { "type": "header", "content": "Typography — Flavor name" },
+        { "type": "text", "id": "flavor_font", "label": "Font family", "default": "Playfair Display" },
+        { "type": "range", "id": "flavor_size", "label": "Font size", "min": 8, "max": 28, "step": 1, "unit": "px", "default": 11 },
+        { "type": "color", "id": "flavor_color", "label": "Color", "default": "#8A7E76" },
+        { "type": "header", "content": "Typography — Original price" },
+        { "type": "range", "id": "price_orig_size", "label": "Font size", "min": 8, "max": 24, "step": 1, "unit": "px", "default": 11 },
+        { "type": "color", "id": "price_orig_color", "label": "Color", "default": "#8A7E76" },
+        { "type": "header", "content": "Typography — Sale price" },
+        { "type": "range", "id": "price_sale_size", "label": "Font size", "min": 8, "max": 24, "step": 1, "unit": "px", "default": 11 },
+        { "type": "color", "id": "price_sale_color", "label": "Color", "default": "#E8607A" },
+        { "type": "header", "content": "Misc" },
+        { "type": "text", "id": "add_label", "label": "Add hover label", "default": "+ Add" }
+      ]
+    },
+    {
       "type": "flavor",
       "name": "Flavor tile",
       "settings": [
@@ -1251,107 +1226,7 @@
     { "type": "range", "id": "mobile_padding_bottom", "label": "Bottom (px)", "min": 0, "max": 120, "step": 4, "default": 40 },
     { "type": "range", "id": "mobile_padding_left", "label": "Left (px)", "min": 0, "max": 60, "step": 2, "default": 20 },
     { "type": "range", "id": "mobile_padding_right", "label": "Right (px)", "min": 0, "max": 60, "step": 2, "default": 20 },
-    { "type": "range", "id": "mobile_column_gap", "label": "Mobile gap (px)", "min": 0, "max": 60, "step": 4, "default": 24 },
-
-    { "type": "header", "content": "— Quick-Add Strip —" },
-    { "type": "checkbox", "id": "qa_enabled", "label": "Show Quick-Add strip below hero", "default": false },
-    { "type": "paragraph", "content": "Add 'Flavor tile' blocks to populate the strip. All settings below only apply when the strip is enabled." },
-
-    { "type": "header", "content": "QA — Copy" },
-    { "type": "select", "id": "qa_copy_align", "label": "Text alignment", "default": "left", "options": [{ "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" }] },
-    { "type": "text", "id": "qa_eyebrow", "label": "Eyebrow", "default": "Subscribe & Save" },
-    { "type": "text", "id": "qa_heading_lead", "label": "Heading (line 1)", "default": "10% OFF" },
-    { "type": "text", "id": "qa_heading_accent", "label": "Heading accent (line 2)", "default": "+ Free Shipping, Always" },
-    { "type": "text", "id": "qa_lead", "label": "Lead line", "default": "Quick add to cart — tap a flavor to drop it in." },
-
-    { "type": "header", "content": "QA — Subscribe & Save" },
-    { "type": "text", "id": "qa_selling_plan_id", "label": "Selling plan ID", "default": "5713658087", "info": "Katching Monthly 10% off plan. Alternate: 5842731239. Leave blank for default." },
-
-    { "type": "header", "content": "QA — Layout & Spacing" },
-    { "type": "color", "id": "qa_bg_color", "label": "Section background", "default": "#FAF5F0" },
-    { "type": "color", "id": "qa_accent_color", "label": "Accent / coral color", "default": "#E8607A" },
-    { "type": "range", "id": "qa_section_pad_top", "label": "Section padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 20 },
-    { "type": "range", "id": "qa_section_pad_bottom", "label": "Section padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 36 },
-    { "type": "range", "id": "qa_section_pad_lr", "label": "Section padding left & right (desktop)", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 32 },
-    { "type": "range", "id": "qa_mobile_pad_lr", "label": "Section padding left & right (mobile)", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 16 },
-    { "type": "range", "id": "qa_mobile_tile_size", "label": "Tile max size (mobile)", "min": 40, "max": 160, "step": 10, "unit": "px", "default": 80 },
-    { "type": "range", "id": "qa_mobile_heading_size", "label": "Heading font size (mobile)", "min": 12, "max": 60, "step": 2, "unit": "px", "default": 24 },
-    { "type": "range", "id": "qa_mobile_eyebrow_size", "label": "Eyebrow font size (mobile)", "min": 8, "max": 20, "step": 1, "unit": "px", "default": 10 },
-    { "type": "range", "id": "qa_mobile_lead_size", "label": "Lead line font size (mobile)", "min": 10, "max": 28, "step": 1, "unit": "px", "default": 14 },
-    { "type": "range", "id": "qa_inner_pad", "label": "Inner container padding", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 28 },
-    { "type": "range", "id": "qa_inner_min_height", "label": "Inner container min height", "min": 0, "max": 600, "step": 10, "unit": "px", "default": 0 },
-
-    { "type": "header", "content": "QA — Inner container border" },
-    { "type": "range", "id": "qa_inner_border_width", "label": "Border thickness", "min": 0, "max": 12, "step": 1, "unit": "px", "default": 2 },
-    { "type": "color", "id": "qa_inner_border_color", "label": "Border color", "default": "#E8DDD5" },
-    { "type": "select", "id": "qa_inner_border_style", "label": "Border style", "default": "solid", "options": [{ "value": "solid", "label": "Solid" }, { "value": "dashed", "label": "Dashed" }, { "value": "dotted", "label": "Dotted" }, { "value": "none", "label": "None" }] },
-
-    { "type": "header", "content": "QA — Inner container background" },
-    { "type": "color", "id": "qa_inner_bg_color", "label": "Background color", "default": "#ffffff" },
-    { "type": "range", "id": "qa_inner_bg_opacity", "label": "Background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 55 },
-    { "type": "image_picker", "id": "qa_inner_bg_image", "label": "Background image" },
-    { "type": "select", "id": "qa_inner_bg_size", "label": "Image size", "default": "cover", "options": [{ "value": "cover", "label": "Cover" }, { "value": "contain", "label": "Contain" }, { "value": "auto", "label": "Auto" }] },
-    { "type": "select", "id": "qa_inner_bg_position", "label": "Image position", "default": "center center", "options": [{ "value": "center center", "label": "Center" }, { "value": "top center", "label": "Top" }, { "value": "bottom center", "label": "Bottom" }, { "value": "center left", "label": "Left" }, { "value": "center right", "label": "Right" }] },
-    { "type": "range", "id": "qa_tile_size", "label": "Tile width", "min": 50, "max": 240, "step": 10, "unit": "px", "default": 120 },
-    { "type": "range", "id": "qa_tile_gap", "label": "Spacing between tiles (desktop)", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 12 },
-    { "type": "range", "id": "qa_mobile_col_gap", "label": "Tile spacing left & right (mobile)", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 10 },
-    { "type": "range", "id": "qa_mobile_row_gap", "label": "Tile spacing top & bottom (mobile)", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 10 },
-    { "type": "range", "id": "qa_col_split", "label": "Copy column width", "min": 1, "max": 99, "step": 1, "default": 41 },
-    { "type": "range", "id": "qa_col_gap", "label": "Gap between copy and products", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 44 },
-    { "type": "checkbox", "id": "qa_products_on_left", "label": "Products on the left", "default": false },
-    { "type": "checkbox", "id": "qa_show_swap", "label": "Show swap sides button", "default": true },
-    { "type": "text", "id": "qa_swap_label", "label": "Swap button label", "default": "Swap sides" },
-
-    { "type": "header", "content": "QA — Eyebrow text" },
-    { "type": "color", "id": "qa_eyebrow_color", "label": "Color", "default": "#E8607A" },
-    { "type": "range", "id": "qa_eyebrow_size", "label": "Font size", "min": 8, "max": 28, "step": 1, "unit": "px", "default": 11 },
-    { "type": "range", "id": "qa_eyebrow_ls", "label": "Letter spacing", "min": 0, "max": 10, "step": 1, "unit": "px", "default": 3 },
-    { "type": "range", "id": "qa_eyebrow_mb", "label": "Space below eyebrow", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 12 },
-
-    { "type": "header", "content": "QA — Heading (line 1)" },
-    { "type": "color", "id": "qa_heading_color", "label": "Color", "default": "#1B3A5C" },
-    { "type": "range", "id": "qa_heading_size", "label": "Font size", "min": 16, "max": 80, "step": 2, "unit": "px", "default": 36 },
-    { "type": "range", "id": "qa_heading_lh", "label": "Line height", "min": 80, "max": 160, "step": 5, "unit": "%", "default": 110 },
-    { "type": "range", "id": "qa_heading_mb", "label": "Space below heading", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 14 },
-
-    { "type": "header", "content": "QA — Heading accent (line 2)" },
-    { "type": "color", "id": "qa_heading_accent_color", "label": "Color", "default": "#E8607A" },
-
-    { "type": "header", "content": "QA — Lead line" },
-    { "type": "color", "id": "qa_lead_color", "label": "Color", "default": "#1B3A5C" },
-    { "type": "range", "id": "qa_lead_size", "label": "Font size", "min": 10, "max": 36, "step": 1, "unit": "px", "default": 18 },
-    { "type": "range", "id": "qa_lead_lh", "label": "Line height", "min": 80, "max": 200, "step": 5, "unit": "%", "default": 140 },
-
-    { "type": "header", "content": "QA — Photo container color" },
-    { "type": "checkbox", "id": "qa_con_enabled", "label": "Show container", "default": true },
-    { "type": "color", "id": "qa_con_color", "label": "Container color", "default": "#F2C4CE" },
-    { "type": "checkbox", "id": "qa_con_gradient", "label": "Use gradient", "default": false },
-    { "type": "color", "id": "qa_con_color2", "label": "Gradient end color", "default": "#E8A87C" },
-    { "type": "range", "id": "qa_con_angle", "label": "Gradient angle", "min": 0, "max": 360, "step": 15, "unit": "°", "default": 135 },
-
-    { "type": "header", "content": "QA — Typography: Product name" },
-    { "type": "text", "id": "qa_brand_font", "label": "Font family", "default": "Playfair Display" },
-    { "type": "range", "id": "qa_brand_size", "label": "Font size", "min": 8, "max": 32, "step": 1, "unit": "px", "default": 14 },
-    { "type": "color", "id": "qa_brand_color", "label": "Color", "default": "#1B3A5C" },
-
-    { "type": "header", "content": "QA — Typography: Flavor name" },
-    { "type": "text", "id": "qa_flavor_font", "label": "Font family", "default": "Playfair Display" },
-    { "type": "range", "id": "qa_flavor_size", "label": "Font size", "min": 8, "max": 28, "step": 1, "unit": "px", "default": 11 },
-    { "type": "color", "id": "qa_flavor_color", "label": "Color", "default": "#8A7E76" },
-
-    { "type": "header", "content": "QA — Typography: Original price" },
-    { "type": "text", "id": "qa_price_orig_font", "label": "Font family", "default": "Playfair Display" },
-    { "type": "range", "id": "qa_price_orig_size", "label": "Font size", "min": 8, "max": 24, "step": 1, "unit": "px", "default": 11 },
-    { "type": "color", "id": "qa_price_orig_color", "label": "Color", "default": "#8A7E76" },
-
-    { "type": "header", "content": "QA — Typography: Sale price" },
-    { "type": "text", "id": "qa_price_sale_font", "label": "Font family", "default": "Playfair Display" },
-    { "type": "range", "id": "qa_price_sale_size", "label": "Font size", "min": 8, "max": 24, "step": 1, "unit": "px", "default": 11 },
-    { "type": "color", "id": "qa_price_sale_color", "label": "Color", "default": "#E8607A" },
-
-    { "type": "header", "content": "QA — Misc" },
-    { "type": "text", "id": "qa_add_label", "label": "Add hover label", "default": "+ Add" },
-    { "type": "image_picker", "id": "qa_mark_image", "label": "Fallback mark image" }
+    { "type": "range", "id": "mobile_column_gap", "label": "Mobile gap (px)", "min": 0, "max": 60, "step": 4, "default": 24 }
   ],
   "presets": [
     { "name": "Hero" }
