@@ -115,6 +115,107 @@
       </div>
     </div>
 
+    {%- comment -%} ---- Mobile stacked cards (hidden on desktop) ---- {%- endcomment -%}
+    <div class="cmp-mob">
+
+      {%- comment -%} Your product card {%- endcomment -%}
+      <div class="cmp-mob-card cmp-mob-us">
+        {%- if section.settings.us_badge != blank -%}<span class="cmp-mob-badge">{{ section.settings.us_badge }}</span>{%- endif -%}
+        <div class="cmp-mob-head">
+          {%- if section.settings.us_mark != blank -%}{{ section.settings.us_mark | image_url: width: 120 | image_tag: class: 'cmp-mob-mark', alt: brand }}{%- endif -%}
+          <span class="cmp-mob-brand cmp-mob-brand-us">{{ bp[0] }}{%- if bp.size > 1 -%}<span class="cmp-apos">&#8217;</span>{{ bp[1] }}{%- endif -%}</span>
+          {%- if section.settings.us_tag != blank -%}<span class="cmp-mob-tag cmp-mob-tag-us">{{ section.settings.us_tag }}</span>{%- endif -%}
+        </div>
+        {%- for block in section.blocks -%}
+          {%- if block.settings.is_price -%}
+            <div class="cmp-mob-row cmp-mob-price-row" {{ block.shopify_attributes }}>
+              <span class="cmp-mob-label">{{ block.settings.label }}</span>
+              <span class="cmp-price us">{{ block.settings.us_text }}<small>{{ unit }}</small></span>
+            </div>
+          {%- else -%}
+            <div class="cmp-mob-row" {{ block.shopify_attributes }}>
+              <span class="cmp-mob-label">
+                {{ block.settings.label }}
+                {%- if block.settings.sublabel != blank -%}<span class="cmp-feat-sub">{{ block.settings.sublabel }}</span>{%- endif -%}
+              </span>
+              <span class="cmp-mob-val">
+                {%- case block.settings.us_type -%}
+                  {%- when 'cross' -%}<span class="cmp-ic no">{{ svg_cross }}</span>
+                  {%- when 'text' -%}<span class="cmp-txt-yes">{{ block.settings.us_text }}</span>
+                  {%- else -%}<span class="cmp-ic yes">{{ svg_check }}</span>
+                {%- endcase -%}
+              </span>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Competitor 1 card {%- endcomment -%}
+      <div class="cmp-mob-card cmp-mob-them">
+        <div class="cmp-mob-head">
+          <span class="cmp-them-dot"></span>
+          <span class="cmp-mob-brand cmp-mob-brand-them">{{ section.settings.c1_name | default: 'Leading Mix' }}</span>
+          {%- if section.settings.c1_tag != blank -%}<span class="cmp-mob-tag cmp-mob-tag-them">{{ section.settings.c1_tag }}</span>{%- endif -%}
+        </div>
+        {%- for block in section.blocks -%}
+          {%- if block.settings.is_price -%}
+            <div class="cmp-mob-row cmp-mob-price-row" {{ block.shopify_attributes }}>
+              <span class="cmp-mob-label">{{ block.settings.label }}</span>
+              <span class="cmp-price them">{{ block.settings.c1_text }}<small>{{ unit }}</small></span>
+            </div>
+          {%- else -%}
+            <div class="cmp-mob-row" {{ block.shopify_attributes }}>
+              <span class="cmp-mob-label">
+                {{ block.settings.label }}
+                {%- if block.settings.sublabel != blank -%}<span class="cmp-feat-sub">{{ block.settings.sublabel }}</span>{%- endif -%}
+              </span>
+              <span class="cmp-mob-val">
+                {%- case block.settings.c1_type -%}
+                  {%- when 'cross' -%}<span class="cmp-ic no">{{ svg_cross }}</span>
+                  {%- when 'text' -%}<span class="cmp-txt-no">{{ block.settings.c1_text }}</span>
+                  {%- else -%}<span class="cmp-ic eq">{{ svg_check }}</span>
+                {%- endcase -%}
+              </span>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- if three -%}
+        {%- comment -%} Competitor 2 card {%- endcomment -%}
+        <div class="cmp-mob-card cmp-mob-them cmp-mob-them2">
+          <div class="cmp-mob-head">
+            <span class="cmp-them-dot"></span>
+            <span class="cmp-mob-brand cmp-mob-brand-them">{{ section.settings.c2_name | default: 'Mood Blend' }}</span>
+            {%- if section.settings.c2_tag != blank -%}<span class="cmp-mob-tag cmp-mob-tag-them">{{ section.settings.c2_tag }}</span>{%- endif -%}
+          </div>
+          {%- for block in section.blocks -%}
+            {%- if block.settings.is_price -%}
+              <div class="cmp-mob-row cmp-mob-price-row" {{ block.shopify_attributes }}>
+                <span class="cmp-mob-label">{{ block.settings.label }}</span>
+                <span class="cmp-price them">{{ block.settings.c2_text }}<small>{{ unit }}</small></span>
+              </div>
+            {%- else -%}
+              <div class="cmp-mob-row" {{ block.shopify_attributes }}>
+                <span class="cmp-mob-label">
+                  {{ block.settings.label }}
+                  {%- if block.settings.sublabel != blank -%}<span class="cmp-feat-sub">{{ block.settings.sublabel }}</span>{%- endif -%}
+                </span>
+                <span class="cmp-mob-val">
+                  {%- case block.settings.c2_type -%}
+                    {%- when 'cross' -%}<span class="cmp-ic no">{{ svg_cross }}</span>
+                    {%- when 'text' -%}<span class="cmp-txt-no">{{ block.settings.c2_text }}</span>
+                    {%- else -%}<span class="cmp-ic eq">{{ svg_check }}</span>
+                  {%- endcase -%}
+                </span>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+    </div>
+
     {%- if section.settings.note != blank -%}
       <p class="cmp-note">
         {%- if section.settings.note_strong != blank -%}<span class="cmp-note-strong">{{ section.settings.note_strong }}</span> {%- endif -%}
@@ -391,8 +492,15 @@
   }
   #cmp-{{ section.id }} .cmp-note-heart { color: var(--cmp-note-heart-color); }
 
+  /* ---- Show/hide: desktop vs mobile layouts ---- */
+  #cmp-{{ section.id }} .cmp-mob  { display: none; }
+  #cmp-{{ section.id }} .cmp-scroll { display: block; }
+
   /* ---- Mobile ---- */
   @media (max-width: 860px) {
+    #cmp-{{ section.id }} .cmp-scroll { display: none; }
+    #cmp-{{ section.id }} .cmp-mob    { display: flex; flex-direction: column; gap: {{ section.settings.mob_card_gap }}px; }
+
     #cmp-{{ section.id }} {
       padding: {{ section.settings.pad_top_m }}px {{ section.settings.pad_x_m }}px {{ section.settings.pad_bottom_m }}px;
       --cmp-ey-size:       {{ section.settings.eyebrow_size_m }}px;
@@ -400,16 +508,11 @@
       --cmp-h-max:         {{ section.settings.title_size_min_m }}px;
       --cmp-lead-size:     {{ section.settings.lead_size_m }}px;
       --cmp-badge-size:    {{ section.settings.badge_size_m }}px;
-      --cmp-ch-h:          {{ section.settings.cellhead_h_m }}px;
       --cmp-brand-us-size: {{ section.settings.brand_us_size_m }}px;
       --cmp-brand-th-size: {{ section.settings.brand_them_size_m }}px;
       --cmp-tag-size:      {{ section.settings.tag_size_m }}px;
       --cmp-dot-size:      {{ section.settings.them_dot_size_m }}px;
       --cmp-mark-h:        {{ section.settings.mark_h_m }}px;
-      --cmp-cell-h:        {{ section.settings.cell_h_m }}px;
-      --cmp-cell-size:     {{ section.settings.cell_size_m }}px;
-      --cmp-feat-size:     {{ section.settings.feat_size_m }}px;
-      --cmp-sub-size:      {{ section.settings.sub_size_m }}px;
       --cmp-ic-size:       {{ section.settings.ic_size_m }}px;
       --cmp-ic-svg:        {{ section.settings.ic_svg_m }}px;
       --cmp-price-size:    {{ section.settings.price_size_m }}px;
@@ -417,9 +520,79 @@
       --cmp-note-size:     {{ section.settings.note_size_m }}px;
       --cmp-feat-ey-size:  {{ section.settings.feat_ey_size_m }}px;
     }
-    #cmp-{{ section.id }} .cmp-grid { min-width: {{ min_w }}; }
     #cmp-{{ section.id }} .cmp-head-block { margin-bottom: {{ section.settings.head_gap_m }}px; }
     #cmp-{{ section.id }} .cmp-note-strong { font-size: {{ section.settings.note_strong_size_m }}px; }
+
+    /* Mobile card */
+    #cmp-{{ section.id }} .cmp-mob-card {
+      position: relative;
+      border-radius: {{ section.settings.mob_card_radius }}px;
+      overflow: hidden;
+      border: 1.5px solid transparent;
+    }
+    #cmp-{{ section.id }} .cmp-mob-us {
+      background: var(--cmp-us-col-bg);
+      border-color: {{ section.settings.us_col_border }};
+      box-shadow: {{ section.settings.us_col_shadow }};
+    }
+    #cmp-{{ section.id }} .cmp-mob-them {
+      background: var(--cmp-them-col-bg);
+      border-color: var(--cmp-mist);
+    }
+    #cmp-{{ section.id }} .cmp-mob-them2 {
+      background: var(--cmp-them2-col-bg);
+    }
+
+    /* Mobile card header */
+    #cmp-{{ section.id }} .cmp-mob-head {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px; padding: 20px 16px 14px; text-align: center;
+      border-bottom: 1px solid rgba(27,58,92,.08);
+    }
+    #cmp-{{ section.id }} .cmp-mob-mark { height: var(--cmp-mark-h); width: auto; }
+    #cmp-{{ section.id }} .cmp-mob-badge {
+      position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+      background: var(--cmp-badge-bg); color: var(--cmp-badge-color);
+      font-family: var(--cmp-sans); font-size: var(--cmp-badge-size);
+      font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      padding: var(--cmp-badge-py) var(--cmp-badge-px);
+      border-radius: var(--cmp-badge-radius); white-space: nowrap; z-index: 2;
+    }
+    #cmp-{{ section.id }} .cmp-mob-brand {
+      font-family: var(--cmp-serif); font-weight: 800; line-height: 1.1; white-space: nowrap;
+    }
+    #cmp-{{ section.id }} .cmp-mob-brand-us   { font-size: var(--cmp-brand-us-size); color: var(--cmp-navy); }
+    #cmp-{{ section.id }} .cmp-mob-brand-them { font-size: var(--cmp-brand-th-size); color: var(--cmp-stone); }
+    #cmp-{{ section.id }} .cmp-mob-tag {
+      font-size: var(--cmp-tag-size); font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+    }
+    #cmp-{{ section.id }} .cmp-mob-tag-us   { color: var(--cmp-tag-color-us); }
+    #cmp-{{ section.id }} .cmp-mob-tag-them { color: var(--cmp-tag-color-th); }
+
+    /* Mobile rows */
+    #cmp-{{ section.id }} .cmp-mob-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: {{ section.settings.mob_row_py }}px {{ section.settings.mob_row_px }}px;
+      border-top: 1px solid rgba(27,58,92,.07);
+      min-height: {{ section.settings.cell_h_m }}px;
+      gap: 12px;
+    }
+    #cmp-{{ section.id }} .cmp-mob-them .cmp-mob-row { border-top-color: rgba(138,126,118,.14); }
+    #cmp-{{ section.id }} .cmp-mob-price-row { background: var(--cmp-price-row-bg); }
+    #cmp-{{ section.id }} .cmp-mob-them .cmp-mob-price-row { background: transparent; }
+
+    #cmp-{{ section.id }} .cmp-mob-label {
+      font-family: var(--cmp-sans);
+      font-size: {{ section.settings.mob_label_size }}px;
+      font-weight: {{ section.settings.feat_weight }};
+      color: var(--cmp-navy);
+      display: flex; flex-direction: column; gap: 2px;
+      flex: 1;
+    }
+    #cmp-{{ section.id }} .cmp-mob-them .cmp-mob-label { color: var(--cmp-stone); }
+    #cmp-{{ section.id }} .cmp-mob-val {
+      flex-shrink: 0; display: flex; align-items: center; justify-content: flex-end;
+    }
   }
 </style>
 
@@ -597,7 +770,14 @@
     { "type": "range", "id": "pad_bottom_m", "label": "Padding bottom — Mobile (px)","min": 16,  "max": 120,  "step": 4,  "default": 60 },
     { "type": "range", "id": "pad_x_m",      "label": "Padding sides — Mobile (px)", "min": 0,   "max": 40,   "step": 2,  "default": 16 },
     { "type": "range", "id": "min_w_2col",   "label": "Table min-width 2-col (px)",  "min": 320,  "max": 900,  "step": 20, "default": 560 },
-    { "type": "range", "id": "min_w_3col",   "label": "Table min-width 3-col (px)",  "min": 480,  "max": 1100, "step": 20, "default": 720 }
+    { "type": "range", "id": "min_w_3col",   "label": "Table min-width 3-col (px)",  "min": 480,  "max": 1100, "step": 20, "default": 720 },
+
+    { "type": "header", "content": "Mobile card layout" },
+    { "type": "range", "id": "mob_card_gap",    "label": "Gap between cards (px)",    "min": 8,  "max": 40, "step": 2,  "default": 16 },
+    { "type": "range", "id": "mob_card_radius", "label": "Card border radius (px)",   "min": 0,  "max": 40, "step": 2,  "default": 16 },
+    { "type": "range", "id": "mob_row_py",      "label": "Row padding vertical (px)", "min": 8,  "max": 28, "step": 2,  "default": 12 },
+    { "type": "range", "id": "mob_row_px",      "label": "Row padding horizontal (px)","min": 8, "max": 32, "step": 2,  "default": 16 },
+    { "type": "range", "id": "mob_label_size",  "label": "Feature label size (px)",   "min": 10, "max": 20, "step": 1,  "default": 14 }
   ],
 
   "blocks": [
