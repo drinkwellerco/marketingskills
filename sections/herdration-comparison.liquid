@@ -139,7 +139,7 @@
     --cmp-ey-size:    {{ section.settings.eyebrow_size }}px;
     --cmp-ey-color:   {{ section.settings.eyebrow_color }};
     --cmp-ey-weight:  {{ section.settings.eyebrow_weight }};
-    --cmp-ey-spacing: {{ section.settings.eyebrow_spacing }}em;
+    --cmp-ey-spacing: {{ section.settings.eyebrow_spacing }}px;
 
     /* heading */
     --cmp-h-min:    {{ section.settings.title_size_min }}px;
@@ -246,8 +246,8 @@
     font-family: var(--cmp-serif);
     font-weight: var(--cmp-h-weight);
     font-size: clamp(var(--cmp-h-min), 4vw, var(--cmp-h-max));
-    line-height: {{ section.settings.title_lh }};
-    letter-spacing: {{ section.settings.title_ls }}em;
+    line-height: {{ section.settings.title_lh }}px;
+    letter-spacing: {{ section.settings.title_ls }}px;
     color: var(--cmp-h-color);
     margin: 0;
   }
@@ -255,7 +255,7 @@
     font-family: var(--cmp-sans);
     font-size: var(--cmp-lead-size);
     font-weight: var(--cmp-lead-weight);
-    line-height: {{ section.settings.lead_lh }};
+    line-height: {{ section.settings.lead_lh }}px;
     color: var(--cmp-lead-color);
     margin: {{ section.settings.lead_mt }}px auto 0;
     max-width: {{ section.settings.lead_max_w }}px;
@@ -445,7 +445,7 @@
     { "type": "range", "id": "eyebrow_size_m", "label": "Font size — Mobile (px)",  "min": 8,  "max": 18,  "step": 1,  "default": 10 },
     { "type": "select", "id": "eyebrow_weight", "label": "Weight", "default": "600", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"}] },
     { "type": "color",  "id": "eyebrow_color",   "label": "Color",            "default": "#E8607A" },
-    { "type": "range",  "id": "eyebrow_spacing",  "label": "Letter spacing (em×100)", "min": 0, "max": 50, "step": 1, "unit": "×0.01em", "default": 24 },
+    { "type": "range",  "id": "eyebrow_spacing",  "label": "Letter spacing (px)", "min": 0, "max": 12, "step": 1, "unit": "px", "default": 3 },
     { "type": "range",  "id": "eyebrow_mb",        "label": "Space below eyebrow (px)", "min": 0, "max": 40, "step": 2, "default": 14 },
 
     { "type": "header", "content": "Typography — Heading" },
@@ -454,15 +454,15 @@
     { "type": "range", "id": "title_size_min_m", "label": "Size — Mobile (px)",       "min": 20, "max": 56, "step": 2, "default": 28 },
     { "type": "select", "id": "title_weight", "label": "Weight", "default": "800", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra-bold"},{"value":"900","label":"Black"}] },
     { "type": "color",  "id": "title_color",  "label": "Color",        "default": "#1B3A5C" },
-    { "type": "range",  "id": "title_lh",      "label": "Line height (×10 = 1.1)", "min": 8, "max": 20, "step": 1, "unit": "×0.1", "default": 11 },
-    { "type": "range",  "id": "title_ls",      "label": "Letter spacing (em×100)", "min": -5, "max": 10, "step": 1, "unit": "×0.01em", "default": -1 },
+    { "type": "range",  "id": "title_lh",  "label": "Line height (px)", "min": 28, "max": 100, "step": 2, "unit": "px", "default": 56 },
+    { "type": "range",  "id": "title_ls", "label": "Letter spacing (px)", "min": -3, "max": 6, "step": 1, "unit": "px", "default": -1 },
 
     { "type": "header", "content": "Typography — Lead" },
     { "type": "range", "id": "lead_size",   "label": "Font size — Desktop (px)", "min": 12, "max": 28, "step": 1, "default": 18 },
     { "type": "range", "id": "lead_size_m", "label": "Font size — Mobile (px)",  "min": 12, "max": 24, "step": 1, "default": 15 },
     { "type": "select", "id": "lead_weight", "label": "Weight", "default": "300", "options": [{"value":"300","label":"Light"},{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"}] },
     { "type": "color",  "id": "lead_color",  "label": "Color", "default": "#1B3A5C" },
-    { "type": "range",  "id": "lead_lh",     "label": "Line height (×10)", "min": 10, "max": 24, "step": 1, "unit": "×0.1", "default": 17 },
+    { "type": "range",  "id": "lead_lh",     "label": "Line height (px)", "min": 14, "max": 60, "step": 2, "unit": "px", "default": 30 },
     { "type": "range",  "id": "lead_mt",     "label": "Space above lead (px)", "min": 0, "max": 40, "step": 2, "default": 18 },
     { "type": "range",  "id": "lead_max_w",  "label": "Lead max width (px)",   "min": 300, "max": 900, "step": 20, "default": 580 },
     { "type": "range",  "id": "head_gap_d",  "label": "Header to table gap — Desktop (px)", "min": 20, "max": 120, "step": 4, "default": 54 },
