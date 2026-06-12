@@ -1,0 +1,897 @@
+{% doc %}
+  @prompt
+    Create a testimonials or content section with excerpts that show only the first couple of words initially (truncated text with ellipsis), and include an interactive "read more" / "show less" toggle button that allows users to expand and collapse the full excerpt text. The expand/collapse should work smoothly with JavaScript and be mobile-friendly., This is for featuring articles from prestigious magazines and new sites! Not for customer testimonials. Needs buttons to be able to link back to the article
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-press-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: {{ block.settings.section_padding }}px 20px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-press-container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-press-header-{{ ai_gen_id }} {
+    text-align: {{ block.settings.text_alignment }};
+    margin-bottom: 40px;
+  }
+
+  .ai-press-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.title_color }};
+    margin: 0 0 12px;
+  }
+
+  .ai-press-subtitle-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subtitle_size }}px;
+    color: {{ block.settings.subtitle_color }};
+    margin: 0;
+  }
+
+  .ai-press-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: {{ block.settings.grid_gap }}px;
+  }
+
+  .ai-press-card-{{ ai_gen_id }} {
+    background-color: {{ block.settings.card_background }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    padding: {{ block.settings.card_padding }}px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, {{ block.settings.card_shadow_opacity | divided_by: 100.0 }});
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ai-press-card-{{ ai_gen_id }}:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, {{ block.settings.card_shadow_opacity | times: 1.5 | divided_by: 100.0 }});
+  }
+
+  .ai-press-logo-wrapper-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: {{ block.settings.logo_height }}px;
+    margin-bottom: 20px;
+    padding: 10px;
+  }
+
+  .ai-press-logo-{{ ai_gen_id }} {
+    max-width: 100%;
+    max-height: {{ block.settings.logo_height }}px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .ai-press-logo-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: {{ block.settings.logo_height }}px;
+    background-color: {{ block.settings.logo_placeholder_bg }};
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-press-logo-placeholder-{{ ai_gen_id }} svg {
+    width: 50%;
+    height: 50%;
+    fill: {{ block.settings.logo_placeholder_color }};
+  }
+
+  .ai-press-content-{{ ai_gen_id }} {
+    flex-grow: 1;
+    margin-bottom: 16px;
+  }
+
+  .ai-press-publication-{{ ai_gen_id }} {
+    font-size: {{ block.settings.publication_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.publication_color }};
+    margin: 0 0 8px;
+  }
+
+  .ai-press-date-{{ ai_gen_id }} {
+    font-size: {{ block.settings.date_size }}px;
+    color: {{ block.settings.date_color }};
+    margin: 0 0 12px;
+  }
+
+  .ai-press-excerpt-{{ ai_gen_id }} {
+    font-size: {{ block.settings.text_size }}px;
+    color: {{ block.settings.text_color }};
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .ai-press-excerpt-truncated-{{ ai_gen_id }} {
+    display: -webkit-box;
+    -webkit-line-clamp: {{ block.settings.truncate_lines }};
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .ai-press-excerpt-full-{{ ai_gen_id }} {
+    display: block;
+  }
+
+  .ai-press-actions-{{ ai_gen_id }} {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid {{ block.settings.divider_color }};
+  }
+
+  .ai-press-toggle-{{ ai_gen_id }} {
+    background: none;
+    border: none;
+    color: {{ block.settings.toggle_color }};
+    font-size: {{ block.settings.toggle_size }}px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+  }
+
+  .ai-press-toggle-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.toggle_hover_color }};
+  }
+
+  .ai-press-link-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: {{ block.settings.button_padding_y }}px {{ block.settings.button_padding_x }}px;
+    background-color: {{ block.settings.button_bg_color }};
+    color: {{ block.settings.button_text_color }};
+    font-size: {{ block.settings.button_size }}px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-left: auto;
+  }
+
+  .ai-press-link-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_bg_color }};
+    transform: translateX(2px);
+  }
+
+  .ai-press-link-icon-{{ ai_gen_id }} {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-press-grid-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: {{ block.settings.grid_gap | times: 0.75 }}px;
+    }
+
+    .ai-press-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size | times: 0.8 }}px;
+    }
+
+    .ai-press-card-{{ ai_gen_id }} {
+      padding: {{ block.settings.card_padding | times: 0.8 }}px;
+    }
+
+    .ai-press-actions-{{ ai_gen_id }} {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .ai-press-link-{{ ai_gen_id }} {
+      margin-left: 0;
+      width: 100%;
+      justify-content: center;
+    }
+  }
+{% endstyle %}
+
+<press-mentions-{{ ai_gen_id }}
+  class="ai-press-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-press-container-{{ ai_gen_id }}">
+    {% if block.settings.title != blank or block.settings.subtitle != blank %}
+      <div class="ai-press-header-{{ ai_gen_id }}">
+        {% if block.settings.title != blank %}
+          <h2 class="ai-press-title-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+        {% endif %}
+        {% if block.settings.subtitle != blank %}
+          <div class="ai-press-subtitle-{{ ai_gen_id }}">{{ block.settings.subtitle }}</div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="ai-press-grid-{{ ai_gen_id }}">
+      {% for i in (1..6) %}
+        {% liquid
+          assign publication_key = 'article_' | append: i | append: '_publication'
+          assign logo_key = 'article_' | append: i | append: '_logo'
+          assign date_key = 'article_' | append: i | append: '_date'
+          assign excerpt_key = 'article_' | append: i | append: '_excerpt'
+          assign url_key = 'article_' | append: i | append: '_url'
+
+          assign publication = block.settings[publication_key]
+          assign logo = block.settings[logo_key]
+          assign date = block.settings[date_key]
+          assign excerpt = block.settings[excerpt_key]
+          assign url = block.settings[url_key]
+        %}
+
+        {% if excerpt != blank %}
+          <div class="ai-press-card-{{ ai_gen_id }}">
+            <div class="ai-press-logo-wrapper-{{ ai_gen_id }}">
+              {% if logo != blank %}
+                <img
+                  src="{{ logo | image_url: width: 400 }}"
+                  alt="{{ publication | escape }}"
+                  class="ai-press-logo-{{ ai_gen_id }}"
+                  loading="lazy"
+                  width="400"
+                  height="{{ block.settings.logo_height }}"
+                >
+              {% else %}
+                <div class="ai-press-logo-placeholder-{{ ai_gen_id }}">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                  </svg>
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="ai-press-content-{{ ai_gen_id }}">
+              {% if publication != blank %}
+                <div class="ai-press-publication-{{ ai_gen_id }}">{{ publication }}</div>
+              {% endif %}
+
+              {% if date != blank %}
+                <div class="ai-press-date-{{ ai_gen_id }}">{{ date }}</div>
+              {% endif %}
+
+              <div
+                class="ai-press-excerpt-{{ ai_gen_id }} ai-press-excerpt-truncated-{{ ai_gen_id }}"
+                data-excerpt-text="{{ i }}"
+              >
+                {{ excerpt }}
+              </div>
+            </div>
+
+            <div class="ai-press-actions-{{ ai_gen_id }}">
+              <button
+                class="ai-press-toggle-{{ ai_gen_id }}"
+                data-toggle-btn="{{ i }}"
+                aria-expanded="false"
+              >
+                {{ block.settings.read_more_text }}
+              </button>
+
+              {% if url != blank %}
+                <a
+                  href="{{ url }}"
+                  class="ai-press-link-{{ ai_gen_id }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ block.settings.button_text }}
+                  <svg class="ai-press-link-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                  </svg>
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</press-mentions-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class PressMentions{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.toggleButtons = this.querySelectorAll('[data-toggle-btn]');
+        this.readMoreText = '{{ block.settings.read_more_text }}';
+        this.showLessText = '{{ block.settings.show_less_text }}';
+      }
+
+      connectedCallback() {
+        this.setupToggleButtons();
+      }
+
+      setupToggleButtons() {
+        this.toggleButtons.forEach((button) => {
+          const articleId = button.getAttribute('data-toggle-btn');
+          const excerptElement = this.querySelector(`[data-excerpt-text="${articleId}"]`);
+
+          if (!excerptElement) return;
+
+          button.addEventListener('click', () => {
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+            if (isExpanded) {
+              excerptElement.classList.add('ai-press-excerpt-truncated-{{ ai_gen_id }}');
+              excerptElement.classList.remove('ai-press-excerpt-full-{{ ai_gen_id }}');
+              button.textContent = this.readMoreText;
+              button.setAttribute('aria-expanded', 'false');
+            } else {
+              excerptElement.classList.remove('ai-press-excerpt-truncated-{{ ai_gen_id }}');
+              excerptElement.classList.add('ai-press-excerpt-full-{{ ai_gen_id }}');
+              button.textContent = this.showLessText;
+              button.setAttribute('aria-expanded', 'true');
+            }
+          });
+        });
+      }
+    }
+
+    customElements.define('press-mentions-{{ ai_gen_id }}', PressMentions{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Press mentions",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "As featured in"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Trusted by leading publications"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Subtitle size",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 600,
+      "max": 1400,
+      "step": 50,
+      "unit": "px",
+      "label": "Maximum width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Section padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Grid gap",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "min": 15,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Card padding",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Card border radius",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "card_shadow_opacity",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "%",
+      "label": "Card shadow opacity",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Publication logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Logo height",
+      "default": 60
+    },
+    {
+      "type": "color",
+      "id": "logo_placeholder_bg",
+      "label": "Placeholder background",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "logo_placeholder_color",
+      "label": "Placeholder icon",
+      "default": "#999999"
+    },
+    {
+      "type": "header",
+      "content": "Publication info"
+    },
+    {
+      "type": "range",
+      "id": "publication_size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Publication name size",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "publication_color",
+      "label": "Publication name color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "date_size",
+      "min": 11,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Date size",
+      "default": 13
+    },
+    {
+      "type": "color",
+      "id": "date_color",
+      "label": "Date color",
+      "default": "#999999"
+    },
+    {
+      "type": "header",
+      "content": "Article excerpt"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Text size",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "truncate_lines",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Truncate lines",
+      "default": 3
+    },
+    {
+      "type": "inline_richtext",
+      "id": "read_more_text",
+      "label": "Read more text",
+      "default": "Read more"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "show_less_text",
+      "label": "Show less text",
+      "default": "Show less"
+    },
+    {
+      "type": "color",
+      "id": "toggle_color",
+      "label": "Toggle color",
+      "default": "#0066cc"
+    },
+    {
+      "type": "color",
+      "id": "toggle_hover_color",
+      "label": "Toggle hover color",
+      "default": "#004499"
+    },
+    {
+      "type": "range",
+      "id": "toggle_size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Toggle size",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Article link button"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Read article"
+    },
+    {
+      "type": "range",
+      "id": "button_size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Button text size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_padding_y",
+      "min": 6,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Button vertical padding",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "button_padding_x",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Button horizontal padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 6
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg_color",
+      "label": "Button hover background",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Article 1"
+    },
+    {
+      "type": "text",
+      "id": "article_1_publication",
+      "label": "Publication name",
+      "default": "Forbes"
+    },
+    {
+      "type": "image_picker",
+      "id": "article_1_logo",
+      "label": "Publication logo"
+    },
+    {
+      "type": "text",
+      "id": "article_1_date",
+      "label": "Date",
+      "default": "December 2024"
+    },
+    {
+      "type": "richtext",
+      "id": "article_1_excerpt",
+      "label": "Excerpt",
+      "default": "<p>This innovative company is revolutionizing the industry with their groundbreaking approach to wellness and sustainability. Their commitment to quality and customer satisfaction sets them apart from competitors.</p>"
+    },
+    {
+      "type": "url",
+      "id": "article_1_url",
+      "label": "Article URL"
+    },
+    {
+      "type": "header",
+      "content": "Article 2"
+    },
+    {
+      "type": "text",
+      "id": "article_2_publication",
+      "label": "Publication name",
+      "default": "TechCrunch"
+    },
+    {
+      "type": "image_picker",
+      "id": "article_2_logo",
+      "label": "Publication logo"
+    },
+    {
+      "type": "text",
+      "id": "article_2_date",
+      "label": "Date",
+      "default": "November 2024"
+    },
+    {
+      "type": "richtext",
+      "id": "article_2_excerpt",
+      "label": "Excerpt",
+      "default": "<p>A game-changer in the market, this brand combines cutting-edge technology with user-friendly design. Industry experts predict significant growth and market disruption in the coming years.</p>"
+    },
+    {
+      "type": "url",
+      "id": "article_2_url",
+      "label": "Article URL"
+    },
+    {
+      "type": "header",
+      "content": "Article 3"
+    },
+    {
+      "type": "text",
+      "id": "article_3_publication",
+      "label": "Publication name",
+      "default": "The New York Times"
+    },
+    {
+      "type": "image_picker",
+      "id": "article_3_logo",
+      "label": "Publication logo"
+    },
+    {
+      "type": "text",
+      "id": "article_3_date",
+      "label": "Date",
+      "default": "October 2024"
+    },
+    {
+      "type": "richtext",
+      "id": "article_3_excerpt",
+      "label": "Excerpt",
+      "default": "<p>With a focus on transparency and ethical practices, this company has earned the trust of consumers worldwide. Their dedication to excellence is evident in every product they create.</p>"
+    },
+    {
+      "type": "url",
+      "id": "article_3_url",
+      "label": "Article URL"
+    },
+    {
+      "type": "header",
+      "content": "Article 4"
+    },
+    {
+      "type": "text",
+      "id": "article_4_publication",
+      "label": "Publication name"
+    },
+    {
+      "type": "image_picker",
+      "id": "article_4_logo",
+      "label": "Publication logo"
+    },
+    {
+      "type": "text",
+      "id": "article_4_date",
+      "label": "Date"
+    },
+    {
+      "type": "richtext",
+      "id": "article_4_excerpt",
+      "label": "Excerpt"
+    },
+    {
+      "type": "url",
+      "id": "article_4_url",
+      "label": "Article URL"
+    },
+    {
+      "type": "header",
+      "content": "Article 5"
+    },
+    {
+      "type": "text",
+      "id": "article_5_publication",
+      "label": "Publication name"
+    },
+    {
+      "type": "image_picker",
+      "id": "article_5_logo",
+      "label": "Publication logo"
+    },
+    {
+      "type": "text",
+      "id": "article_5_date",
+      "label": "Date"
+    },
+    {
+      "type": "richtext",
+      "id": "article_5_excerpt",
+      "label": "Excerpt"
+    },
+    {
+      "type": "url",
+      "id": "article_5_url",
+      "label": "Article URL"
+    },
+    {
+      "type": "header",
+      "content": "Article 6"
+    },
+    {
+      "type": "text",
+      "id": "article_6_publication",
+      "label": "Publication name"
+    },
+    {
+      "type": "image_picker",
+      "id": "article_6_logo",
+      "label": "Publication logo"
+    },
+    {
+      "type": "text",
+      "id": "article_6_date",
+      "label": "Date"
+    },
+    {
+      "type": "richtext",
+      "id": "article_6_excerpt",
+      "label": "Excerpt"
+    },
+    {
+      "type": "url",
+      "id": "article_6_url",
+      "label": "Article URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Press mentions"
+    }
+  ]
+}
+{% endschema %}

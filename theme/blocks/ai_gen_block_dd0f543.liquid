@@ -1,0 +1,1158 @@
+{% doc %}
+  @prompt
+    I need a sction that appropriatly displays our journey as a family and as a company. From me and my wife meeting when we already had kids to dating and coming up with the product and our idea for the company, the steps we took along the way, our vision, and how we planm to achieve it! I need to be able to cusomize colors and suxh. As well asbe abl;e to uplad pictures for every step/aspect, Maybe make it in the style of a family tree and a timeline combined? start with 2 different branches that merge into 1, take the heart logo out and stop stagger stepping. Make each part the full width of the page. Maybe make cool little gradient arrows that show the flow of the steps
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-family-tree-timeline-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: {{ block.settings.section_padding_top }}px 20px {{ block.settings.section_padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-family-tree-timeline__container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-family-tree-timeline__header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .ai-family-tree-timeline__title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.title_color }};
+    margin: 0 0 16px;
+    font-weight: 700;
+  }
+
+  .ai-family-tree-timeline__subtitle-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subtitle_size }}px;
+    color: {{ block.settings.subtitle_color }};
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .ai-family-tree-timeline__branches-{{ ai_gen_id }} {
+    position: relative;
+    display: flex;
+    gap: 40px;
+    margin-bottom: 60px;
+    justify-content: center;
+  }
+
+  .ai-family-tree-timeline__branch-{{ ai_gen_id }} {
+    flex: 1;
+    max-width: 500px;
+    position: relative;
+  }
+
+  .ai-family-tree-timeline__branch-line-{{ ai_gen_id }} {
+    position: absolute;
+    top: 100%;
+    width: {{ block.settings.branch_line_width }}px;
+    height: 100px;
+    background: linear-gradient(180deg, {{ block.settings.arrow_gradient_start }}, {{ block.settings.arrow_gradient_end }});
+  }
+
+  .ai-family-tree-timeline__branch-{{ ai_gen_id }}:first-child .ai-family-tree-timeline__branch-line-{{ ai_gen_id }} {
+    right: -20px;
+    transform-origin: top right;
+    transform: rotate(30deg);
+  }
+
+  .ai-family-tree-timeline__branch-{{ ai_gen_id }}:last-child .ai-family-tree-timeline__branch-line-{{ ai_gen_id }} {
+    left: -20px;
+    transform-origin: top left;
+    transform: rotate(-30deg);
+  }
+
+  .ai-family-tree-timeline__branch-card-{{ ai_gen_id }} {
+    background-color: {{ block.settings.card_background }};
+    padding: {{ block.settings.card_padding }}px;
+    border-radius: {{ block.settings.card_border_radius }}px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .ai-family-tree-timeline__branch-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    margin-bottom: 16px;
+  }
+
+  .ai-family-tree-timeline__branch-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    aspect-ratio: 1;
+    background-color: #f4f4f4;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-family-tree-timeline__branch-image-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  .ai-family-tree-timeline__branch-label-{{ ai_gen_id }} {
+    font-size: {{ block.settings.branch_label_size }}px;
+    color: {{ block.settings.branch_label_color }};
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+
+  .ai-family-tree-timeline__branch-name-{{ ai_gen_id }} {
+    font-size: {{ block.settings.branch_name_size }}px;
+    color: {{ block.settings.branch_name_color }};
+    font-weight: 600;
+    margin: 0 0 12px;
+  }
+
+  .ai-family-tree-timeline__branch-description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.description_size }}px;
+    color: {{ block.settings.description_color }};
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .ai-family-tree-timeline__merge-point-{{ ai_gen_id }} {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+
+  .ai-family-tree-timeline__merge-line-{{ ai_gen_id }} {
+    width: {{ block.settings.merge_line_width }}px;
+    height: 60px;
+    background: linear-gradient(180deg, {{ block.settings.arrow_gradient_start }}, {{ block.settings.arrow_gradient_end }});
+    position: relative;
+  }
+
+  .ai-family-tree-timeline__merge-line-{{ ai_gen_id }}::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 16px solid {{ block.settings.arrow_gradient_end }};
+  }
+
+  .ai-family-tree-timeline__unified-timeline-{{ ai_gen_id }} {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .ai-family-tree-timeline__item-{{ ai_gen_id }} {
+    position: relative;
+    margin-bottom: {{ block.settings.item_spacing }}px;
+  }
+
+  .ai-family-tree-timeline__item-{{ ai_gen_id }}:last-child {
+    margin-bottom: 0;
+  }
+
+  .ai-family-tree-timeline__content-{{ ai_gen_id }} {
+    width: 100%;
+    padding: {{ block.settings.card_padding }}px;
+    background-color: {{ block.settings.card_background }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+
+  .ai-family-tree-timeline__image-wrapper-{{ ai_gen_id }} {
+    width: 100%;
+  }
+
+  .ai-family-tree-timeline__text-wrapper-{{ ai_gen_id }} {
+    width: 100%;
+  }
+
+  .ai-family-tree-timeline__image-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    border-radius: {{ block.settings.image_border_radius }}px;
+  }
+
+  .ai-family-tree-timeline__image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #f4f4f4;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-family-tree-timeline__image-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  .ai-family-tree-timeline__date-{{ ai_gen_id }} {
+    font-size: {{ block.settings.date_size }}px;
+    color: {{ block.settings.date_color }};
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+
+  .ai-family-tree-timeline__step-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.step_title_size }}px;
+    color: {{ block.settings.step_title_color }};
+    font-weight: 700;
+    margin: 0 0 16px;
+  }
+
+  .ai-family-tree-timeline__description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.description_size }}px;
+    color: {{ block.settings.description_color }};
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .ai-family-tree-timeline__arrow-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: center;
+    margin: {{ block.settings.arrow_spacing }}px 0;
+  }
+
+  .ai-family-tree-timeline__arrow-line-{{ ai_gen_id }} {
+    width: {{ block.settings.arrow_width }}px;
+    height: {{ block.settings.arrow_height }}px;
+    background: linear-gradient(180deg, {{ block.settings.arrow_gradient_start }}, {{ block.settings.arrow_gradient_end }});
+    position: relative;
+    border-radius: {{ block.settings.arrow_border_radius }}px;
+  }
+
+  .ai-family-tree-timeline__arrow-line-{{ ai_gen_id }}::after {
+    content: '';
+    position: absolute;
+    bottom: -{{ block.settings.arrow_head_size }}px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: {{ block.settings.arrow_head_size }}px solid transparent;
+    border-right: {{ block.settings.arrow_head_size }}px solid transparent;
+    border-top: {{ block.settings.arrow_head_size | times: 1.3 | round }}px solid {{ block.settings.arrow_gradient_end }};
+  }
+
+  @media screen and (max-width: 768px) {
+    .ai-family-tree-timeline__branches-{{ ai_gen_id }} {
+      flex-direction: column;
+      gap: 40px;
+      margin-bottom: 60px;
+    }
+
+    .ai-family-tree-timeline__branch-{{ ai_gen_id }} {
+      max-width: 100%;
+    }
+
+    .ai-family-tree-timeline__branch-line-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .ai-family-tree-timeline__content-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .ai-family-tree-timeline__arrow-line-{{ ai_gen_id }} {
+      height: {{ block.settings.arrow_height | times: 0.7 | round }}px;
+    }
+  }
+{% endstyle %}
+
+<family-tree-timeline-{{ ai_gen_id }} class="ai-family-tree-timeline-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-family-tree-timeline__container-{{ ai_gen_id }}">
+    {% if block.settings.title != blank or block.settings.subtitle != blank %}
+      <div class="ai-family-tree-timeline__header-{{ ai_gen_id }}">
+        {% if block.settings.title != blank %}
+          <h2 class="ai-family-tree-timeline__title-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+        {% endif %}
+        {% if block.settings.subtitle != blank %}
+          <div class="ai-family-tree-timeline__subtitle-{{ ai_gen_id }}">{{ block.settings.subtitle }}</div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="ai-family-tree-timeline__branches-{{ ai_gen_id }}">
+      {% if block.settings.branch_1_enabled %}
+        <div class="ai-family-tree-timeline__branch-{{ ai_gen_id }}">
+          <div class="ai-family-tree-timeline__branch-card-{{ ai_gen_id }}">
+            {% if block.settings.branch_1_image %}
+              <img
+                src="{{ block.settings.branch_1_image | image_url: width: 600 }}"
+                alt="{{ block.settings.branch_1_name | escape }}"
+                class="ai-family-tree-timeline__branch-image-{{ ai_gen_id }}"
+                loading="lazy"
+                width="600"
+                height="{{ 600 | divided_by: block.settings.branch_1_image.aspect_ratio | round }}"
+              >
+            {% else %}
+              <div class="ai-family-tree-timeline__branch-image-placeholder-{{ ai_gen_id }}">
+                {{ 'image' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
+
+            {% if block.settings.branch_1_label != blank %}
+              <div class="ai-family-tree-timeline__branch-label-{{ ai_gen_id }}">{{ block.settings.branch_1_label }}</div>
+            {% endif %}
+
+            {% if block.settings.branch_1_name != blank %}
+              <h3 class="ai-family-tree-timeline__branch-name-{{ ai_gen_id }}">{{ block.settings.branch_1_name }}</h3>
+            {% endif %}
+
+            {% if block.settings.branch_1_description != blank %}
+              <div class="ai-family-tree-timeline__branch-description-{{ ai_gen_id }}">{{ block.settings.branch_1_description }}</div>
+            {% endif %}
+          </div>
+          <div class="ai-family-tree-timeline__branch-line-{{ ai_gen_id }}"></div>
+        </div>
+      {% endif %}
+
+      {% if block.settings.branch_2_enabled %}
+        <div class="ai-family-tree-timeline__branch-{{ ai_gen_id }}">
+          <div class="ai-family-tree-timeline__branch-card-{{ ai_gen_id }}">
+            {% if block.settings.branch_2_image %}
+              <img
+                src="{{ block.settings.branch_2_image | image_url: width: 600 }}"
+                alt="{{ block.settings.branch_2_name | escape }}"
+                class="ai-family-tree-timeline__branch-image-{{ ai_gen_id }}"
+                loading="lazy"
+                width="600"
+                height="{{ 600 | divided_by: block.settings.branch_2_image.aspect_ratio | round }}"
+              >
+            {% else %}
+              <div class="ai-family-tree-timeline__branch-image-placeholder-{{ ai_gen_id }}">
+                {{ 'image' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
+
+            {% if block.settings.branch_2_label != blank %}
+              <div class="ai-family-tree-timeline__branch-label-{{ ai_gen_id }}">{{ block.settings.branch_2_label }}</div>
+            {% endif %}
+
+            {% if block.settings.branch_2_name != blank %}
+              <h3 class="ai-family-tree-timeline__branch-name-{{ ai_gen_id }}">{{ block.settings.branch_2_name }}</h3>
+            {% endif %}
+
+            {% if block.settings.branch_2_description != blank %}
+              <div class="ai-family-tree-timeline__branch-description-{{ ai_gen_id }}">{{ block.settings.branch_2_description }}</div>
+            {% endif %}
+          </div>
+          <div class="ai-family-tree-timeline__branch-line-{{ ai_gen_id }}"></div>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="ai-family-tree-timeline__merge-point-{{ ai_gen_id }}">
+      <div class="ai-family-tree-timeline__merge-line-{{ ai_gen_id }}"></div>
+    </div>
+
+    <ul class="ai-family-tree-timeline__unified-timeline-{{ ai_gen_id }}">
+      {% for i in (1..8) %}
+        {% liquid
+          assign step_enabled_key = 'step_' | append: i | append: '_enabled'
+          assign step_date_key = 'step_' | append: i | append: '_date'
+          assign step_title_key = 'step_' | append: i | append: '_title'
+          assign step_description_key = 'step_' | append: i | append: '_description'
+          assign step_image_key = 'step_' | append: i | append: '_image'
+
+          assign step_enabled = block.settings[step_enabled_key]
+          assign step_date = block.settings[step_date_key]
+          assign step_title = block.settings[step_title_key]
+          assign step_description = block.settings[step_description_key]
+          assign step_image = block.settings[step_image_key]
+        %}
+
+        {% if step_enabled %}
+          <li class="ai-family-tree-timeline__item-{{ ai_gen_id }}">
+            <div class="ai-family-tree-timeline__content-{{ ai_gen_id }}">
+              <div class="ai-family-tree-timeline__image-wrapper-{{ ai_gen_id }}">
+                {% if step_image %}
+                  <img
+                    src="{{ step_image | image_url: width: 800 }}"
+                    alt="{{ step_title | escape }}"
+                    class="ai-family-tree-timeline__image-{{ ai_gen_id }}"
+                    loading="lazy"
+                    width="800"
+                    height="{{ 800 | divided_by: step_image.aspect_ratio | round }}"
+                  >
+                {% else %}
+                  <div class="ai-family-tree-timeline__image-placeholder-{{ ai_gen_id }}">
+                    {{ 'image' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="ai-family-tree-timeline__text-wrapper-{{ ai_gen_id }}">
+                {% if step_date != blank %}
+                  <div class="ai-family-tree-timeline__date-{{ ai_gen_id }}">{{ step_date }}</div>
+                {% endif %}
+
+                {% if step_title != blank %}
+                  <h3 class="ai-family-tree-timeline__step-title-{{ ai_gen_id }}">{{ step_title }}</h3>
+                {% endif %}
+
+                {% if step_description != blank %}
+                  <div class="ai-family-tree-timeline__description-{{ ai_gen_id }}">{{ step_description }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </li>
+
+          {% unless forloop.last %}
+            <div class="ai-family-tree-timeline__arrow-{{ ai_gen_id }}">
+              <div class="ai-family-tree-timeline__arrow-line-{{ ai_gen_id }}"></div>
+            </div>
+          {% endunless %}
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+</family-tree-timeline-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class FamilyTreeTimeline{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.initScrollAnimation();
+      }
+
+      initScrollAnimation() {
+        const branches = this.querySelectorAll('.ai-family-tree-timeline__branch-{{ ai_gen_id }}');
+        const mergePoint = this.querySelector('.ai-family-tree-timeline__merge-point-{{ ai_gen_id }}');
+        const items = this.querySelectorAll('.ai-family-tree-timeline__item-{{ ai_gen_id }}');
+        const arrows = this.querySelectorAll('.ai-family-tree-timeline__arrow-{{ ai_gen_id }}');
+        
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = '1';
+              entry.target.style.transform = 'translateY(0)';
+            }
+          });
+        }, {
+          threshold: 0.1,
+          rootMargin: '0px 0px -50px 0px'
+        });
+
+        branches.forEach((branch, index) => {
+          branch.style.opacity = '0';
+          branch.style.transform = 'translateY(30px)';
+          branch.style.transition = `opacity 0.6s ease ${index * 0.2}s, transform 0.6s ease ${index * 0.2}s`;
+          observer.observe(branch);
+        });
+
+        if (mergePoint) {
+          mergePoint.style.opacity = '0';
+          mergePoint.style.transform = 'translateY(20px)';
+          mergePoint.style.transition = 'opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s';
+          observer.observe(mergePoint);
+        }
+
+        items.forEach((item, index) => {
+          item.style.opacity = '0';
+          item.style.transform = 'translateY(30px)';
+          item.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+          observer.observe(item);
+        });
+
+        arrows.forEach((arrow, index) => {
+          arrow.style.opacity = '0';
+          arrow.style.transform = 'translateY(20px)';
+          arrow.style.transition = `opacity 0.6s ease ${index * 0.1 + 0.3}s, transform 0.6s ease ${index * 0.1 + 0.3}s`;
+          observer.observe(arrow);
+        });
+      }
+    }
+
+    customElements.define('family-tree-timeline-{{ ai_gen_id }}', FamilyTreeTimeline{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Family tree timeline",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "Our Journey"
+    },
+    {
+      "type": "richtext",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "<p>Two families, one vision - the story of how we came together</p>"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 800,
+      "max": 1400,
+      "step": 50,
+      "unit": "px",
+      "label": "Maximum width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "item_spacing",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Space between items",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Arrow style"
+    },
+    {
+      "type": "range",
+      "id": "arrow_width",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Arrow width",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "arrow_height",
+      "min": 40,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Arrow height",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "arrow_head_size",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Arrow head size",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "arrow_spacing",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Arrow spacing",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "arrow_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Arrow border radius",
+      "default": 4
+    },
+    {
+      "type": "color",
+      "id": "arrow_gradient_start",
+      "label": "Arrow gradient start",
+      "default": "#da6c01"
+    },
+    {
+      "type": "color",
+      "id": "arrow_gradient_end",
+      "label": "Arrow gradient end",
+      "default": "#fde596"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#0a4e39"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title",
+      "default": "#fde596"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle",
+      "default": "#fde596"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "branch_line_color",
+      "label": "Branch line",
+      "default": "#da6c01"
+    },
+    {
+      "type": "color",
+      "id": "branch_label_color",
+      "label": "Branch label",
+      "default": "#da6c01"
+    },
+    {
+      "type": "color",
+      "id": "branch_name_color",
+      "label": "Branch name",
+      "default": "#0a4e39"
+    },
+    {
+      "type": "color",
+      "id": "date_color",
+      "label": "Date",
+      "default": "#da6c01"
+    },
+    {
+      "type": "color",
+      "id": "step_title_color",
+      "label": "Step title",
+      "default": "#0a4e39"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description",
+      "default": "#333333"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 24,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size",
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "min": 14,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "label": "Subtitle size",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "branch_label_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Branch label size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "branch_name_size",
+      "min": 18,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Branch name size",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "date_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Date size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "step_title_size",
+      "min": 18,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "label": "Step title size",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "min": 14,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Description size",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "branch_line_width",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "label": "Branch line width",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "merge_line_width",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Merge line width",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "min": 16,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "label": "Card padding",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Card border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Image border radius",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Branch 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "branch_1_enabled",
+      "label": "Enable branch 1",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "branch_1_label",
+      "label": "Label",
+      "default": "Her Story"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "branch_1_name",
+      "label": "Name"
+    },
+    {
+      "type": "richtext",
+      "id": "branch_1_description",
+      "label": "Description",
+      "default": "<p>A mother with her own journey, bringing strength and wisdom to our family.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "branch_1_image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Branch 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "branch_2_enabled",
+      "label": "Enable branch 2",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "branch_2_label",
+      "label": "Label",
+      "default": "His Story"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "branch_2_name",
+      "label": "Name"
+    },
+    {
+      "type": "richtext",
+      "id": "branch_2_description",
+      "label": "Description",
+      "default": "<p>A father with his own path, bringing passion and vision to our family.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "branch_2_image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Step 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "step_1_enabled",
+      "label": "Enable step 1",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "step_1_date",
+      "label": "Date",
+      "default": "2015"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "step_1_title",
+      "label": "Title",
+      "default": "We Met"
+    },
+    {
+      "type": "richtext",
+      "id": "step_1_description",
+      "label": "Description",
+      "default": "<p>Two families came together, each bringing their own children and experiences. Little did we know this was the beginning of something special.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "step_1_image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Step 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "step_2_enabled",
+      "label": "Enable step 2",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "step_2_date",
+      "label": "Date",
+      "default": "2017"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "step_2_title",
+      "label": "Title",
+      "default": "Building Our Family"
+    },
+    {
+      "type": "richtext",
+      "id": "step_2_description",
+      "label": "Description",
+      "default": "<p>As we blended our families, we discovered shared values and a passion for wellness that would shape our future.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "step_2_image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Step 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "step_3_enabled",
+      "label": "Enable step 3",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "step_3_date",
+      "label": "Date",
+      "default": "2019"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "step_3_title",
+      "label": "Title",
+      "default": "The Idea"
+    },
+    {
+      "type": "richtext",
+      "id": "step_3_description",
+      "label": "Description",
+      "default": "<p>During a family road trip, we realized there was a need for convenient, high-quality wellness supplements designed for people on the go.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "step_3_image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Step 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "step_4_enabled",
+      "label": "Enable step 4",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "step_4_date",
+      "label": "Date",
+      "default": "2020"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "step_4_title",
+      "label": "Title",
+      "default": "First Product"
+    },
+    {
+      "type": "richtext",
+      "id": "step_4_description",
+      "label": "Description",
+      "default": "<p>After months of research and development, we launched our first travel-friendly supplement pack, combining quality ingredients with convenience.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "step_4_image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Step 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "step_5_enabled",
+      "label": "Enable step 5",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "step_5_date",
+      "label": "Date",
+      "default": "2021"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "step_5_title",
+      "label": "Title",
+      "default": "Growing the Team"
+    },
+    {
+      "type": "richtext",
+      "id": "step_5_description",
+      "label": "Description",
+      "default": "<p>What started as a family project grew into a small team of passionate individuals who shared our vision for accessible wellness.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "step_5_image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Step 6"
+    },
+    {
+      "type": "checkbox",
+      "id": "step_6_enabled",
+      "label": "Enable step 6",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "step_6_date",
+      "label": "Date",
+      "default": "2022"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "step_6_title",
+      "label": "Title",
+      "default": "Expanding Our Line"
+    },
+    {
+      "type": "richtext",
+      "id": "step_6_description",
+      "label": "Description",
+      "default": "<p>Customer feedback inspired us to develop new flavors and formulations, expanding our product line to meet diverse wellness needs.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "step_6_image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Step 7"
+    },
+    {
+      "type": "checkbox",
+      "id": "step_7_enabled",
+      "label": "Enable step 7",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "step_7_date",
+      "label": "Date",
+      "default": "2023"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "step_7_title",
+      "label": "Title",
+      "default": "Our Vision"
+    },
+    {
+      "type": "richtext",
+      "id": "step_7_description",
+      "label": "Description",
+      "default": "<p>We envision a world where everyone has access to premium wellness products that fit seamlessly into their lifestyle, no matter where life takes them.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "step_7_image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Step 8"
+    },
+    {
+      "type": "checkbox",
+      "id": "step_8_enabled",
+      "label": "Enable step 8",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "step_8_date",
+      "label": "Date",
+      "default": "Today"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "step_8_title",
+      "label": "Title",
+      "default": "The Journey Continues"
+    },
+    {
+      "type": "richtext",
+      "id": "step_8_description",
+      "label": "Description",
+      "default": "<p>We're committed to innovation, sustainability, and helping our customers achieve their wellness goals. This is just the beginning of our story.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "step_8_image",
+      "label": "Image"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Family tree timeline"
+    }
+  ]
+}
+{% endschema %}
