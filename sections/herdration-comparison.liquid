@@ -24,7 +24,7 @@
   {%- assign _bg_top = section.settings.bg_color -%}
 {%- endif -%}
 
-<section id="cmp-{{ section.id }}" class="cmp">
+<section id="cmp-{{ section.id }}" class="cmp" style="background:linear-gradient(180deg,{{ _bg_top }} 0%,{{ section.settings.bg_color }} 42%)!important;">
   <div class="cmp-inner">
 
     <div class="cmp-head-block">
@@ -217,9 +217,6 @@
 
     display: block; position: relative; overflow: hidden;
     padding: {{ section.settings.pad_top }}px {{ section.settings.pad_x }}px {{ section.settings.pad_bottom }}px;
-    --cmp-bg:     {{ section.settings.bg_color }};
-    --cmp-bg-top: {{ _bg_top }};
-    background: linear-gradient(180deg, var(--cmp-bg-top) 0%, var(--cmp-bg) 42%);
     color: var(--cmp-navy); font-family: var(--cmp-sans);
   }
 
