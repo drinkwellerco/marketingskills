@@ -463,7 +463,7 @@
       .qa-sb-{{ qa_bid }} .qa-prod.con-off .qa-photo { box-shadow:none; }
       .qa-sb-{{ qa_bid }} .qa-prod.in-cart .qa-photo { outline-color:var(--qa-rose); }
       .qa-sb-{{ qa_bid }} .qa-prod:hover .qa-photo { box-shadow:var(--qa-shadow-lg); }
-      .qa-sb-{{ qa_bid }} .qa-img { position:relative; z-index:1; width:var(--img-w,78%); height:var(--img-h,78%); object-fit:contain; filter:drop-shadow(0 6px 12px rgba(27,58,92,.20)); transform:translateX(var(--img-x,0px)) translateY(var(--img-y,0px)); }
+      .qa-sb-{{ qa_bid }} .qa-img { position:absolute; top:50%; left:50%; z-index:1; width:var(--img-w,78%); height:var(--img-h,78%); object-fit:contain; filter:drop-shadow(0 6px 12px rgba(27,58,92,.20)); transform:translate(calc(-50% + var(--img-x,0px)),calc(-50% + var(--img-y,0px))); }
       .qa-sb-{{ qa_bid }} .qa-add { position:absolute; z-index:2; bottom:8px; left:50%; transform:translateX(-50%); display:inline-flex; align-items:center; padding:4px 11px; border-radius:999px; background:var(--qa-navy); color:var(--qa-cream); font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; opacity:0; transition:opacity .18s; white-space:nowrap; }
       .qa-sb-{{ qa_bid }} .qa-prod:hover .qa-add { opacity:1; }
       .qa-sb-{{ qa_bid }} .qa-remove { position:absolute; top:7px; left:7px; z-index:4; width:24px; height:24px; border-radius:50%; border:none; cursor:pointer; background:#fff; color:var(--qa-navy); box-shadow:0 3px 8px rgba(0,0,0,.22); display:none; align-items:center; justify-content:center; padding:0; }
@@ -489,7 +489,7 @@
         .qa-sb-{{ qa_bid }} .qa-lead { font-size:{{ block.settings.mobile_lead_size }}px !important; }
         .qa-sb-{{ qa_bid }} .qa-prod { max-width:{{ block.settings.mobile_tile_size }}px; }
         .qa-sb-{{ qa_bid }} .qa-photo { height:var(--m-photo-h,var(--photo-h,auto)); border-radius:var(--m-con-radius,var(--con-radius,18px)); }
-        .qa-sb-{{ qa_bid }} .qa-img { width:var(--m-img-w,var(--img-w,78%)); height:var(--m-img-h,var(--img-h,78%)); transform:translateX(var(--m-img-x,var(--img-x,0px))) translateY(var(--m-img-y,var(--img-y,0px))); }
+        .qa-sb-{{ qa_bid }} .qa-img { width:var(--m-img-w,var(--img-w,78%)); height:var(--m-img-h,var(--img-h,78%)); transform:translate(calc(-50% + var(--m-img-x,var(--img-x,0px))),calc(-50% + var(--m-img-y,var(--img-y,0px)))); }
         .qa-sb-{{ qa_bid }} .qa-add { display:none; }
       }
     {% endif %}
