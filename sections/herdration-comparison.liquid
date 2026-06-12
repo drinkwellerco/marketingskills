@@ -18,6 +18,11 @@
 {%- assign brand = section.settings.us_name | default: "Her'dration" -%}
 {%- assign bp = brand | split: "'" -%}
 {%- assign unit = section.settings.price_unit | default: '/serving' -%}
+{%- if section.settings.bg_gradient -%}
+  {%- assign _bg_top = section.settings.bg_color_2 -%}
+{%- else -%}
+  {%- assign _bg_top = section.settings.bg_color -%}
+{%- endif -%}
 
 <section id="cmp-{{ section.id }}" class="cmp">
   <div class="cmp-inner">
@@ -204,9 +209,17 @@
     --cmp-feat-ey-size:  {{ section.settings.feat_ey_size_d }}px;
     --cmp-feat-ey-color: {{ section.settings.feat_ey_color }};
 
+    /* column / cell backgrounds */
+    --cmp-us-col-bg:    {{ section.settings.us_col_bg }};
+    --cmp-them-col-bg:  {{ section.settings.them_col_bg }};
+    --cmp-them2-col-bg: {{ section.settings.them2_col_bg }};
+    --cmp-price-row-bg: {{ section.settings.price_row_bg }};
+
     display: block; position: relative; overflow: hidden;
     padding: {{ section.settings.pad_top }}px {{ section.settings.pad_x }}px {{ section.settings.pad_bottom }}px;
-    background: {% if section.settings.bg_gradient %}linear-gradient(180deg, {{ section.settings.bg_color_2 }} 0%, {{ section.settings.bg_color }} 42%){% else %}{{ section.settings.bg_color }}{% endif %};
+    --cmp-bg:     {{ section.settings.bg_color }};
+    --cmp-bg-top: {{ _bg_top }};
+    background: linear-gradient(180deg, var(--cmp-bg-top) 0%, var(--cmp-bg) 42%);
     color: var(--cmp-navy); font-family: var(--cmp-sans);
   }
 
@@ -266,17 +279,17 @@
   #cmp-{{ section.id }} .cmp-grid { display: grid; grid-template-columns: {{ grid_cols }}; align-items: start; position: relative; }
   #cmp-{{ section.id }} .cmp-col { display: flex; flex-direction: column; border: 1.5px solid transparent; border-radius: {{ section.settings.col_radius }}px; }
   #cmp-{{ section.id }} .cmp-col-us {
-    background: {{ section.settings.us_col_bg }};
+    background: var(--cmp-us-col-bg);
     box-shadow: {{ section.settings.us_col_shadow }};
     border-color: {{ section.settings.us_col_border }};
     position: relative; z-index: 3;
   }
   #cmp-{{ section.id }} .cmp-col-them {
-    background: {{ section.settings.them_col_bg }};
+    background: var(--cmp-them-col-bg);
     border-color: var(--cmp-mist);
     margin-left: -4px;
   }
-  #cmp-{{ section.id }} .cmp-col-them + .cmp-col-them { background: {{ section.settings.them2_col_bg }}; }
+  #cmp-{{ section.id }} .cmp-col-them + .cmp-col-them { background: var(--cmp-them2-col-bg); }
 
   /* ---- Column header ---- */
   #cmp-{{ section.id }} .cmp-cellhead {
@@ -377,7 +390,7 @@
   #cmp-{{ section.id }} .cmp-price small {
     font-weight: 500; font-size: var(--cmp-price-sub-size); opacity: .7; margin-left: 1px;
   }
-  #cmp-{{ section.id }} .cmp-col-us .cmp-price-row { background: {{ section.settings.price_row_bg }}; }
+  #cmp-{{ section.id }} .cmp-col-us .cmp-price-row { background: var(--cmp-price-row-bg); }
 
   /* ---- Note ---- */
   #cmp-{{ section.id }} .cmp-note {
