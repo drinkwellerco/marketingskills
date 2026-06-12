@@ -448,20 +448,27 @@
   .shop-image-container.shop-square-container {
     overflow: hidden !important;
     border-radius: {{ section.settings.main_image_border_radius | default: 0 }}px !important;
+    --product-image-border-radius: {{ section.settings.main_image_border_radius | default: 0 }}px;
   }
-  .shop-main-image,
-  .shop-image-zoom-wrapper,
-  .shop-video {
-    border-radius: {{ section.settings.main_image_border_radius | default: 0 }}px !important;
-  }
-  /* Always fill the container — never overflow or underflow */
-  .shop-main-image {
+  /* Zoom wrapper must fill its container so the absolute image has a parent to fill */
+  .shop-image-zoom-wrapper {
+    position: relative !important;
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important;
+    display: block !important;
+  }
+  /* Image fills its wrapper exactly — object-fit:cover prevents any overflow or whitespace */
+  .shop-main-image {
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: {{ section.settings.main_image_border_radius | default: 0 }}px !important;
+  }
+  .shop-video {
+    border-radius: {{ section.settings.main_image_border_radius | default: 0 }}px !important;
   }
 
   /* Thumbnail shape */
@@ -773,11 +780,6 @@
 
   .shop-main-image {
     transition: opacity 0.3s ease;
-    display: block;
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: var(--product-image-border-radius) !important;
   }
 
   
