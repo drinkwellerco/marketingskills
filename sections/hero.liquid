@@ -299,6 +299,7 @@
         flex-wrap: wrap;
         gap: {{ block.settings.gap }}px;
         align-items: center;
+        justify-content: {{ block.settings.align }};
       }
       .hero-btnp-{{ bid }} {
         font-family: '{{ block.settings.font_family }}', sans-serif !important;
@@ -382,7 +383,8 @@
       .hero-popup-ingname-{{ bid }} { font-weight: 600; color: {{ block.settings.modal_accent_color }}; white-space: nowrap; }
       .hero-popup-yourdose-{{ bid }} { font-weight: 600; }
       @media (max-width: 768px) {
-        {% if block.settings.mobile_stack %}.hero-btns-{{ bid }} { flex-direction: column; align-items: flex-start; }{% endif %}
+        .hero-btns-{{ bid }} { justify-content: {{ block.settings.mobile_align }}; }
+        {% if block.settings.mobile_stack %}.hero-btns-{{ bid }} { flex-direction: column; align-items: {% if block.settings.mobile_align == 'center' %}center{% elsif block.settings.mobile_align == 'flex-end' %}flex-end{% else %}flex-start{% endif %}; }{% endif %}
         .hero-btnp-{{ bid }} { font-size: {{ block.settings.mobile_primary_font_size }}px !important; }
         .hero-popup-trigger-{{ bid }} { font-size: {{ block.settings.mobile_popup_font_size }}px !important; }
         .hero-popup-modal-{{ bid }} { padding: 20px 16px; }
@@ -393,6 +395,7 @@
       .hero-pills-{{ bid }} {
         display: flex; flex-wrap: wrap;
         gap: {{ block.settings.gap }}px; align-items: center;
+        justify-content: {{ block.settings.align }};
       }
       .hero-pill-{{ bid }} {
         font-family: '{{ block.settings.font_family }}', sans-serif !important;
@@ -403,7 +406,7 @@
         .hero-pill-{{ i }}-{{ bid }} { font-size: {{ block.settings[fs_key] }}px; }
       {% endfor %}
       @media (max-width: 768px) {
-        .hero-pills-{{ bid }} { gap: {{ block.settings.mobile_gap }}px; }
+        .hero-pills-{{ bid }} { gap: {{ block.settings.mobile_gap }}px; justify-content: {{ block.settings.mobile_align }}; }
         {% for i in (1..5) %}
           {% assign mfs_key = 'pill_' | append: i | append: '_mobile_font_size' %}
           .hero-pill-{{ i }}-{{ bid }} { font-size: {{ block.settings[mfs_key] }}px !important; }
@@ -952,8 +955,11 @@
         { "type": "header", "content": "Spacing" },
         { "type": "range", "id": "padding_top", "label": "Space above this block (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
         { "type": "range", "id": "padding_bottom", "label": "Space below this block (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
-        { "type": "range", "id": "mobile_padding_top", "label": "Space above this block — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
-        { "type": "range", "id": "mobile_padding_bottom", "label": "Space below this block — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
+        { "type": "range", "id": "mobile_padding_top", "label": "Space above — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
+        { "type": "range", "id": "mobile_padding_bottom", "label": "Space below — Mobile (px)", "min": 0, "max": 80, "step": 2, "default": 0 },
+        { "type": "select", "id": "align", "label": "Alignment — Desktop", "default": "flex-start", "options": [{ "value": "flex-start", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "flex-end", "label": "Right" }] },
+        { "type": "select", "id": "mobile_align", "label": "Alignment — Mobile", "default": "flex-start", "options": [{ "value": "flex-start", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "flex-end", "label": "Right" }] },
+        { "type": "range", "id": "gap", "label": "Gap between buttons (px)", "min": 4, "max": 40, "step": 2, "default": 12 },
         { "type": "header", "content": "Primary Button" },
         { "type": "text", "id": "primary_text", "label": "Text", "default": "Shop Now" },
         { "type": "url", "id": "primary_url", "label": "Link" },
@@ -1023,7 +1029,6 @@
         { "type": "textarea", "id": "ing_6_description", "label": "What it does" },
         { "type": "header", "content": "Layout" },
         { "type": "text", "id": "font_family", "label": "Font family (Google Fonts name)", "default": "Inter" },
-        { "type": "range", "id": "gap", "label": "Gap between items (px)", "min": 4, "max": 40, "step": 2, "default": 16 },
         { "type": "checkbox", "id": "mobile_stack", "label": "Stack on mobile", "default": false }
       ]
     },
@@ -1039,6 +1044,8 @@
         { "type": "header", "content": "Global" },
         { "type": "text", "id": "font_family", "label": "Font family (Google Fonts name)", "default": "Inter" },
         { "type": "select", "id": "font_weight", "label": "Font weight", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"}], "default": "500" },
+        { "type": "select", "id": "align", "label": "Alignment — Desktop", "default": "flex-start", "options": [{ "value": "flex-start", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "flex-end", "label": "Right" }] },
+        { "type": "select", "id": "mobile_align", "label": "Alignment — Mobile", "default": "flex-start", "options": [{ "value": "flex-start", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "flex-end", "label": "Right" }] },
         { "type": "range", "id": "gap", "label": "Gap (px)", "min": 2, "max": 24, "step": 2, "default": 8 },
         { "type": "range", "id": "mobile_gap", "label": "Gap — Mobile (px)", "min": 2, "max": 24, "step": 2, "default": 6 },
         { "type": "header", "content": "Pill 1" },
