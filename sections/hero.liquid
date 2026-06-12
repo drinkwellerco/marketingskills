@@ -709,8 +709,14 @@
                 {%- endfor -%}
                 {%- if fb.settings.con_override -%}
                   {%- assign t_on = fb.settings.con_enabled -%}{%- assign t_c1 = fb.settings.con_color -%}{%- assign t_gr = fb.settings.con_gradient -%}{%- assign t_c2 = fb.settings.con_color2 -%}{%- assign t_ag = fb.settings.con_angle -%}
+                  {%- assign t_shape = fb.settings.con_shape -%}{%- assign t_radius = fb.settings.con_radius -%}
+                  {%- assign t_m_shape = fb.settings.con_mobile_shape -%}{%- assign t_m_radius = fb.settings.con_mobile_radius -%}
+                  {%- assign t_ph_d = fb.settings.con_photo_h_desktop -%}{%- assign t_ph_m = fb.settings.con_photo_h_mobile -%}
                 {%- else -%}
                   {%- assign t_on = block.settings.con_enabled -%}{%- assign t_c1 = block.settings.con_color -%}{%- assign t_gr = block.settings.con_gradient -%}{%- assign t_c2 = block.settings.con_color2 -%}{%- assign t_ag = block.settings.con_angle -%}
+                  {%- assign t_shape = block.settings.con_shape -%}{%- assign t_radius = block.settings.con_radius -%}
+                  {%- assign t_m_shape = block.settings.con_mobile_shape -%}{%- assign t_m_radius = block.settings.con_mobile_radius -%}
+                  {%- assign t_ph_d = block.settings.con_photo_h_desktop -%}{%- assign t_ph_m = block.settings.con_photo_h_mobile -%}
                 {%- endif -%}
                 {%- if t_on -%}
                   {%- if t_gr -%}{%- assign con_bg = 'linear-gradient(' | append: t_ag | append: 'deg, ' | append: t_c1 | append: ', ' | append: t_c2 | append: ')' -%}
@@ -719,14 +725,14 @@
                 {%- assign flav_raw = fb.settings.label | default: pv.title | default: prod.title -%}
                 {%- assign flav_parts = flav_raw | split: '||' -%}
                 {%- assign bparts = prod.title | split: "'" -%}
-                {%- if fb.settings.img_shape == 'circle' -%}{%- assign _con_r = '50%' -%}
-                {%- elsif fb.settings.img_shape == 'square' -%}{%- assign _con_r = '0px' -%}
-                {%- else -%}{%- assign _con_r = fb.settings.img_radius | append: 'px' -%}{%- endif -%}
-                {%- if fb.settings.mobile_img_shape == 'circle' -%}{%- assign _m_con_r = '50%' -%}
-                {%- elsif fb.settings.mobile_img_shape == 'square' -%}{%- assign _m_con_r = '0px' -%}
-                {%- else -%}{%- assign _m_con_r = fb.settings.mobile_img_radius | append: 'px' -%}{%- endif -%}
-                {%- if fb.settings.photo_h_desktop > 0 -%}{%- assign _photo_h = fb.settings.photo_h_desktop | append: 'px' -%}{%- else -%}{%- assign _photo_h = 'auto' -%}{%- endif -%}
-                {%- if fb.settings.photo_h_mobile > 0 -%}{%- assign _m_photo_h = fb.settings.photo_h_mobile | append: 'px' -%}{%- else -%}{%- assign _m_photo_h = 'auto' -%}{%- endif -%}
+                {%- if t_shape == 'circle' -%}{%- assign _con_r = '50%' -%}
+                {%- elsif t_shape == 'square' -%}{%- assign _con_r = '0px' -%}
+                {%- else -%}{%- assign _con_r = t_radius | append: 'px' -%}{%- endif -%}
+                {%- if t_m_shape == 'circle' -%}{%- assign _m_con_r = '50%' -%}
+                {%- elsif t_m_shape == 'square' -%}{%- assign _m_con_r = '0px' -%}
+                {%- else -%}{%- assign _m_con_r = t_m_radius | append: 'px' -%}{%- endif -%}
+                {%- if t_ph_d > 0 -%}{%- assign _photo_h = t_ph_d | append: 'px' -%}{%- else -%}{%- assign _photo_h = 'auto' -%}{%- endif -%}
+                {%- if t_ph_m > 0 -%}{%- assign _m_photo_h = t_ph_m | append: 'px' -%}{%- else -%}{%- assign _m_photo_h = 'auto' -%}{%- endif -%}
                 <div class="qa-prod{% unless t_on %} con-off{% endunless %}"
                      {{ fb.shopify_attributes }}
                      data-qa-prod="{{ qa_bid }}"
@@ -1159,7 +1165,14 @@
         { "type": "range", "id": "lead_lh", "label": "Line height", "min": 80, "max": 200, "step": 5, "unit": "%", "default": 140 },
         { "type": "range", "id": "mobile_eyebrow_size", "label": "Eyebrow font size (mobile)", "min": 8, "max": 20, "step": 1, "unit": "px", "default": 10 },
         { "type": "range", "id": "mobile_lead_size", "label": "Lead line font size (mobile)", "min": 10, "max": 28, "step": 1, "unit": "px", "default": 14 },
-        { "type": "header", "content": "Photo container" },
+        { "type": "header", "content": "Photo container — Shape & Size" },
+        { "type": "select", "id": "con_shape", "label": "Container shape — Desktop", "default": "rounded", "options": [{ "value": "rounded", "label": "Rounded square" }, { "value": "square", "label": "Square (sharp corners)" }, { "value": "circle", "label": "Circle" }] },
+        { "type": "range", "id": "con_radius", "label": "Corner radius — Desktop (rounded only)", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 18 },
+        { "type": "range", "id": "con_photo_h_desktop", "label": "Container height — Desktop (0 = auto square)", "min": 0, "max": 400, "step": 4, "unit": "px", "default": 0 },
+        { "type": "select", "id": "con_mobile_shape", "label": "Container shape — Mobile", "default": "rounded", "options": [{ "value": "rounded", "label": "Rounded square" }, { "value": "square", "label": "Square (sharp corners)" }, { "value": "circle", "label": "Circle" }] },
+        { "type": "range", "id": "con_mobile_radius", "label": "Corner radius — Mobile (rounded only)", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 18 },
+        { "type": "range", "id": "con_photo_h_mobile", "label": "Container height — Mobile (0 = auto square)", "min": 0, "max": 300, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Photo container — Color" },
         { "type": "checkbox", "id": "con_enabled", "label": "Show container", "default": true },
         { "type": "color", "id": "con_color", "label": "Container color", "default": "#F2C4CE" },
         { "type": "checkbox", "id": "con_gradient", "label": "Use gradient", "default": false },
@@ -1191,25 +1204,25 @@
         { "type": "text", "id": "variant_title", "label": "Variant title", "info": "Exact variant name e.g. Raspberry Refresher. Leave blank for first available." },
         { "type": "image_picker", "id": "custom_image", "label": "Custom image", "info": "Overrides the product image. CLEAR THIS when switching products." },
         { "type": "text", "id": "label", "label": "Flavor name override", "info": "Leave blank to use variant title. Use || for accent e.g. Raspberry||Refresher." },
-        { "type": "header", "content": "Desktop — Image & container" },
-        { "type": "select", "id": "img_shape", "label": "Container shape", "default": "rounded", "options": [{ "value": "rounded", "label": "Rounded square" }, { "value": "square", "label": "Square (sharp corners)" }, { "value": "circle", "label": "Circle" }] },
-        { "type": "range", "id": "img_radius", "label": "Corner radius (rounded only)", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 18 },
-        { "type": "range", "id": "photo_h_desktop", "label": "Container height — Desktop (0 = auto square)", "min": 0, "max": 400, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Image — Desktop" },
         { "type": "range", "id": "img_w", "label": "Image width — Desktop", "min": 10, "max": 200, "step": 2, "unit": "%", "default": 78 },
         { "type": "range", "id": "img_h", "label": "Image height — Desktop", "min": 10, "max": 200, "step": 2, "unit": "%", "default": 78 },
         { "type": "range", "id": "img_x", "label": "Image offset X — Desktop (left/right)", "min": -200, "max": 200, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "img_y", "label": "Image offset Y — Desktop (up/down)", "min": -200, "max": 200, "step": 4, "unit": "px", "default": 0 },
-        { "type": "header", "content": "Mobile — Image & container" },
-        { "type": "select", "id": "mobile_img_shape", "label": "Container shape — Mobile", "default": "rounded", "options": [{ "value": "rounded", "label": "Rounded square" }, { "value": "square", "label": "Square (sharp corners)" }, { "value": "circle", "label": "Circle" }] },
-        { "type": "range", "id": "mobile_img_radius", "label": "Corner radius — Mobile (rounded only)", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 18 },
-        { "type": "range", "id": "photo_h_mobile", "label": "Container height — Mobile (0 = auto square)", "min": 0, "max": 300, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Image — Mobile" },
         { "type": "range", "id": "mobile_img_w", "label": "Image width — Mobile", "min": 10, "max": 200, "step": 2, "unit": "%", "default": 78 },
         { "type": "range", "id": "mobile_img_h", "label": "Image height — Mobile", "min": 10, "max": 200, "step": 2, "unit": "%", "default": 78 },
         { "type": "range", "id": "mobile_img_x", "label": "Image offset X — Mobile (left/right)", "min": -200, "max": 200, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "mobile_img_y", "label": "Image offset Y — Mobile (up/down)", "min": -200, "max": 200, "step": 4, "unit": "px", "default": 0 },
-        { "type": "header", "content": "Container color override" },
-        { "type": "checkbox", "id": "con_override", "label": "Override section container color for this tile", "default": false },
-        { "type": "checkbox", "id": "con_enabled", "label": "Show container", "default": true },
+        { "type": "header", "content": "Container override — enable to override block defaults for this tile" },
+        { "type": "checkbox", "id": "con_override", "label": "Override block container settings for this tile", "default": false },
+        { "type": "select", "id": "con_shape", "label": "Container shape — Desktop", "default": "rounded", "options": [{ "value": "rounded", "label": "Rounded square" }, { "value": "square", "label": "Square (sharp corners)" }, { "value": "circle", "label": "Circle" }] },
+        { "type": "range", "id": "con_radius", "label": "Corner radius — Desktop (rounded only)", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 18 },
+        { "type": "range", "id": "con_photo_h_desktop", "label": "Container height — Desktop (0 = auto square)", "min": 0, "max": 400, "step": 4, "unit": "px", "default": 0 },
+        { "type": "select", "id": "con_mobile_shape", "label": "Container shape — Mobile", "default": "rounded", "options": [{ "value": "rounded", "label": "Rounded square" }, { "value": "square", "label": "Square (sharp corners)" }, { "value": "circle", "label": "Circle" }] },
+        { "type": "range", "id": "con_mobile_radius", "label": "Corner radius — Mobile (rounded only)", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 18 },
+        { "type": "range", "id": "con_photo_h_mobile", "label": "Container height — Mobile (0 = auto square)", "min": 0, "max": 300, "step": 4, "unit": "px", "default": 0 },
+        { "type": "checkbox", "id": "con_enabled", "label": "Show container color", "default": true },
         { "type": "color", "id": "con_color", "label": "Container color", "default": "#F2C4CE" },
         { "type": "checkbox", "id": "con_gradient", "label": "Use gradient", "default": false },
         { "type": "color", "id": "con_color2", "label": "Gradient end color", "default": "#E8A87C" },
