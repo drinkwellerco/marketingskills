@@ -225,17 +225,6 @@
 
   #cmp-{{ section.id }} * { box-sizing: border-box; }
 
-  #cmp-{{ section.id }}::before {
-    content: ''; position: absolute; width: 440px; height: 440px; border-radius: 50%;
-    background: var(--cmp-rose); opacity: .14; filter: blur(80px);
-    top: -140px; right: -120px; pointer-events: none;
-  }
-  #cmp-{{ section.id }}::after {
-    content: ''; position: absolute; width: 300px; height: 300px; border-radius: 50%;
-    background: var(--cmp-stone); opacity: .10; filter: blur(60px);
-    bottom: -120px; left: -100px; pointer-events: none;
-  }
-
   #cmp-{{ section.id }} .cmp-inner {
     max-width: {{ section.settings.inner_max_w }}px; margin: 0 auto; position: relative; z-index: 2;
   }
