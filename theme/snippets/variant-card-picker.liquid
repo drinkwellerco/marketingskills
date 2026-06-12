@@ -1,0 +1,221 @@
+{% comment %}
+  Variant Card Picker Block
+  Shows all product variants as clickable cards: image + flavor + price.
+  Selecting a card updates the product form's variant ID and price display.
+  No subscription — one-time purchase only.
+  Usage: {% render 'variant-card-picker', block: block, product: product %}
+{% endcomment %}
+
+{% liquid
+  assign vcp_id = block.id
+  assign img_shape = block.settings.card_image_shape | default: 'rounded'
+  assign img_radius = block.settings.card_image_radius | default: 8
+  if img_shape == 'circle'
+    assign computed_img_radius = '50%'
+  elsif img_shape == 'rounded'
+    assign computed_img_radius = img_radius | append: 'px'
+  else
+    assign computed_img_radius = '0px'
+  endif
+%}
+
+<div class="vcp-wrapper" {{ block.shopify_attributes }} data-block-id="{{ vcp_id }}"
+  style="
+    margin-top: {{ block.settings.margin_top | default: 0 }}px;
+    margin-bottom: {{ block.settings.margin_bottom | default: 8 }}px;
+    --vcp-gap: {{ block.settings.card_gap | default: 8 }}px;
+    --vcp-cols: {{ block.settings.cards_per_row | default: 3 }};
+    --vcp-card-bg: {{ block.settings.card_bg_color | default: '#ffffff' }};
+    --vcp-card-bg-sel: {{ block.settings.card_bg_selected | default: '#fff5f5' }};
+    --vcp-card-border: {{ block.settings.card_border_color | default: '#e0e0e0' }};
+    --vcp-card-border-sel: {{ block.settings.card_border_selected | default: '#D32F2F' }};
+    --vcp-card-radius: {{ block.settings.card_border_radius | default: 10 }}px;
+    --vcp-img-radius: {{ computed_img_radius }};
+    --vcp-text-color: {{ block.settings.card_text_color | default: '#333333' }};
+    --vcp-price-color: {{ block.settings.card_price_color | default: '#000000' }};
+    --vcp-text-size: {{ block.settings.card_text_size | default: 12 }}px;
+    --vcp-price-size: {{ block.settings.card_price_size | default: 12 }}px;
+  ">
+  <div class="vcp-grid">
+    {% for variant in product.variants %}
+      {% liquid
+        assign is_selected = false
+        if variant.id == product.selected_or_first_available_variant.id
+          assign is_selected = true
+        endif
+        assign variant_img = variant.featured_image | default: product.featured_image
+      %}
+      <div class="vcp-card {% if is_selected %}vcp-card--selected{% endif %}"
+        data-variant-id="{{ variant.id }}"
+        data-variant-price="{{ variant.price | money }}"
+        data-variant-compare-price="{{ variant.compare_at_price | money }}"
+        data-available="{{ variant.available }}"
+        role="button"
+        tabindex="0"
+        aria-label="{{ variant.title }} — {{ variant.price | money }}">
+
+        <div class="vcp-card__image-wrap">
+          {% if variant_img %}
+            <img
+              src="{{ variant_img | image_url: width: 200 }}"
+              alt="{{ variant.title | escape }}"
+              loading="lazy"
+              width="200"
+              height="200"
+              class="vcp-card__image"
+            >
+          {% else %}
+            <div class="vcp-card__image-placeholder">
+              {{ 'product-1' | placeholder_svg_tag: 'vcp-placeholder-svg' }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="vcp-card__info">
+          <span class="vcp-card__flavor">{{ variant.title }}</span>
+          <span class="vcp-card__price">{{ variant.price | money }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .vcp-wrapper {
+    width: 100%;
+  }
+  .vcp-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--vcp-cols, 3), 1fr);
+    gap: var(--vcp-gap, 8px);
+  }
+  .vcp-card {
+    background: var(--vcp-card-bg);
+    border: 1.5px solid var(--vcp-card-border);
+    border-radius: var(--vcp-card-radius);
+    cursor: pointer;
+    padding: 6px;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .vcp-card:hover {
+    border-color: var(--vcp-card-border-sel);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .vcp-card--selected {
+    background: var(--vcp-card-bg-sel) !important;
+    border-color: var(--vcp-card-border-sel) !important;
+    border-width: 2px !important;
+  }
+  .vcp-card__image-wrap {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--vcp-img-radius);
+    background: #f5f5f5;
+    flex-shrink: 0;
+  }
+  .vcp-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: var(--vcp-img-radius);
+  }
+  .vcp-card__image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+  }
+  .vcp-placeholder-svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.4;
+  }
+  .vcp-card__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    width: 100%;
+    text-align: center;
+  }
+  .vcp-card__flavor {
+    font-size: var(--vcp-text-size);
+    color: var(--vcp-text-color);
+    font-weight: 600;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+  .vcp-card__price {
+    font-size: var(--vcp-price-size);
+    color: var(--vcp-price-color);
+    font-weight: 700;
+  }
+  @media (max-width: 480px) {
+    .vcp-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<script>
+(function() {
+  function initVCP(wrapper) {
+    var cards = wrapper.querySelectorAll('.vcp-card');
+    var form = document.querySelector('form[action*="/cart/add"]');
+
+    function selectCard(card) {
+      cards.forEach(function(c) { c.classList.remove('vcp-card--selected'); });
+      card.classList.add('vcp-card--selected');
+
+      var variantId = card.getAttribute('data-variant-id');
+      var price = card.getAttribute('data-variant-price');
+      var comparePrice = card.getAttribute('data-variant-compare-price');
+
+      /* Update form variant input */
+      if (form) {
+        var idInput = form.querySelector('input[name="id"]');
+        if (idInput) idInput.value = variantId;
+      }
+
+      /* Update visible price elements */
+      document.querySelectorAll('.shop-product-price, .price__regular .price-item--regular').forEach(function(el) {
+        el.textContent = price;
+      });
+      document.querySelectorAll('.shop-compare-price, .price__sale .price-item--regular').forEach(function(el) {
+        el.textContent = comparePrice || '';
+      });
+
+      /* Fire variant change event for other scripts */
+      var evt = new CustomEvent('variantChange', { bubbles: true, detail: { variantId: variantId } });
+      wrapper.dispatchEvent(evt);
+    }
+
+    cards.forEach(function(card) {
+      card.addEventListener('click', function() { selectCard(this); });
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectCard(this); }
+      });
+    });
+  }
+
+  function ready() {
+    document.querySelectorAll('.vcp-wrapper[data-block-id="{{ block.id }}"]').forEach(initVCP);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', ready);
+  } else {
+    ready();
+  }
+})();
+</script>
