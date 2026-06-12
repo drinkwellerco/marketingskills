@@ -5,12 +5,30 @@
         {% render block %}
       </div>
     {% when 'product_description' %}
+      {% if block.settings.description_font != blank %}
+        {{ block.settings.description_font | font_face: font_display: 'swap' }}
+      {% endif %}
+      <style>
+        #block-{{ block.id }}.product-description-block,
+        #block-{{ block.id }}.product-description-block p,
+        #block-{{ block.id }}.product-description-block li,
+        #block-{{ block.id }}.product-description-block span {
+          {% if block.settings.description_font != blank %}
+            font-family: '{{ block.settings.description_font.family }}', {{ block.settings.description_font.fallback_families }}, sans-serif !important;
+          {% endif %}
+          font-weight: {{ block.settings.description_font_weight | default: 400 }} !important;
+          letter-spacing: {{ block.settings.description_letter_spacing | default: 0 }}px !important;
+          line-height: {{ block.settings.description_line_height | default: 1.6 }} !important;
+          color: {{ block.settings.description_text_color | default: '#444444' }} !important;
+          font-size: {{ block.settings.description_font_size_main | default: 14 }}px !important;
+        }
+      </style>
       <div
         class="product-description-block"
         id="block-{{ block.id }}"
         {{ block.shopify_attributes }}
         style="
-          margin-top: {{ block.settings.margin_top }}px; 
+          margin-top: {{ block.settings.margin_top }}px;
           margin-bottom: {{ block.settings.margin_bottom }}px;
           width: 100%;
           max-width: 100%;
@@ -244,30 +262,123 @@
 
     {% when 'title' %}
       {% assign mobile_font_size = block.settings.font_size | times: 0.85 | round %}
-      {% comment %} Debug font information {% endcomment %}
-      <!-- Font Debug: {{ block.settings.custom_font.family | default: 'No custom font' }} -->
-      <h1
-        style="
-            font-size: {{ block.settings.font_size }}px !important;
-            margin-top: {{ block.settings.margin_top }}px !important;
-            margin-bottom: {{ block.settings.margin_bottom }}px !important;
+
+      {% comment %} Load custom font face if set {% endcomment %}
+      {% if block.settings.custom_font != blank %}
+        {{ block.settings.custom_font | font_face: font_display: 'swap' }}
+      {% endif %}
+      {% if block.settings.accent_font != blank %}
+        {{ block.settings.accent_font | font_face: font_display: 'swap' }}
+      {% endif %}
+
+      {% comment %} Resolve title text {% endcomment %}
+      {% if block.settings.use_custom_title and block.settings.custom_title != blank %}
+        {% assign raw_title = block.settings.custom_title %}
+      {% else %}
+        {% assign raw_title = product.title %}
+      {% endif %}
+
+      {% comment %} Parse |accent| pipe syntax into <span class="title-accent"> {% endcomment %}
+      {% assign accent_parts = raw_title | split: '|' %}
+      {% assign title_html = '' %}
+      {% for part in accent_parts %}
+        {% assign mod = forloop.index0 | modulo: 2 %}
+        {% if mod == 1 %}
+          {% assign title_html = title_html | append: '<span class="title-accent-' | append: block.id | append: '">' | append: part | append: '</span>' %}
+        {% else %}
+          {% assign title_html = title_html | append: part %}
+        {% endif %}
+      {% endfor %}
+
+      <style>
+        .product-title-{{ block.id }} {
+          font-size: {{ block.settings.font_size }}px !important;
+          margin-top: {{ block.settings.margin_top }}px !important;
+          margin-bottom: {{ block.settings.margin_bottom }}px !important;
           color: {% if section.settings.use_theme_colors %}{{ settings.global_section_text_color }}{% else %}{{ block.settings.title_color }}{% endif %} !important;
-            line-height: {{ block.settings.line_height | default: 1.2 }} !important;
-            padding: 2px 0 !important;
-            width: 100% !important;
-            display: block !important;
-            {% if block.settings.custom_font != blank %}
-              {% if block.settings.override_global_font %}
-                font-family: '{{ block.settings.custom_font.family }}', {{ block.settings.custom_font.fallback_families }}, Arial, sans-serif !important;
-                font-weight: {{ block.settings.custom_font.weight | default: 400 }} !important;
-                font-style: {{ block.settings.custom_font.style | default: 'normal' }} !important;
-              {% else %}
-                font-family: '{{ block.settings.custom_font.family }}', {{ block.settings.custom_font.fallback_families }}, Arial, sans-serif;
-                font-weight: {{ block.settings.custom_font.weight | default: 400 }};
-                font-style: {{ block.settings.custom_font.style | default: 'normal' }};
-              {% endif %}
-            {% endif %}
-        "
+          line-height: {{ block.settings.line_height | default: 1.2 }} !important;
+          letter-spacing: {{ block.settings.letter_spacing | default: 0 }}px !important;
+          font-weight: {{ block.settings.font_weight | default: 700 }} !important;
+          padding: 2px 0 !important;
+          width: 100% !important;
+          display: block !important;
+          {% if block.settings.custom_font != blank %}
+            font-family: '{{ block.settings.custom_font.family }}', {{ block.settings.custom_font.fallback_families }}, serif !important;
+            {% unless block.settings.override_global_font %}
+              font-family: '{{ block.settings.custom_font.family }}', {{ block.settings.custom_font.fallback_families }}, serif;
+            {% endunless %}
+          {% endif %}
+        }
+        @media (max-width: 767px) {
+          .product-title-{{ block.id }} {
+            font-size: {{ mobile_font_size }}px !important;
+          }
+        }
+        .title-accent-{{ block.id }} {
+          color: {{ block.settings.accent_color | default: '#EF4A65' }} !important;
+          font-style: {{ block.settings.accent_font_style | default: 'italic' }} !important;
+          {% assign accent_size = block.settings.font_size | plus: block.settings.accent_font_size_offset | default: block.settings.font_size %}
+          font-size: {{ accent_size }}px !important;
+          {% if block.settings.accent_font != blank %}
+            font-family: '{{ block.settings.accent_font.family }}', {{ block.settings.accent_font.fallback_families }}, serif !important;
+            font-weight: {{ block.settings.accent_font.weight | default: 700 }} !important;
+          {% endif %}
+        }
+        .nutrition-link-{{ block.id }} {
+          display: inline-block;
+          margin-top: 4px;
+          font-size: 12px;
+          color: {{ block.settings.nutrition_link_color | default: '#555555' }};
+          text-decoration: underline;
+          cursor: pointer;
+          background: none;
+          border: none;
+          padding: 0;
+          font-family: inherit;
+          letter-spacing: inherit;
+        }
+        .nutrition-link-{{ block.id }}:hover { opacity: 0.7; }
+        .nutrition-modal-{{ block.id }} {
+          display: none;
+          position: fixed;
+          inset: 0;
+          z-index: 99999;
+          background: rgba(0,0,0,0.6);
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        }
+        .nutrition-modal-{{ block.id }}.open { display: flex; }
+        .nutrition-modal-inner-{{ block.id }} {
+          background: #fff;
+          border-radius: 12px;
+          max-width: 480px;
+          width: 100%;
+          max-height: 90vh;
+          overflow-y: auto;
+          position: relative;
+          padding: 16px;
+        }
+        .nutrition-modal-close-{{ block.id }} {
+          position: absolute;
+          top: 10px;
+          right: 12px;
+          background: none;
+          border: none;
+          font-size: 22px;
+          cursor: pointer;
+          line-height: 1;
+          color: #333;
+        }
+        .nutrition-modal-img-{{ block.id }} {
+          width: 100%;
+          height: auto;
+          display: block;
+          border-radius: 8px;
+        }
+      </style>
+
+      <h1
         class="shop-product-title product-title-{{ block.id }}{% if block.settings.override_global_font %} custom-font-override{% endif %}"
         {{ block.shopify_attributes }}
         data-font-size="{{ block.settings.font_size }}"
@@ -275,13 +386,23 @@
         data-custom-font="{{ block.settings.custom_font.family | default: 'none' }}"
         data-dynamic-variant-option="{{ block.settings.dynamic_variant_title_option | default: 'none' }}"
         data-original-title="{{ product.title }}"
-      >
-        {% if block.settings.use_custom_title and block.settings.custom_title != blank %}
-          {{ block.settings.custom_title }}
-        {% else %}
-          {{ product.title }}
-        {% endif %}
-      </h1>
+      >{{ title_html }}</h1>
+
+      {% if block.settings.show_nutrition_link and block.settings.nutrition_label_image != blank %}
+        <button class="nutrition-link-{{ block.id }}" onclick="document.getElementById('nutrition-modal-{{ block.id }}').classList.add('open')">
+          {{ block.settings.nutrition_link_text | default: 'See Nutrition Label' }}
+        </button>
+        <div id="nutrition-modal-{{ block.id }}" class="nutrition-modal-{{ block.id }}" onclick="if(event.target===this)this.classList.remove('open')">
+          <div class="nutrition-modal-inner-{{ block.id }}">
+            <button class="nutrition-modal-close-{{ block.id }}" onclick="document.getElementById('nutrition-modal-{{ block.id }}').classList.remove('open')" aria-label="Close">&times;</button>
+            <img
+              src="{{ block.settings.nutrition_label_image | image_url: width: 960 }}"
+              alt="Nutrition Label"
+              class="nutrition-modal-img-{{ block.id }}"
+            >
+          </div>
+        </div>
+      {% endif %}
       <!-- Responsive title sizing is handled by shop-product-details.js -->
       
       {% if block.settings.dynamic_variant_title_option != 'none' and block.settings.dynamic_variant_title_option != blank %}
@@ -447,6 +568,18 @@
 
         #block-{{ block.id }} .shop-product-price-block.on-sale {
           color: {% if block.settings.use_theme_colors %}{{ settings.global_section_accent_1_color }}{% else %}{{ block.settings.price_color }}{% endif %} !important;
+        }
+
+        {% if block.settings.price_font != blank %}
+          {{ block.settings.price_font | font_face: font_display: 'swap' }}
+          #block-{{ block.id }} .shop-product-price-block,
+          #block-{{ block.id }} .shop-compare-price {
+            font-family: '{{ block.settings.price_font.family }}', {{ block.settings.price_font.fallback_families }}, sans-serif !important;
+          }
+        {% endif %}
+        #block-{{ block.id }} .shop-product-price-block,
+        #block-{{ block.id }} .shop-compare-price {
+          letter-spacing: {{ block.settings.price_letter_spacing | default: 0 }}px !important;
         }
 
         #block-{{ block.id }} .shop-compare-price {
