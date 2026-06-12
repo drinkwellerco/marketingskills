@@ -642,10 +642,8 @@
         assign icon_position = block.settings.icon_position | default: 'left'
         assign icon_size = block.settings.icon_size | default: 20
 
-        assign has_quantity_selector = false
         for blk in section.blocks
           if blk.type == 'quantity_selector'
-            assign has_quantity_selector = true
             break
           endif
         endfor
@@ -1185,10 +1183,8 @@
 
     {% when 'shipping_notice' %}
       {% if section.settings.use_theme_colors %}
-        {% assign shipping_highlight_color = block.settings.highlight_color %}
         {% assign shipping_bg_color = block.settings.bg_color %}
       {% else %}
-        {% assign shipping_highlight_color = block.settings.custom_highlight_color_off_theme %}
         {% assign shipping_bg_color = block.settings.custom_bg_color_off_theme %}
       {% endif %}
 
@@ -2175,17 +2171,16 @@
 
           <img
             {% if block.settings.high_quality_image %}
-              src="{{ block.settings.image | img_url: 'master' }}"
+              src="{{ block.settings.image | image_url: width: 1600 }}"
               srcset="
-                {{ block.settings.image | img_url: '800x' }} 1x,
-                {{ block.settings.image | img_url: '1600x' }} 2x,
-                {{ block.settings.image | img_url: 'master' }} 3x
+                {{ block.settings.image | image_url: width: 800 }} 1x,
+                {{ block.settings.image | image_url: width: 1600 }} 2x
               "
             {% else %}
-              src="{{ block.settings.image | img_url: '200x' }}"
+              src="{{ block.settings.image | image_url: width: 200 }}"
               srcset="
-                {{ block.settings.image | img_url: '200x' }} 1x,
-                {{ block.settings.image | img_url: '400x' }} 2x
+                {{ block.settings.image | image_url: width: 200 }} 1x,
+                {{ block.settings.image | image_url: width: 400 }} 2x
               "
             {% endif %}
             alt="{{ block.settings.image.alt | escape }}"

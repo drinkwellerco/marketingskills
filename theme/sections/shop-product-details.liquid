@@ -1,9 +1,6 @@
 {{ 'shop-product-details.css' | asset_url | stylesheet_tag }}
 {{ 'variant-selector.css' | asset_url | stylesheet_tag }}
 
-{% liquid
-  assign show_price_in_button = section.settings.show_price_in_button
-%}
 {% style %}
     .shop-product-section {
         letter-spacing: var(--letter-spacing-body);
@@ -577,14 +574,14 @@
             {%- if block.settings.use_theme_colors -%}
             {%- if settings.use_dedicated_button_colors and settings.global_section_button_color != blank -%}
               {%- assign button_bg_color = settings.global_section_button_color -%}
-              {%- assign color_source = 'Theme - Dedicated Button Color' -%}
+  
             {%- else -%}
               {%- assign button_bg_color = settings.global_section_accent_1_color -%}
-              {%- assign color_source = 'Theme - Accent Color' -%}
+
             {%- endif -%}
           {%- else -%}
             {%- assign button_bg_color = block.settings.buy_box_button_bg_color -%}
-            {%- assign color_source = 'Custom Color' -%}
+
           {%- endif -%}
 
           {%- if block.settings.use_theme_colors -%}
