@@ -4024,9 +4024,29 @@
         },
         {
           "type": "range",
+          "id": "card_image_size",
+          "min": 40,
+          "max": 160,
+          "step": 4,
+          "unit": "px",
+          "label": "Card image size",
+          "default": 80
+        },
+        {
+          "type": "range",
+          "id": "card_padding",
+          "min": 2,
+          "max": 20,
+          "step": 1,
+          "unit": "px",
+          "label": "Card padding",
+          "default": 6
+        },
+        {
+          "type": "range",
           "id": "cards_per_row",
           "min": 2,
-          "max": 4,
+          "max": 6,
           "step": 1,
           "label": "Cards per row",
           "default": 3
@@ -4078,6 +4098,16 @@
           "unit": "px",
           "label": "Card border radius",
           "default": 10
+        },
+        {
+          "type": "range",
+          "id": "card_border_width_selected",
+          "min": 1,
+          "max": 4,
+          "step": 1,
+          "unit": "px",
+          "label": "Selected card border width",
+          "default": 2
         },
         {
           "type": "header",
@@ -4138,6 +4168,254 @@
           "unit": "px",
           "label": "Bottom margin",
           "default": 8
+        }
+      ]
+    },
+
+    {
+      "type": "purchase_options",
+      "name": "Purchase Options",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "One-Time Purchase"
+        },
+        {
+          "type": "text",
+          "id": "one_time_label",
+          "label": "One-time label",
+          "default": "One-Time Purchase"
+        },
+        {
+          "type": "text",
+          "id": "one_time_sublabel",
+          "label": "One-time sub-label",
+          "default": "No commitment"
+        },
+        {
+          "type": "text",
+          "id": "one_time_price",
+          "label": "One-time price display",
+          "default": ""
+        },
+        {
+          "type": "header",
+          "content": "Subscribe & Save Section"
+        },
+        {
+          "type": "text",
+          "id": "subscribe_heading",
+          "label": "Subscribe heading",
+          "default": "Subscribe & Save"
+        },
+        {
+          "type": "text",
+          "id": "save_badge_text",
+          "label": "Save badge text (e.g. Save 15%)",
+          "default": "Save 15%"
+        },
+        {
+          "type": "header",
+          "content": "Monthly Plan"
+        },
+        {
+          "type": "text",
+          "id": "monthly_label",
+          "label": "Monthly label",
+          "default": "Monthly"
+        },
+        {
+          "type": "text",
+          "id": "monthly_sublabel",
+          "label": "Monthly sub-label",
+          "default": "Ships every month"
+        },
+        {
+          "type": "text",
+          "id": "monthly_price",
+          "label": "Monthly price display",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "monthly_plan_id",
+          "label": "Monthly selling plan ID",
+          "info": "Enter the numeric Shopify selling plan ID for monthly subscription"
+        },
+        {
+          "type": "header",
+          "content": "Bi-Monthly Plan"
+        },
+        {
+          "type": "text",
+          "id": "bimonthly_label",
+          "label": "Bi-monthly label",
+          "default": "Bi-Monthly"
+        },
+        {
+          "type": "text",
+          "id": "bimonthly_sublabel",
+          "label": "Bi-monthly sub-label",
+          "default": "Ships every 2 months"
+        },
+        {
+          "type": "text",
+          "id": "bimonthly_price",
+          "label": "Bi-monthly price display",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "bimonthly_plan_id",
+          "label": "Bi-monthly selling plan ID",
+          "info": "Enter the numeric Shopify selling plan ID for bi-monthly subscription"
+        },
+        {
+          "type": "header",
+          "content": "Colors"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Option background (unselected)",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "bg_color_selected",
+          "label": "Option background (selected)",
+          "default": "#fff5f5"
+        },
+        {
+          "type": "color",
+          "id": "border_color",
+          "label": "Option border (unselected)",
+          "default": "#e0e0e0"
+        },
+        {
+          "type": "color",
+          "id": "border_color_selected",
+          "label": "Option border (selected)",
+          "default": "#D32F2F"
+        },
+        {
+          "type": "color",
+          "id": "label_color",
+          "label": "Label color",
+          "default": "#222222"
+        },
+        {
+          "type": "color",
+          "id": "sublabel_color",
+          "label": "Sub-label color",
+          "default": "#666666"
+        },
+        {
+          "type": "color",
+          "id": "price_color",
+          "label": "Price color",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "badge_bg",
+          "label": "Save badge background",
+          "default": "#D32F2F"
+        },
+        {
+          "type": "color",
+          "id": "badge_text_color",
+          "label": "Save badge text color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "header",
+          "content": "Typography"
+        },
+        {
+          "type": "range",
+          "id": "label_size",
+          "min": 11,
+          "max": 20,
+          "step": 1,
+          "unit": "px",
+          "label": "Label font size",
+          "default": 14
+        },
+        {
+          "type": "range",
+          "id": "sublabel_size",
+          "min": 10,
+          "max": 16,
+          "step": 1,
+          "unit": "px",
+          "label": "Sub-label font size",
+          "default": 11
+        },
+        {
+          "type": "range",
+          "id": "price_size",
+          "min": 11,
+          "max": 20,
+          "step": 1,
+          "unit": "px",
+          "label": "Price font size",
+          "default": 14
+        },
+        {
+          "type": "range",
+          "id": "badge_font_size",
+          "min": 9,
+          "max": 14,
+          "step": 1,
+          "unit": "px",
+          "label": "Badge font size",
+          "default": 10
+        },
+        {
+          "type": "header",
+          "content": "Shape & Spacing"
+        },
+        {
+          "type": "range",
+          "id": "option_radius",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "unit": "px",
+          "label": "Option border radius",
+          "default": 10
+        },
+        {
+          "type": "range",
+          "id": "option_gap",
+          "min": 4,
+          "max": 20,
+          "step": 2,
+          "unit": "px",
+          "label": "Gap between options",
+          "default": 8
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "min": -20,
+          "max": 40,
+          "step": 2,
+          "unit": "px",
+          "label": "Top margin",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom",
+          "min": -20,
+          "max": 40,
+          "step": 2,
+          "unit": "px",
+          "label": "Bottom margin",
+          "default": 12
         }
       ]
     },

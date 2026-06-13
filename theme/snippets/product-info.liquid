@@ -3657,7 +3657,10 @@
       {% render 'subscribe-and-save', block: block %}
 
     {% when 'variant_card_picker' %}
-      {% render 'variant-card-picker', block: block, product: product %}
+      {% render 'variant-card-picker', block: block, product: product, product_form_id: product_form_id %}
+
+    {% when 'purchase_options' %}
+      {% render 'purchase-options', block: block, product: product, product_form_id: product_form_id %}
 
     {% when 'deal_timer' %}
       {% render 'deal-timer', block: block %}

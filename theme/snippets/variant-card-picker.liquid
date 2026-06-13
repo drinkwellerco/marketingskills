@@ -1,11 +1,11 @@
 {% comment %}
   Variant Card Picker Block
-  Shows all product variants as clickable cards: image + flavor + price.
-  Selecting a card updates the product form's variant ID and price display.
-  No subscription — one-time purchase only.
-  Usage: {% render 'variant-card-picker', block: block, product: product %}
+  Variants shown as image+flavor+price cards. Uses radio inputs tied to the product form
+  so selecting a card correctly updates the cart variant — same mechanism as simple-variant-picker.
+  Usage: {% render 'variant-card-picker', block: block, product: product, product_form_id: product_form_id %}
 {% endcomment %}
 
+{%- unless product.has_only_default_variant -%}
 {% liquid
   assign vcp_id = block.id
   assign img_shape = block.settings.card_image_shape | default: 'rounded'
@@ -31,10 +31,14 @@
     --vcp-card-border-sel: {{ block.settings.card_border_selected | default: '#D32F2F' }};
     --vcp-card-radius: {{ block.settings.card_border_radius | default: 10 }}px;
     --vcp-img-radius: {{ computed_img_radius }};
+    --vcp-img-width: {{ block.settings.card_image_size | default: 80 }}px;
+    --vcp-img-height: {{ block.settings.card_image_size | default: 80 }}px;
     --vcp-text-color: {{ block.settings.card_text_color | default: '#333333' }};
     --vcp-price-color: {{ block.settings.card_price_color | default: '#000000' }};
     --vcp-text-size: {{ block.settings.card_text_size | default: 12 }}px;
     --vcp-price-size: {{ block.settings.card_price_size | default: 12 }}px;
+    --vcp-card-padding: {{ block.settings.card_padding | default: 6 }}px;
+    --vcp-border-width-sel: {{ block.settings.card_border_width_selected | default: 2 }}px;
   ">
   <div class="vcp-grid">
     {% for variant in product.variants %}
@@ -45,14 +49,22 @@
         endif
         assign variant_img = variant.featured_image | default: product.featured_image
       %}
-      <div class="vcp-card {% if is_selected %}vcp-card--selected{% endif %}"
-        data-variant-id="{{ variant.id }}"
-        data-variant-price="{{ variant.price | money }}"
-        data-variant-compare-price="{{ variant.compare_at_price | money }}"
-        data-available="{{ variant.available }}"
-        role="button"
-        tabindex="0"
+      <label class="vcp-card {% if is_selected %}vcp-card--selected{% endif %} {% unless variant.available %}vcp-card--unavailable{% endunless %}"
+        for="vcp-{{ vcp_id }}-{{ variant.id }}"
         aria-label="{{ variant.title }} — {{ variant.price | money }}">
+
+        <input
+          type="radio"
+          id="vcp-{{ vcp_id }}-{{ variant.id }}"
+          name="id"
+          value="{{ variant.id }}"
+          form="{{ product_form_id }}"
+          class="vcp-radio"
+          {% if is_selected %}checked{% endif %}
+          {% unless variant.available %}disabled{% endunless %}
+          data-variant-price="{{ variant.price | money }}"
+          data-variant-compare-price="{{ variant.compare_at_price | money }}"
+        >
 
         <div class="vcp-card__image-wrap">
           {% if variant_img %}
@@ -74,8 +86,11 @@
         <div class="vcp-card__info">
           <span class="vcp-card__flavor">{{ variant.title }}</span>
           <span class="vcp-card__price">{{ variant.price | money }}</span>
+          {% if variant.compare_at_price > variant.price %}
+            <span class="vcp-card__compare">{{ variant.compare_at_price | money }}</span>
+          {% endif %}
         </div>
-      </div>
+      </label>
     {% endfor %}
   </div>
 </div>
@@ -89,12 +104,19 @@
     grid-template-columns: repeat(var(--vcp-cols, 3), 1fr);
     gap: var(--vcp-gap, 8px);
   }
+  .vcp-radio {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
   .vcp-card {
     background: var(--vcp-card-bg);
     border: 1.5px solid var(--vcp-card-border);
     border-radius: var(--vcp-card-radius);
     cursor: pointer;
-    padding: 6px;
+    padding: var(--vcp-card-padding, 6px);
     transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
@@ -102,6 +124,7 @@
     gap: 4px;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    position: relative;
   }
   .vcp-card:hover {
     border-color: var(--vcp-card-border-sel);
@@ -110,11 +133,15 @@
   .vcp-card--selected {
     background: var(--vcp-card-bg-sel) !important;
     border-color: var(--vcp-card-border-sel) !important;
-    border-width: 2px !important;
+    border-width: var(--vcp-border-width-sel, 2px) !important;
+  }
+  .vcp-card--unavailable {
+    opacity: 0.45;
+    cursor: not-allowed;
   }
   .vcp-card__image-wrap {
-    width: 100%;
-    aspect-ratio: 1;
+    width: var(--vcp-img-width, 80px);
+    height: var(--vcp-img-height, 80px);
     overflow: hidden;
     border-radius: var(--vcp-img-radius);
     background: #f5f5f5;
@@ -160,6 +187,11 @@
     color: var(--vcp-price-color);
     font-weight: 700;
   }
+  .vcp-card__compare {
+    font-size: calc(var(--vcp-price-size) * 0.9);
+    color: #999;
+    text-decoration: line-through;
+  }
   @media (max-width: 480px) {
     .vcp-grid {
       grid-template-columns: repeat(2, 1fr);
@@ -170,46 +202,34 @@
 <script>
 (function() {
   function initVCP(wrapper) {
+    var radios = wrapper.querySelectorAll('.vcp-radio');
     var cards = wrapper.querySelectorAll('.vcp-card');
-    var form = document.querySelector('form[action*="/cart/add"]');
 
-    function selectCard(card) {
-      cards.forEach(function(c) { c.classList.remove('vcp-card--selected'); });
-      card.classList.add('vcp-card--selected');
+    radios.forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        /* Update selected card styling */
+        cards.forEach(function(c) { c.classList.remove('vcp-card--selected'); });
+        radio.closest('.vcp-card').classList.add('vcp-card--selected');
 
-      var variantId = card.getAttribute('data-variant-id');
-      var price = card.getAttribute('data-variant-price');
-      var comparePrice = card.getAttribute('data-variant-compare-price');
+        /* Update visible price elements */
+        var price = radio.getAttribute('data-variant-price');
+        var comparePrice = radio.getAttribute('data-variant-compare-price');
 
-      /* Update form variant input */
-      if (form) {
-        var idInput = form.querySelector('input[name="id"]');
-        if (idInput) idInput.value = variantId;
-      }
+        document.querySelectorAll('.shop-product-price, .price__regular .price-item--regular, .shop-product-price-block').forEach(function(el) {
+          el.textContent = price;
+        });
+        document.querySelectorAll('.shop-compare-price, .price__sale .price-item--regular').forEach(function(el) {
+          el.textContent = comparePrice || '';
+        });
 
-      /* Update visible price elements */
-      document.querySelectorAll('.shop-product-price, .price__regular .price-item--regular').forEach(function(el) {
-        el.textContent = price;
-      });
-      document.querySelectorAll('.shop-compare-price, .price__sale .price-item--regular').forEach(function(el) {
-        el.textContent = comparePrice || '';
-      });
-
-      /* Fire variant change event for other scripts */
-      var evt = new CustomEvent('variantChange', { bubbles: true, detail: { variantId: variantId } });
-      wrapper.dispatchEvent(evt);
-    }
-
-    cards.forEach(function(card) {
-      card.addEventListener('click', function() { selectCard(this); });
-      card.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectCard(this); }
+        /* Fire variant change event for other scripts */
+        wrapper.dispatchEvent(new CustomEvent('variantChange', { bubbles: true, detail: { variantId: radio.value } }));
       });
     });
   }
 
   function ready() {
-    document.querySelectorAll('.vcp-wrapper[data-block-id="{{ block.id }}"]').forEach(initVCP);
+    document.querySelectorAll('.vcp-wrapper').forEach(initVCP);
   }
 
   if (document.readyState === 'loading') {
@@ -219,3 +239,4 @@
   }
 })();
 </script>
+{%- endunless -%}
