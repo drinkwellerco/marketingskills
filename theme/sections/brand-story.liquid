@@ -68,6 +68,8 @@
         <img
           src="{{ bs.image | image_url: width: 1400 }}"
           alt="{{ bs.image.alt | default: bs.title | escape }}"
+          width="1400"
+          height="{{ bs.image_height | default: 480 }}"
           loading="lazy"
           style="width:100%;height:{{ bs.image_height | default: 480 }}px;object-fit:{{ bs.image_fit | default: 'cover' }};display:block;border-radius:{{ bs.image_radius | default: 12 }}px;">
       </div>
