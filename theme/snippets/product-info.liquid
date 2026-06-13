@@ -3880,25 +3880,26 @@
         .sfp-site:hover{opacity:.7;}
         @media(max-width:700px){
           .sfp-modal{align-items:flex-end;padding:0;}
-          .sfp-panel{padding:32px 20px 28px;position:fixed;bottom:0;left:0;right:0;max-height:92vh;border-radius:16px 16px 0 0;animation:sfp-slide-mobile .3s cubic-bezier(.22,1,.36,1);}
+          .sfp-panel{padding:32px 20px 28px;width:100%;max-height:92vh;border-radius:16px 16px 0 0;animation:sfp-slide-mobile .3s cubic-bezier(.22,1,.36,1);}
           @keyframes sfp-slide-mobile{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:translateY(0)}}
           .sfp-body{grid-template-columns:1fr;gap:28px;}
           .sfp-product{font-size:38px;}
           .sfp-pill{display:none;}
         }
       </style>
+      <style>.sfp-scroll-lock{overflow:hidden!important;}</style>
       <script>
       (function(){
         var o=document.getElementById('sfp-open-{{ block.id }}');
         var m=document.getElementById('sfp-modal-{{ block.id }}');
         var b=document.getElementById('sfp-backdrop-{{ block.id }}');
         var c=document.getElementById('sfp-close-{{ block.id }}');
-        function open(){m.classList.add('open');document.body.style.overflow='hidden';}
-        function close(){m.classList.remove('open');document.body.style.overflow='';}
-        if(o)o.addEventListener('click',open);
-        if(c)c.addEventListener('click',close);
-        if(b)b.addEventListener('click',close);
-        document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+        function openModal(e){if(e)e.preventDefault();m.classList.add('open');document.documentElement.classList.add('sfp-scroll-lock');}
+        function closeModal(){m.classList.remove('open');document.documentElement.classList.remove('sfp-scroll-lock');}
+        if(o)o.addEventListener('click',openModal);
+        if(c)c.addEventListener('click',closeModal);
+        if(b)b.addEventListener('click',closeModal);
+        document.addEventListener('keydown',function(e){if(e.key==='Escape'&&m.classList.contains('open'))closeModal();});
       })();
       </script>
       {% endif %}
