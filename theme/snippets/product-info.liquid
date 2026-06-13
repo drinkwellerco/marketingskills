@@ -5,10 +5,8 @@
         {% render block %}
       </div>
     {% when 'product_description' %}
-      {% if block.settings.description_font != blank %}
-        {{ block.settings.description_font | font_face: font_display: 'swap' }}
-      {% endif %}
       <style>
+        {% if block.settings.description_font != blank %}{{ block.settings.description_font | font_face: font_display: 'swap' }}{% endif %}
         #block-{{ block.id }}.product-description-block,
         #block-{{ block.id }}.product-description-block p,
         #block-{{ block.id }}.product-description-block li,
@@ -264,12 +262,10 @@
       {% assign mobile_font_size = block.settings.font_size | times: 0.85 | round %}
 
       {% comment %} Load custom font face if set {% endcomment %}
-      {% if block.settings.custom_font != blank %}
-        {{ block.settings.custom_font | font_face: font_display: 'swap' }}
-      {% endif %}
-      {% if block.settings.accent_font != blank %}
-        {{ block.settings.accent_font | font_face: font_display: 'swap' }}
-      {% endif %}
+      <style>
+        {% if block.settings.custom_font != blank %}{{ block.settings.custom_font | font_face: font_display: 'swap' }}{% endif %}
+        {% if block.settings.accent_font != blank %}{{ block.settings.accent_font | font_face: font_display: 'swap' }}{% endif %}
+      </style>
 
       {% comment %} Resolve title text {% endcomment %}
       {% if block.settings.use_custom_title and block.settings.custom_title != blank %}
