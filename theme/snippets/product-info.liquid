@@ -3820,12 +3820,11 @@
         .sfp-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;cursor:pointer;font-family:var(--font-body-family);font-weight:600;letter-spacing:.03em;transition:opacity .18s,transform .12s;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;}
         .sfp-btn:hover{opacity:.75;transform:translateY(-1px);}
         .sfp-btn:active{transform:scale(.97);}
-        .sfp-modal{display:none;position:fixed;inset:0;z-index:99999;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+        .sfp-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;overflow-y:scroll;-webkit-overflow-scrolling:touch;padding:24px 16px 40px;}
         .sfp-modal.open{display:block;}
-        .sfp-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.52);backdrop-filter:blur(3px);animation:sfp-fade-in .22s ease;}
-        @keyframes sfp-fade-in{from{opacity:0}to{opacity:1}}
-        .sfp-panel{position:relative;z-index:1;background:#FAF5F0;border-radius:16px;box-shadow:0 24px 80px rgba(27,58,92,.22);max-width:900px;width:calc(100% - 40px);margin:40px auto;padding:48px 52px 44px;animation:sfp-slide-up .26s cubic-bezier(.22,1,.36,1);}
-        @keyframes sfp-slide-up{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+        .sfp-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);}
+        .sfp-panel{position:relative;z-index:1;background:#FAF5F0;border-radius:16px;box-shadow:0 24px 80px rgba(27,58,92,.22);max-width:900px;width:100%;margin:0 auto;padding:48px 52px 44px;animation:sfp-slide-up .25s cubic-bezier(.22,1,.36,1);}
+        @keyframes sfp-slide-up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
         .sfp-close{position:absolute;top:14px;right:16px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(0,0,0,.08);color:#333;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .12s;}
         .sfp-close:hover{background:rgba(0,0,0,.16);transform:rotate(90deg);}
         .sfp-header{display:flex;align-items:center;gap:20px;padding-bottom:24px;border-bottom:1.5px solid #E8DDD5;margin-bottom:32px;}
@@ -3885,18 +3884,17 @@
           .sfp-pill{display:none;}
         }
       </style>
-      <style>.sfp-scroll-lock{overflow:hidden!important;}</style>
       <script>
       (function(){
         var o=document.getElementById('sfp-open-{{ block.id }}');
         var m=document.getElementById('sfp-modal-{{ block.id }}');
         var b=document.getElementById('sfp-backdrop-{{ block.id }}');
         var c=document.getElementById('sfp-close-{{ block.id }}');
-        function openModal(e){if(e)e.preventDefault();m.classList.add('open');document.documentElement.classList.add('sfp-scroll-lock');}
-        function closeModal(){m.classList.remove('open');document.documentElement.classList.remove('sfp-scroll-lock');}
+        function openModal(){m.classList.add('open');m.scrollTop=0;}
+        function closeModal(){m.classList.remove('open');}
         if(o)o.addEventListener('click',openModal);
         if(c)c.addEventListener('click',closeModal);
-        if(b)b.addEventListener('click',closeModal);
+        if(b)b.addEventListener('click',function(e){if(e.target===b)closeModal();});
         document.addEventListener('keydown',function(e){if(e.key==='Escape'&&m.classList.contains('open'))closeModal();});
       })();
       </script>

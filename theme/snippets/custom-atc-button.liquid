@@ -131,6 +131,11 @@
   }
 
   function getActivePlanId() {
+    /* Primary: global set by purchase-options when user picks a plan */
+    if (typeof window.__sellingPlan !== 'undefined' && window.__sellingPlan !== '') {
+      return window.__sellingPlan.toString();
+    }
+    /* Fallback: read from native product form hidden input */
     var form = document.getElementById('{{ product_form_id }}') || document.querySelector('form[action*="/cart/add"]');
     var planInput = form ? form.querySelector('input[name="selling_plan"]') : null;
     return (planInput && planInput.value) ? planInput.value.toString() : null;
@@ -226,14 +231,10 @@
       observer.observe(card, { attributes: true, attributeFilter: ['data-qty'] });
     });
 
-    /* Watch selling_plan changes — use event delegation so dynamic inputs are caught */
-    if (form) {
-      form.addEventListener('change', function(e) {
-        if (e.target && e.target.name === 'selling_plan') updateButton();
-      });
-    }
+    /* Listen for plan changes broadcast by purchase-options */
+    document.addEventListener('sellingPlanChanged', updateButton);
 
-    /* Watch purchase options clicks */
+    /* Also watch po-option clicks as a fallback */
     document.addEventListener('click', function(e) {
       if (e.target && e.target.closest('.po-option')) setTimeout(updateButton, 80);
     });
@@ -253,6 +254,7 @@
         return entry;
       });
 
+      console.log('[CATC] Adding to cart:', JSON.stringify({ items: payload }));
       fetch('/cart/add.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },

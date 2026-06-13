@@ -388,15 +388,20 @@
         wrapper.removeAttribute('data-onetime-selected');
       }
 
+      /* Store plan globally so any button on the page can read it */
+      window.__sellingPlan = isOnetime ? '' : planId;
+
+      /* Also update the form input if a native product form exists */
       if (form) {
         var planInput = getOrCreateInput('selling_plan');
         if (planInput) {
-          var newVal = isOnetime ? '' : planId;
-          planInput.value = newVal;
-          planInput.setAttribute('value', newVal);
-          planInput.dispatchEvent(new Event('change', { bubbles: true }));
+          planInput.value = window.__sellingPlan;
+          planInput.setAttribute('value', window.__sellingPlan);
         }
       }
+
+      /* Broadcast so ATC buttons re-calculate totals immediately */
+      document.dispatchEvent(new CustomEvent('sellingPlanChanged', { detail: { planId: window.__sellingPlan } }));
     }
 
     allOptions.forEach(function(opt) {
