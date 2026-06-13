@@ -3686,7 +3686,20 @@
       {% assign sfp_brand = block.settings.product_name | default: "Her'dration" %}
       {% assign sfp_bp = sfp_brand | split: "'" %}
       {% assign sfp_claims = block.settings.claims | default: '' | split: ',' %}
-      {% assign sfp_nutrients = block.settings.nutrients | default: '' | split: "\n" %}
+      {% assign sfp_nutrients_raw = block.settings.nutrients | default: '' %}
+      {% if sfp_nutrients_raw == blank %}
+        {% assign sfp_nutrients_raw = "Total Fat | | 0g | 0% | |
+Total Carbohydrate | | 1g | 0% | |
+Total Sugars | | 0g | † | y |
+Sodium | (Redmond Real Salt) | 380mg | 17% | |
+Magnesium | (Magnesium Malate) | 52.5mg | 13% | |
+Potassium | (Potassium Chloride) | 260mg | 6% | |
+Myo-Inositol | | 4g | † | | Mood & Hormone Support Blend
+L-Theanine | | 200mg | † | |
+Pregnenolone | | 25mg | † | |" %}
+      {% endif %}
+      {% assign sfp_nutrients = sfp_nutrients_raw | split: "
+" %}
 
       <div class="sfp-wrap" {{ block.shopify_attributes }}
         style="margin-top:{{ block.settings.margin_top | default: 0 }}px;margin-bottom:{{ block.settings.margin_bottom | default: 8 }}px;">
@@ -3752,8 +3765,8 @@
                   {% endfor %}
                   <div class="sfp-rule-lg"></div>
                   <div class="sfp-foot">
-                    {% if block.settings.footnote_star != blank %}<span class="star">{{ block.settings.footnote_star }}</span>{% endif %}
-                    {% if block.settings.footnote_dagger != blank %}<span class="star">{{ block.settings.footnote_dagger }}</span>{% endif %}
+                    <span class="star">{{ block.settings.footnote_star | default: '* Percent Daily Values are based on a 2,000 calorie diet.' }}</span>
+                    <span class="star">{{ block.settings.footnote_dagger | default: '† Daily Value not established.' }}</span>
                   </div>
                 </div>
               </div>
