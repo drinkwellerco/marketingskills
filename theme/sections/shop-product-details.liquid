@@ -1782,6 +1782,19 @@
       "settings": [
         {
           "type": "select",
+          "id": "title_tag",
+          "label": "HTML tag (font type)",
+          "default": "h1",
+          "options": [
+            { "value": "h1", "label": "H1 (heading 1)" },
+            { "value": "h2", "label": "H2 (heading 2)" },
+            { "value": "h3", "label": "H3 (heading 3)" },
+            { "value": "p", "label": "Body (paragraph)" }
+          ],
+          "info": "Choose 'Body' for Playfair Display (theme body font). H1/H2/H3 use the theme heading font."
+        },
+        {
+          "type": "select",
           "id": "dynamic_variant_title_option",
           "label": "Dynamic title from variant option",
           "default": "none",

@@ -381,15 +381,15 @@
         }
       </style>
 
-      <h1
-        class="shop-product-title product-title-{{ block.id }}{% if block.settings.override_global_font %} custom-font-override{% endif %}"
+      {% assign title_tag = block.settings.title_tag | default: 'h1' %}
+      <{{ title_tag }}
+        class="shop-product-title product-title-{{ block.id }}"
         {{ block.shopify_attributes }}
         data-font-size="{{ block.settings.font_size }}"
         data-mobile-font-size="{{ mobile_font_size }}"
-        data-custom-font="{{ block.settings.custom_font.family | default: 'none' }}"
         data-dynamic-variant-option="{{ block.settings.dynamic_variant_title_option | default: 'none' }}"
         data-original-title="{{ product.title }}"
-      >{{ title_html }}</h1>
+      >{{ title_html }}</{{ title_tag }}>
 
       {% if block.settings.show_nutrition_link and block.settings.nutrition_label_image != blank %}
         <button class="nutrition-link-{{ block.id }}" onclick="document.getElementById('nutrition-modal-{{ block.id }}').classList.add('open')">
