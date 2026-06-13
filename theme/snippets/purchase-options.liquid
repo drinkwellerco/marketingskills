@@ -253,12 +253,20 @@
     transition: opacity 0.3s ease, border-color 0.2s;
   }
 
-  /* Dim subscribe section when one-time is active */
+  /* Dim subscribe section when one-time is active — still clickable */
   .po-wrapper[data-onetime-selected] .po-subscribe-section {
-    opacity: 0.4;
-    pointer-events: none;
     border-color: var(--po-border);
     background: var(--po-bg);
+  }
+  .po-wrapper[data-onetime-selected] .po-subscribe-heading,
+  .po-wrapper[data-onetime-selected] .po-benefit-text,
+  .po-wrapper[data-onetime-selected] .po-plans .po-option,
+  .po-wrapper[data-onetime-selected] .po-gifts {
+    opacity: 0.4;
+    transition: opacity 0.2s ease;
+  }
+  .po-wrapper[data-onetime-selected] .po-plans .po-option:hover {
+    opacity: 1;
   }
 
   /* Big heading block */
