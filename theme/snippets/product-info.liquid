@@ -282,7 +282,16 @@
         {% if mod == 1 %}
           {% assign title_html = title_html | append: '<span class="title-accent-' | append: block.id | append: '">' | append: part | append: '</span>' %}
         {% else %}
-          {% assign title_html = title_html | append: part %}
+          {% comment %} Auto-accent apostrophes in non-pipe segments {% endcomment %}
+          {% assign apos_parts = part | split: "'" %}
+          {% assign apos_html = '' %}
+          {% for apos_part in apos_parts %}
+            {% unless forloop.first %}
+              {% assign apos_html = apos_html | append: '<span class="title-accent-' | append: block.id | append: '">' | append: "'" | append: '</span>' %}
+            {% endunless %}
+            {% assign apos_html = apos_html | append: apos_part %}
+          {% endfor %}
+          {% assign title_html = title_html | append: apos_html %}
         {% endif %}
       {% endfor %}
 
@@ -298,11 +307,9 @@
           padding: 2px 0 !important;
           width: 100% !important;
           display: block !important;
+          font-family: var(--font-body-family) !important;
           {% if block.settings.custom_font != blank %}
             font-family: '{{ block.settings.custom_font.family }}', {{ block.settings.custom_font.fallback_families }}, serif !important;
-            {% unless block.settings.override_global_font %}
-              font-family: '{{ block.settings.custom_font.family }}', {{ block.settings.custom_font.fallback_families }}, serif;
-            {% endunless %}
           {% endif %}
         }
         @media (max-width: 767px) {
