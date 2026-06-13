@@ -3823,7 +3823,6 @@
       </div>
 
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,600;1,700&family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&display=swap');
 
         .sfp-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;cursor:pointer;font-family:var(--font-body-family);font-weight:600;letter-spacing:.03em;transition:opacity .18s,transform .12s;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;border:none;background:none;}
         .sfp-btn:hover{opacity:.7;transform:translateY(-1px);}
@@ -3857,9 +3856,9 @@
           position:relative;
         }
         .sfp-logo{width:56px;height:56px;object-fit:contain;border-radius:8px;margin-bottom:10px;}
-        .sfp-wordmark{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:600;font-size:13px;letter-spacing:.38em;text-transform:uppercase;color:#1B3A5C;margin-bottom:2px;}
+        .sfp-wordmark{font-family:var(--font-body-family);font-weight:600;font-size:13px;letter-spacing:.38em;text-transform:uppercase;color:#1B3A5C;margin-bottom:2px;}
         .sfp-product{
-          {% if block.settings.product_name_font == 'body' %}font-family:var(--font-body-family)!important;{% else %}font-family:'DM Serif Display','Georgia',serif;{% endif %}
+          {% if block.settings.product_name_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
           font-size:{{ block.settings.product_name_size | default: 68 }}px;
           color:{{ block.settings.product_name_color | default: '#1B3A5C' }};
           line-height:1;letter-spacing:-.01em;margin:4px 0 6px;
@@ -3873,7 +3872,7 @@
         .sfp-body{display:grid;grid-template-columns:minmax(0,420px) 1fr;gap:52px;align-items:start;}
         .sfp-eyebrow{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:700;font-size:11px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px;}
         .sfp-col-title{
-          {% if block.settings.col_title_font == 'heading' %}font-family:var(--font-heading-family)!important;{% else %}font-family:var(--font-body-family)!important;{% endif %}
+          {% if block.settings.col_title_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
           font-weight:900;
           font-size:{{ block.settings.col_title_size | default: 28 }}px;
           color:{{ block.settings.col_title_color | default: '#1B3A5C' }};
@@ -3909,7 +3908,7 @@
         .sfp-flavor:hover{box-shadow:0 8px 32px rgba(27,58,92,.14);transform:translateY(-2px);}
         .sfp-accent-bar{position:absolute;left:0;top:0;bottom:0;width:6px;}
         .sfp-flavor-name{
-          {% if block.settings.flavor_name_font == 'heading' %}font-family:var(--font-heading-family)!important;{% else %}font-family:var(--font-body-family)!important;{% endif %}
+          {% if block.settings.flavor_name_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
           font-style:italic;font-weight:700;
           font-size:{{ block.settings.flavor_name_size | default: 26 }}px;
           line-height:1;margin-bottom:4px;
