@@ -274,25 +274,19 @@
         {% assign raw_title = product.title %}
       {% endif %}
 
-      {% comment %} Determine accent tag — inline block-level tags so they inherit theme font for that tag {% endcomment %}
-      {% assign accent_tag = block.settings.accent_font_tag | default: 'span' %}
-      {% assign accent_open = '<' | append: accent_tag | append: ' class="title-accent-' | append: block.id | append: '">' %}
-      {% assign accent_close = '</' | append: accent_tag | append: '>' %}
-
-      {% comment %} Parse |accent| pipe syntax {% endcomment %}
+      {% comment %} Parse |accent| pipe syntax — always <span> to stay valid inside any heading tag {% endcomment %}
       {% assign accent_parts = raw_title | split: '|' %}
       {% assign title_html = '' %}
       {% for part in accent_parts %}
         {% assign mod = forloop.index0 | modulo: 2 %}
         {% if mod == 1 %}
-          {% assign title_html = title_html | append: accent_open | append: part | append: accent_close %}
+          {% assign title_html = title_html | append: '<span class="title-accent-' | append: block.id | append: '">' | append: part | append: '</span>' %}
         {% else %}
-          {% comment %} Auto-accent apostrophes in non-pipe segments {% endcomment %}
           {% assign apos_parts = part | split: "'" %}
           {% assign apos_html = '' %}
           {% for apos_part in apos_parts %}
             {% unless forloop.first %}
-              {% assign apos_html = apos_html | append: accent_open | append: "'" | append: accent_close %}
+              {% assign apos_html = apos_html | append: '<span class="title-accent-' | append: block.id | append: '">' | append: "'" | append: '</span>' %}
             {% endunless %}
             {% assign apos_html = apos_html | append: apos_part %}
           {% endfor %}
@@ -323,17 +317,18 @@
           }
         }
         .title-accent-{{ block.id }} {
-          display: inline !important;
           color: {{ block.settings.accent_color | default: '#EF4A65' }} !important;
           font-style: {{ block.settings.accent_font_style | default: 'italic' }} !important;
           {% assign accent_size = block.settings.font_size | plus: block.settings.accent_font_size_offset | default: block.settings.font_size %}
           font-size: {{ accent_size }}px !important;
-          line-height: inherit !important;
-          margin: 0 !important;
-          padding: 0 !important;
+          {% assign accent_font_choice = block.settings.accent_font_tag | default: 'p' %}
+          {% if accent_font_choice == 'p' %}
+            font-family: var(--font-body-family) !important;
+          {% else %}
+            font-family: var(--font-heading-family) !important;
+          {% endif %}
           {% if block.settings.accent_font != blank %}
             font-family: '{{ block.settings.accent_font.family }}', {{ block.settings.accent_font.fallback_families }}, serif !important;
-            font-weight: {{ block.settings.accent_font.weight | default: 700 }} !important;
           {% endif %}
         }
         .nutrition-link-{{ block.id }} {
