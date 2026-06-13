@@ -390,7 +390,12 @@
 
       if (form) {
         var planInput = getOrCreateInput('selling_plan');
-        if (planInput) planInput.value = isOnetime ? '' : planId;
+        if (planInput) {
+          var newVal = isOnetime ? '' : planId;
+          planInput.value = newVal;
+          planInput.setAttribute('value', newVal);
+          planInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
       }
     }
 

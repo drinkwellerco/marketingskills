@@ -226,18 +226,16 @@
       observer.observe(card, { attributes: true, attributeFilter: ['data-qty'] });
     });
 
-    /* Watch selling_plan changes */
+    /* Watch selling_plan changes — use event delegation so dynamic inputs are caught */
     if (form) {
-      var planInput = form.querySelector('input[name="selling_plan"]');
-      if (planInput) {
-        new MutationObserver(updateButton).observe(planInput, { attributes: true, attributeFilter: ['value'] });
-        planInput.addEventListener('change', updateButton);
-      }
+      form.addEventListener('change', function(e) {
+        if (e.target && e.target.name === 'selling_plan') updateButton();
+      });
     }
 
     /* Watch purchase options clicks */
-    document.querySelectorAll('.po-option').forEach(function(opt) {
-      opt.addEventListener('click', function() { setTimeout(updateButton, 60); });
+    document.addEventListener('click', function(e) {
+      if (e.target && e.target.closest('.po-option')) setTimeout(updateButton, 80);
     });
 
     /* Add to cart */
@@ -260,7 +258,10 @@
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ items: payload })
       })
-      .then(function(r) { return r.json(); })
+      .then(function(r) {
+        if (!r.ok) return r.json().then(function(e) { throw new Error(e.description || r.status); });
+        return r.json();
+      })
       .then(function() {
         btn.classList.remove('loading');
         btnTextEl.textContent = BTN_TEXT_ADDED;
@@ -288,7 +289,8 @@
       .catch(function(err) {
         console.error('CATC error:', err);
         btn.classList.remove('loading');
-        btnTextEl.textContent = BTN_TEXT;
+        btnTextEl.textContent = 'Error: ' + (err.message || 'Try again');
+        setTimeout(function() { btnTextEl.textContent = BTN_TEXT; updateButton(); }, 3000);
       });
     });
 
