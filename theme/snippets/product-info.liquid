@@ -3662,6 +3662,9 @@
     {% when 'purchase_options' %}
       {% render 'purchase-options', block: block, product: product, product_form_id: product_form_id %}
 
+    {% when 'custom_atc_button' %}
+      {% render 'custom-atc-button', block: block, product: product, product_form_id: product_form_id %}
+
     {% when 'deal_timer' %}
       {% render 'deal-timer', block: block %}
   {% endcase %}

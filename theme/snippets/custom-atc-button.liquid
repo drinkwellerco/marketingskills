@@ -1,0 +1,281 @@
+{% comment %}
+  Custom ATC Button Block
+  Watches Variant Card Picker selections, shows running total with:
+  - Crossed-out original price when subscribe is active
+  - Subscribe discounted total
+  - Savings badge
+  On click: sends all VCP selections to cart via Cart API.
+{% endcomment %}
+
+<div class="catc-wrapper" {{ block.shopify_attributes }} data-block-id="{{ block.id }}"
+  style="
+    margin-top: {{ block.settings.margin_top | default: 0 }}px;
+    margin-bottom: {{ block.settings.margin_bottom | default: 8 }}px;
+    --catc-btn-bg: {{ block.settings.btn_bg | default: '#D32F2F' }};
+    --catc-btn-color: {{ block.settings.btn_text_color | default: '#ffffff' }};
+    --catc-btn-radius: {{ block.settings.btn_radius | default: 8 }}px;
+    --catc-btn-size: {{ block.settings.btn_font_size | default: 16 }}px;
+    --catc-badge-bg: {{ block.settings.badge_bg | default: '#1a7a1a' }};
+    --catc-badge-color: {{ block.settings.badge_text_color | default: '#ffffff' }};
+    --catc-compare-color: {{ block.settings.compare_price_color | default: '#999999' }};
+    --catc-price-color: {{ block.settings.price_color | default: '#ffffff' }};
+  ">
+
+  <button class="catc-btn" type="button" id="catc-btn-{{ block.id }}">
+    <span class="catc-btn-text">{{ block.settings.btn_text | default: 'Add to Cart' }}</span>
+    <span class="catc-price-area" aria-live="polite">
+      <span class="catc-compare-price"></span>
+      <span class="catc-total-price"></span>
+    </span>
+  </button>
+  <div class="catc-savings-badge" aria-live="polite"></div>
+</div>
+
+<style>
+  .catc-wrapper {
+    width: 100%;
+    font-family: var(--font-body-family) !important;
+  }
+  .catc-btn {
+    width: 100%;
+    background: var(--catc-btn-bg);
+    color: var(--catc-btn-color);
+    border: none;
+    border-radius: var(--catc-btn-radius);
+    font-size: var(--catc-btn-size);
+    font-weight: 700;
+    font-family: var(--font-body-family) !important;
+    padding: 14px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    transition: opacity 0.2s, transform 0.1s;
+    line-height: 1.2;
+    letter-spacing: var(--letter-spacing-body);
+  }
+  .catc-btn:hover { opacity: 0.88; }
+  .catc-btn:active { transform: scale(0.98); }
+  .catc-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .catc-btn-text { flex-shrink: 0; }
+  .catc-price-area {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .catc-price-area:empty { display: none; }
+  .catc-compare-price {
+    font-size: 0.85em;
+    color: var(--catc-compare-color);
+    text-decoration: line-through;
+    opacity: 0.8;
+  }
+  .catc-compare-price:empty { display: none; }
+  .catc-total-price {
+    font-size: 1em;
+    color: var(--catc-price-color);
+    font-weight: 800;
+  }
+  .catc-total-price:empty { display: none; }
+  .catc-savings-badge {
+    display: none;
+    margin-top: 6px;
+    text-align: center;
+    background: var(--catc-badge-bg);
+    color: var(--catc-badge-color);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: var(--font-body-family) !important;
+  }
+  .catc-savings-badge.visible { display: block; }
+  /* Loading state */
+  .catc-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+  .catc-btn.loading .catc-btn-text::after {
+    content: '...';
+    animation: catcDots 1s infinite;
+  }
+  @keyframes catcDots {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+</style>
+
+<script>
+(function() {
+  var SUBSCRIBE_DISCOUNT = {{ block.settings.subscribe_discount_pct | default: 0 }} / 100;
+  var BTN_TEXT = {{ block.settings.btn_text | default: 'Add to Cart' | json }};
+  var BTN_TEXT_ADDING = {{ block.settings.btn_text_adding | default: 'Adding...' | json }};
+  var BTN_TEXT_ADDED = {{ block.settings.btn_text_added | default: 'Added!' | json }};
+  var SHOW_SAVINGS = {{ block.settings.show_savings_badge | default: true }};
+
+  function formatMoney(cents) {
+    if (typeof Shopify !== 'undefined' && typeof Shopify.formatMoney === 'function') {
+      return Shopify.formatMoney(cents, Shopify.money_format || '{{amount}}');
+    }
+    return '$' + (cents / 100).toFixed(2);
+  }
+
+  function initCATC() {
+    var btn = document.getElementById('catc-btn-{{ block.id }}');
+    if (!btn) return;
+
+    var wrapper = btn.closest('.catc-wrapper');
+    var btnTextEl = btn.querySelector('.catc-btn-text');
+    var compareEl = btn.querySelector('.catc-compare-price');
+    var totalEl = btn.querySelector('.catc-total-price');
+    var badgeEl = wrapper.querySelector('.catc-savings-badge');
+
+    var form = document.getElementById('{{ product_form_id }}') || document.querySelector('form[action*="/cart/add"]');
+
+    function isSubscribeMode() {
+      var planInput = form ? form.querySelector('input[name="selling_plan"]') : null;
+      return planInput && planInput.value && planInput.value !== '';
+    }
+
+    function getVCPItems() {
+      var items = [];
+      document.querySelectorAll('.vcp-card').forEach(function(card) {
+        var qty = parseInt(card.getAttribute('data-qty') || '0', 10);
+        if (qty > 0) {
+          items.push({
+            id: parseInt(card.getAttribute('data-variant-id'), 10),
+            quantity: qty,
+            priceCents: parseInt(card.getAttribute('data-price-cents') || '0', 10)
+          });
+        }
+      });
+      return items;
+    }
+
+    function updateButton() {
+      var items = getVCPItems();
+      var totalQty = items.reduce(function(s, i) { return s + i.quantity; }, 0);
+      var originalCents = items.reduce(function(s, i) { return s + i.priceCents * i.quantity; }, 0);
+
+      if (totalQty === 0) {
+        btnTextEl.textContent = BTN_TEXT;
+        compareEl.textContent = '';
+        totalEl.textContent = '';
+        badgeEl.textContent = '';
+        badgeEl.classList.remove('visible');
+        return;
+      }
+
+      var subscribe = isSubscribeMode() && SUBSCRIBE_DISCOUNT > 0;
+      var finalCents = subscribe ? Math.round(originalCents * (1 - SUBSCRIBE_DISCOUNT)) : originalCents;
+      var savingsCents = originalCents - finalCents;
+
+      btnTextEl.textContent = BTN_TEXT + ' (' + totalQty + ')';
+
+      if (subscribe && savingsCents > 0) {
+        compareEl.textContent = formatMoney(originalCents);
+        totalEl.textContent = formatMoney(finalCents);
+        if (SHOW_SAVINGS) {
+          badgeEl.textContent = 'You save ' + formatMoney(savingsCents) + '!';
+          badgeEl.classList.add('visible');
+        }
+      } else {
+        compareEl.textContent = '';
+        totalEl.textContent = formatMoney(finalCents);
+        badgeEl.textContent = '';
+        badgeEl.classList.remove('visible');
+      }
+    }
+
+    /* Watch VCP card qty changes */
+    var observer = new MutationObserver(updateButton);
+    document.querySelectorAll('.vcp-card').forEach(function(card) {
+      observer.observe(card, { attributes: true, attributeFilter: ['data-qty'] });
+    });
+
+    /* Watch selling_plan changes */
+    if (form) {
+      var planInput = form.querySelector('input[name="selling_plan"]');
+      if (planInput) {
+        observer.observe(planInput, { attributes: true, attributeFilter: ['value'] });
+      }
+    }
+    document.querySelectorAll('.po-option').forEach(function(opt) {
+      opt.addEventListener('click', function() { setTimeout(updateButton, 60); });
+    });
+
+    /* Click handler */
+    btn.addEventListener('click', function() {
+      var items = getVCPItems();
+
+      if (items.length === 0) {
+        /* Nothing in VCP — fall back to normal form submit */
+        var nativeBtn = document.querySelector('.shop-add-to-cart-button, .product-form__submit');
+        if (nativeBtn && nativeBtn !== btn) nativeBtn.click();
+        return;
+      }
+
+      btn.classList.add('loading');
+      btnTextEl.textContent = BTN_TEXT_ADDING;
+
+      var payload = items.map(function(item) {
+        var entry = { id: item.id, quantity: item.quantity };
+        var planInput = form ? form.querySelector('input[name="selling_plan"]') : null;
+        if (planInput && planInput.value) entry.selling_plan = parseInt(planInput.value, 10);
+        return entry;
+      });
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ items: payload })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function() {
+        btn.classList.remove('loading');
+        btnTextEl.textContent = BTN_TEXT_ADDED;
+
+        /* Reset VCP */
+        document.querySelectorAll('.vcp-card').forEach(function(card) {
+          card.setAttribute('data-qty', '0');
+          var badge = card.querySelector('.vcp-qty-badge');
+          if (badge) badge.textContent = '0';
+        });
+
+        /* Notify theme cart */
+        document.dispatchEvent(new CustomEvent('cart:updated'));
+        document.dispatchEvent(new CustomEvent('cart:refresh'));
+
+        /* Try to open cart drawer */
+        var cartTriggers = document.querySelectorAll('[data-cart-toggle], .cart-icon-bubble, header-drawer [href="/cart"]');
+        if (cartTriggers.length) cartTriggers[0].click();
+
+        setTimeout(function() {
+          btnTextEl.textContent = BTN_TEXT;
+          updateButton();
+        }, 2000);
+      })
+      .catch(function(err) {
+        console.error('CATC error:', err);
+        btn.classList.remove('loading');
+        btnTextEl.textContent = BTN_TEXT;
+      });
+    });
+
+    updateButton();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCATC);
+  } else {
+    initCATC();
+  }
+})();
+</script>

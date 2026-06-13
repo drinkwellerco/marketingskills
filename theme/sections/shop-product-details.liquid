@@ -4115,6 +4115,145 @@
     },
 
     {
+      "name": "Custom Add to Cart Button",
+      "type": "custom_atc_button",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Button Text"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button text",
+          "default": "Add to Cart"
+        },
+        {
+          "type": "text",
+          "id": "btn_text_adding",
+          "label": "Adding text",
+          "default": "Adding..."
+        },
+        {
+          "type": "text",
+          "id": "btn_text_added",
+          "label": "Added text",
+          "default": "Added!"
+        },
+        {
+          "type": "header",
+          "content": "Subscribe Pricing"
+        },
+        {
+          "type": "range",
+          "id": "subscribe_discount_pct",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "unit": "%",
+          "label": "Subscribe discount %",
+          "default": 10,
+          "info": "Enter your subscribe & save discount so the button can show the crossed-out vs discounted total"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_savings_badge",
+          "label": "Show savings badge",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "Button Style"
+        },
+        {
+          "type": "color",
+          "id": "btn_bg",
+          "label": "Button background",
+          "default": "#D32F2F"
+        },
+        {
+          "type": "color",
+          "id": "btn_text_color",
+          "label": "Button text color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "price_color",
+          "label": "Price color (on button)",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "compare_price_color",
+          "label": "Crossed-out price color",
+          "default": "#ffaaaa"
+        },
+        {
+          "type": "range",
+          "id": "btn_font_size",
+          "min": 12,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "label": "Font size",
+          "default": 16
+        },
+        {
+          "type": "range",
+          "id": "btn_radius",
+          "min": 0,
+          "max": 30,
+          "step": 1,
+          "unit": "px",
+          "label": "Border radius",
+          "default": 8
+        },
+        {
+          "type": "header",
+          "content": "Savings Badge"
+        },
+        {
+          "type": "color",
+          "id": "badge_bg",
+          "label": "Badge background",
+          "default": "#1a7a1a"
+        },
+        {
+          "type": "color",
+          "id": "badge_text_color",
+          "label": "Badge text color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "header",
+          "content": "Spacing"
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "min": -20,
+          "max": 40,
+          "step": 2,
+          "unit": "px",
+          "label": "Top margin",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom",
+          "min": -20,
+          "max": 40,
+          "step": 2,
+          "unit": "px",
+          "label": "Bottom margin",
+          "default": 8
+        }
+      ]
+    },
+
+    {
       "type": "purchase_options",
       "name": "Purchase Options",
       "limit": 1,
