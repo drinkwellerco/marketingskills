@@ -1,0 +1,287 @@
+{% comment %} Brand Story / Meet Weller Co. section {% endcomment %}
+
+{% assign bs = section.settings %}
+{% assign title_tag = bs.title_tag | default: 'h2' %}
+{% assign subtitle_tag = bs.subtitle_tag | default: 'h3' %}
+{% assign desc_tag = bs.desc_tag | default: 'p' %}
+
+<section id="bs-{{ section.id }}" class="bs-section" style="
+  background: {{ bs.bg_color | default: '#ffffff' }};
+  padding: {{ bs.pad_top | default: 60 }}px 20px {{ bs.pad_bottom | default: 60 }}px;
+">
+  <div class="bs-inner" style="max-width: {{ bs.max_width | default: 1100 }}px; margin: 0 auto;">
+
+    {%- comment -%} ── HEADER ── {%- endcomment -%}
+    <div class="bs-header" style="text-align: {{ bs.text_align | default: 'left' }};">
+
+      {%- if bs.title != blank -%}
+        <{{ title_tag }} class="bs-title" style="
+          font-size: {{ bs.title_size | default: 40 }}px;
+          color: {{ bs.title_color | default: '#1B3A5C' }};
+          font-weight: {{ bs.title_weight | default: 700 }};
+          letter-spacing: {{ bs.title_spacing | default: 0 }}px;
+          margin-bottom: {{ bs.title_mb | default: 8 }}px;
+          font-family: {% if bs.title_font_tag == 'p' %}var(--font-body-family){% else %}var(--font-heading-family){% endif %};
+        ">
+          {%- assign title_apos = bs.title | split: "'" -%}
+          {%- for part in title_apos -%}
+            {%- unless forloop.first -%}<span class="bs-accent" style="color:{{ bs.accent_color | default: '#E8607A' }};font-family:{% if bs.accent_font_tag == 'p' %}var(--font-body-family){% else %}var(--font-heading-family){% endif %};">&#8217;</span>{%- endunless -%}
+            {{- part -}}
+          {%- endfor -%}
+        </{{ title_tag }}>
+      {%- endif -%}
+
+      {%- if bs.subtitle != blank -%}
+        <{{ subtitle_tag }} class="bs-subtitle" style="
+          font-size: {{ bs.subtitle_size | default: 22 }}px;
+          color: {{ bs.subtitle_color | default: '#555555' }};
+          font-weight: {{ bs.subtitle_weight | default: 500 }};
+          letter-spacing: {{ bs.subtitle_spacing | default: 0 }}px;
+          margin-bottom: {{ bs.subtitle_mb | default: 16 }}px;
+          font-family: {% if bs.subtitle_font_tag == 'p' %}var(--font-body-family){% else %}var(--font-heading-family){% endif %};
+        ">{{ bs.subtitle }}</{{ subtitle_tag }}>
+      {%- endif -%}
+
+      {%- if bs.description != blank -%}
+        <{{ desc_tag }} class="bs-desc" style="
+          font-size: {{ bs.desc_size | default: 16 }}px;
+          color: {{ bs.desc_color | default: '#444444' }};
+          font-weight: {{ bs.desc_weight | default: 400 }};
+          line-height: {{ bs.desc_line_height | default: 1.7 }};
+          max-width: {{ bs.desc_max_width | default: 780 }}px;
+          margin-bottom: {{ bs.desc_mb | default: 32 }}px;
+          font-family: {% if bs.desc_font_tag == 'p' %}var(--font-body-family){% else %}var(--font-heading-family){% endif %};
+          {% if bs.text_align == 'center' %}margin-left:auto;margin-right:auto;{% endif %}
+        ">{{ bs.description }}</{{ desc_tag }}>
+      {%- endif -%}
+
+    </div>
+
+    {%- comment -%} ── IMAGE ── {%- endcomment -%}
+    {%- if bs.image != blank -%}
+      <div class="bs-image-wrap" style="
+        margin-bottom: {{ bs.image_mb | default: 40 }}px;
+        border-radius: {{ bs.image_radius | default: 12 }}px;
+        overflow: hidden;
+        {% if bs.text_align == 'center' %}text-align:center;{% endif %}
+      ">
+        <img
+          src="{{ bs.image | image_url: width: 1400 }}"
+          alt="{{ bs.image.alt | default: bs.title | escape }}"
+          loading="lazy"
+          style="width:100%;height:{{ bs.image_height | default: 480 }}px;object-fit:{{ bs.image_fit | default: 'cover' }};display:block;border-radius:{{ bs.image_radius | default: 12 }}px;">
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} ── PARAGRAPHS ── {%- endcomment -%}
+    {%- assign has_paragraphs = false -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'paragraph' and block.settings.body != blank -%}
+        {%- assign has_paragraphs = true -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if has_paragraphs -%}
+      <div class="bs-paragraphs" style="
+        display: grid;
+        grid-template-columns: repeat({{ bs.para_cols | default: 2 }}, 1fr);
+        gap: {{ bs.para_gap | default: 40 }}px;
+      ">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'paragraph' -%}
+            {%- assign p = block.settings -%}
+            {%- assign p_tag = p.para_font_tag | default: 'h4' -%}
+            <div class="bs-para" {{ block.shopify_attributes }} style="
+              background: {{ p.para_bg | default: 'transparent' }};
+              border-radius: {{ p.para_radius | default: 0 }}px;
+              padding: {{ p.para_padding | default: 0 }}px;
+              border-left: {{ p.accent_bar_width | default: 0 }}px solid {{ bs.accent_color | default: '#E8607A' }};
+              padding-left: {% if p.accent_bar_width > 0 %}{{ p.para_padding | plus: 16 | default: 16 }}px{% else %}{{ p.para_padding | default: 0 }}px{% endif %};
+            ">
+              {%- if p.para_title != blank -%}
+                <{{ p_tag }} class="bs-para-title" style="
+                  font-size: {{ p.para_title_size | default: 18 }}px;
+                  color: {{ p.para_title_color | default: '#1B3A5C' }};
+                  font-weight: {{ p.para_title_weight | default: 700 }};
+                  margin-bottom: 8px;
+                  font-family: {% if p.para_font_tag == 'p' %}var(--font-body-family){% else %}var(--font-heading-family){% endif %};
+                ">{{ p.para_title }}</{{ p_tag }}>
+              {%- endif -%}
+              <div class="bs-para-body" style="
+                font-size: {{ p.para_body_size | default: 15 }}px;
+                color: {{ p.para_body_color | default: '#444444' }};
+                line-height: {{ p.para_line_height | default: 1.7 }};
+                font-family: var(--font-body-family);
+              ">{{ p.body }}</div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<style>
+  #bs-{{ section.id }} * { box-sizing: border-box; }
+  #bs-{{ section.id }} .bs-title,
+  #bs-{{ section.id }} .bs-subtitle { margin: 0 0 8px; padding: 0; }
+  #bs-{{ section.id }} .bs-desc { margin-top: 0; }
+  #bs-{{ section.id }} .bs-accent { font-style: inherit; }
+  #bs-{{ section.id }} .bs-para-body p { margin: 0 0 .75em; }
+  #bs-{{ section.id }} .bs-para-body p:last-child { margin-bottom: 0; }
+  @media (max-width: 680px) {
+    #bs-{{ section.id }} .bs-paragraphs { grid-template-columns: 1fr !important; }
+    #bs-{{ section.id }} .bs-image-wrap img { height: 260px !important; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Brand Story",
+  "tag": "section",
+  "class": "brand-story-section",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    { "type": "color", "id": "bg_color", "label": "Background color", "default": "#ffffff" },
+    { "type": "range", "id": "max_width", "label": "Max content width", "min": 600, "max": 1400, "step": 20, "unit": "px", "default": 1100 },
+    { "type": "select", "id": "text_align", "label": "Text alignment", "default": "left", "options": [
+      { "value": "left", "label": "Left" },
+      { "value": "center", "label": "Center" }
+    ]},
+    { "type": "range", "id": "pad_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+    { "type": "range", "id": "pad_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+
+    { "type": "header", "content": "Title" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Meet Weller Co." },
+    { "type": "select", "id": "title_font_tag", "label": "Title font", "default": "p", "options": [
+      { "value": "h1", "label": "H1 — Heading" },
+      { "value": "h2", "label": "H2 — Heading" },
+      { "value": "h3", "label": "H3 — Heading" },
+      { "value": "h4", "label": "H4 — Heading" },
+      { "value": "p", "label": "Body / Paragraph" }
+    ]},
+    { "type": "select", "id": "title_tag", "label": "Title HTML tag", "default": "h2", "options": [
+      { "value": "h1", "label": "H1" },
+      { "value": "h2", "label": "H2" },
+      { "value": "h3", "label": "H3" },
+      { "value": "h4", "label": "H4" },
+      { "value": "p", "label": "Paragraph" }
+    ]},
+    { "type": "range", "id": "title_size", "label": "Title size", "min": 18, "max": 100, "step": 2, "unit": "px", "default": 40 },
+    { "type": "color", "id": "title_color", "label": "Title color", "default": "#1B3A5C" },
+    { "type": "range", "id": "title_weight", "label": "Title weight", "min": 300, "max": 900, "step": 100, "default": 700 },
+    { "type": "range", "id": "title_spacing", "label": "Letter spacing", "min": -2, "max": 10, "step": 1, "unit": "px", "default": 0 },
+    { "type": "range", "id": "title_mb", "label": "Space below title", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 8 },
+
+    { "type": "header", "content": "Accent text" },
+    { "type": "color", "id": "accent_color", "label": "Accent color (apostrophes)", "default": "#E8607A" },
+    { "type": "select", "id": "accent_font_tag", "label": "Accent font", "default": "p", "options": [
+      { "value": "h1", "label": "H1 — Heading" },
+      { "value": "h2", "label": "H2 — Heading" },
+      { "value": "h3", "label": "H3 — Heading" },
+      { "value": "h4", "label": "H4 — Heading" },
+      { "value": "p", "label": "Body / Paragraph" }
+    ]},
+
+    { "type": "header", "content": "Subtitle" },
+    { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "Our Story" },
+    { "type": "select", "id": "subtitle_font_tag", "label": "Subtitle font", "default": "p", "options": [
+      { "value": "h1", "label": "H1 — Heading" },
+      { "value": "h2", "label": "H2 — Heading" },
+      { "value": "h3", "label": "H3 — Heading" },
+      { "value": "h4", "label": "H4 — Heading" },
+      { "value": "p", "label": "Body / Paragraph" }
+    ]},
+    { "type": "select", "id": "subtitle_tag", "label": "Subtitle HTML tag", "default": "h3", "options": [
+      { "value": "h2", "label": "H2" },
+      { "value": "h3", "label": "H3" },
+      { "value": "h4", "label": "H4" },
+      { "value": "p", "label": "Paragraph" }
+    ]},
+    { "type": "range", "id": "subtitle_size", "label": "Subtitle size", "min": 12, "max": 60, "step": 2, "unit": "px", "default": 22 },
+    { "type": "color", "id": "subtitle_color", "label": "Subtitle color", "default": "#555555" },
+    { "type": "range", "id": "subtitle_weight", "label": "Subtitle weight", "min": 300, "max": 900, "step": 100, "default": 500 },
+    { "type": "range", "id": "subtitle_spacing", "label": "Letter spacing", "min": -2, "max": 10, "step": 1, "unit": "px", "default": 0 },
+    { "type": "range", "id": "subtitle_mb", "label": "Space below subtitle", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 16 },
+
+    { "type": "header", "content": "Description" },
+    { "type": "richtext", "id": "description", "label": "Description text" },
+    { "type": "select", "id": "desc_font_tag", "label": "Description font", "default": "p", "options": [
+      { "value": "h1", "label": "H1 — Heading" },
+      { "value": "h2", "label": "H2 — Heading" },
+      { "value": "h3", "label": "H3 — Heading" },
+      { "value": "h4", "label": "H4 — Heading" },
+      { "value": "p", "label": "Body / Paragraph" }
+    ]},
+    { "type": "select", "id": "desc_tag", "label": "Description HTML tag", "default": "div", "options": [
+      { "value": "div", "label": "Div" },
+      { "value": "p", "label": "Paragraph" }
+    ]},
+    { "type": "range", "id": "desc_size", "label": "Description size", "min": 12, "max": 28, "step": 1, "unit": "px", "default": 16 },
+    { "type": "color", "id": "desc_color", "label": "Description color", "default": "#444444" },
+    { "type": "range", "id": "desc_weight", "label": "Description weight", "min": 300, "max": 700, "step": 100, "default": 400 },
+    { "type": "range", "id": "desc_line_height", "label": "Line height", "min": 10, "max": 22, "step": 1, "default": 17, "info": "Divide by 10 — e.g. 17 = 1.7" },
+    { "type": "range", "id": "desc_max_width", "label": "Max width", "min": 400, "max": 1200, "step": 20, "unit": "px", "default": 780 },
+    { "type": "range", "id": "desc_mb", "label": "Space below description", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 32 },
+
+    { "type": "header", "content": "Image" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "range", "id": "image_height", "label": "Image height", "min": 100, "max": 800, "step": 20, "unit": "px", "default": 480 },
+    { "type": "select", "id": "image_fit", "label": "Image fit", "default": "cover", "options": [
+      { "value": "cover", "label": "Cover (crop to fill)" },
+      { "value": "contain", "label": "Contain (show whole image)" }
+    ]},
+    { "type": "range", "id": "image_radius", "label": "Image corner radius", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 12 },
+    { "type": "range", "id": "image_mb", "label": "Space below image", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 40 },
+
+    { "type": "header", "content": "Paragraph grid" },
+    { "type": "select", "id": "para_cols", "label": "Columns", "default": "2", "options": [
+      { "value": "1", "label": "1 column" },
+      { "value": "2", "label": "2 columns" },
+      { "value": "3", "label": "3 columns" },
+      { "value": "4", "label": "4 columns" }
+    ]},
+    { "type": "range", "id": "para_gap", "label": "Gap between paragraphs", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 40 }
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "name": "Paragraph",
+      "limit": 4,
+      "settings": [
+        { "type": "text", "id": "para_title", "label": "Paragraph title", "default": "Our Mission" },
+        { "type": "select", "id": "para_font_tag", "label": "Title font", "default": "p", "options": [
+          { "value": "h1", "label": "H1 — Heading" },
+          { "value": "h2", "label": "H2 — Heading" },
+          { "value": "h3", "label": "H3 — Heading" },
+          { "value": "h4", "label": "H4 — Heading" },
+          { "value": "p", "label": "Body / Paragraph" }
+        ]},
+        { "type": "range", "id": "para_title_size", "label": "Title size", "min": 12, "max": 40, "step": 1, "unit": "px", "default": 18 },
+        { "type": "color", "id": "para_title_color", "label": "Title color", "default": "#1B3A5C" },
+        { "type": "range", "id": "para_title_weight", "label": "Title weight", "min": 300, "max": 900, "step": 100, "default": 700 },
+        { "type": "richtext", "id": "body", "label": "Paragraph body", "default": "<p>Write your story here.</p>" },
+        { "type": "range", "id": "para_body_size", "label": "Body size", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 15 },
+        { "type": "color", "id": "para_body_color", "label": "Body color", "default": "#444444" },
+        { "type": "range", "id": "para_line_height", "label": "Line height", "min": 10, "max": 22, "step": 1, "default": 17, "info": "Divide by 10 — e.g. 17 = 1.7" },
+        { "type": "header", "content": "Card style" },
+        { "type": "color", "id": "para_bg", "label": "Background", "default": "#ffffff" },
+        { "type": "range", "id": "para_radius", "label": "Corner radius", "min": 0, "max": 24, "step": 2, "unit": "px", "default": 0 },
+        { "type": "range", "id": "para_padding", "label": "Padding", "min": 0, "max": 40, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "accent_bar_width", "label": "Left accent bar width (0 = off)", "min": 0, "max": 8, "step": 1, "unit": "px", "default": 0 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand Story",
+      "blocks": [
+        { "type": "paragraph", "settings": { "para_title": "Why We Started", "body": "<p>We created Weller Co. because we believe wellness should be simple, honest, and effective.</p>" } },
+        { "type": "paragraph", "settings": { "para_title": "What We Stand For", "body": "<p>No artificial flavors. No artificial sweeteners. Just real ingredients that work.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
