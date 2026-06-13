@@ -3699,22 +3699,20 @@
 
         <div class="sfp-modal" id="sfp-modal-{{ block.id }}" role="dialog" aria-modal="true" aria-label="Supplement Facts">
           <div class="sfp-backdrop" id="sfp-backdrop-{{ block.id }}"></div>
-          <div class="sfp-panel" id="sfp-panel-{{ block.id }}">
+          <div class="sfp-panel" id="sfp-panel-{{ block.id }}" style="--sfp-accent:{{ block.settings.accent_color | default: '#E8607A' }}">
             <button class="sfp-close" id="sfp-close-{{ block.id }}" aria-label="Close">&times;</button>
 
             <div class="sfp-header">
               {% if block.settings.logo != blank %}
-                <img src="{{ block.settings.logo | image_url: width: 140 }}" alt="{{ sfp_brand }}" class="sfp-logo" width="70" height="70" loading="lazy">
+                <img src="{{ block.settings.logo | image_url: width: 120 }}" alt="{{ sfp_brand }}" class="sfp-logo" loading="lazy">
               {% endif %}
-              <div class="sfp-head-text">
-                {% if block.settings.wordmark != blank %}<div class="sfp-wordmark">{{ block.settings.wordmark }}</div>{% endif %}
-                <div class="sfp-product">{{ sfp_bp[0] }}{% if sfp_bp.size > 1 %}<span class="sfp-apos" style="color:{{ block.settings.accent_color | default: '#E8607A' }}">&#8217;</span>{{ sfp_bp[1] }}{% endif %}</div>
-                {% if block.settings.tagline != blank %}<div class="sfp-tagline" style="color:{{ block.settings.accent_color | default: '#E8607A' }}">{{ block.settings.tagline }}</div>{% endif %}
-              </div>
+              {% if block.settings.wordmark != blank %}<div class="sfp-wordmark">{{ block.settings.wordmark }}</div>{% endif %}
+              <div class="sfp-product">{{ sfp_bp[0] }}{% if sfp_bp.size > 1 %}<span class="sfp-apos">&#8217;</span>{{ sfp_bp[1] }}{% endif %}</div>
+              {% if block.settings.tagline != blank %}<div class="sfp-tagline" style="color:{{ block.settings.accent_color | default: '#E8607A' }}">{{ block.settings.tagline }}</div>{% endif %}
               {% if block.settings.header_pill != blank %}<div class="sfp-pill" style="background:{{ block.settings.accent_color | default: '#E8607A' }}">{{ block.settings.header_pill }}</div>{% endif %}
             </div>
 
-            <div class="sfp-body">
+            <div class="sfp-inner"><div class="sfp-body">
               <div class="sfp-col-left">
                 {% if block.settings.left_eyebrow != blank %}<div class="sfp-eyebrow" style="color:{{ block.settings.accent_color | default: '#E8607A' }}">{{ block.settings.left_eyebrow }}</div>{% endif %}
                 {% if block.settings.left_title != blank %}<div class="sfp-col-title">{{ block.settings.left_title }}</div>{% endif %}
@@ -3775,7 +3773,7 @@
                     {% if block.settings[f_name] != blank %}
                       {% assign ings = block.settings[f_ings] | split: ',' %}
                       <div class="sfp-flavor">
-                        <span class="sfp-accent" style="background:{{ block.settings[f_color] | default: '#E8607A' }}"></span>
+                        <span class="sfp-accent-bar" style="background:{{ block.settings[f_color] | default: '#E8607A' }}"></span>
                         <div class="sfp-flavor-head">
                           <div class="sfp-flavor-name" style="color:{{ block.settings[f_color] | default: '#E8607A' }}">{{ block.settings[f_name] }}</div>
                           {% if block.settings[f_call] != blank %}
@@ -3794,6 +3792,8 @@
                 </div>
               </div>
             </div>
+
+            </div><!-- /sfp-body -->
 
             {% assign sfp_has_claims = false %}
             {% for c in sfp_claims %}{% if c != blank %}{% assign sfp_has_claims = true %}{% break %}{% endif %}{% endfor %}
@@ -3815,84 +3815,116 @@
                 {% endif %}
               </div>
             {% endif %}
+            </div><!-- /sfp-inner -->
 
           </div>
         </div>
       </div>
 
       <style>
-        .sfp-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;cursor:pointer;font-family:var(--font-body-family);font-weight:600;letter-spacing:.03em;transition:opacity .18s,transform .12s;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;}
-        .sfp-btn:hover{opacity:.75;transform:translateY(-1px);}
-        .sfp-btn:active{transform:scale(.97);}
-        .sfp-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;overflow-y:scroll;-webkit-overflow-scrolling:touch;padding:24px 16px 40px;}
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,600;1,700&family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&display=swap');
+
+        .sfp-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;cursor:pointer;font-family:var(--font-body-family);font-weight:600;letter-spacing:.03em;transition:opacity .18s,transform .12s;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;border:none;background:none;}
+        .sfp-btn:hover{opacity:.7;transform:translateY(-1px);}
+
+        /* ── OVERLAY ── */
+        .sfp-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:32px 16px 48px;}
         .sfp-modal.open{display:block;}
-        .sfp-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);}
-        .sfp-panel{position:relative;z-index:1;background:#FAF5F0;border-radius:16px;box-shadow:0 24px 80px rgba(27,58,92,.22);max-width:900px;width:100%;margin:0 auto;padding:48px 52px 44px;animation:sfp-slide-up .25s cubic-bezier(.22,1,.36,1);}
-        @keyframes sfp-slide-up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        .sfp-close{position:absolute;top:14px;right:16px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(0,0,0,.08);color:#333;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .12s;}
-        .sfp-close:hover{background:rgba(0,0,0,.16);transform:rotate(90deg);}
-        .sfp-header{display:flex;align-items:center;gap:20px;padding-bottom:24px;border-bottom:1.5px solid #E8DDD5;margin-bottom:32px;}
-        .sfp-logo{width:64px;height:64px;object-fit:contain;flex-shrink:0;border-radius:8px;}
-        .sfp-head-text{flex:1;}
-        .sfp-wordmark{font-family:'Cormorant Garamond','Georgia',serif;font-weight:500;font-size:16px;letter-spacing:.32em;text-transform:uppercase;color:#1B3A5C;}
-        .sfp-product{font-family:'DM Serif Display','Georgia',serif;font-size:52px;color:#1B3A5C;line-height:.96;letter-spacing:-.01em;margin-top:2px;}
-        .sfp-tagline{font-weight:600;font-size:11px;letter-spacing:.22em;text-transform:uppercase;margin-top:6px;}
-        .sfp-pill{align-self:flex-start;flex-shrink:0;font-weight:700;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:#fff;padding:8px 16px;border-radius:9999px;white-space:nowrap;box-shadow:0 4px 14px rgba(232,96,122,.28);}
-        .sfp-body{display:grid;grid-template-columns:minmax(0,380px) 1fr;gap:44px;}
-        .sfp-eyebrow{font-weight:700;font-size:11px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:6px;}
-        .sfp-col-title{font-family:'Playfair Display','Georgia',serif;font-weight:900;font-size:24px;color:#1B3A5C;line-height:1.1;margin-bottom:18px;}
-        .sfp-nf{background:#fff;border:2.5px solid #1B3A5C;padding:12px 16px 14px;box-shadow:0 4px 20px rgba(27,58,92,.09);transition:box-shadow .2s;overflow:hidden;}
-        .sfp-nf:hover{box-shadow:0 8px 32px rgba(27,58,92,.15);}
-        .sfp-nf-title{font-family:'Playfair Display','Georgia',serif;font-weight:900;font-size:30px;color:#1B3A5C;line-height:1;letter-spacing:-.01em;}
-        .sfp-rule-x{height:9px;background:#1B3A5C;margin-top:6px;}
+        .sfp-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(20,20,20,.6);backdrop-filter:blur(6px);}
+
+        /* ── PANEL ── */
+        .sfp-panel{
+          position:relative;z-index:1;
+          max-width:1100px;width:100%;margin:0 auto;
+          background:#FAF5F0;
+          border-radius:20px;
+          box-shadow:0 30px 90px rgba(27,58,92,.25);
+          overflow:hidden;
+          animation:sfp-up .28s cubic-bezier(.22,1,.36,1);
+        }
+        @keyframes sfp-up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+        .sfp-close{position:absolute;top:16px;right:18px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(0,0,0,.09);color:#333;font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .15s;z-index:2;}
+        .sfp-close:hover{background:rgba(0,0,0,.18);transform:rotate(90deg);}
+
+        /* ── HEADER (centered, like screenshot) ── */
+        .sfp-header{
+          text-align:center;
+          padding:44px 52px 28px;
+          border-bottom:1.5px solid #E8DDD5;
+          background:#FAF5F0;
+          position:relative;
+        }
+        .sfp-logo{width:56px;height:56px;object-fit:contain;border-radius:8px;margin-bottom:10px;}
+        .sfp-wordmark{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:600;font-size:13px;letter-spacing:.38em;text-transform:uppercase;color:#1B3A5C;margin-bottom:2px;}
+        .sfp-product{font-family:'DM Serif Display','Georgia',serif;font-size:68px;color:#1B3A5C;line-height:1;letter-spacing:-.01em;margin:4px 0 6px;}
+        .sfp-apos{color:var(--sfp-accent,#E8607A);}
+        .sfp-tagline{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:600;font-size:11px;letter-spacing:.24em;text-transform:uppercase;}
+        .sfp-pill{display:inline-block;margin-top:14px;font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#fff;padding:8px 20px;border-radius:9999px;}
+
+        /* ── BODY ── */
+        .sfp-inner{padding:44px 52px 44px;}
+        .sfp-body{display:grid;grid-template-columns:minmax(0,420px) 1fr;gap:52px;align-items:start;}
+        .sfp-eyebrow{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:700;font-size:11px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px;}
+        .sfp-col-title{font-family:'Playfair Display','Georgia',serif;font-weight:900;font-size:28px;color:#1B3A5C;line-height:1.1;margin-bottom:22px;}
+
+        /* ── SUPPLEMENT FACTS PANEL ── */
+        .sfp-nf{background:#fff;border:2.5px solid #1B3A5C;padding:14px 18px 16px;box-shadow:0 6px 26px rgba(27,58,92,.10);}
+        .sfp-nf-title{font-family:'Playfair Display','Georgia',serif;font-weight:900;font-size:34px;color:#1B3A5C;line-height:1;letter-spacing:-.01em;}
+        .sfp-rule-x{height:9px;background:#1B3A5C;margin-top:7px;}
         .sfp-rule-lg{height:5px;background:#1B3A5C;}
         .sfp-rule-md{height:2.5px;background:#1B3A5C;}
-        .sfp-rule-sm{height:1px;background:rgba(27,58,92,.25);}
-        .sfp-serve{font-size:12px;color:#1B3A5C;padding:4px 0;display:flex;justify-content:space-between;}
+        .sfp-rule-sm{height:1px;background:rgba(27,58,92,.28);}
+        .sfp-serve{font-size:12.5px;color:#1B3A5C;padding:5px 0;display:flex;justify-content:space-between;gap:8px;}
         .sfp-serve b{font-weight:700;}
-        .sfp-calrow{display:flex;align-items:flex-end;justify-content:space-between;padding:2px 0 4px;}
-        .sfp-cal-label{font-weight:800;font-size:14px;color:#1B3A5C;}
-        .sfp-cal-val{font-family:'Playfair Display','Georgia',serif;font-weight:900;font-size:28px;color:#1B3A5C;line-height:.9;}
-        .sfp-dvhead{text-align:right;font-size:10.5px;font-weight:700;color:#1B3A5C;padding:2px 0;}
-        .sfp-row{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:#1B3A5C;padding:4px 0;gap:8px;}
-        .sfp-row .nm{font-weight:700;flex:1;min-width:0;word-break:break-word;}
-        .sfp-row .nm .src{font-weight:400;font-size:10px;color:#8A7E76;}
-        .sfp-row .nm.indent{font-weight:400;padding-left:16px;}
+        .sfp-calrow{display:flex;align-items:flex-end;justify-content:space-between;padding:3px 0 5px;}
+        .sfp-cal-label{font-weight:800;font-size:15px;color:#1B3A5C;}
+        .sfp-cal-val{font-family:'Playfair Display','Georgia',serif;font-weight:900;font-size:32px;color:#1B3A5C;line-height:.9;}
+        .sfp-dvhead{text-align:right;font-size:11px;font-weight:700;color:#1B3A5C;padding:3px 0;}
+        .sfp-row{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:#1B3A5C;padding:5px 0;gap:10px;}
+        .sfp-row .nm{font-weight:700;flex:1;min-width:0;}
+        .sfp-row .nm .src{font-weight:400;font-size:10.5px;color:#8A7E76;}
+        .sfp-row .nm.indent{font-weight:400;padding-left:18px;}
         .sfp-row .dv{font-weight:700;flex-shrink:0;white-space:nowrap;}
-        .sfp-supphead{font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:7px 0 2px;}
-        .sfp-foot{font-size:9px;color:#8A7E76;line-height:1.5;padding-top:7px;}
+        .sfp-supphead{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:8px 0 2px;}
+        .sfp-foot{font-size:9.5px;color:#8A7E76;line-height:1.5;padding-top:8px;}
         .sfp-foot .star{display:block;}
-        .sfp-lead{font-size:13px;color:#1B3A5C;line-height:1.6;opacity:.75;margin:-6px 0 12px;}
-        .sfp-flavors{display:flex;flex-direction:column;gap:12px;}
-        .sfp-flavor{position:relative;background:#fff;border-radius:14px;padding:18px 22px 18px 26px;box-shadow:0 2px 14px rgba(27,58,92,.06);border:1px solid #E8DDD5;overflow:hidden;transition:box-shadow .2s,transform .15s;}
-        .sfp-flavor:hover{box-shadow:0 6px 28px rgba(27,58,92,.13);transform:translateY(-2px);}
-        .sfp-accent{position:absolute;left:0;top:0;bottom:0;width:5px;}
-        .sfp-flavor-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
-        .sfp-flavor-name{font-family:'Cormorant Garamond','Georgia',serif;font-style:italic;font-weight:700;font-size:24px;line-height:1;}
-        .sfp-flavor-from{font-weight:700;font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:#8A7E76;text-align:right;line-height:1.5;flex-shrink:0;}
-        .sfp-flavor-from em{font-family:'Cormorant Garamond','Georgia',serif;font-style:italic;font-weight:600;font-size:13px;letter-spacing:0;text-transform:none;display:block;}
-        .sfp-ing-label{font-weight:700;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#1B3A5C;margin:14px 0 6px;}
-        .sfp-ing-list{display:flex;flex-wrap:wrap;gap:6px;}
-        .sfp-ing-chip{font-weight:500;font-size:12px;color:#1B3A5C;background:#F5EEE8;border:1px solid #E8DDD5;padding:4px 10px;border-radius:9999px;transition:background .15s,transform .12s;}
+
+        /* ── FLAVORS ── */
+        .sfp-lead{font-size:14px;color:#1B3A5C;line-height:1.6;opacity:.75;margin:0 0 16px;}
+        .sfp-flavors{display:flex;flex-direction:column;gap:14px;}
+        .sfp-flavor{position:relative;background:#fff;border-radius:16px;padding:20px 24px 20px 28px;box-shadow:0 3px 18px rgba(27,58,92,.07);border:1px solid #E8DDD5;overflow:hidden;transition:box-shadow .2s,transform .16s;}
+        .sfp-flavor:hover{box-shadow:0 8px 32px rgba(27,58,92,.14);transform:translateY(-2px);}
+        .sfp-accent-bar{position:absolute;left:0;top:0;bottom:0;width:6px;}
+        .sfp-flavor-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;}
+        .sfp-flavor-name{font-family:'Cormorant Garamond','Georgia',serif;font-style:italic;font-weight:700;font-size:26px;line-height:1;}
+        .sfp-flavor-from{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:700;font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:#8A7E76;text-align:right;line-height:1.5;flex-shrink:0;}
+        .sfp-flavor-from em{font-family:'Cormorant Garamond','Georgia',serif;font-style:italic;font-weight:600;font-size:14px;letter-spacing:0;text-transform:none;display:block;margin-top:1px;}
+        .sfp-ing-label{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:700;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#1B3A5C;margin:14px 0 7px;}
+        .sfp-ing-list{display:flex;flex-wrap:wrap;gap:7px;}
+        .sfp-ing-chip{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:500;font-size:12.5px;color:#1B3A5C;background:#F5EEE8;border:1px solid #E8DDD5;padding:5px 12px;border-radius:9999px;transition:background .15s,transform .12s;}
         .sfp-ing-chip:hover{background:#E8DDD5;transform:scale(1.04);}
-        .sfp-footer{margin-top:32px;padding-top:18px;border-top:1.5px solid #E8DDD5;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
-        .sfp-claims{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-        .sfp-claim{font-weight:700;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#1B3A5C;}
-        .sfp-claim-dot{width:4px;height:4px;border-radius:50%;display:inline-block;}
-        .sfp-site{font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid;padding:6px 14px;border-radius:9999px;transition:opacity .15s;}
+
+        /* ── FOOTER ── */
+        .sfp-footer{margin-top:36px;padding-top:20px;border-top:1.5px solid #E8DDD5;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+        .sfp-claims{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+        .sfp-claim{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:700;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:#1B3A5C;}
+        .sfp-claim-dot{width:4px;height:4px;border-radius:50%;display:inline-block;vertical-align:middle;}
+        .sfp-site{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid;padding:7px 16px;border-radius:9999px;transition:opacity .15s;}
         .sfp-site:hover{opacity:.7;}
-        @media(max-width:780px){
-          .sfp-modal{padding:12px 10px 32px;}
-          .sfp-panel{padding:28px 16px 24px;}
-          .sfp-header{flex-wrap:wrap;gap:12px;}
-          .sfp-logo{width:48px;height:48px;}
-          .sfp-product{font-size:36px;}
+
+        /* ── MOBILE ── */
+        @media(max-width:760px){
+          .sfp-modal{padding:0;}
+          .sfp-panel{border-radius:16px 16px 0 0;margin-top:48px;}
+          .sfp-header{padding:32px 20px 20px;}
+          .sfp-product{font-size:46px;}
           .sfp-pill{display:none;}
-          .sfp-body{grid-template-columns:1fr;gap:24px;}
-          .sfp-col-title{font-size:20px;margin-bottom:12px;}
-          .sfp-nf-title{font-size:24px;}
-          .sfp-flavor-name{font-size:20px;}
-          .sfp-flavor{padding:14px 14px 14px 20px;}
+          .sfp-inner{padding:28px 18px 32px;}
+          .sfp-body{grid-template-columns:1fr;gap:28px;}
+          .sfp-col-title{font-size:22px;margin-bottom:14px;}
+          .sfp-nf-title{font-size:26px;}
+          .sfp-flavor-name{font-size:22px;}
           .sfp-footer{flex-direction:column;align-items:flex-start;gap:10px;}
         }
       </style>
