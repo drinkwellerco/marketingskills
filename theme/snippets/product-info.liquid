@@ -3778,12 +3778,10 @@
                       {% assign ings = block.settings[f_ings] | split: ',' %}
                       <div class="sfp-flavor">
                         <span class="sfp-accent-bar" style="background:{{ block.settings[f_color] | default: '#E8607A' }}"></span>
-                        <div class="sfp-flavor-head">
-                          <div class="sfp-flavor-name" style="color:{{ block.settings[f_color] | default: '#E8607A' }}">{{ block.settings[f_name] }}</div>
-                          {% if block.settings[f_call] != blank %}
-                            <div class="sfp-flavor-from">{{ block.settings[f_from] | default: 'Flavored only with' }}<em>{{ block.settings[f_call] }}</em></div>
-                          {% endif %}
-                        </div>
+                        <div class="sfp-flavor-name" style="color:{{ block.settings[f_color] | default: '#E8607A' }}">{{ block.settings[f_name] }}</div>
+                        {% if block.settings[f_call] != blank %}
+                          <div class="sfp-flavor-from"><span class="sfp-flavor-from-lbl">{{ block.settings[f_from] | default: 'Flavored only with' }}</span> <em>{{ block.settings[f_call] }}</em></div>
+                        {% endif %}
                         {% if block.settings[f_ings] != blank %}
                           <div class="sfp-ing-label">{{ block.settings[f_ilbl] | default: 'Other Ingredients' }}</div>
                           <div class="sfp-ing-list">
@@ -3910,15 +3908,15 @@
         .sfp-flavor{position:relative;background:#fff;border-radius:16px;padding:20px 24px 20px 28px;box-shadow:0 3px 18px rgba(27,58,92,.07);border:1px solid #E8DDD5;overflow:hidden;transition:box-shadow .2s,transform .16s;}
         .sfp-flavor:hover{box-shadow:0 8px 32px rgba(27,58,92,.14);transform:translateY(-2px);}
         .sfp-accent-bar{position:absolute;left:0;top:0;bottom:0;width:6px;}
-        .sfp-flavor-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;}
         .sfp-flavor-name{
           {% if block.settings.flavor_name_font == 'heading' %}font-family:var(--font-heading-family)!important;{% else %}font-family:var(--font-body-family)!important;{% endif %}
           font-style:italic;font-weight:700;
           font-size:{{ block.settings.flavor_name_size | default: 26 }}px;
-          line-height:1;
+          line-height:1;margin-bottom:4px;
         }
-        .sfp-flavor-from{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:700;font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:#8A7E76;text-align:right;line-height:1.5;flex-shrink:0;}
-        .sfp-flavor-from em{font-family:'Cormorant Garamond','Georgia',serif;font-style:italic;font-weight:600;font-size:14px;letter-spacing:0;text-transform:none;display:block;margin-top:1px;}
+        .sfp-flavor-from{display:flex;align-items:baseline;gap:5px;margin-top:3px;}
+        .sfp-flavor-from-lbl{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:700;font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:#8A7E76;white-space:nowrap;}
+        .sfp-flavor-from em{font-family:'DM Sans','Helvetica Neue',sans-serif;font-style:normal;font-weight:600;font-size:11px;color:#1B3A5C;}
         .sfp-ing-label{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:700;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#1B3A5C;margin:14px 0 7px;}
         .sfp-ing-list{display:flex;flex-wrap:wrap;gap:7px;}
         .sfp-ing-chip{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:500;font-size:12.5px;color:#1B3A5C;background:#F5EEE8;border:1px solid #E8DDD5;padding:5px 12px;border-radius:9999px;transition:background .15s,transform .12s;}
