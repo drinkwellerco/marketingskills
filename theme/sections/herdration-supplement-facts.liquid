@@ -1,0 +1,342 @@
+{%- comment -%}
+  ============================================================
+  WELLER CO. — Her'dration Supplement Facts  (Shopify Section)
+  ------------------------------------------------------------
+  Two-column "what's inside" panel:
+    • Left  — the FDA-style Supplement Facts box (the core
+              formula shared by every flavor).
+    • Right — one card per flavor with its fruit callout and
+              its own "Other Ingredients" list.
+
+  • Supplement Facts rows  -> "Nutrient row" blocks.
+        Set label / source / amount / %DV. Optional "Blend
+        header" prints a coral sub-header above the row.
+  • Flavor cards           -> "Flavor" blocks.
+        Name, accent color, fruit callout, and a comma-
+        separated Other Ingredients list (rendered as chips).
+  • Panel top (servings / serving size / calories) + claims
+        footer -> section settings.
+  • Styles are JS-free and namespaced under #sf-{{ section.id }}
+        so they can't collide with your theme.
+  ============================================================
+{%- endcomment -%}
+
+{%- if section.settings.limit_to_handle != blank and product.handle != section.settings.limit_to_handle -%}
+  {%- comment -%} Wrong product — render nothing {%- endcomment -%}
+{%- else -%}
+{%- assign brand = section.settings.product_name | default: "Her'dration" -%}
+{%- assign bp = brand | split: "'" -%}
+{%- assign claims = section.settings.claims | default: "Gluten Free, No Artificial Sweeteners, Vegan, No Artificial or Natural Flavors" | split: "," -%}
+
+<section id="sf-{{ section.id }}" class="sf">
+  <div class="sf-poster">
+    <span class="sf-blob b1"></span>
+    <span class="sf-blob b2"></span>
+    <span class="sf-blob b3"></span>
+
+    <div class="sf-inner">
+
+      {%- comment -%} ---------- HEADER ---------- {%- endcomment -%}
+      <div class="sf-header">
+        {%- if section.settings.logo != blank -%}
+          {{ section.settings.logo | image_url: width: 160 | image_tag: class: 'sf-logo', alt: brand, loading: 'lazy' }}
+        {%- endif -%}
+        <div class="sf-head-text">
+          {%- if section.settings.wordmark != blank -%}<div class="sf-wordmark">{{ section.settings.wordmark }}</div>{%- endif -%}
+          <div class="sf-product">{{ bp[0] }}{%- if bp.size > 1 -%}<span class="sf-apos">&#8217;</span>{{ bp[1] }}{%- endif -%}</div>
+          {%- if section.settings.tagline != blank -%}<div class="sf-tagline">{{ section.settings.tagline }}</div>{%- endif -%}
+        </div>
+        {%- if section.settings.header_pill != blank -%}<div class="sf-pill">{{ section.settings.header_pill }}</div>{%- endif -%}
+      </div>
+
+      {%- comment -%} ---------- BODY ---------- {%- endcomment -%}
+      <div class="sf-body">
+
+        {%- comment -%} ----- LEFT: Supplement Facts ----- {%- endcomment -%}
+        <div class="sf-col-left">
+          {%- if section.settings.left_eyebrow != blank -%}<div class="sf-eyebrow">{{ section.settings.left_eyebrow }}</div>{%- endif -%}
+          {%- if section.settings.left_title != blank -%}<div class="sf-col-title">{{ section.settings.left_title }}</div>{%- endif -%}
+
+          <div class="sf-nf">
+            <div class="sf-nf-title">{{ section.settings.nf_title | default: 'Supplement Facts' }}</div>
+            <div class="sf-rule-x"></div>
+            <div class="sf-serve"><span>{{ section.settings.servings_label | default: 'Servings Per Container' }}</span><b>{{ section.settings.servings | default: '30' }}</b></div>
+            <div class="sf-rule-sm"></div>
+            <div class="sf-serve"><span>{{ section.settings.serving_size_label | default: 'Serving Size' }}</span><b>{{ section.settings.serving_size | default: '2 tsp (8g)' }}</b></div>
+            <div class="sf-rule-lg"></div>
+
+            <div class="sf-calrow">
+              <div class="sf-cal-label">{{ section.settings.calories_label | default: 'Calories' }}</div>
+              <div class="sf-cal-val">{{ section.settings.calories | default: '15' }}</div>
+            </div>
+            <div class="sf-rule-md"></div>
+            <div class="sf-dvhead">{{ section.settings.dv_label | default: '% Daily Value*' }}</div>
+
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'nutrient' -%}
+                {%- if block.settings.group_header != blank -%}
+                  <div class="sf-supphead">{{ block.settings.group_header }}</div>
+                  <div class="sf-rule-md"></div>
+                {%- else -%}
+                  <div class="sf-rule-sm"></div>
+                {%- endif -%}
+                <div class="sf-row" {{ block.shopify_attributes }}>
+                  <span class="nm{% if block.settings.indent %} indent{% endif %}">{{ block.settings.label }}{%- if block.settings.source != blank -%} <span class="src">{{ block.settings.source }}</span>{%- endif -%}{%- if block.settings.amount != blank -%} {{ block.settings.amount }}{%- endif -%}</span>
+                  <span class="dv">{%- if block.settings.dv != blank -%}{{ block.settings.dv }}{%- else -%}&dagger;{%- endif -%}</span>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+
+            <div class="sf-rule-lg"></div>
+            <div class="sf-foot">
+              {%- if section.settings.footnote_star != blank -%}<span class="star">{{ section.settings.footnote_star }}</span>{%- endif -%}
+              {%- if section.settings.footnote_dagger != blank -%}<span class="star">{{ section.settings.footnote_dagger }}</span>{%- endif -%}
+            </div>
+          </div>
+        </div>
+
+        {%- comment -%} ----- RIGHT: Flavors ----- {%- endcomment -%}
+        <div class="sf-col-right">
+          {%- if section.settings.right_eyebrow != blank -%}<div class="sf-eyebrow">{{ section.settings.right_eyebrow }}</div>{%- endif -%}
+          {%- if section.settings.right_title != blank -%}<div class="sf-col-title">{{ section.settings.right_title }}</div>{%- endif -%}
+          {%- if section.settings.right_lead != blank -%}<p class="sf-lead">{{ section.settings.right_lead }}</p>{%- endif -%}
+
+          <div class="sf-flavors">
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'flavor' -%}
+                {%- assign ings = block.settings.ingredients | split: ',' -%}
+                <div class="sf-flavor" {{ block.shopify_attributes }}>
+                  <span class="sf-accent" style="background:{{ block.settings.color }};"></span>
+                  <div class="sf-flavor-head">
+                    <div class="sf-flavor-name" style="color:{{ block.settings.color }};">{{ block.settings.name }}</div>
+                    {%- if block.settings.callout != blank -%}
+                      <div class="sf-flavor-from">{{ block.settings.from_label | default: 'Flavored only with' }}<em>{{ block.settings.callout }}</em></div>
+                    {%- endif -%}
+                  </div>
+                  <div class="sf-ing-label">{{ block.settings.ing_label | default: 'Other Ingredients' }}</div>
+                  <div class="sf-ing-list">
+                    {%- for ing in ings -%}
+                      <span class="sf-ing-chip">{{ ing | strip }}</span>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </div>
+
+      </div>
+
+      {%- comment -%} ---------- FOOTER ---------- {%- endcomment -%}
+      {%- if claims.size > 0 or section.settings.site != blank -%}
+        <div class="sf-footer">
+          <div class="sf-claims">
+            {%- for claim in claims -%}
+              {%- unless forloop.first -%}<span class="sf-claim-dot"></span>{%- endunless -%}
+              <span class="sf-claim">{{ claim | strip }}</span>
+            {%- endfor -%}
+          </div>
+          {%- if section.settings.site != blank -%}<div class="sf-site">{{ section.settings.site }}</div>{%- endif -%}
+        </div>
+      {%- endif -%}
+
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ============ STYLES (namespaced) ============ {%- endcomment -%}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,600;1,700&family=Playfair+Display:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&display=swap');
+
+  #sf-{{ section.id }}{
+    --navy:#1B3A5C; --rose:#E8607A; --cream:#FAF5F0; --cream-dk:#F0E8E0;
+    --fog:#F5EEE8; --blush:#F2C4CE; --peach:#E8A87C; --sage:#8A9B6E;
+    --mist:#E8DDD5; --stone:#8A7E76;
+    --serif:'Playfair Display','Georgia',serif;
+    --display:'Cormorant Garamond','Georgia',serif;
+    --sans:'DM Sans','Helvetica Neue',sans-serif;
+    --dserif:'DM Serif Display','Georgia',serif;
+    display:block; padding:{{ section.settings.pad_top }}px 20px {{ section.settings.pad_bottom }}px;
+    background:{{ section.settings.bg_outer | default: '#ECE3DB' }};
+    font-family:var(--sans); color:var(--navy);
+  }
+  #sf-{{ section.id }} *{ box-sizing:border-box; }
+
+  #sf-{{ section.id }} .sf-poster{
+    position:relative; max-width:1280px; margin:0 auto; overflow:hidden;
+    background:var(--cream); border-radius:{{ section.settings.radius }}px;
+    box-shadow:0 18px 70px rgba(27,58,92,.18);
+  }
+  #sf-{{ section.id }} .sf-blob{ position:absolute; border-radius:50%; filter:blur(8px); pointer-events:none; }
+  #sf-{{ section.id }} .sf-blob.b1{ width:460px; height:460px; background:var(--blush); opacity:.5; top:-160px; right:-120px; }
+  #sf-{{ section.id }} .sf-blob.b2{ width:380px; height:380px; background:var(--peach); opacity:.35; bottom:-160px; left:-120px; }
+  #sf-{{ section.id }} .sf-blob.b3{ width:300px; height:300px; background:var(--sage); opacity:.22; bottom:120px; right:-130px; }
+  #sf-{{ section.id }} .sf-inner{ position:relative; z-index:2; padding:60px 64px 56px; }
+
+  /* header */
+  #sf-{{ section.id }} .sf-header{ display:flex; align-items:center; gap:22px; padding-bottom:30px; border-bottom:1.5px solid var(--mist); }
+  #sf-{{ section.id }} .sf-logo{ width:74px; height:74px; object-fit:contain; flex-shrink:0; }
+  #sf-{{ section.id }} .sf-head-text{ flex:1; }
+  #sf-{{ section.id }} .sf-wordmark{ font-family:var(--display); font-weight:500; font-size:19px; letter-spacing:.32em; text-transform:uppercase; color:var(--navy); }
+  #sf-{{ section.id }} .sf-product{ font-family:var(--dserif); font-size:58px; color:var(--navy); line-height:.96; letter-spacing:-.01em; margin-top:2px; }
+  #sf-{{ section.id }} .sf-apos{ color:var(--rose); }
+  #sf-{{ section.id }} .sf-tagline{ font-weight:600; font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--rose); margin-top:8px; }
+  #sf-{{ section.id }} .sf-pill{ align-self:flex-start; flex-shrink:0; font-weight:700; font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:#fff; background:var(--rose); padding:9px 18px; border-radius:9999px; white-space:nowrap; box-shadow:0 6px 18px rgba(232,96,122,.28); }
+
+  /* body grid */
+  #sf-{{ section.id }} .sf-body{ display:grid; grid-template-columns:430px 1fr; gap:52px; margin-top:42px; }
+  #sf-{{ section.id }} .sf-eyebrow{ font-weight:700; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--rose); margin-bottom:6px; }
+  #sf-{{ section.id }} .sf-col-title{ font-family:var(--serif); font-weight:900; font-size:28px; color:var(--navy); line-height:1.05; margin-bottom:22px; }
+  #sf-{{ section.id }} .sf-col-title p{ margin:0; }
+  #sf-{{ section.id }} .sf-lead p{ margin:0; }
+
+  /* supplement facts panel */
+  #sf-{{ section.id }} .sf-nf{ background:#fff; border:2.5px solid var(--navy); padding:14px 18px 16px; box-shadow:0 6px 26px rgba(27,58,92,.10); }
+  #sf-{{ section.id }} .sf-nf-title{ font-family:var(--serif); font-weight:900; font-size:34px; color:var(--navy); line-height:1; letter-spacing:-.01em; }
+  #sf-{{ section.id }} .sf-rule-x{ height:9px; background:var(--navy); margin-top:7px; }
+  #sf-{{ section.id }} .sf-rule-lg{ height:5px; background:var(--navy); }
+  #sf-{{ section.id }} .sf-rule-md{ height:2.5px; background:var(--navy); }
+  #sf-{{ section.id }} .sf-rule-sm{ height:1px; background:rgba(27,58,92,.28); }
+  #sf-{{ section.id }} .sf-serve{ font-size:12.5px; color:var(--navy); padding:5px 0; display:flex; justify-content:space-between; white-space:nowrap; }
+  #sf-{{ section.id }} .sf-serve b{ font-weight:700; }
+  #sf-{{ section.id }} .sf-calrow{ display:flex; align-items:flex-end; justify-content:space-between; padding:3px 0 5px; }
+  #sf-{{ section.id }} .sf-cal-label{ font-weight:800; font-size:15px; color:var(--navy); }
+  #sf-{{ section.id }} .sf-cal-val{ font-family:var(--serif); font-weight:900; font-size:30px; color:var(--navy); line-height:.9; }
+  #sf-{{ section.id }} .sf-dvhead{ text-align:right; font-size:11px; font-weight:700; color:var(--navy); padding:3px 0; }
+  #sf-{{ section.id }} .sf-row{ display:flex; justify-content:space-between; align-items:baseline; font-size:13px; color:var(--navy); padding:5px 0; }
+  #sf-{{ section.id }} .sf-row .nm{ font-weight:700; }
+  #sf-{{ section.id }} .sf-row .nm .src{ font-weight:400; font-size:10.5px; color:var(--stone); }
+  #sf-{{ section.id }} .sf-row .nm.indent{ font-weight:400; padding-left:18px; }
+  #sf-{{ section.id }} .sf-row .dv{ font-weight:700; flex-shrink:0; padding-left:16px; }
+  #sf-{{ section.id }} .sf-supphead{ font-weight:700; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--rose); padding:8px 0 2px; }
+  #sf-{{ section.id }} .sf-foot{ font-size:9.5px; color:var(--stone); line-height:1.5; padding-top:8px; }
+  #sf-{{ section.id }} .sf-foot .star{ display:block; }
+
+  /* flavors */
+  #sf-{{ section.id }} .sf-lead{ font-weight:400; font-size:14px; color:var(--navy); line-height:1.6; opacity:.78; margin:-8px 0 4px; max-width:520px; }
+  #sf-{{ section.id }} .sf-flavors{ display:flex; flex-direction:column; gap:16px; }
+  #sf-{{ section.id }} .sf-flavor{ position:relative; background:#fff; border-radius:16px; padding:22px 26px 22px 30px; box-shadow:0 3px 18px rgba(27,58,92,.07); border:1px solid var(--mist); overflow:hidden; }
+  #sf-{{ section.id }} .sf-accent{ position:absolute; left:0; top:0; bottom:0; width:6px; }
+  #sf-{{ section.id }} .sf-flavor-head{ display:flex; align-items:baseline; justify-content:space-between; gap:16px; }
+  #sf-{{ section.id }} .sf-flavor-name{ font-family:var(--display); font-style:italic; font-weight:700; font-size:27px; line-height:1; letter-spacing:.01em; }
+  #sf-{{ section.id }} .sf-flavor-from{ font-weight:700; font-size:9.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--stone); text-align:right; line-height:1.5; flex-shrink:0; }
+  #sf-{{ section.id }} .sf-flavor-from em{ font-family:var(--display); font-style:italic; font-weight:600; font-size:14px; letter-spacing:0; text-transform:none; display:block; margin-top:1px; }
+  #sf-{{ section.id }} .sf-ing-label{ font-weight:700; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--navy); margin:16px 0 7px; }
+  #sf-{{ section.id }} .sf-ing-list{ display:flex; flex-wrap:wrap; gap:7px; }
+  #sf-{{ section.id }} .sf-ing-chip{ font-weight:500; font-size:12.5px; color:var(--navy); background:var(--fog); border:1px solid var(--mist); padding:5px 12px; border-radius:9999px; }
+
+  /* footer */
+  #sf-{{ section.id }} .sf-footer{ margin-top:40px; padding-top:22px; border-top:1.5px solid var(--mist); display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+  #sf-{{ section.id }} .sf-claims{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  #sf-{{ section.id }} .sf-claim{ font-weight:700; font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--navy); }
+  #sf-{{ section.id }} .sf-claim-dot{ width:4px; height:4px; border-radius:50%; background:var(--rose); }
+  #sf-{{ section.id }} .sf-site{ font-weight:700; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--rose); border:1.5px solid var(--rose); padding:7px 16px; border-radius:9999px; }
+
+  @media (max-width:900px){
+    #sf-{{ section.id }} .sf-inner{ padding:40px 32px 36px; }
+    #sf-{{ section.id }} .sf-body{ grid-template-columns:1fr; gap:40px; }
+    #sf-{{ section.id }} .sf-product{ font-size:46px; }
+  }
+  @media (max-width:520px){
+    #sf-{{ section.id }} .sf-header{ flex-wrap:wrap; }
+    #sf-{{ section.id }} .sf-pill{ order:3; }
+    #sf-{{ section.id }} .sf-flavor-head{ flex-direction:column; gap:6px; }
+    #sf-{{ section.id }} .sf-flavor-from{ text-align:left; }
+  }
+</style>
+{%- endif -%}
+
+{%- comment -%} ============ THEME EDITOR SCHEMA ============ {%- endcomment -%}
+{% schema %}
+{
+  "name": "Supplement Facts",
+  "tag": "section",
+  "class": "shopify-section--supplement-facts",
+  "max_blocks": 24,
+  "settings": [
+    { "type": "header", "content": "Product visibility" },
+    { "type": "text", "id": "limit_to_handle", "label": "Show only on product handle", "info": "Enter the product URL handle (e.g. herdration). Leave blank to show on all pages.", "default": "herdration" },
+
+    { "type": "header", "content": "Brand header" },
+    { "type": "image_picker", "id": "logo", "label": "Logo mark" },
+    { "type": "text", "id": "wordmark", "label": "Wordmark", "default": "Weller Co." },
+    { "type": "text", "id": "product_name", "label": "Product name", "info": "Apostrophe shows in coral.", "default": "Her'dration" },
+    { "type": "text", "id": "tagline", "label": "Tagline", "default": "Mood & Hormone Support Drink Mix" },
+    { "type": "text", "id": "header_pill", "label": "Header pill", "default": "What's Inside" },
+
+    { "type": "header", "content": "Left column — Supplement Facts" },
+    { "type": "text", "id": "left_eyebrow", "label": "Eyebrow", "default": "The Core Formula" },
+    { "type": "richtext", "id": "left_title", "label": "Heading", "default": "<p>Every flavor, same panel.</p>" },
+    { "type": "text", "id": "nf_title", "label": "Panel title", "default": "Supplement Facts" },
+    { "type": "text", "id": "servings_label", "label": "Servings label", "default": "Servings Per Container" },
+    { "type": "text", "id": "servings", "label": "Servings value", "default": "30" },
+    { "type": "text", "id": "serving_size_label", "label": "Serving size label", "default": "Serving Size" },
+    { "type": "text", "id": "serving_size", "label": "Serving size value", "default": "2 tsp (8g)" },
+    { "type": "text", "id": "calories_label", "label": "Calories label", "default": "Calories" },
+    { "type": "text", "id": "calories", "label": "Calories value", "default": "15" },
+    { "type": "text", "id": "dv_label", "label": "% Daily Value header", "default": "% Daily Value*" },
+    { "type": "text", "id": "footnote_star", "label": "Footnote (*)", "default": "* Percent Daily Values are based on a 2,000 calorie diet." },
+    { "type": "text", "id": "footnote_dagger", "label": "Footnote (†)", "default": "† Daily Value not established." },
+
+    { "type": "header", "content": "Right column — Flavors" },
+    { "type": "text", "id": "right_eyebrow", "label": "Eyebrow", "default": "Flavored Only With Real Fruit" },
+    { "type": "richtext", "id": "right_title", "label": "Heading", "default": "<p>What makes each flavor.</p>" },
+    { "type": "richtext", "id": "right_lead", "label": "Lead paragraph", "default": "<p>The supplement panel never changes — only the Other Ingredients do. No artificial or natural flavors. No artificial sweeteners. Just freeze-dried fruit and a touch of organic stevia.</p>" },
+
+    { "type": "header", "content": "Claims footer" },
+    { "type": "text", "id": "claims", "label": "Claims", "info": "Comma-separated. Dots are added between.", "default": "Gluten Free, No Artificial Sweeteners, Vegan, No Artificial or Natural Flavors" },
+    { "type": "text", "id": "site", "label": "Website", "default": "drinkwellerco.com" },
+
+    { "type": "header", "content": "Appearance" },
+    { "type": "color", "id": "bg_outer", "label": "Outer background", "default": "#ECE3DB" },
+    { "type": "range", "id": "radius", "label": "Poster corner radius", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 0 },
+    { "type": "range", "id": "pad_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "pad_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 40 }
+  ],
+  "blocks": [
+    {
+      "type": "nutrient",
+      "name": "Nutrient row",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Name", "default": "Sodium" },
+        { "type": "text", "id": "source", "label": "Source (parenthetical)", "info": "Optional, e.g. (Redmond Real Salt)" },
+        { "type": "text", "id": "amount", "label": "Amount", "default": "380mg" },
+        { "type": "text", "id": "dv", "label": "% Daily Value", "info": "Leave blank to show †", "default": "17%" },
+        { "type": "checkbox", "id": "indent", "label": "Indent (sub-nutrient)", "default": false },
+        { "type": "text", "id": "group_header", "label": "Blend header above this row", "info": "Optional coral sub-header, e.g. Mood & Hormone Support Blend" }
+      ]
+    },
+    {
+      "type": "flavor",
+      "name": "Flavor",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Flavor name", "default": "Lime Margarita" },
+        { "type": "color", "id": "color", "label": "Accent color", "default": "#7DB642" },
+        { "type": "text", "id": "from_label", "label": "Callout label", "default": "Flavored only with" },
+        { "type": "text", "id": "callout", "label": "Fruit callout", "default": "Freeze-Dried Limes" },
+        { "type": "text", "id": "ing_label", "label": "Ingredients label", "default": "Other Ingredients" },
+        { "type": "textarea", "id": "ingredients", "label": "Other Ingredients", "info": "Comma-separated; each becomes a chip.", "default": "Citric Acid, Lime Powder, Organic Debittered Stevia Extract" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Supplement Facts",
+      "blocks": [
+        { "type": "nutrient", "settings": { "label": "Total Fat", "amount": "0g", "dv": "0%" } },
+        { "type": "nutrient", "settings": { "label": "Total Carbohydrate", "amount": "1g", "dv": "0%" } },
+        { "type": "nutrient", "settings": { "label": "Total Sugars", "amount": "0g", "dv": "", "indent": true } },
+        { "type": "nutrient", "settings": { "label": "Sodium", "source": "(Redmond Real Salt)", "amount": "380mg", "dv": "17%" } },
+        { "type": "nutrient", "settings": { "label": "Magnesium", "source": "(Magnesium Malate)", "amount": "52.5mg", "dv": "13%" } },
+        { "type": "nutrient", "settings": { "label": "Potassium", "source": "(Potassium Chloride)", "amount": "260mg", "dv": "6%" } },
+        { "type": "nutrient", "settings": { "label": "Myo-Inositol", "amount": "4g", "dv": "", "group_header": "Mood & Hormone Support Blend" } },
+        { "type": "nutrient", "settings": { "label": "L-Theanine", "amount": "200mg", "dv": "" } },
+        { "type": "nutrient", "settings": { "label": "Pregnenolone", "amount": "25mg", "dv": "" } },
+        { "type": "flavor", "settings": { "name": "Lime Margarita", "color": "#7DB642", "callout": "Freeze-Dried Limes", "ingredients": "Citric Acid, Lime Powder, Organic Debittered Stevia Extract" } },
+        { "type": "flavor", "settings": { "name": "Raspberry Refresher", "color": "#D64C6F", "callout": "Organic Freeze-Dried Raspberries", "ingredients": "Citric Acid, Organic Raspberry Powder, Organic De-Bittered Stevia Extract" } },
+        { "type": "flavor", "settings": { "name": "Coconut Strawberry", "color": "#E8607A", "callout": "Freeze-Dried Strawberries & Coconut Milk", "ingredients": "Citric Acid, Coconut Milk Powder, Organic Strawberry Powder, Organic Debittered Stevia Extract" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
