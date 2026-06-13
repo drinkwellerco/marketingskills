@@ -322,6 +322,12 @@
           font-style: {{ block.settings.accent_font_style | default: 'italic' }} !important;
           {% assign accent_size = block.settings.font_size | plus: block.settings.accent_font_size_offset | default: block.settings.font_size %}
           font-size: {{ accent_size }}px !important;
+          {% assign accent_tag = block.settings.accent_font_tag | default: 'p' %}
+          {% if accent_tag == 'p' %}
+            font-family: var(--font-body-family) !important;
+          {% else %}
+            font-family: var(--font-heading-family) !important;
+          {% endif %}
           {% if block.settings.accent_font != blank %}
             font-family: '{{ block.settings.accent_font.family }}', {{ block.settings.accent_font.fallback_families }}, serif !important;
             font-weight: {{ block.settings.accent_font.weight | default: 700 }} !important;
