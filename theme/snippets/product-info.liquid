@@ -3672,6 +3672,9 @@
     {% when 'custom_atc_button' %}
       {% render 'custom-atc-button', block: block, product: product, product_form_id: product_form_id %}
 
+    {% when 'supplement_facts' %}
+      {% render 'supplement-facts-popup', block: block, product: product %}
+
     {% when 'deal_timer' %}
       {% render 'deal-timer', block: block %}
   {% endcase %}
