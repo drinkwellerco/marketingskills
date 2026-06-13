@@ -3994,53 +3994,7 @@
       "settings": [
         {
           "type": "header",
-          "content": "Variant Card Display"
-        },
-        {
-          "type": "paragraph",
-          "content": "Shows all product variants as clickable cards with image, flavor name, and price. Selecting a card updates the product price and adds that variant to cart — no subscription."
-        },
-        {
-          "type": "select",
-          "id": "card_image_shape",
-          "label": "Card image shape",
-          "options": [
-            { "value": "square", "label": "Square" },
-            { "value": "rounded", "label": "Rounded" },
-            { "value": "circle", "label": "Circle" }
-          ],
-          "default": "rounded"
-        },
-        {
-          "type": "range",
-          "id": "card_image_radius",
-          "min": 0,
-          "max": 30,
-          "step": 1,
-          "unit": "px",
-          "label": "Card image border radius",
-          "default": 8,
-          "visible_if": "{{ block.settings.card_image_shape == 'rounded' }}"
-        },
-        {
-          "type": "range",
-          "id": "card_image_size",
-          "min": 40,
-          "max": 160,
-          "step": 4,
-          "unit": "px",
-          "label": "Card image size",
-          "default": 80
-        },
-        {
-          "type": "range",
-          "id": "card_padding",
-          "min": 2,
-          "max": 20,
-          "step": 1,
-          "unit": "px",
-          "label": "Card padding",
-          "default": 6
+          "content": "Grid Layout"
         },
         {
           "type": "range",
@@ -4055,95 +4009,83 @@
           "type": "range",
           "id": "card_gap",
           "min": 4,
-          "max": 20,
+          "max": 24,
           "step": 2,
           "unit": "px",
           "label": "Gap between cards",
-          "default": 8
+          "default": 10
         },
         {
           "type": "header",
-          "content": "Card Colors"
+          "content": "Image"
+        },
+        {
+          "type": "range",
+          "id": "card_image_size",
+          "min": 40,
+          "max": 160,
+          "step": 4,
+          "unit": "px",
+          "label": "Circle image size",
+          "default": 80
+        },
+        {
+          "type": "header",
+          "content": "Text"
         },
         {
           "type": "color",
-          "id": "card_bg_color",
-          "label": "Card background (unselected)",
-          "default": "#ffffff"
+          "id": "flavor_color",
+          "label": "Flavor name color",
+          "default": "#222222"
+        },
+        {
+          "type": "range",
+          "id": "flavor_size",
+          "min": 10,
+          "max": 18,
+          "step": 1,
+          "unit": "px",
+          "label": "Flavor name size",
+          "default": 12
         },
         {
           "type": "color",
-          "id": "card_bg_selected",
-          "label": "Card background (selected)",
-          "default": "#fff5f5"
+          "id": "price_color_onetime",
+          "label": "Price color (one-time)",
+          "default": "#000000"
         },
         {
           "type": "color",
-          "id": "card_border_color",
-          "label": "Card border (unselected)",
-          "default": "#e0e0e0"
-        },
-        {
-          "type": "color",
-          "id": "card_border_selected",
-          "label": "Card border (selected)",
+          "id": "price_color_subscribe",
+          "label": "Price color (subscribe)",
           "default": "#D32F2F"
         },
         {
           "type": "range",
-          "id": "card_border_radius",
-          "min": 0,
-          "max": 20,
+          "id": "price_size",
+          "min": 10,
+          "max": 18,
           "step": 1,
           "unit": "px",
-          "label": "Card border radius",
-          "default": 10
-        },
-        {
-          "type": "range",
-          "id": "card_border_width_selected",
-          "min": 1,
-          "max": 4,
-          "step": 1,
-          "unit": "px",
-          "label": "Selected card border width",
-          "default": 2
+          "label": "Price size",
+          "default": 12
         },
         {
           "type": "header",
-          "content": "Text Styling"
+          "content": "Quantity Badge"
         },
         {
           "type": "color",
-          "id": "card_text_color",
-          "label": "Flavor name color",
-          "default": "#333333"
+          "id": "badge_bg",
+          "label": "Badge background",
+          "default": "#D32F2F"
         },
         {
           "type": "color",
-          "id": "card_price_color",
-          "label": "Price color",
-          "default": "#000000"
-        },
-        {
-          "type": "range",
-          "id": "card_text_size",
-          "min": 10,
-          "max": 18,
-          "step": 1,
-          "unit": "px",
-          "label": "Flavor text size",
-          "default": 12
-        },
-        {
-          "type": "range",
-          "id": "card_price_size",
-          "min": 10,
-          "max": 18,
-          "step": 1,
-          "unit": "px",
-          "label": "Price text size",
-          "default": 12
+          "id": "badge_text_color",
+          "label": "Badge text color",
+          "default": "#ffffff"
         },
         {
           "type": "header",

@@ -1,196 +1,195 @@
 {% comment %}
-  Variant Card Picker Block
-  Variants shown as image+flavor+price cards. Uses radio inputs tied to the product form
-  so selecting a card correctly updates the cart variant — same mechanism as simple-variant-picker.
-  Usage: {% render 'variant-card-picker', block: block, product: product, product_form_id: product_form_id %}
+  Variant Card Picker — simple grid of circular variant photos.
+  Click to increment qty (badge top-right), X to remove (top-left).
+  ATC button sends all selected variants+quantities to cart via Cart API.
+  Price color updates when subscribe/one-time purchase mode changes.
 {% endcomment %}
 
 {%- unless product.has_only_default_variant -%}
-{% liquid
-  assign vcp_id = block.id
-  assign img_shape = block.settings.card_image_shape | default: 'rounded'
-  assign img_radius = block.settings.card_image_radius | default: 8
-  if img_shape == 'circle'
-    assign computed_img_radius = '50%'
-  elsif img_shape == 'rounded'
-    assign computed_img_radius = img_radius | append: 'px'
-  else
-    assign computed_img_radius = '0px'
-  endif
-%}
-
-<div class="vcp-wrapper" {{ block.shopify_attributes }} data-block-id="{{ vcp_id }}"
+<div class="vcp-wrapper" {{ block.shopify_attributes }}
   style="
     margin-top: {{ block.settings.margin_top | default: 0 }}px;
     margin-bottom: {{ block.settings.margin_bottom | default: 8 }}px;
-    --vcp-gap: {{ block.settings.card_gap | default: 8 }}px;
     --vcp-cols: {{ block.settings.cards_per_row | default: 3 }};
-    --vcp-card-bg: {{ block.settings.card_bg_color | default: '#ffffff' }};
-    --vcp-card-bg-sel: {{ block.settings.card_bg_selected | default: '#fff5f5' }};
-    --vcp-card-border: {{ block.settings.card_border_color | default: '#e0e0e0' }};
-    --vcp-card-border-sel: {{ block.settings.card_border_selected | default: '#D32F2F' }};
-    --vcp-card-radius: {{ block.settings.card_border_radius | default: 10 }}px;
-    --vcp-img-radius: {{ computed_img_radius }};
-    --vcp-img-width: {{ block.settings.card_image_size | default: 80 }}px;
-    --vcp-img-height: {{ block.settings.card_image_size | default: 80 }}px;
-    --vcp-text-color: {{ block.settings.card_text_color | default: '#333333' }};
-    --vcp-price-color: {{ block.settings.card_price_color | default: '#000000' }};
-    --vcp-text-size: {{ block.settings.card_text_size | default: 12 }}px;
-    --vcp-price-size: {{ block.settings.card_price_size | default: 12 }}px;
-    --vcp-card-padding: {{ block.settings.card_padding | default: 6 }}px;
-    --vcp-border-width-sel: {{ block.settings.card_border_width_selected | default: 2 }}px;
+    --vcp-gap: {{ block.settings.card_gap | default: 10 }}px;
+    --vcp-img-size: {{ block.settings.card_image_size | default: 80 }}px;
+    --vcp-card-bg: {{ block.settings.card_bg | default: 'transparent' }};
+    --vcp-flavor-color: {{ block.settings.flavor_color | default: '#222222' }};
+    --vcp-flavor-size: {{ block.settings.flavor_size | default: 12 }}px;
+    --vcp-price-onetime: {{ block.settings.price_color_onetime | default: '#000000' }};
+    --vcp-price-subscribe: {{ block.settings.price_color_subscribe | default: '#D32F2F' }};
+    --vcp-price-size: {{ block.settings.price_size | default: 12 }}px;
+    --vcp-badge-bg: {{ block.settings.badge_bg | default: '#D32F2F' }};
+    --vcp-badge-color: {{ block.settings.badge_text_color | default: '#ffffff' }};
   ">
   <div class="vcp-grid">
     {% for variant in product.variants %}
-      {% liquid
-        assign is_selected = false
-        if variant.id == product.selected_or_first_available_variant.id
-          assign is_selected = true
-        endif
-        assign variant_img = variant.featured_image | default: product.featured_image
-      %}
-      <label class="vcp-card {% if is_selected %}vcp-card--selected{% endif %} {% unless variant.available %}vcp-card--unavailable{% endunless %}"
-        for="vcp-{{ vcp_id }}-{{ variant.id }}"
-        aria-label="{{ variant.title }} — {{ variant.price | money }}">
+      {% assign variant_img = variant.featured_image | default: product.featured_image %}
+      <div class="vcp-card" data-variant-id="{{ variant.id }}" data-qty="0"
+        data-price-cents="{{ variant.price }}"
+        data-price="{{ variant.price | money }}"
+        data-sub-price="{% if variant.compare_at_price > 0 %}{{ variant.compare_at_price | money }}{% else %}{{ variant.price | money }}{% endif %}"
+        {% unless variant.available %}data-unavailable="true"{% endunless %}>
 
-        <input
-          type="radio"
-          id="vcp-{{ vcp_id }}-{{ variant.id }}"
-          name="id"
-          value="{{ variant.id }}"
-          form="{{ product_form_id }}"
-          class="vcp-radio"
-          {% if is_selected %}checked{% endif %}
-          {% unless variant.available %}disabled{% endunless %}
-          data-variant-price="{{ variant.price | money }}"
-          data-variant-compare-price="{{ variant.compare_at_price | money }}"
-        >
+        <button class="vcp-btn-remove" aria-label="Remove {{ variant.title }}" tabindex="-1">×</button>
+        <span class="vcp-qty-badge" aria-live="polite">0</span>
 
-        <div class="vcp-card__image-wrap">
+        <div class="vcp-img-wrap">
           {% if variant_img %}
-            <img
-              src="{{ variant_img | image_url: width: 200 }}"
-              alt="{{ variant.title | escape }}"
-              loading="lazy"
-              width="200"
-              height="200"
-              class="vcp-card__image"
-            >
+            <img src="{{ variant_img | image_url: width: 300 }}" alt="{{ variant.title | escape }}" loading="lazy" class="vcp-img">
           {% else %}
-            <div class="vcp-card__image-placeholder">
-              {{ 'product-1' | placeholder_svg_tag: 'vcp-placeholder-svg' }}
-            </div>
+            <div class="vcp-img-placeholder"></div>
           {% endif %}
+          {% unless variant.available %}<div class="vcp-sold-out">Sold Out</div>{% endunless %}
         </div>
 
-        <div class="vcp-card__info">
-          <span class="vcp-card__flavor">{{ variant.title }}</span>
-          <span class="vcp-card__price">{{ variant.price | money }}</span>
-          {% if variant.compare_at_price > variant.price %}
-            <span class="vcp-card__compare">{{ variant.compare_at_price | money }}</span>
-          {% endif %}
-        </div>
-      </label>
+        <span class="vcp-flavor">{{ variant.title }}</span>
+        <span class="vcp-price" data-onetime="{{ variant.price | money }}" data-subscribe="{{ variant.price | money }}">{{ variant.price | money }}</span>
+      </div>
     {% endfor %}
   </div>
 </div>
 
 <style>
-  .vcp-wrapper {
-    width: 100%;
-  }
   .vcp-grid {
     display: grid;
     grid-template-columns: repeat(var(--vcp-cols, 3), 1fr);
-    gap: var(--vcp-gap, 8px);
-  }
-  .vcp-radio {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-    pointer-events: none;
+    gap: var(--vcp-gap, 10px);
   }
   .vcp-card {
-    background: var(--vcp-card-bg);
-    border: 1.5px solid var(--vcp-card-border);
-    border-radius: var(--vcp-card-radius);
-    cursor: pointer;
-    padding: var(--vcp-card-padding, 6px);
-    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
+    background: var(--vcp-card-bg);
+    cursor: pointer;
+    position: relative;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    position: relative;
+    padding: 4px;
   }
-  .vcp-card:hover {
-    border-color: var(--vcp-card-border-sel);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  }
-  .vcp-card--selected {
-    background: var(--vcp-card-bg-sel) !important;
-    border-color: var(--vcp-card-border-sel) !important;
-    border-width: var(--vcp-border-width-sel, 2px) !important;
-  }
-  .vcp-card--unavailable {
+  .vcp-card[data-unavailable] {
     opacity: 0.45;
     cursor: not-allowed;
+    pointer-events: none;
   }
-  .vcp-card__image-wrap {
-    width: var(--vcp-img-width, 80px);
-    height: var(--vcp-img-height, 80px);
+  .vcp-img-wrap {
+    width: var(--vcp-img-size);
+    height: var(--vcp-img-size);
+    border-radius: 50%;
     overflow: hidden;
-    border-radius: var(--vcp-img-radius);
-    background: #f5f5f5;
+    background: #f0f0f0;
     flex-shrink: 0;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
-  .vcp-card__image {
+  .vcp-card:hover .vcp-img-wrap {
+    transform: scale(1.04);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+  .vcp-card[data-qty]:not([data-qty="0"]) .vcp-img-wrap {
+    box-shadow: 0 0 0 3px var(--vcp-badge-bg);
+  }
+  .vcp-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: var(--vcp-img-radius);
   }
-  .vcp-card__image-placeholder {
+  .vcp-img-placeholder {
     width: 100%;
     height: 100%;
+    background: #e0e0e0;
+  }
+  .vcp-sold-out {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    text-align: center;
+    padding: 3px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  /* Quantity badge — top right */
+  .vcp-qty-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--vcp-badge-bg);
+    color: var(--vcp-badge-color);
+    font-size: 11px;
+    font-weight: 800;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f0f0f0;
+    line-height: 1;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    pointer-events: none;
+    z-index: 2;
   }
-  .vcp-placeholder-svg {
-    width: 60%;
-    height: 60%;
-    opacity: 0.4;
+  .vcp-card[data-qty]:not([data-qty="0"]) .vcp-qty-badge {
+    opacity: 1;
+    transform: scale(1);
   }
-  .vcp-card__info {
+  /* Remove button — top left */
+  .vcp-btn-remove {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #555;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 2px;
-    width: 100%;
-    text-align: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 2;
+    padding: 0;
   }
-  .vcp-card__flavor {
-    font-size: var(--vcp-text-size);
-    color: var(--vcp-text-color);
+  .vcp-card[data-qty]:not([data-qty="0"]) .vcp-btn-remove {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .vcp-btn-remove:hover {
+    background: #222;
+  }
+  .vcp-flavor {
+    font-size: var(--vcp-flavor-size);
+    color: var(--vcp-flavor-color);
     font-weight: 600;
+    text-align: center;
     line-height: 1.2;
     word-break: break-word;
+    margin-top: 2px;
   }
-  .vcp-card__price {
+  .vcp-price {
     font-size: var(--vcp-price-size);
-    color: var(--vcp-price-color);
     font-weight: 700;
+    color: var(--vcp-price-onetime);
+    text-align: center;
+    transition: color 0.2s ease;
   }
-  .vcp-card__compare {
-    font-size: calc(var(--vcp-price-size) * 0.9);
-    color: #999;
-    text-decoration: line-through;
+  /* Price switches color when subscribe mode is active */
+  body.vcp-subscribe-mode .vcp-price {
+    color: var(--vcp-price-subscribe) !important;
   }
   @media (max-width: 480px) {
     .vcp-grid {
@@ -201,41 +200,119 @@
 
 <script>
 (function() {
-  function initVCP(wrapper) {
-    var radios = wrapper.querySelectorAll('.vcp-radio');
+  var productVariants = {{ product.variants | json }};
+
+  function initVCP() {
+    var wrapper = document.querySelector('.vcp-wrapper[data-block-id="{{ block.id }}"], .vcp-wrapper');
+    if (!wrapper) return;
+
     var cards = wrapper.querySelectorAll('.vcp-card');
+    var form = document.getElementById('{{ product_form_id }}') || document.querySelector('form[action*="/cart/add"]');
+    var atcBtn = document.querySelector('.shop-add-to-cart-button, .product-form__submit, [data-add-to-cart]');
 
-    radios.forEach(function(radio) {
-      radio.addEventListener('change', function() {
-        /* Update selected card styling */
-        cards.forEach(function(c) { c.classList.remove('vcp-card--selected'); });
-        radio.closest('.vcp-card').classList.add('vcp-card--selected');
-
-        /* Update visible price elements */
-        var price = radio.getAttribute('data-variant-price');
-        var comparePrice = radio.getAttribute('data-variant-compare-price');
-
-        document.querySelectorAll('.shop-product-price, .price__regular .price-item--regular, .shop-product-price-block').forEach(function(el) {
-          el.textContent = price;
-        });
-        document.querySelectorAll('.shop-compare-price, .price__sale .price-item--regular').forEach(function(el) {
-          el.textContent = comparePrice || '';
-        });
-
-        /* Fire variant change event for other scripts */
-        wrapper.dispatchEvent(new CustomEvent('variantChange', { bubbles: true, detail: { variantId: radio.value } }));
+    /* --- Card click: increment qty --- */
+    cards.forEach(function(card) {
+      card.addEventListener('click', function(e) {
+        if (e.target.closest('.vcp-btn-remove')) return;
+        var qty = parseInt(card.getAttribute('data-qty') || '0', 10) + 1;
+        setQty(card, qty);
       });
-    });
-  }
 
-  function ready() {
-    document.querySelectorAll('.vcp-wrapper').forEach(initVCP);
+      var removeBtn = card.querySelector('.vcp-btn-remove');
+      if (removeBtn) {
+        removeBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          setQty(card, 0);
+        });
+      }
+    });
+
+    function setQty(card, qty) {
+      card.setAttribute('data-qty', qty);
+      var badge = card.querySelector('.vcp-qty-badge');
+      if (badge) badge.textContent = qty;
+    }
+
+    /* --- ATC button: add all selected variants --- */
+    if (atcBtn && form) {
+      atcBtn.addEventListener('click', function(e) {
+        var items = [];
+        cards.forEach(function(card) {
+          var qty = parseInt(card.getAttribute('data-qty') || '0', 10);
+          if (qty > 0) {
+            var item = { id: parseInt(card.getAttribute('data-variant-id'), 10), quantity: qty };
+            var sellingPlan = form.querySelector('input[name="selling_plan"]');
+            if (sellingPlan && sellingPlan.value) item.selling_plan = parseInt(sellingPlan.value, 10);
+            items.push(item);
+          }
+        });
+
+        if (items.length === 0) return; /* let normal submit handle it if nothing selected */
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ items: items })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function() {
+          /* Reset all cards */
+          cards.forEach(function(c) { setQty(c, 0); });
+          /* Open cart or reload */
+          if (window.Shopify && window.Shopify.onItemAdded) {
+            window.Shopify.onItemAdded();
+          } else {
+            document.dispatchEvent(new CustomEvent('cart:updated'));
+            /* Try to open cart drawer if theme has one */
+            var cartDrawerToggle = document.querySelector('[data-cart-toggle], .cart-icon-bubble, [href="/cart"]');
+            if (cartDrawerToggle) cartDrawerToggle.click();
+          }
+        })
+        .catch(function(err) { console.error('VCP add to cart error:', err); });
+      }, true);
+    }
+
+    /* --- Listen for purchase mode changes from purchase-options block --- */
+    document.addEventListener('DOMContentLoaded', function() {
+      /* Watch selling_plan input for changes */
+      if (form) {
+        var planInput = form.querySelector('input[name="selling_plan"]');
+        if (planInput) {
+          var observer = new MutationObserver(updatePriceColors);
+          observer.observe(planInput, { attributes: true, attributeFilter: ['value'] });
+
+          planInput.addEventListener('change', updatePriceColors);
+        }
+      }
+
+      /* Also watch po-wrapper clicks */
+      document.querySelectorAll('.po-option').forEach(function(opt) {
+        opt.addEventListener('click', function() {
+          setTimeout(updatePriceColors, 50);
+        });
+      });
+
+      updatePriceColors();
+    });
+
+    function updatePriceColors() {
+      var planInput = form ? form.querySelector('input[name="selling_plan"]') : null;
+      var isSubscribe = planInput && planInput.value && planInput.value !== '';
+      if (isSubscribe) {
+        document.body.classList.add('vcp-subscribe-mode');
+      } else {
+        document.body.classList.remove('vcp-subscribe-mode');
+      }
+    }
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', ready);
+    document.addEventListener('DOMContentLoaded', initVCP);
   } else {
-    ready();
+    initVCP();
   }
 })();
 </script>
