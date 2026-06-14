@@ -4604,11 +4604,26 @@
           "label": "Accent text font type (apostrophe)",
           "default": "p",
           "options": [
-            { "value": "h1", "label": "H1" },
-            { "value": "h2", "label": "H2" },
-            { "value": "h3", "label": "H3" },
-            { "value": "h4", "label": "H4" },
-            { "value": "p", "label": "Body / Paragraph" }
+            {
+              "value": "h1",
+              "label": "H1"
+            },
+            {
+              "value": "h2",
+              "label": "H2"
+            },
+            {
+              "value": "h3",
+              "label": "H3"
+            },
+            {
+              "value": "h4",
+              "label": "H4"
+            },
+            {
+              "value": "p",
+              "label": "Body / Paragraph"
+            }
           ]
         },
         {
@@ -4617,13 +4632,34 @@
           "label": "Accent text font weight",
           "default": "700",
           "options": [
-            { "value": "300", "label": "300 — Light" },
-            { "value": "400", "label": "400 — Regular" },
-            { "value": "500", "label": "500 — Medium" },
-            { "value": "600", "label": "600 — Semi Bold" },
-            { "value": "700", "label": "700 — Bold" },
-            { "value": "800", "label": "800 — Extra Bold" },
-            { "value": "900", "label": "900 — Black" }
+            {
+              "value": "300",
+              "label": "300 \u2014 Light"
+            },
+            {
+              "value": "400",
+              "label": "400 \u2014 Regular"
+            },
+            {
+              "value": "500",
+              "label": "500 \u2014 Medium"
+            },
+            {
+              "value": "600",
+              "label": "600 \u2014 Semi Bold"
+            },
+            {
+              "value": "700",
+              "label": "700 \u2014 Bold"
+            },
+            {
+              "value": "800",
+              "label": "800 \u2014 Extra Bold"
+            },
+            {
+              "value": "900",
+              "label": "900 \u2014 Black"
+            }
           ]
         },
         {
@@ -4724,7 +4760,7 @@
           "id": "nutrients",
           "label": "Nutrient rows",
           "info": "Rows separated by semicolons (;). Format per row: Label|Source|Amount|%DV|y(indent)|Group Header. Example: Sodium|(Redmond Real Salt)|380mg|17%||",
-          "default": "Total Fat||0g|0%||;Total Carbohydrate||1g|0%||;Total Sugars||0g|†|y|;Sodium|(Redmond Real Salt)|380mg|17%||;Magnesium|(Magnesium Malate)|52.5mg|13%||;Potassium|(Potassium Chloride)|260mg|6%||;Myo-Inositol||4g|†||Mood & Hormone Support Blend;L-Theanine||200mg|†||;Pregnenolone||25mg|†||"
+          "default": "Total Fat||0g|0%||;Total Carbohydrate||1g|0%||;Total Sugars||0g|\u2020|y|;Sodium|(Redmond Real Salt)|380mg|17%||;Magnesium|(Magnesium Malate)|52.5mg|13%||;Potassium|(Potassium Chloride)|260mg|6%||;Myo-Inositol||4g|\u2020||Mood & Hormone Support Blend;L-Theanine||200mg|\u2020||;Pregnenolone||25mg|\u2020||"
         },
         {
           "type": "text",
@@ -4740,141 +4776,753 @@
         },
         {
           "type": "header",
-          "content": "Typography \u2014 Product Name"
+          "content": "Typography \u2014 Wordmark"
         },
         {
           "type": "select",
-          "id": "product_name_font",
-          "label": "Product name font type",
-          "default": "h1",
+          "id": "wordmark_font",
+          "label": "Wordmark font type",
+          "default": "p",
           "options": [
-            { "value": "h1", "label": "H1" },
-            { "value": "h2", "label": "H2" },
-            { "value": "h3", "label": "H3" },
-            { "value": "h4", "label": "H4" },
-            { "value": "p", "label": "Body / Paragraph" }
+            {
+              "value": "h1",
+              "label": "H1"
+            },
+            {
+              "value": "h2",
+              "label": "H2"
+            },
+            {
+              "value": "h3",
+              "label": "H3"
+            },
+            {
+              "value": "h4",
+              "label": "H4"
+            },
+            {
+              "value": "p",
+              "label": "Body / Paragraph"
+            }
           ]
         },
         {
           "type": "range",
-          "id": "product_name_size",
-          "label": "Product name size",
-          "min": 28,
-          "max": 100,
-          "step": 2,
+          "id": "wordmark_size",
+          "label": "Wordmark size",
+          "min": 8,
+          "max": 40,
+          "step": 1,
           "unit": "px",
-          "default": 68
+          "default": 13
+        },
+        {
+          "type": "select",
+          "id": "wordmark_weight",
+          "label": "Wordmark weight",
+          "default": "600",
+          "options": [
+            {
+              "value": "300",
+              "label": "300 \u2014 Light"
+            },
+            {
+              "value": "400",
+              "label": "400 \u2014 Regular"
+            },
+            {
+              "value": "500",
+              "label": "500 \u2014 Medium"
+            },
+            {
+              "value": "600",
+              "label": "600 \u2014 Semi Bold"
+            },
+            {
+              "value": "700",
+              "label": "700 \u2014 Bold"
+            },
+            {
+              "value": "800",
+              "label": "800 \u2014 Extra Bold"
+            },
+            {
+              "value": "900",
+              "label": "900 \u2014 Black"
+            }
+          ]
         },
         {
           "type": "color",
-          "id": "product_name_color",
-          "label": "Product name color",
+          "id": "wordmark_color",
+          "label": "Wordmark color",
           "default": "#1B3A5C"
         },
         {
-          "type": "select",
-          "id": "product_name_weight",
-          "label": "Product name font weight",
-          "default": "700",
-          "options": [
-            { "value": "300", "label": "300 \u2014 Light" },
-            { "value": "400", "label": "400 \u2014 Regular" },
-            { "value": "500", "label": "500 \u2014 Medium" },
-            { "value": "600", "label": "600 \u2014 Semi Bold" },
-            { "value": "700", "label": "700 \u2014 Bold" },
-            { "value": "800", "label": "800 \u2014 Extra Bold" },
-            { "value": "900", "label": "900 \u2014 Black" }
-          ]
+          "type": "range",
+          "id": "wordmark_spacing",
+          "label": "Wordmark letter spacing",
+          "min": -5,
+          "max": 30,
+          "step": 1,
+          "unit": "px",
+          "default": 4
         },
         {
           "type": "header",
-          "content": "Typography \u2014 Column Heading"
+          "content": "Typography \u2014 Tagline"
         },
         {
           "type": "select",
-          "id": "col_title_font",
-          "label": "Column heading font type",
-          "default": "h2",
+          "id": "tagline_font",
+          "label": "Tagline font type",
+          "default": "p",
           "options": [
-            { "value": "h1", "label": "H1" },
-            { "value": "h2", "label": "H2" },
-            { "value": "h3", "label": "H3" },
-            { "value": "h4", "label": "H4" },
-            { "value": "p", "label": "Body / Paragraph" }
+            {
+              "value": "h1",
+              "label": "H1"
+            },
+            {
+              "value": "h2",
+              "label": "H2"
+            },
+            {
+              "value": "h3",
+              "label": "H3"
+            },
+            {
+              "value": "h4",
+              "label": "H4"
+            },
+            {
+              "value": "p",
+              "label": "Body / Paragraph"
+            }
           ]
         },
         {
           "type": "range",
-          "id": "col_title_size",
-          "label": "Column heading size",
-          "min": 14,
+          "id": "tagline_size",
+          "label": "Tagline size",
+          "min": 8,
+          "max": 30,
+          "step": 1,
+          "unit": "px",
+          "default": 11
+        },
+        {
+          "type": "select",
+          "id": "tagline_weight",
+          "label": "Tagline weight",
+          "default": "600",
+          "options": [
+            {
+              "value": "300",
+              "label": "300 \u2014 Light"
+            },
+            {
+              "value": "400",
+              "label": "400 \u2014 Regular"
+            },
+            {
+              "value": "500",
+              "label": "500 \u2014 Medium"
+            },
+            {
+              "value": "600",
+              "label": "600 \u2014 Semi Bold"
+            },
+            {
+              "value": "700",
+              "label": "700 \u2014 Bold"
+            },
+            {
+              "value": "800",
+              "label": "800 \u2014 Extra Bold"
+            },
+            {
+              "value": "900",
+              "label": "900 \u2014 Black"
+            }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "tagline_color",
+          "label": "Tagline color",
+          "default": "#E8607A"
+        },
+        {
+          "type": "range",
+          "id": "tagline_spacing",
+          "label": "Tagline letter spacing",
+          "min": -5,
+          "max": 30,
+          "step": 1,
+          "unit": "px",
+          "default": 5
+        },
+        {
+          "type": "header",
+          "content": "Typography \u2014 Eyebrow Labels"
+        },
+        {
+          "type": "select",
+          "id": "eyebrow_font",
+          "label": "Eyebrow font type",
+          "default": "p",
+          "options": [
+            {
+              "value": "h1",
+              "label": "H1"
+            },
+            {
+              "value": "h2",
+              "label": "H2"
+            },
+            {
+              "value": "h3",
+              "label": "H3"
+            },
+            {
+              "value": "h4",
+              "label": "H4"
+            },
+            {
+              "value": "p",
+              "label": "Body / Paragraph"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "eyebrow_size",
+          "label": "Eyebrow size",
+          "min": 8,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "default": 11
+        },
+        {
+          "type": "select",
+          "id": "eyebrow_weight",
+          "label": "Eyebrow weight",
+          "default": "700",
+          "options": [
+            {
+              "value": "300",
+              "label": "300 \u2014 Light"
+            },
+            {
+              "value": "400",
+              "label": "400 \u2014 Regular"
+            },
+            {
+              "value": "500",
+              "label": "500 \u2014 Medium"
+            },
+            {
+              "value": "600",
+              "label": "600 \u2014 Semi Bold"
+            },
+            {
+              "value": "700",
+              "label": "700 \u2014 Bold"
+            },
+            {
+              "value": "800",
+              "label": "800 \u2014 Extra Bold"
+            },
+            {
+              "value": "900",
+              "label": "900 \u2014 Black"
+            }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "eyebrow_color",
+          "label": "Eyebrow color",
+          "default": "#E8607A"
+        },
+        {
+          "type": "range",
+          "id": "eyebrow_spacing",
+          "label": "Eyebrow letter spacing",
+          "min": -5,
+          "max": 30,
+          "step": 1,
+          "unit": "px",
+          "default": 4
+        },
+        {
+          "type": "header",
+          "content": "Typography \u2014 Panel Title (Supplement Facts)"
+        },
+        {
+          "type": "select",
+          "id": "panel_title_font",
+          "label": "Panel title font type",
+          "default": "p",
+          "options": [
+            {
+              "value": "h1",
+              "label": "H1"
+            },
+            {
+              "value": "h2",
+              "label": "H2"
+            },
+            {
+              "value": "h3",
+              "label": "H3"
+            },
+            {
+              "value": "h4",
+              "label": "H4"
+            },
+            {
+              "value": "p",
+              "label": "Body / Paragraph"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "panel_title_size",
+          "label": "Panel title size",
+          "min": 16,
           "max": 60,
           "step": 2,
           "unit": "px",
-          "default": 28
+          "default": 34
+        },
+        {
+          "type": "select",
+          "id": "panel_title_weight",
+          "label": "Panel title weight",
+          "default": "900",
+          "options": [
+            {
+              "value": "300",
+              "label": "300 \u2014 Light"
+            },
+            {
+              "value": "400",
+              "label": "400 \u2014 Regular"
+            },
+            {
+              "value": "500",
+              "label": "500 \u2014 Medium"
+            },
+            {
+              "value": "600",
+              "label": "600 \u2014 Semi Bold"
+            },
+            {
+              "value": "700",
+              "label": "700 \u2014 Bold"
+            },
+            {
+              "value": "800",
+              "label": "800 \u2014 Extra Bold"
+            },
+            {
+              "value": "900",
+              "label": "900 \u2014 Black"
+            }
+          ]
         },
         {
           "type": "color",
-          "id": "col_title_color",
-          "label": "Column heading color",
+          "id": "panel_title_color",
+          "label": "Panel title color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "header",
+          "content": "Typography \u2014 Serving / Calorie Rows"
+        },
+        {
+          "type": "range",
+          "id": "serve_size",
+          "label": "Serving row text size",
+          "min": 8,
+          "max": 20,
+          "step": 1,
+          "unit": "px",
+          "default": 12
+        },
+        {
+          "type": "select",
+          "id": "serve_weight",
+          "label": "Serving row weight",
+          "default": "400",
+          "options": [
+            {
+              "value": "300",
+              "label": "300 \u2014 Light"
+            },
+            {
+              "value": "400",
+              "label": "400 \u2014 Regular"
+            },
+            {
+              "value": "500",
+              "label": "500 \u2014 Medium"
+            },
+            {
+              "value": "600",
+              "label": "600 \u2014 Semi Bold"
+            },
+            {
+              "value": "700",
+              "label": "700 \u2014 Bold"
+            },
+            {
+              "value": "800",
+              "label": "800 \u2014 Extra Bold"
+            },
+            {
+              "value": "900",
+              "label": "900 \u2014 Black"
+            }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "serve_color",
+          "label": "Serving row color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "range",
+          "id": "cal_label_size",
+          "label": "Calories label size",
+          "min": 10,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "select",
+          "id": "cal_label_weight",
+          "label": "Calories label weight",
+          "default": "800",
+          "options": [
+            {
+              "value": "300",
+              "label": "300 \u2014 Light"
+            },
+            {
+              "value": "400",
+              "label": "400 \u2014 Regular"
+            },
+            {
+              "value": "500",
+              "label": "500 \u2014 Medium"
+            },
+            {
+              "value": "600",
+              "label": "600 \u2014 Semi Bold"
+            },
+            {
+              "value": "700",
+              "label": "700 \u2014 Bold"
+            },
+            {
+              "value": "800",
+              "label": "800 \u2014 Extra Bold"
+            },
+            {
+              "value": "900",
+              "label": "900 \u2014 Black"
+            }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "cal_label_color",
+          "label": "Calories label color",
           "default": "#1B3A5C"
         },
         {
           "type": "select",
-          "id": "col_title_weight",
-          "label": "Column heading font weight",
-          "default": "900",
+          "id": "cal_num_font",
+          "label": "Calories number font type",
+          "default": "p",
           "options": [
-            { "value": "300", "label": "300 — Light" },
-            { "value": "400", "label": "400 — Regular" },
-            { "value": "500", "label": "500 — Medium" },
-            { "value": "600", "label": "600 — Semi Bold" },
-            { "value": "700", "label": "700 — Bold" },
-            { "value": "800", "label": "800 — Extra Bold" },
-            { "value": "900", "label": "900 — Black" }
-          ]
-        },
-        {
-          "type": "header",
-          "content": "Typography \u2014 Flavor Names"
-        },
-        {
-          "type": "select",
-          "id": "flavor_name_font",
-          "label": "Flavor name font type",
-          "default": "h3",
-          "options": [
-            { "value": "h1", "label": "H1" },
-            { "value": "h2", "label": "H2" },
-            { "value": "h3", "label": "H3" },
-            { "value": "h4", "label": "H4" },
-            { "value": "p", "label": "Body / Paragraph" }
+            {
+              "value": "h1",
+              "label": "H1"
+            },
+            {
+              "value": "h2",
+              "label": "H2"
+            },
+            {
+              "value": "h3",
+              "label": "H3"
+            },
+            {
+              "value": "h4",
+              "label": "H4"
+            },
+            {
+              "value": "p",
+              "label": "Body / Paragraph"
+            }
           ]
         },
         {
           "type": "range",
-          "id": "flavor_name_size",
-          "label": "Flavor name size",
-          "min": 14,
-          "max": 48,
+          "id": "cal_num_size",
+          "label": "Calories number size",
+          "min": 16,
+          "max": 60,
           "step": 2,
           "unit": "px",
-          "default": 26
+          "default": 32
         },
         {
           "type": "select",
-          "id": "flavor_name_weight",
-          "label": "Flavor name font weight",
+          "id": "cal_num_weight",
+          "label": "Calories number weight",
+          "default": "900",
+          "options": [
+            {
+              "value": "300",
+              "label": "300 \u2014 Light"
+            },
+            {
+              "value": "400",
+              "label": "400 \u2014 Regular"
+            },
+            {
+              "value": "500",
+              "label": "500 \u2014 Medium"
+            },
+            {
+              "value": "600",
+              "label": "600 \u2014 Semi Bold"
+            },
+            {
+              "value": "700",
+              "label": "700 \u2014 Bold"
+            },
+            {
+              "value": "800",
+              "label": "800 \u2014 Extra Bold"
+            },
+            {
+              "value": "900",
+              "label": "900 \u2014 Black"
+            }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "cal_num_color",
+          "label": "Calories number color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "header",
+          "content": "Typography \u2014 Nutrient Rows"
+        },
+        {
+          "type": "range",
+          "id": "nutrient_size",
+          "label": "Nutrient row size",
+          "min": 8,
+          "max": 20,
+          "step": 1,
+          "unit": "px",
+          "default": 13
+        },
+        {
+          "type": "select",
+          "id": "nutrient_weight",
+          "label": "Nutrient label weight",
           "default": "700",
           "options": [
-            { "value": "300", "label": "300 — Light" },
-            { "value": "400", "label": "400 — Regular" },
-            { "value": "500", "label": "500 — Medium" },
-            { "value": "600", "label": "600 — Semi Bold" },
-            { "value": "700", "label": "700 — Bold" },
-            { "value": "800", "label": "800 — Extra Bold" },
-            { "value": "900", "label": "900 — Black" }
+            {
+              "value": "300",
+              "label": "300 \u2014 Light"
+            },
+            {
+              "value": "400",
+              "label": "400 \u2014 Regular"
+            },
+            {
+              "value": "500",
+              "label": "500 \u2014 Medium"
+            },
+            {
+              "value": "600",
+              "label": "600 \u2014 Semi Bold"
+            },
+            {
+              "value": "700",
+              "label": "700 \u2014 Bold"
+            },
+            {
+              "value": "800",
+              "label": "800 \u2014 Extra Bold"
+            },
+            {
+              "value": "900",
+              "label": "900 \u2014 Black"
+            }
           ]
+        },
+        {
+          "type": "color",
+          "id": "nutrient_color",
+          "label": "Nutrient row color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "range",
+          "id": "nutrient_src_size",
+          "label": "Source text size",
+          "min": 7,
+          "max": 16,
+          "step": 1,
+          "unit": "px",
+          "default": 10
+        },
+        {
+          "type": "color",
+          "id": "nutrient_src_color",
+          "label": "Source text color",
+          "default": "#8A7E76"
+        },
+        {
+          "type": "range",
+          "id": "footnote_size",
+          "label": "Footnote text size",
+          "min": 7,
+          "max": 14,
+          "step": 1,
+          "unit": "px",
+          "default": 9
+        },
+        {
+          "type": "color",
+          "id": "footnote_color",
+          "label": "Footnote color",
+          "default": "#8A7E76"
+        },
+        {
+          "type": "header",
+          "content": "Typography \u2014 Flavor Callout"
+        },
+        {
+          "type": "range",
+          "id": "flavor_from_lbl_size",
+          "label": "'Flavored only with' size",
+          "min": 7,
+          "max": 16,
+          "step": 1,
+          "unit": "px",
+          "default": 9
+        },
+        {
+          "type": "select",
+          "id": "flavor_from_lbl_weight",
+          "label": "'Flavored only with' weight",
+          "default": "700",
+          "options": [
+            {
+              "value": "300",
+              "label": "300 \u2014 Light"
+            },
+            {
+              "value": "400",
+              "label": "400 \u2014 Regular"
+            },
+            {
+              "value": "500",
+              "label": "500 \u2014 Medium"
+            },
+            {
+              "value": "600",
+              "label": "600 \u2014 Semi Bold"
+            },
+            {
+              "value": "700",
+              "label": "700 \u2014 Bold"
+            },
+            {
+              "value": "800",
+              "label": "800 \u2014 Extra Bold"
+            },
+            {
+              "value": "900",
+              "label": "900 \u2014 Black"
+            }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "flavor_from_lbl_color",
+          "label": "'Flavored only with' color",
+          "default": "#8A7E76"
+        },
+        {
+          "type": "range",
+          "id": "flavor_callout_size",
+          "label": "Callout text size",
+          "min": 8,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "default": 11
+        },
+        {
+          "type": "select",
+          "id": "flavor_callout_weight",
+          "label": "Callout weight",
+          "default": "600",
+          "options": [
+            {
+              "value": "300",
+              "label": "300 \u2014 Light"
+            },
+            {
+              "value": "400",
+              "label": "400 \u2014 Regular"
+            },
+            {
+              "value": "500",
+              "label": "500 \u2014 Medium"
+            },
+            {
+              "value": "600",
+              "label": "600 \u2014 Semi Bold"
+            },
+            {
+              "value": "700",
+              "label": "700 \u2014 Bold"
+            },
+            {
+              "value": "800",
+              "label": "800 \u2014 Extra Bold"
+            },
+            {
+              "value": "900",
+              "label": "900 \u2014 Black"
+            }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "flavor_callout_color",
+          "label": "Callout color",
+          "default": "#1B3A5C"
         },
         {
           "type": "header",

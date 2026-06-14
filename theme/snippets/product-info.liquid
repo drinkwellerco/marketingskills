@@ -3860,7 +3860,21 @@
           position:relative;
         }
         .sfp-logo{width:56px;height:56px;object-fit:contain;border-radius:8px;margin-bottom:10px;}
-        .sfp-wordmark{font-family:var(--font-body-family);font-weight:600;font-size:13px;letter-spacing:.38em;text-transform:uppercase;color:#1B3A5C;margin-bottom:2px;}
+        .sfp-wordmark{font-weight:600;font-size:13px;letter-spacing:.38em;text-transform:uppercase;color:#1B3A5C;margin-bottom:2px;}
+        .sfp-tagline{font-weight:600;font-size:11px;letter-spacing:.24em;text-transform:uppercase;}
+        .sfp-pill{display:inline-block;margin-top:14px;font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#fff;padding:8px 20px;border-radius:9999px;}
+        .sfp-eyebrow{font-weight:700;font-size:11px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px;}
+        .sfp-col-title{font-weight:900;line-height:1.1;margin-bottom:22px;}
+        .sfp-flavor-name{font-style:italic;font-weight:700;line-height:1;margin-bottom:4px;}
+
+        /* ── SCOPED TYPOGRAPHY OVERRIDES ── */
+        #sfp-panel-{{ block.id }} .sfp-wordmark{
+          {% if block.settings.wordmark_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
+          font-size:{{ block.settings.wordmark_size | default: 13 }}px!important;
+          font-weight:{{ block.settings.wordmark_weight | default: 600 }}!important;
+          color:{{ block.settings.wordmark_color | default: '#1B3A5C' }}!important;
+          letter-spacing:{{ block.settings.wordmark_spacing | default: 4 }}px!important;
+        }
         #sfp-panel-{{ block.id }} .sfp-product{
           font-size:{{ block.settings.product_name_size | default: 68 }}px!important;
           font-weight:{{ block.settings.product_name_weight | default: 700 }}!important;
@@ -3868,16 +3882,70 @@
           line-height:1!important;letter-spacing:-.01em;margin:4px 0 6px;
         }
         #sfp-panel-{{ block.id }} .sfp-apos{
-          color:var(--sfp-accent,#E8607A)!important;
+          color:{{ block.settings.accent_color | default: '#E8607A' }}!important;
           font-weight:{{ block.settings.accent_weight | default: 700 }}!important;
           {% if block.settings.accent_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
-          font-style:italic;
+          font-style:italic!important;
+          font-size:inherit!important;
+        }
+        #sfp-panel-{{ block.id }} .sfp-tagline{
+          {% if block.settings.tagline_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
+          font-size:{{ block.settings.tagline_size | default: 11 }}px!important;
+          font-weight:{{ block.settings.tagline_weight | default: 600 }}!important;
+          color:{{ block.settings.tagline_color | default: '#E8607A' }}!important;
+          letter-spacing:{{ block.settings.tagline_spacing | default: 5 }}px!important;
+        }
+        #sfp-panel-{{ block.id }} .sfp-eyebrow{
+          {% if block.settings.eyebrow_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
+          font-size:{{ block.settings.eyebrow_size | default: 11 }}px!important;
+          font-weight:{{ block.settings.eyebrow_weight | default: 700 }}!important;
+          color:{{ block.settings.eyebrow_color | default: '#E8607A' }}!important;
+          letter-spacing:{{ block.settings.eyebrow_spacing | default: 4 }}px!important;
         }
         #sfp-panel-{{ block.id }} .sfp-col-title{
           font-size:{{ block.settings.col_title_size | default: 28 }}px!important;
           font-weight:{{ block.settings.col_title_weight | default: 900 }}!important;
           color:{{ block.settings.col_title_color | default: '#1B3A5C' }}!important;
-          line-height:1.1!important;margin-bottom:22px;
+          line-height:1.2!important;margin-bottom:22px;
+        }
+        #sfp-panel-{{ block.id }} .sfp-nf-title{
+          {% if block.settings.panel_title_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
+          font-size:{{ block.settings.panel_title_size | default: 34 }}px!important;
+          font-weight:{{ block.settings.panel_title_weight | default: 900 }}!important;
+          color:{{ block.settings.panel_title_color | default: '#1B3A5C' }}!important;
+        }
+        #sfp-panel-{{ block.id }} .sfp-serve{
+          font-size:{{ block.settings.serve_size | default: 12 }}px!important;
+          color:{{ block.settings.serve_color | default: '#1B3A5C' }}!important;
+        }
+        #sfp-panel-{{ block.id }} .sfp-serve b{
+          font-weight:{{ block.settings.serve_weight | default: 700 }}!important;
+        }
+        #sfp-panel-{{ block.id }} .sfp-cal-label{
+          font-size:{{ block.settings.cal_label_size | default: 15 }}px!important;
+          font-weight:{{ block.settings.cal_label_weight | default: 800 }}!important;
+          color:{{ block.settings.cal_label_color | default: '#1B3A5C' }}!important;
+        }
+        #sfp-panel-{{ block.id }} .sfp-cal-val{
+          {% if block.settings.cal_num_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
+          font-size:{{ block.settings.cal_num_size | default: 32 }}px!important;
+          font-weight:{{ block.settings.cal_num_weight | default: 900 }}!important;
+          color:{{ block.settings.cal_num_color | default: '#1B3A5C' }}!important;
+        }
+        #sfp-panel-{{ block.id }} .sfp-row{
+          font-size:{{ block.settings.nutrient_size | default: 13 }}px!important;
+          color:{{ block.settings.nutrient_color | default: '#1B3A5C' }}!important;
+        }
+        #sfp-panel-{{ block.id }} .sfp-row .nm{
+          font-weight:{{ block.settings.nutrient_weight | default: 700 }}!important;
+        }
+        #sfp-panel-{{ block.id }} .sfp-row .nm .src{
+          font-size:{{ block.settings.nutrient_src_size | default: 10 }}px!important;
+          color:{{ block.settings.nutrient_src_color | default: '#8A7E76' }}!important;
+        }
+        #sfp-panel-{{ block.id }} .sfp-foot{
+          font-size:{{ block.settings.footnote_size | default: 9 }}px!important;
+          color:{{ block.settings.footnote_color | default: '#8A7E76' }}!important;
         }
         #sfp-panel-{{ block.id }} .sfp-flavor-name{
           font-style:italic;
@@ -3885,13 +3953,20 @@
           font-weight:{{ block.settings.flavor_name_weight | default: 700 }}!important;
           line-height:1!important;margin-bottom:4px;
         }
-        .sfp-tagline{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:600;font-size:11px;letter-spacing:.24em;text-transform:uppercase;}
-        .sfp-pill{display:inline-block;margin-top:14px;font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#fff;padding:8px 20px;border-radius:9999px;}
+        #sfp-panel-{{ block.id }} .sfp-flavor-from-lbl{
+          font-size:{{ block.settings.flavor_from_lbl_size | default: 9 }}px!important;
+          font-weight:{{ block.settings.flavor_from_lbl_weight | default: 700 }}!important;
+          color:{{ block.settings.flavor_from_lbl_color | default: '#8A7E76' }}!important;
+        }
+        #sfp-panel-{{ block.id }} .sfp-flavor-from em{
+          font-size:{{ block.settings.flavor_callout_size | default: 11 }}px!important;
+          font-weight:{{ block.settings.flavor_callout_weight | default: 600 }}!important;
+          color:{{ block.settings.flavor_callout_color | default: '#1B3A5C' }}!important;
+        }
 
         /* ── BODY ── */
         .sfp-inner{padding:44px 52px 44px;}
         .sfp-body{display:grid;grid-template-columns:minmax(0,420px) 1fr;gap:52px;align-items:start;}
-        .sfp-eyebrow{font-family:'DM Sans','Helvetica Neue',sans-serif;font-weight:700;font-size:11px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px;}
         .sfp-col-title{font-weight:900;line-height:1.1;margin-bottom:22px;}
 
         /* ── SUPPLEMENT FACTS PANEL ── */
