@@ -808,10 +808,8 @@
         {% endif %}
 
         <!-- Brand Story block — rendered below the photos (left column) -->
-        {% assign brand_story_rendered = false %}
         {% for block in section.blocks %}
-          {% if block.type == 'brand_story' and brand_story_rendered == false %}
-            {% assign brand_story_rendered = true %}
+          {% if block.type == 'brand_story' %}
             {%- assign bs = block.settings -%}
             {%- assign bs_title_tag = bs.title_tag | default: 'h2' -%}
             {%- assign bs_sub_tag = bs.subtitle_tag | default: 'h3' -%}
@@ -871,6 +869,7 @@
                 </div>
               {%- endif -%}
             </div>
+            {% break %}
           {% endif %}
         {% endfor %}
       </div>
