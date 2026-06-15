@@ -807,6 +807,75 @@
           </div>
         {% endif %}
       </div>
+
+      <!-- Brand Story blocks — rendered below the two-column layout -->
+      {% for block in section.blocks %}
+        {% if block.type == 'brand_story' %}
+          {%- assign bs = block.settings -%}
+          {%- assign bs_title_tag = bs.title_tag | default: 'h2' -%}
+          {%- assign bs_subtitle_tag = bs.subtitle_tag | default: 'h3' -%}
+
+          <div class="bs-block-{{ block.id }}" {{ block.shopify_attributes }}
+            style="margin-top:{{ bs.margin_top | default: 24 }}px;margin-bottom:{{ bs.margin_bottom | default: 0 }}px;background:{{ bs.bg_color | default: '#ffffff' }};width:100%;">
+
+            <style>
+              .bs-title-{{ block.id }} {
+                font-size: {{ bs.title_size | default: 40 }}px;
+                color: {{ bs.title_color | default: '#222222' }};
+                {% if bs.title_font == 'body' %}font-family: var(--font-body-family) !important;{% else %}font-family: var(--font-heading-family) !important;{% endif %}
+                margin: 0 0 8px;
+                line-height: 1.2;
+              }
+              .bs-accent-{{ block.id }} {
+                color: {{ bs.accent_color | default: '#EF4A65' }} !important;
+                font-style: italic;
+                {% if bs.accent_font == 'body' %}font-family: var(--font-body-family) !important;{% else %}font-family: var(--font-heading-family) !important;{% endif %}
+              }
+              .bs-subtitle-{{ block.id }} {
+                font-size: {{ bs.subtitle_size | default: 20 }}px;
+                color: {{ bs.subtitle_color | default: '#444444' }};
+                {% if bs.subtitle_font == 'body' %}font-family: var(--font-body-family) !important;{% else %}font-family: var(--font-heading-family) !important;{% endif %}
+                margin: 0 0 12px;
+              }
+              .bs-desc-{{ block.id }}, .bs-desc-{{ block.id }} p {
+                font-size: {{ bs.desc_size | default: 15 }}px;
+                color: {{ bs.desc_color | default: '#444444' }};
+                {% if bs.desc_font == 'body' %}font-family: var(--font-body-family) !important;{% else %}font-family: var(--font-heading-family) !important;{% endif %}
+                margin: 0 0 16px;
+              }
+            </style>
+
+            {%- if bs.title != blank -%}
+              {%- assign bs_title_parts = bs.title | split: "'" -%}
+              <{{ bs_title_tag }} class="bs-title-{{ block.id }}">
+                {%- for part in bs_title_parts -%}
+                  {%- unless forloop.first -%}<span class="bs-accent-{{ block.id }}">'</span>{%- endunless -%}{{ part }}
+                {%- endfor -%}
+              </{{ bs_title_tag }}>
+            {%- endif -%}
+
+            {%- if bs.subtitle != blank -%}
+              <{{ bs_subtitle_tag }} class="bs-subtitle-{{ block.id }}">{{ bs.subtitle }}</{{ bs_subtitle_tag }}>
+            {%- endif -%}
+
+            {%- if bs.description != blank -%}
+              <div class="bs-desc-{{ block.id }}">{{ bs.description }}</div>
+            {%- endif -%}
+
+            {%- if bs.image != blank -%}
+              <img
+                src="{{ bs.image | image_url: width: 1400 }}"
+                alt="{{ bs.image.alt | default: bs.title | escape }}"
+                width="1400"
+                height="{{ bs.image_height | default: 400 }}"
+                loading="lazy"
+                style="width:100%;height:{{ bs.image_height | default: 400 }}px;object-fit:{{ bs.image_fit | default: 'cover' }};display:block;border-radius:{{ bs.image_radius | default: 12 }}px;margin-bottom:16px;">
+            {%- endif -%}
+
+          </div>
+        {% endif %}
+      {% endfor %}
+
     {% endif %}
   </div>
 </div>
