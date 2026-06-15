@@ -315,6 +315,12 @@
   var root = document.getElementById('qa-{{ section.id }}');
   if(!root) return;
 
+  // Guard against double-initialisation: themes re-render sections on cart
+  // updates, which would otherwise re-run this script and bind a second set
+  // of click handlers — causing each click to add the item twice.
+  if(root.dataset.qaInit) return;
+  root.dataset.qaInit = '1';
+
   var inner = root.querySelector('[data-qa-inner]');
   var swapBtn = root.querySelector('[data-qa-swap]');
   if(swapBtn){ swapBtn.addEventListener('click', function(){ inner.classList.toggle('swapped'); }); }
@@ -369,6 +375,7 @@
   function addOne(tile){
     var id = tile.dataset.variantId;
     if(!id) return;
+    if(tile.classList.contains('is-busy')) return; // an add is already in flight
 
     var prevQty = parseInt(tile.dataset.qty, 10) || 0;
     setTile(tile, prevQty + 1);
@@ -403,6 +410,7 @@
   function removeOne(tile){
     var current = parseInt(tile.dataset.qty, 10) || 0;
     if(current <= 0) return;
+    if(tile.classList.contains('is-busy')) return; // a change is already in flight
 
     setTile(tile, current - 1);
     tile.classList.add('is-busy');
