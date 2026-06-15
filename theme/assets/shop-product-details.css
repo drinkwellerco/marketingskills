@@ -407,17 +407,6 @@
   align-items: flex-start;
   gap: 20px;
 }
-.shop-left-column {
-  flex: 0 0 55%;
-  max-width: 55%;
-  display: flex;
-  flex-direction: column;
-}
-.shop-left-column .shop-carousel-container {
-  flex: none !important;
-  width: 100% !important;
-  max-width: 100% !important;
-}
 .shop-carousel-container {
   flex: 0 0 55%;
   max-width: 55%;
