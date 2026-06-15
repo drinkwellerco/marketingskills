@@ -42,7 +42,7 @@
           <span class="vcp-qty-badge" aria-live="polite">0</span>
           <div class="vcp-img-clip">
             {% if variant_img %}
-              <img src="{{ variant_img | image_url: width: 300 }}" alt="{{ variant.title | escape }}" loading="lazy" class="vcp-img">
+              <img src="{{ variant_img | image_url: width: 300 }}" alt="{{ variant.title | escape }}" loading="lazy" class="vcp-img" width="300" height="300">
             {% else %}
               <div class="vcp-img-placeholder"></div>
             {% endif %}
