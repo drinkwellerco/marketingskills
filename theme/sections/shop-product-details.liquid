@@ -23,6 +23,16 @@
         gap: {{ section.settings.blocks_spacing }}px;
         color: {{ section.settings.text_color }};
     }
+    {%- assign gw = section.settings.gallery_width | default: 55 -%}
+    {%- assign iw = 100 | minus: gw | minus: 2 -%}
+    .shop-carousel-container {
+        flex: 0 0 {{ gw }}% !important;
+        max-width: {{ gw }}% !important;
+    }
+    .shop-product-info {
+        flex: 0 0 {{ iw }}% !important;
+        max-width: {{ iw }}% !important;
+    }
     .shop-thumbnail {
         border: 1px solid {{ section.settings.thumbnail_border_color }};
     }
@@ -1070,6 +1080,16 @@
       "label": "Show product gallery",
       "default": true,
       "info": "Turn off to hide the product images and gallery completely"
+    },
+    {
+      "type": "range",
+      "id": "gallery_width",
+      "label": "Gallery width",
+      "min": 30,
+      "max": 65,
+      "step": 1,
+      "unit": "%",
+      "default": 55
     },
     {
       "type": "checkbox",
