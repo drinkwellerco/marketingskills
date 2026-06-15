@@ -4055,8 +4055,7 @@
       <style>
         #block-sfp-{{ block.id }} { display: block; width: 100%; }
         #block-sfp-{{ block.id }} .sfp-btn { width: 100%; justify-content: {{ sfp_da_flex }} !important; box-sizing: border-box; }
-        #block-sfp-{{ block.id }} .sfp-modal,
-        #block-sfp-{{ block.id }} .sfp-modal * { text-align: revert; }
+        .sfp-modal, .sfp-modal * { text-align: left !important; }
         @media (max-width: 767px) {
           #block-sfp-{{ block.id }} .sfp-btn { justify-content: {{ sfp_ma_flex }} !important; }
         }
