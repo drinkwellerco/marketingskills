@@ -1429,6 +1429,21 @@
     max-width: 100% !important;
     width: 100% !important;
   }
+  .shop-product-info,
+  .shop-product-info * {
+    text-align: center !important;
+  }
+  .shop-product-info > *,
+  .shop-product-info [class*="variant"],
+  .shop-product-info [class*="picker"],
+  .shop-product-info [class*="options"],
+  .shop-product-info [class*="price"],
+  .shop-product-info [class*="button"],
+  .shop-product-info [class*="rating"],
+  .shop-product-info form {
+    justify-content: center !important;
+    align-items: center !important;
+  }
 }
 @media (max-width: 767px) {
   .shop-image-container {
