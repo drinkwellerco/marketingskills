@@ -208,10 +208,7 @@
   body.vcp-subscribe-mode .vcp-price {
     color: var(--vcp-price-subscribe) !important;
   }
-  /* Desktop centering */
-  #block-vcp-{{ block.id }} .vcp-grid {
-    justify-items: center;
-  }
+  /* Default: full width, card content centered by block alignment CSS */
   @media (max-width: 767px) {
     #block-vcp-{{ block.id }} .vcp-grid {
       gap: var(--vcp-mobile-gap) !important;

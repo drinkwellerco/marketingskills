@@ -3993,21 +3993,12 @@
         endif
       -%}
       <style>
-        #block-vcp-{{ block.id }} { display: block; text-align: {{ vcp_da }}; }
-        {% if vcp_da == 'center' %}
-        #block-vcp-{{ block.id }} .vcp-grid { width: fit-content; margin-left: auto; margin-right: auto; }
-        {% elsif vcp_da == 'right' %}
-        #block-vcp-{{ block.id }} .vcp-grid { width: fit-content; margin-left: auto; margin-right: 0; }
-        {% endif %}
+        #block-vcp-{{ block.id }} { display: block; width: 100%; }
+        #block-vcp-{{ block.id }} .vcp-grid { justify-items: {{ vcp_da_justify }}; }
+        #block-vcp-{{ block.id }} .vcp-card { text-align: {{ vcp_da }}; }
         @media (max-width: 767px) {
-          #block-vcp-{{ block.id }} { text-align: {{ vcp_ma }}; }
-          {% if vcp_ma == 'center' %}
-          #block-vcp-{{ block.id }} .vcp-grid { width: fit-content; margin-left: auto; margin-right: auto; }
-          {% elsif vcp_ma == 'right' %}
-          #block-vcp-{{ block.id }} .vcp-grid { width: fit-content; margin-left: auto; margin-right: 0; }
-          {% else %}
-          #block-vcp-{{ block.id }} .vcp-grid { width: 100%; margin-left: 0; margin-right: 0; }
-          {% endif %}
+          #block-vcp-{{ block.id }} .vcp-grid { justify-items: {{ vcp_ma_justify }}; }
+          #block-vcp-{{ block.id }} .vcp-card { text-align: {{ vcp_ma }}; }
         }
       </style>
       {% render 'variant-card-picker', block: block, product: product, product_form_id: product_form_id %}
