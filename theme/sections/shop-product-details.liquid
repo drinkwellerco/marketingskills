@@ -4685,6 +4685,20 @@
         },
         {
           "type": "header",
+          "content": "Mobile Spacing"
+        },
+        {
+          "type": "range",
+          "id": "mobile_grid_gap",
+          "min": 4,
+          "max": 24,
+          "step": 2,
+          "unit": "px",
+          "label": "Mobile gap between pills",
+          "default": 8
+        },
+        {
+          "type": "header",
           "content": "Alignment"
         },
         {
@@ -4799,7 +4813,31 @@
         },
         {
           "type": "header",
-          "content": "Quantity Badge"
+          "content": "Mobile Layout"
+        },
+        {
+          "type": "range",
+          "id": "mobile_card_image_size",
+          "min": 40,
+          "max": 140,
+          "step": 4,
+          "unit": "px",
+          "label": "Mobile circle size",
+          "default": 70
+        },
+        {
+          "type": "range",
+          "id": "mobile_card_gap",
+          "min": 4,
+          "max": 24,
+          "step": 2,
+          "unit": "px",
+          "label": "Mobile gap between cards",
+          "default": 8
+        },
+        {
+          "type": "header",
+          "content": "Quantity Badge (Desktop)"
         },
         {
           "type": "color",
@@ -4812,6 +4850,78 @@
           "id": "badge_text_color",
           "label": "Badge text color",
           "default": "#ffffff"
+        },
+        {
+          "type": "range",
+          "id": "badge_size",
+          "min": 16,
+          "max": 36,
+          "step": 2,
+          "unit": "px",
+          "label": "Badge circle size",
+          "default": 22
+        },
+        {
+          "type": "range",
+          "id": "badge_font_size",
+          "min": 8,
+          "max": 18,
+          "step": 1,
+          "unit": "px",
+          "label": "Badge font size",
+          "default": 11
+        },
+        {
+          "type": "header",
+          "content": "Quantity Badge (Mobile)"
+        },
+        {
+          "type": "range",
+          "id": "mobile_badge_size",
+          "min": 14,
+          "max": 32,
+          "step": 2,
+          "unit": "px",
+          "label": "Mobile badge circle size",
+          "default": 20
+        },
+        {
+          "type": "range",
+          "id": "mobile_badge_font_size",
+          "min": 8,
+          "max": 16,
+          "step": 1,
+          "unit": "px",
+          "label": "Mobile badge font size",
+          "default": 10
+        },
+        {
+          "type": "header",
+          "content": "Alignment"
+        },
+        {
+          "type": "select",
+          "id": "desktop_alignment",
+          "label": "Desktop alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "mobile_alignment",
+          "label": "Mobile alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
         },
         {
           "type": "header",

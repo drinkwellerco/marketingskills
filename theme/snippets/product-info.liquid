@@ -1570,6 +1570,7 @@
         @media (max-width: 767px) {
           #block-{{ block.id }} .simple-variant-picker__values {
             justify-content: {{ svp_ma_flex }} !important;
+            gap: {{ block.settings.mobile_grid_gap | default: 8 }}px !important;
           }
           #block-{{ block.id }} .simple-variant-picker__option {
             align-items: {{ svp_ma_flex }} !important;
@@ -3963,6 +3964,30 @@
       {% render 'subscribe-and-save', block: block %}
 
     {% when 'variant_card_picker' %}
+      {%- liquid
+        assign vcp_da = block.settings.desktop_alignment | default: 'inherit'
+        assign vcp_ma = block.settings.mobile_alignment | default: 'inherit'
+        if vcp_da == 'center'
+          assign vcp_da_justify = 'center'
+        elsif vcp_da == 'right'
+          assign vcp_da_justify = 'flex-end'
+        else
+          assign vcp_da_justify = 'flex-start'
+        endif
+        if vcp_ma == 'center'
+          assign vcp_ma_justify = 'center'
+        elsif vcp_ma == 'right'
+          assign vcp_ma_justify = 'flex-end'
+        else
+          assign vcp_ma_justify = 'flex-start'
+        endif
+      -%}
+      <style>
+        #block-vcp-{{ block.id }} { display: flex; justify-content: {{ vcp_da_justify }} !important; }
+        @media (max-width: 767px) {
+          #block-vcp-{{ block.id }} { justify-content: {{ vcp_ma_justify }} !important; }
+        }
+      </style>
       {% render 'variant-card-picker', block: block, product: product, product_form_id: product_form_id %}
 
     {% when 'purchase_options' %}

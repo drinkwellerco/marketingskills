@@ -6,13 +6,19 @@
 {% endcomment %}
 
 {%- unless product.has_only_default_variant -%}
-<div class="vcp-wrapper" {{ block.shopify_attributes }}
+<div class="vcp-wrapper" id="block-vcp-{{ block.id }}" {{ block.shopify_attributes }}
   style="
     margin-top: {{ block.settings.margin_top | default: 0 }}px;
     margin-bottom: {{ block.settings.margin_bottom | default: 8 }}px;
     --vcp-cols: {{ block.settings.cards_per_row | default: 3 }};
     --vcp-gap: {{ block.settings.card_gap | default: 10 }}px;
     --vcp-img-size: {{ block.settings.card_image_size | default: 80 }}px;
+    --vcp-mobile-img-size: {{ block.settings.mobile_card_image_size | default: block.settings.card_image_size | default: 70 }}px;
+    --vcp-mobile-gap: {{ block.settings.mobile_card_gap | default: block.settings.card_gap | default: 8 }}px;
+    --vcp-badge-size: {{ block.settings.badge_size | default: 22 }}px;
+    --vcp-badge-font-size: {{ block.settings.badge_font_size | default: 11 }}px;
+    --vcp-mobile-badge-size: {{ block.settings.mobile_badge_size | default: block.settings.badge_size | default: 20 }}px;
+    --vcp-mobile-badge-font-size: {{ block.settings.mobile_badge_font_size | default: block.settings.badge_font_size | default: 10 }}px;
     --vcp-card-bg: {{ block.settings.card_bg | default: 'transparent' }};
     --vcp-flavor-color: {{ block.settings.flavor_color | default: '#222222' }};
     --vcp-flavor-size: {{ block.settings.flavor_size | default: 12 }}px;
@@ -31,10 +37,9 @@
         data-sub-price="{% if variant.compare_at_price > 0 %}{{ variant.compare_at_price | money }}{% else %}{{ variant.price | money }}{% endif %}"
         {% unless variant.available %}data-unavailable="true"{% endunless %}>
 
-        <button class="vcp-btn-remove" aria-label="Remove {{ variant.title }}" tabindex="-1">×</button>
-        <span class="vcp-qty-badge" aria-live="polite">0</span>
-
         <div class="vcp-img-wrap">
+          <button class="vcp-btn-remove" aria-label="Remove {{ variant.title }}" tabindex="-1">×</button>
+          <span class="vcp-qty-badge" aria-live="polite">0</span>
           {% if variant_img %}
             <img src="{{ variant_img | image_url: width: 300 }}" alt="{{ variant.title | escape }}" loading="lazy" class="vcp-img">
           {% else %}
@@ -115,58 +120,58 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
-  /* Quantity badge — top right */
+  /* Quantity badge — top right of circle */
   .vcp-qty-badge {
     position: absolute;
     top: 0;
     right: 0;
     background: var(--vcp-badge-bg);
     color: var(--vcp-badge-color);
-    font-size: 11px;
+    font-size: var(--vcp-badge-font-size, 11px);
     font-weight: 800;
-    width: 22px;
-    height: 22px;
+    width: var(--vcp-badge-size, 22px);
+    height: var(--vcp-badge-size, 22px);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
     opacity: 0;
-    transform: scale(0.5);
+    transform: scale(0.5) translate(30%, -30%);
     transition: opacity 0.15s ease, transform 0.15s ease;
     pointer-events: none;
     z-index: 2;
   }
   .vcp-card[data-qty]:not([data-qty="0"]) .vcp-qty-badge {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translate(30%, -30%);
   }
-  /* Remove button — top left */
+  /* Remove button — top left of circle */
   .vcp-btn-remove {
     position: absolute;
     top: 0;
     left: 0;
-    width: 22px;
-    height: 22px;
+    width: var(--vcp-badge-size, 22px);
+    height: var(--vcp-badge-size, 22px);
     border-radius: 50%;
     background: #555;
     color: #fff;
     border: none;
     cursor: pointer;
-    font-size: 14px;
+    font-size: var(--vcp-badge-font-size, 14px);
     line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transform: scale(0.5);
+    transform: scale(0.5) translate(-30%, -30%);
     transition: opacity 0.15s ease, transform 0.15s ease;
     z-index: 2;
     padding: 0;
   }
   .vcp-card[data-qty]:not([data-qty="0"]) .vcp-btn-remove {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translate(-30%, -30%);
   }
   .vcp-btn-remove:hover {
     background: #222;
@@ -191,9 +196,23 @@
   body.vcp-subscribe-mode .vcp-price {
     color: var(--vcp-price-subscribe) !important;
   }
-  @media (max-width: 480px) {
-    .vcp-grid {
-      grid-template-columns: repeat(2, 1fr);
+  /* Desktop centering */
+  #block-vcp-{{ block.id }} .vcp-grid {
+    justify-items: center;
+  }
+  @media (max-width: 767px) {
+    #block-vcp-{{ block.id }} .vcp-grid {
+      gap: var(--vcp-mobile-gap) !important;
+    }
+    #block-vcp-{{ block.id }} .vcp-img-wrap {
+      width: var(--vcp-mobile-img-size) !important;
+      height: var(--vcp-mobile-img-size) !important;
+    }
+    #block-vcp-{{ block.id }} .vcp-qty-badge,
+    #block-vcp-{{ block.id }} .vcp-btn-remove {
+      width: var(--vcp-mobile-badge-size) !important;
+      height: var(--vcp-mobile-badge-size) !important;
+      font-size: var(--vcp-mobile-badge-font-size) !important;
     }
   }
 </style>
