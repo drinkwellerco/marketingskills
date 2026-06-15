@@ -1684,6 +1684,15 @@
       %}
 
     {% when 'unique_rating' %}
+      {%- liquid
+        assign ur_da = block.settings.desktop_alignment | default: 'inherit'
+        assign ur_ma = block.settings.mobile_alignment | default: 'inherit'
+      -%}
+      <style>
+        .ur-wrap-{{ block.id }} { display: block; text-align: {{ ur_da }}; }
+        @media (max-width: 767px) { .ur-wrap-{{ block.id }} { text-align: {{ ur_ma }}; } }
+      </style>
+      <div class="ur-wrap-{{ block.id }}">
       {% render 'unique-rating-component',
         star_color: block.settings.star_color,
         empty_star_color: block.settings.empty_star_color,
@@ -1708,6 +1717,7 @@
         star_spacing: block.settings.star_spacing,
         mobile_responsive: block.settings.mobile_responsive
       %}
+      </div>
     {% when 'quantity_bundle' %}
       {% render 'quantity-bundle-block', product: product, block: block %}
     {% when 'limited_stock' %}
@@ -3983,9 +3993,21 @@
         endif
       -%}
       <style>
-        #block-vcp-{{ block.id }} { display: flex; justify-content: {{ vcp_da_justify }} !important; }
+        #block-vcp-{{ block.id }} { display: block; text-align: {{ vcp_da }}; }
+        {% if vcp_da == 'center' %}
+        #block-vcp-{{ block.id }} .vcp-grid { width: fit-content; margin-left: auto; margin-right: auto; }
+        {% elsif vcp_da == 'right' %}
+        #block-vcp-{{ block.id }} .vcp-grid { width: fit-content; margin-left: auto; margin-right: 0; }
+        {% endif %}
         @media (max-width: 767px) {
-          #block-vcp-{{ block.id }} { justify-content: {{ vcp_ma_justify }} !important; }
+          #block-vcp-{{ block.id }} { text-align: {{ vcp_ma }}; }
+          {% if vcp_ma == 'center' %}
+          #block-vcp-{{ block.id }} .vcp-grid { width: fit-content; margin-left: auto; margin-right: auto; }
+          {% elsif vcp_ma == 'right' %}
+          #block-vcp-{{ block.id }} .vcp-grid { width: fit-content; margin-left: auto; margin-right: 0; }
+          {% else %}
+          #block-vcp-{{ block.id }} .vcp-grid { width: 100%; margin-left: 0; margin-right: 0; }
+          {% endif %}
         }
       </style>
       {% render 'variant-card-picker', block: block, product: product, product_form_id: product_form_id %}
