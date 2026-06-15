@@ -3690,6 +3690,11 @@
       {%- assign sfp_acc_tag = block.settings.accent_font | default: 'p' -%}
       {%- assign sfp_ct_tag = block.settings.col_title_font | default: 'h2' -%}
       {%- assign sfp_fn_tag = block.settings.flavor_name_font | default: 'h3' -%}
+      {%- assign sfp_wm_tag = block.settings.wordmark_font | default: 'p' -%}
+      {%- assign sfp_tl_tag = block.settings.tagline_font | default: 'p' -%}
+      {%- assign sfp_ey_tag = block.settings.eyebrow_font | default: 'p' -%}
+      {%- assign sfp_pt_tag = block.settings.panel_title_font | default: 'p' -%}
+      {%- assign sfp_cn_tag = block.settings.cal_num_font | default: 'p' -%}
       {% assign sfp_nutrients_raw = block.settings.nutrients | default: '' %}
       {% if sfp_nutrients_raw == blank %}
         {% assign sfp_nutrients_raw = "Total Fat||0g|0%||;Total Carbohydrate||1g|0%||;Total Sugars||0g|†|y|;Sodium|(Redmond Real Salt)|380mg|17%||;Magnesium|(Magnesium Malate)|52.5mg|13%||;Potassium|(Potassium Chloride)|260mg|6%||;Myo-Inositol||4g|†||Mood & Hormone Support Blend;L-Theanine||200mg|†||;Pregnenolone||25mg|†||" %}
@@ -3714,18 +3719,18 @@
               {% if block.settings.logo != blank %}
                 <img src="{{ block.settings.logo | image_url: width: 120 }}" alt="{{ sfp_brand }}" class="sfp-logo" loading="lazy">
               {% endif %}
-              {% if block.settings.wordmark != blank %}<div class="sfp-wordmark">{{ block.settings.wordmark }}</div>{% endif %}
+              {% if block.settings.wordmark != blank %}<{{ sfp_wm_tag }} class="sfp-wordmark">{{ block.settings.wordmark }}</{{ sfp_wm_tag }}>{% endif %}
               <{{ sfp_pn_tag }} class="sfp-product">{{ sfp_bp[0] }}{% if sfp_bp.size > 1 %}<span class="sfp-apos">&#8217;</span>{{ sfp_bp[1] }}{% endif %}</{{ sfp_pn_tag }}>
-              {% if block.settings.tagline != blank %}<div class="sfp-tagline" style="color:{{ block.settings.accent_color | default: '#E8607A' }}">{{ block.settings.tagline }}</div>{% endif %}
+              {% if block.settings.tagline != blank %}<{{ sfp_tl_tag }} class="sfp-tagline">{{ block.settings.tagline }}</{{ sfp_tl_tag }}>{% endif %}
               {% if block.settings.header_pill != blank %}<div class="sfp-pill" style="background:{{ block.settings.accent_color | default: '#E8607A' }}">{{ block.settings.header_pill }}</div>{% endif %}
             </div>
 
             <div class="sfp-inner"><div class="sfp-body">
               <div class="sfp-col-left">
-                {% if block.settings.left_eyebrow != blank %}<div class="sfp-eyebrow" style="color:{{ block.settings.accent_color | default: '#E8607A' }}">{{ block.settings.left_eyebrow }}</div>{% endif %}
+                {% if block.settings.left_eyebrow != blank %}<{{ sfp_ey_tag }} class="sfp-eyebrow">{{ block.settings.left_eyebrow }}</{{ sfp_ey_tag }}>{% endif %}
                 {% if block.settings.left_title != blank %}<{{ sfp_ct_tag }} class="sfp-col-title">{{ block.settings.left_title }}</{{ sfp_ct_tag }}>{% endif %}
                 <div class="sfp-nf">
-                  <div class="sfp-nf-title">{{ block.settings.nf_title | default: 'Supplement Facts' }}</div>
+                  <{{ sfp_pt_tag }} class="sfp-nf-title">{{ block.settings.nf_title | default: 'Supplement Facts' }}</{{ sfp_pt_tag }}>
                   <div class="sfp-rule-x"></div>
                   <div class="sfp-serve"><span>{{ block.settings.servings_label | default: 'Servings Per Container' }}</span><b>{{ block.settings.servings | default: '30' }}</b></div>
                   <div class="sfp-rule-sm"></div>
@@ -3733,7 +3738,7 @@
                   <div class="sfp-rule-lg"></div>
                   <div class="sfp-calrow">
                     <div class="sfp-cal-label">{{ block.settings.calories_label | default: 'Calories' }}</div>
-                    <div class="sfp-cal-val">{{ block.settings.calories | default: '15' }}</div>
+                    <{{ sfp_cn_tag }} class="sfp-cal-val">{{ block.settings.calories | default: '15' }}</{{ sfp_cn_tag }}>
                   </div>
                   <div class="sfp-rule-md"></div>
                   <div class="sfp-dvhead">{{ block.settings.dv_label | default: '% Daily Value*' }}</div>
@@ -3767,7 +3772,7 @@
               </div>
 
               <div class="sfp-col-right">
-                {% if block.settings.right_eyebrow != blank %}<div class="sfp-eyebrow" style="color:{{ block.settings.accent_color | default: '#E8607A' }}">{{ block.settings.right_eyebrow }}</div>{% endif %}
+                {% if block.settings.right_eyebrow != blank %}<{{ sfp_ey_tag }} class="sfp-eyebrow">{{ block.settings.right_eyebrow }}</{{ sfp_ey_tag }}>{% endif %}
                 {% if block.settings.right_title != blank %}<{{ sfp_ct_tag }} class="sfp-col-title">{{ block.settings.right_title }}</{{ sfp_ct_tag }}>{% endif %}
                 {% if block.settings.right_lead != blank %}<p class="sfp-lead">{{ block.settings.right_lead }}</p>{% endif %}
                 <div class="sfp-flavors">
@@ -3869,7 +3874,6 @@
 
         /* ── SCOPED TYPOGRAPHY OVERRIDES ── */
         #sfp-panel-{{ block.id }} .sfp-wordmark{
-          {% if block.settings.wordmark_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
           font-size:{{ block.settings.wordmark_size | default: 13 }}px!important;
           font-weight:{{ block.settings.wordmark_weight | default: 600 }}!important;
           color:{{ block.settings.wordmark_color | default: '#1B3A5C' }}!important;
@@ -3889,14 +3893,12 @@
           font-size:inherit!important;
         }
         #sfp-panel-{{ block.id }} .sfp-tagline{
-          {% if block.settings.tagline_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
           font-size:{{ block.settings.tagline_size | default: 11 }}px!important;
           font-weight:{{ block.settings.tagline_weight | default: 600 }}!important;
           color:{{ block.settings.tagline_color | default: '#E8607A' }}!important;
           letter-spacing:{{ block.settings.tagline_spacing | default: 5 }}px!important;
         }
         #sfp-panel-{{ block.id }} .sfp-eyebrow{
-          {% if block.settings.eyebrow_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
           font-size:{{ block.settings.eyebrow_size | default: 11 }}px!important;
           font-weight:{{ block.settings.eyebrow_weight | default: 700 }}!important;
           color:{{ block.settings.eyebrow_color | default: '#E8607A' }}!important;
@@ -3909,7 +3911,6 @@
           line-height:1.2!important;margin-bottom:22px;
         }
         #sfp-panel-{{ block.id }} .sfp-nf-title{
-          {% if block.settings.panel_title_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
           font-size:{{ block.settings.panel_title_size | default: 34 }}px!important;
           font-weight:{{ block.settings.panel_title_weight | default: 900 }}!important;
           color:{{ block.settings.panel_title_color | default: '#1B3A5C' }}!important;
@@ -3927,7 +3928,6 @@
           color:{{ block.settings.cal_label_color | default: '#1B3A5C' }}!important;
         }
         #sfp-panel-{{ block.id }} .sfp-cal-val{
-          {% if block.settings.cal_num_font == 'p' %}font-family:var(--font-body-family)!important;{% else %}font-family:var(--font-heading-family)!important;{% endif %}
           font-size:{{ block.settings.cal_num_size | default: 32 }}px!important;
           font-weight:{{ block.settings.cal_num_weight | default: 900 }}!important;
           color:{{ block.settings.cal_num_color | default: '#1B3A5C' }}!important;
