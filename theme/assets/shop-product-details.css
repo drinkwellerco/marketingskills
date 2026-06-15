@@ -1444,6 +1444,17 @@
     justify-content: center !important;
     align-items: center !important;
   }
+  .shop-product-info .po-wrapper,
+  .shop-product-info .po-option,
+  .shop-product-info .po-plans,
+  .shop-product-info .po-subscribe-section,
+  .shop-product-info .subscribe-save-wrapper,
+  .shop-product-info .subscribe-save-container,
+  .shop-product-info .subscribe-top-row,
+  .shop-product-info .subscribe-row-content {
+    align-items: unset !important;
+    width: 100% !important;
+  }
 }
 @media (max-width: 767px) {
   .shop-image-container {
