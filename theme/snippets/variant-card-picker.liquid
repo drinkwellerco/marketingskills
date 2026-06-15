@@ -40,12 +40,14 @@
         <div class="vcp-img-wrap">
           <button class="vcp-btn-remove" aria-label="Remove {{ variant.title }}" tabindex="-1">×</button>
           <span class="vcp-qty-badge" aria-live="polite">0</span>
-          {% if variant_img %}
-            <img src="{{ variant_img | image_url: width: 300 }}" alt="{{ variant.title | escape }}" loading="lazy" class="vcp-img">
-          {% else %}
-            <div class="vcp-img-placeholder"></div>
-          {% endif %}
-          {% unless variant.available %}<div class="vcp-sold-out">Sold Out</div>{% endunless %}
+          <div class="vcp-img-clip">
+            {% if variant_img %}
+              <img src="{{ variant_img | image_url: width: 300 }}" alt="{{ variant.title | escape }}" loading="lazy" class="vcp-img">
+            {% else %}
+              <div class="vcp-img-placeholder"></div>
+            {% endif %}
+            {% unless variant.available %}<div class="vcp-sold-out">Sold Out</div>{% endunless %}
+          </div>
         </div>
 
         <span class="vcp-flavor">{{ variant.title }}</span>
@@ -82,17 +84,27 @@
     width: var(--vcp-img-size);
     height: var(--vcp-img-size);
     border-radius: 50%;
-    overflow: hidden;
-    background: #f0f0f0;
+    overflow: visible;
+    background: transparent;
     flex-shrink: 0;
     position: relative;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
+  .vcp-img-clip {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f0f0f0;
+    position: relative;
+  }
   .vcp-card:hover .vcp-img-wrap {
     transform: scale(1.04);
+  }
+  .vcp-card:hover .vcp-img-clip {
     box-shadow: 0 4px 12px rgba(0,0,0,0.12);
   }
-  .vcp-card[data-qty]:not([data-qty="0"]) .vcp-img-wrap {
+  .vcp-card[data-qty]:not([data-qty="0"]) .vcp-img-clip {
     box-shadow: 0 0 0 3px var(--vcp-badge-bg);
   }
   .vcp-img {
