@@ -6,6 +6,35 @@
       </div>
     {% when 'product_description' %}
       <style>
+        #block-{{ block.id }} { text-align: {{ block.settings.desktop_alignment | default: 'inherit' }}; }
+        #block-{{ block.id }} * { text-align: inherit; }
+        #block-{{ block.id }} .flex-container,
+        #block-{{ block.id }} [class*="variant"],
+        #block-{{ block.id }} [class*="picker"],
+        #block-{{ block.id }} [class*="options"],
+        #block-{{ block.id }} [class*="pills"],
+        #block-{{ block.id }} form,
+        #block-{{ block.id }} [class*="button"],
+        #block-{{ block.id }} [class*="price"] {
+          justify-content: {{ block.settings.desktop_alignment | default: 'inherit' }} !important;
+          align-items: {% if block.settings.desktop_alignment == 'center' %}center{% elsif block.settings.desktop_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+        }
+        @media (max-width: 767px) {
+          #block-{{ block.id }} { text-align: {{ block.settings.mobile_alignment | default: 'inherit' }}; }
+          #block-{{ block.id }} .flex-container,
+          #block-{{ block.id }} [class*="variant"],
+          #block-{{ block.id }} [class*="picker"],
+          #block-{{ block.id }} [class*="options"],
+          #block-{{ block.id }} [class*="pills"],
+          #block-{{ block.id }} form,
+          #block-{{ block.id }} [class*="button"],
+          #block-{{ block.id }} [class*="price"] {
+            justify-content: {{ block.settings.mobile_alignment | default: 'inherit' }} !important;
+            align-items: {% if block.settings.mobile_alignment == 'center' %}center{% elsif block.settings.mobile_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+          }
+        }
+      </style>
+      <style>
         {% if block.settings.description_font != blank %}{{ block.settings.description_font | font_face: font_display: 'swap' }}{% endif %}
         #block-{{ block.id }}.product-description-block,
         #block-{{ block.id }}.product-description-block p,
@@ -259,6 +288,35 @@
       {% endstyle %}
 
     {% when 'title' %}
+      <style>
+        #block-{{ block.id }} { text-align: {{ block.settings.desktop_alignment | default: 'inherit' }}; }
+        #block-{{ block.id }} * { text-align: inherit; }
+        #block-{{ block.id }} .flex-container,
+        #block-{{ block.id }} [class*="variant"],
+        #block-{{ block.id }} [class*="picker"],
+        #block-{{ block.id }} [class*="options"],
+        #block-{{ block.id }} [class*="pills"],
+        #block-{{ block.id }} form,
+        #block-{{ block.id }} [class*="button"],
+        #block-{{ block.id }} [class*="price"] {
+          justify-content: {{ block.settings.desktop_alignment | default: 'inherit' }} !important;
+          align-items: {% if block.settings.desktop_alignment == 'center' %}center{% elsif block.settings.desktop_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+        }
+        @media (max-width: 767px) {
+          #block-{{ block.id }} { text-align: {{ block.settings.mobile_alignment | default: 'inherit' }}; }
+          #block-{{ block.id }} .flex-container,
+          #block-{{ block.id }} [class*="variant"],
+          #block-{{ block.id }} [class*="picker"],
+          #block-{{ block.id }} [class*="options"],
+          #block-{{ block.id }} [class*="pills"],
+          #block-{{ block.id }} form,
+          #block-{{ block.id }} [class*="button"],
+          #block-{{ block.id }} [class*="price"] {
+            justify-content: {{ block.settings.mobile_alignment | default: 'inherit' }} !important;
+            align-items: {% if block.settings.mobile_alignment == 'center' %}center{% elsif block.settings.mobile_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+          }
+        }
+      </style>
       {% assign mobile_font_size = block.settings.font_size | times: 0.85 | round %}
 
       {% comment %} Load custom font face if set {% endcomment %}
@@ -390,6 +448,7 @@
       {% assign title_tag = block.settings.title_tag | default: 'h1' %}
       <{{ title_tag }}
         class="shop-product-title product-title-{{ block.id }}"
+        id="block-{{ block.id }}"
         {{ block.shopify_attributes }}
         data-font-size="{{ block.settings.font_size }}"
         data-mobile-font-size="{{ mobile_font_size }}"
@@ -502,6 +561,35 @@
       {% endif %}
 
     {% when 'price' %}
+      <style>
+        #block-{{ block.id }} { text-align: {{ block.settings.desktop_alignment | default: 'inherit' }}; }
+        #block-{{ block.id }} * { text-align: inherit; }
+        #block-{{ block.id }} .flex-container,
+        #block-{{ block.id }} [class*="variant"],
+        #block-{{ block.id }} [class*="picker"],
+        #block-{{ block.id }} [class*="options"],
+        #block-{{ block.id }} [class*="pills"],
+        #block-{{ block.id }} form,
+        #block-{{ block.id }} [class*="button"],
+        #block-{{ block.id }} [class*="price"] {
+          justify-content: {{ block.settings.desktop_alignment | default: 'inherit' }} !important;
+          align-items: {% if block.settings.desktop_alignment == 'center' %}center{% elsif block.settings.desktop_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+        }
+        @media (max-width: 767px) {
+          #block-{{ block.id }} { text-align: {{ block.settings.mobile_alignment | default: 'inherit' }}; }
+          #block-{{ block.id }} .flex-container,
+          #block-{{ block.id }} [class*="variant"],
+          #block-{{ block.id }} [class*="picker"],
+          #block-{{ block.id }} [class*="options"],
+          #block-{{ block.id }} [class*="pills"],
+          #block-{{ block.id }} form,
+          #block-{{ block.id }} [class*="button"],
+          #block-{{ block.id }} [class*="price"] {
+            justify-content: {{ block.settings.mobile_alignment | default: 'inherit' }} !important;
+            align-items: {% if block.settings.mobile_alignment == 'center' %}center{% elsif block.settings.mobile_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+          }
+        }
+      </style>
       <div
         class="shop-product-price-container"
         id="block-{{ block.id }}"
@@ -762,6 +850,35 @@
       %}
 
     {% when 'add_to_cart' %}
+      <style>
+        #block-{{ block.id }} { text-align: {{ block.settings.desktop_alignment | default: 'inherit' }}; }
+        #block-{{ block.id }} * { text-align: inherit; }
+        #block-{{ block.id }} .flex-container,
+        #block-{{ block.id }} [class*="variant"],
+        #block-{{ block.id }} [class*="picker"],
+        #block-{{ block.id }} [class*="options"],
+        #block-{{ block.id }} [class*="pills"],
+        #block-{{ block.id }} form,
+        #block-{{ block.id }} [class*="button"],
+        #block-{{ block.id }} [class*="price"] {
+          justify-content: {{ block.settings.desktop_alignment | default: 'inherit' }} !important;
+          align-items: {% if block.settings.desktop_alignment == 'center' %}center{% elsif block.settings.desktop_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+        }
+        @media (max-width: 767px) {
+          #block-{{ block.id }} { text-align: {{ block.settings.mobile_alignment | default: 'inherit' }}; }
+          #block-{{ block.id }} .flex-container,
+          #block-{{ block.id }} [class*="variant"],
+          #block-{{ block.id }} [class*="picker"],
+          #block-{{ block.id }} [class*="options"],
+          #block-{{ block.id }} [class*="pills"],
+          #block-{{ block.id }} form,
+          #block-{{ block.id }} [class*="button"],
+          #block-{{ block.id }} [class*="price"] {
+            justify-content: {{ block.settings.mobile_alignment | default: 'inherit' }} !important;
+            align-items: {% if block.settings.mobile_alignment == 'center' %}center{% elsif block.settings.mobile_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+          }
+        }
+      </style>
       {%- liquid
         assign base_add_to_cart_text = 'products.product.add_to_cart' | t
         assign current_button_text = ''
@@ -806,7 +923,7 @@
         var showPriceButton = {{ block.settings.show_price_in_button  }}
       </script>
 
-      <div class="shop-add-to-cart-wrapper">
+      <div class="shop-add-to-cart-wrapper" id="block-{{ block.id }}" {{ block.shopify_attributes }}>
         <product-form class="product-form" data-section-id="{{ section.id }}">
           {% assign product_form_id = 'product-form-' | append: section.id %}
           {%- form 'product',
@@ -1425,6 +1542,36 @@
       %}
 
     {% when 'simple_variant_picker' %}
+      <style>
+        #block-{{ block.id }} { text-align: {{ block.settings.desktop_alignment | default: 'inherit' }}; }
+        #block-{{ block.id }} * { text-align: inherit; }
+        #block-{{ block.id }} .flex-container,
+        #block-{{ block.id }} [class*="variant"],
+        #block-{{ block.id }} [class*="picker"],
+        #block-{{ block.id }} [class*="options"],
+        #block-{{ block.id }} [class*="pills"],
+        #block-{{ block.id }} form,
+        #block-{{ block.id }} [class*="button"],
+        #block-{{ block.id }} [class*="price"] {
+          justify-content: {{ block.settings.desktop_alignment | default: 'inherit' }} !important;
+          align-items: {% if block.settings.desktop_alignment == 'center' %}center{% elsif block.settings.desktop_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+        }
+        @media (max-width: 767px) {
+          #block-{{ block.id }} { text-align: {{ block.settings.mobile_alignment | default: 'inherit' }}; }
+          #block-{{ block.id }} .flex-container,
+          #block-{{ block.id }} [class*="variant"],
+          #block-{{ block.id }} [class*="picker"],
+          #block-{{ block.id }} [class*="options"],
+          #block-{{ block.id }} [class*="pills"],
+          #block-{{ block.id }} form,
+          #block-{{ block.id }} [class*="button"],
+          #block-{{ block.id }} [class*="price"] {
+            justify-content: {{ block.settings.mobile_alignment | default: 'inherit' }} !important;
+            align-items: {% if block.settings.mobile_alignment == 'center' %}center{% elsif block.settings.mobile_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+          }
+        }
+      </style>
+      <div id="block-{{ block.id }}" {{ block.shopify_attributes }}>
       {% assign product_form_id = 'product-form-' | append: section.id %}
       {%
         render 'simple-variant-picker',
@@ -1438,6 +1585,7 @@
         hide_option_2: block.settings.hide_option_2,
         hide_option_3: block.settings.hide_option_3,
       %}
+      </div>
 
     {% when 'product_videos' %}
       {% render 'video-carousel-standalone',
@@ -1675,6 +1823,36 @@
       %}
 
     {% when 'quantity_selector' %}
+      <style>
+        #block-{{ block.id }} { text-align: {{ block.settings.desktop_alignment | default: 'inherit' }}; }
+        #block-{{ block.id }} * { text-align: inherit; }
+        #block-{{ block.id }} .flex-container,
+        #block-{{ block.id }} [class*="variant"],
+        #block-{{ block.id }} [class*="picker"],
+        #block-{{ block.id }} [class*="options"],
+        #block-{{ block.id }} [class*="pills"],
+        #block-{{ block.id }} form,
+        #block-{{ block.id }} [class*="button"],
+        #block-{{ block.id }} [class*="price"] {
+          justify-content: {{ block.settings.desktop_alignment | default: 'inherit' }} !important;
+          align-items: {% if block.settings.desktop_alignment == 'center' %}center{% elsif block.settings.desktop_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+        }
+        @media (max-width: 767px) {
+          #block-{{ block.id }} { text-align: {{ block.settings.mobile_alignment | default: 'inherit' }}; }
+          #block-{{ block.id }} .flex-container,
+          #block-{{ block.id }} [class*="variant"],
+          #block-{{ block.id }} [class*="picker"],
+          #block-{{ block.id }} [class*="options"],
+          #block-{{ block.id }} [class*="pills"],
+          #block-{{ block.id }} form,
+          #block-{{ block.id }} [class*="button"],
+          #block-{{ block.id }} [class*="price"] {
+            justify-content: {{ block.settings.mobile_alignment | default: 'inherit' }} !important;
+            align-items: {% if block.settings.mobile_alignment == 'center' %}center{% elsif block.settings.mobile_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+          }
+        }
+      </style>
+      <div id="block-{{ block.id }}" {{ block.shopify_attributes }}>
       {% assign product_form_id = 'product-form-' | append: section.id %}
       {% render 'modern-quantity-selector',
         product: product,
@@ -1688,6 +1866,7 @@
         button_text: button_text,
         block: block
       %}
+      </div>
 
     {% when 'replica_warning' %}
       <div
@@ -1798,8 +1977,37 @@
       {% render 'product-upsell-block', block: block %}
 
     {% when 'custom_text' %}
+      <style>
+        #block-{{ block.id }} { text-align: {{ block.settings.desktop_alignment | default: 'inherit' }}; }
+        #block-{{ block.id }} * { text-align: inherit; }
+        #block-{{ block.id }} .flex-container,
+        #block-{{ block.id }} [class*="variant"],
+        #block-{{ block.id }} [class*="picker"],
+        #block-{{ block.id }} [class*="options"],
+        #block-{{ block.id }} [class*="pills"],
+        #block-{{ block.id }} form,
+        #block-{{ block.id }} [class*="button"],
+        #block-{{ block.id }} [class*="price"] {
+          justify-content: {{ block.settings.desktop_alignment | default: 'inherit' }} !important;
+          align-items: {% if block.settings.desktop_alignment == 'center' %}center{% elsif block.settings.desktop_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+        }
+        @media (max-width: 767px) {
+          #block-{{ block.id }} { text-align: {{ block.settings.mobile_alignment | default: 'inherit' }}; }
+          #block-{{ block.id }} .flex-container,
+          #block-{{ block.id }} [class*="variant"],
+          #block-{{ block.id }} [class*="picker"],
+          #block-{{ block.id }} [class*="options"],
+          #block-{{ block.id }} [class*="pills"],
+          #block-{{ block.id }} form,
+          #block-{{ block.id }} [class*="button"],
+          #block-{{ block.id }} [class*="price"] {
+            justify-content: {{ block.settings.mobile_alignment | default: 'inherit' }} !important;
+            align-items: {% if block.settings.mobile_alignment == 'center' %}center{% elsif block.settings.mobile_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+          }
+        }
+      </style>
       <div class="custom-text-block-container-{{ block.id }}">
-        <div class="custom-text-block-{{ block.id }}" {{ block.shopify_attributes }}>
+        <div class="custom-text-block-{{ block.id }}" id="block-{{ block.id }}" {{ block.shopify_attributes }}>
         <div class="custom-text-wrapper">
           <div class="custom-text-content">
             {% if block.settings.show_divider %}
@@ -2282,8 +2490,38 @@
       </style>
 
     {% when 'payment_icons' %}
+      <style>
+        #block-{{ block.id }} { text-align: {{ block.settings.desktop_alignment | default: 'inherit' }}; }
+        #block-{{ block.id }} * { text-align: inherit; }
+        #block-{{ block.id }} .flex-container,
+        #block-{{ block.id }} [class*="variant"],
+        #block-{{ block.id }} [class*="picker"],
+        #block-{{ block.id }} [class*="options"],
+        #block-{{ block.id }} [class*="pills"],
+        #block-{{ block.id }} form,
+        #block-{{ block.id }} [class*="button"],
+        #block-{{ block.id }} [class*="price"] {
+          justify-content: {{ block.settings.desktop_alignment | default: 'inherit' }} !important;
+          align-items: {% if block.settings.desktop_alignment == 'center' %}center{% elsif block.settings.desktop_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+        }
+        @media (max-width: 767px) {
+          #block-{{ block.id }} { text-align: {{ block.settings.mobile_alignment | default: 'inherit' }}; }
+          #block-{{ block.id }} .flex-container,
+          #block-{{ block.id }} [class*="variant"],
+          #block-{{ block.id }} [class*="picker"],
+          #block-{{ block.id }} [class*="options"],
+          #block-{{ block.id }} [class*="pills"],
+          #block-{{ block.id }} form,
+          #block-{{ block.id }} [class*="button"],
+          #block-{{ block.id }} [class*="price"] {
+            justify-content: {{ block.settings.mobile_alignment | default: 'inherit' }} !important;
+            align-items: {% if block.settings.mobile_alignment == 'center' %}center{% elsif block.settings.mobile_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+          }
+        }
+      </style>
       <div
         class="payment-icons-wrapper"
+        id="block-{{ block.id }}"
         style="width: 100%; text-align: center; margin-top: {{ block.settings.margin_top }}px; margin-bottom: {{ block.settings.margin_bottom }}px;"
         {{ block.shopify_attributes }}
       >
@@ -3664,7 +3902,38 @@
     {% when 'tiktok_comment' %}
       {% render 'tiktok-comment-block', block: block %}
     {% when 'variant_selector' %}
+      <style>
+        #block-{{ block.id }} { text-align: {{ block.settings.desktop_alignment | default: 'inherit' }}; }
+        #block-{{ block.id }} * { text-align: inherit; }
+        #block-{{ block.id }} .flex-container,
+        #block-{{ block.id }} [class*="variant"],
+        #block-{{ block.id }} [class*="picker"],
+        #block-{{ block.id }} [class*="options"],
+        #block-{{ block.id }} [class*="pills"],
+        #block-{{ block.id }} form,
+        #block-{{ block.id }} [class*="button"],
+        #block-{{ block.id }} [class*="price"] {
+          justify-content: {{ block.settings.desktop_alignment | default: 'inherit' }} !important;
+          align-items: {% if block.settings.desktop_alignment == 'center' %}center{% elsif block.settings.desktop_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+        }
+        @media (max-width: 767px) {
+          #block-{{ block.id }} { text-align: {{ block.settings.mobile_alignment | default: 'inherit' }}; }
+          #block-{{ block.id }} .flex-container,
+          #block-{{ block.id }} [class*="variant"],
+          #block-{{ block.id }} [class*="picker"],
+          #block-{{ block.id }} [class*="options"],
+          #block-{{ block.id }} [class*="pills"],
+          #block-{{ block.id }} form,
+          #block-{{ block.id }} [class*="button"],
+          #block-{{ block.id }} [class*="price"] {
+            justify-content: {{ block.settings.mobile_alignment | default: 'inherit' }} !important;
+            align-items: {% if block.settings.mobile_alignment == 'center' %}center{% elsif block.settings.mobile_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+          }
+        }
+      </style>
+      <div id="block-{{ block.id }}" {{ block.shopify_attributes }}>
       {% render 'variant-selector-clean', block: block, product: product %}
+      </div>
 
     {% when 'selling_out_fast' %}
       {% render 'selling-out-fast', block: block %}

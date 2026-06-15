@@ -77,6 +77,18 @@
         flex: 0 0 {{ iw }}% !important;
         max-width: {{ iw }}% !important;
     }
+    @media (max-width: 767px) {
+        .shop-carousel-container {
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+        .shop-product-info {
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+    }
     .shop-thumbnail {
         border: 1px solid {{ section.settings.thumbnail_border_color }};
     }
@@ -1996,6 +2008,34 @@
           "step": 2,
           "default": 12,
           "label": "Space between text and divider (px)"
+        },
+        {
+          "type": "header",
+          "content": "Alignment"
+        },
+        {
+          "type": "select",
+          "id": "desktop_alignment",
+          "label": "Desktop alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "mobile_alignment",
+          "label": "Mobile alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
         }
       ]
     },
@@ -2309,6 +2349,34 @@
           "default": "inherit",
           "options": [
             { "value": "inherit", "label": "Use section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Alignment"
+        },
+        {
+          "type": "select",
+          "id": "desktop_alignment",
+          "label": "Desktop alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "mobile_alignment",
+          "label": "Mobile alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
             { "value": "left", "label": "Left" },
             { "value": "center", "label": "Center" },
             { "value": "right", "label": "Right" }
@@ -2921,6 +2989,34 @@
           "id": "custom_save_amount",
           "label": "Custom save amount",
           "info": "Enter custom text to display (e.g., '$25 OFF', '50% OFF', 'SAVE BIG'). Only used when 'Custom amount' is selected above."
+        },
+        {
+          "type": "header",
+          "content": "Alignment"
+        },
+        {
+          "type": "select",
+          "id": "desktop_alignment",
+          "label": "Desktop alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "mobile_alignment",
+          "label": "Mobile alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
         }
       ]
     },
@@ -4560,6 +4656,34 @@
           "step": 1,
           "unit": "px",
           "default": 0
+        },
+        {
+          "type": "header",
+          "content": "Alignment"
+        },
+        {
+          "type": "select",
+          "id": "desktop_alignment",
+          "label": "Desktop alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "mobile_alignment",
+          "label": "Mobile alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
         }
       ]
     },
@@ -7429,6 +7553,34 @@
           "unit": "px",
           "default": 10,
           "info": "Only applies when 'Use Global Button Styling' is disabled"
+        },
+        {
+          "type": "header",
+          "content": "Alignment"
+        },
+        {
+          "type": "select",
+          "id": "desktop_alignment",
+          "label": "Desktop alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "mobile_alignment",
+          "label": "Mobile alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
         }
       ]
     },
@@ -8466,6 +8618,34 @@
           "step": 2,
           "default": 12,
           "label": "Margin bottom (px)"
+        },
+        {
+          "type": "header",
+          "content": "Alignment"
+        },
+        {
+          "type": "select",
+          "id": "desktop_alignment",
+          "label": "Desktop alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "mobile_alignment",
+          "label": "Mobile alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
         }
       ]
     },
@@ -13953,6 +14133,34 @@
           "label": "Bottom Margin",
           "default": 8,
           "info": "Space below the payment icons"
+        },
+        {
+          "type": "header",
+          "content": "Alignment"
+        },
+        {
+          "type": "select",
+          "id": "desktop_alignment",
+          "label": "Desktop alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "mobile_alignment",
+          "label": "Mobile alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
         }
       ]
     },
@@ -17917,6 +18125,34 @@
           "step": 1,
           "default": 16,
           "label": "Bottom margin (px)"
+        },
+        {
+          "type": "header",
+          "content": "Alignment"
+        },
+        {
+          "type": "select",
+          "id": "desktop_alignment",
+          "label": "Desktop alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "mobile_alignment",
+          "label": "Mobile alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
         }
       ]
     },
@@ -20383,6 +20619,34 @@
           "label": "Show sold out overlay",
           "default": true,
           "info": "Gray out and overlay sold out variants"
+        },
+        {
+          "type": "header",
+          "content": "Alignment"
+        },
+        {
+          "type": "select",
+          "id": "desktop_alignment",
+          "label": "Desktop alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "mobile_alignment",
+          "label": "Mobile alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
         }
       ]
     },
