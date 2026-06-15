@@ -469,9 +469,9 @@
       .qa-sb-{{ qa_bid }} .qa-img { position:absolute; top:50%; left:50%; z-index:1; width:var(--img-w,78%); height:var(--img-h,78%); object-fit:contain; filter:drop-shadow(0 6px 12px rgba(27,58,92,.20)); transform:translate(calc(-50% + var(--img-x,0px)),calc(-50% + var(--img-y,0px))); }
       .qa-sb-{{ qa_bid }} .qa-add { position:absolute; z-index:2; bottom:8px; left:50%; transform:translateX(-50%); display:inline-flex; align-items:center; padding:4px 11px; border-radius:999px; background:var(--qa-navy); color:var(--qa-cream); font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; opacity:0; transition:opacity .18s; white-space:nowrap; }
       .qa-sb-{{ qa_bid }} .qa-prod:hover .qa-add { opacity:1; }
-      .qa-sb-{{ qa_bid }} .qa-remove { position:absolute; top:7px; left:7px; z-index:4; width:24px; height:24px; border-radius:50%; border:none; cursor:pointer; background:#fff; color:var(--qa-navy); box-shadow:0 3px 8px rgba(0,0,0,.22); display:none; align-items:center; justify-content:center; padding:0; }
+      .qa-sb-{{ qa_bid }} .qa-remove { position:absolute; top:-6px; left:-6px; z-index:6; width:24px; height:24px; border-radius:50%; border:none; cursor:pointer; background:#fff; color:var(--qa-navy); box-shadow:0 3px 8px rgba(0,0,0,.22); display:none; align-items:center; justify-content:center; padding:0; }
       .qa-sb-{{ qa_bid }} .qa-remove svg { width:12px; height:12px; }
-      .qa-sb-{{ qa_bid }} .qa-qty { position:absolute; top:7px; right:7px; z-index:4; min-width:24px; height:24px; padding:0 6px; border-radius:999px; background:var(--qa-rose); color:#fff; font-size:12px; font-weight:700; display:none; align-items:center; justify-content:center; }
+      .qa-sb-{{ qa_bid }} .qa-qty { position:absolute; top:-6px; right:-6px; z-index:6; min-width:24px; height:24px; padding:0 6px; border-radius:999px; background:var(--qa-rose); color:#fff; font-size:12px; font-weight:700; display:none; align-items:center; justify-content:center; }
       .qa-sb-{{ qa_bid }} .qa-prod.in-cart .qa-remove,
       .qa-sb-{{ qa_bid }} .qa-prod.in-cart .qa-qty { display:inline-flex; }
       .qa-sb-{{ qa_bid }} .qa-brand { font-family:'{{ block.settings.brand_font }}','Playfair Display',serif; font-weight:800; font-size:{{ block.settings.brand_size }}px; line-height:1.1; color:{{ block.settings.brand_color }}; margin-bottom:-2px; }
@@ -747,10 +747,10 @@
                     {%- if fb.settings.custom_image != blank -%}{{ fb.settings.custom_image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flav_raw, loading: 'lazy' }}
                     {%- elsif pv.image -%}{{ pv.image | image_url: width: 300 | image_tag: class: 'qa-img', alt: flav_raw, loading: 'lazy' }}
                     {%- elsif prod.featured_media -%}{{ prod.featured_media | image_url: width: 300 | image_tag: class: 'qa-img', alt: flav_raw, loading: 'lazy' }}{%- endif -%}
-                    <button class="qa-remove" type="button" data-qa-remove aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
-                    <span class="qa-qty" data-qa-qty>0</span>
                     <span class="qa-add">{{ block.settings.add_label | default: '+ Add' }}</span>
                   </span>
+                  <button class="qa-remove" type="button" data-qa-remove aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+                  <span class="qa-qty" data-qa-qty>0</span>
                   <span class="qa-brand">{%- if bparts.size > 1 -%}{{ bparts[0] }}<span class="qa-apos">'</span>{{ bparts[1] }}{%- else -%}{{ prod.title }}{%- endif -%}</span>
                   <span class="qa-name">
                     {%- assign fw = flav_parts[0] | split: ' ' -%}{{ fw | join: '<br>' }}
