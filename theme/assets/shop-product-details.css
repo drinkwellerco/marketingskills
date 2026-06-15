@@ -407,9 +407,17 @@
   align-items: flex-start;
   gap: 20px;
 }
-.shop-carousel-container {
+.shop-left-column {
   flex: 0 0 55%;
   max-width: 55%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.shop-carousel-container {
+  flex: none;
+  max-width: 100%;
+  width: 100%;
   position: relative;
   align-self: flex-start;
 }
