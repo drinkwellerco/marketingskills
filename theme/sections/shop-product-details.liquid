@@ -23,6 +23,50 @@
         gap: {{ section.settings.blocks_spacing }}px;
         color: {{ section.settings.text_color }};
     }
+    .shop-product-info,
+    .shop-product-info * {
+        text-align: {{ section.settings.desktop_alignment | default: 'left' }};
+    }
+    .shop-product-info .shop-variant-selector,
+    .shop-product-info .shop-variant-options,
+    .shop-product-info .variant-options,
+    .shop-product-info .simple-variant-picker,
+    .shop-product-info .variant-card-picker,
+    .shop-product-info .shop-add-to-cart-wrapper,
+    .shop-product-info .buy-buttons,
+    .shop-product-info .price-wrapper,
+    .shop-product-info .shop-price-block,
+    .shop-product-info .imgr-container,
+    .shop-product-info .product-labels,
+    .shop-product-info .shop-benefit-list,
+    .shop-product-info .blocks-section,
+    .shop-product-info form {
+        justify-content: {{ section.settings.desktop_alignment | default: 'left' }} !important;
+        align-items: {% if section.settings.desktop_alignment == 'center' %}center{% elsif section.settings.desktop_alignment == 'right' %}flex-end{% else %}flex-start{% endif %} !important;
+    }
+    @media screen and (max-width: 767px) {
+        .shop-product-info,
+        .shop-product-info * {
+            text-align: {{ section.settings.mobile_alignment | default: 'left' }};
+        }
+        .shop-product-info .shop-variant-selector,
+        .shop-product-info .shop-variant-options,
+        .shop-product-info .variant-options,
+        .shop-product-info .simple-variant-picker,
+        .shop-product-info .variant-card-picker,
+        .shop-product-info .shop-add-to-cart-wrapper,
+        .shop-product-info .buy-buttons,
+        .shop-product-info .price-wrapper,
+        .shop-product-info .shop-price-block,
+        .shop-product-info .imgr-container,
+        .shop-product-info .product-labels,
+        .shop-product-info .shop-benefit-list,
+        .shop-product-info .blocks-section,
+        .shop-product-info form {
+            justify-content: {{ section.settings.mobile_alignment | default: 'left' }} !important;
+            align-items: {% if section.settings.mobile_alignment == 'center' %}center{% elsif section.settings.mobile_alignment == 'right' %}flex-end{% else %}flex-start{% endif %} !important;
+        }
+    }
     {%- assign gw = section.settings.gallery_width | default: 55 -%}
     {%- assign iw = 100 | minus: gw | minus: 2 -%}
     .shop-carousel-container {
@@ -1041,6 +1085,32 @@
       "step": 1,
       "default": 4,
       "label": "Spacing between blocks (px)"
+    },
+    {
+      "type": "header",
+      "content": "Alignment"
+    },
+    {
+      "type": "select",
+      "id": "desktop_alignment",
+      "label": "Desktop alignment",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_alignment",
+      "label": "Mobile alignment",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
     },
     {
       "type": "header",
@@ -2215,6 +2285,34 @@
           "label": "Link color",
           "default": "#555555",
           "visible_if": "{{ block.settings.show_nutrition_link == true }}"
+        },
+        {
+          "type": "header",
+          "content": "Alignment"
+        },
+        {
+          "type": "select",
+          "id": "title_desktop_align",
+          "label": "Desktop alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Use section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "title_mobile_align",
+          "label": "Mobile alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Use section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
         }
       ]
     },

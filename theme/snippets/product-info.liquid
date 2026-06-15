@@ -310,10 +310,12 @@
           {% if block.settings.custom_font != blank %}
             font-family: '{{ block.settings.custom_font.family }}', {{ block.settings.custom_font.fallback_families }}, serif !important;
           {% endif %}
+          text-align: {{ block.settings.title_desktop_align | default: 'inherit' }} !important;
         }
         @media (max-width: 767px) {
           .product-title-{{ block.id }} {
             font-size: {{ mobile_font_size }}px !important;
+            text-align: {{ block.settings.title_mobile_align | default: 'inherit' }} !important;
           }
         }
         .title-accent-{{ block.id }} {
