@@ -1420,6 +1420,17 @@
   }
 }
 @media (max-width: 767px) {
+  .shop-product-layout {
+    flex-direction: column !important;
+  }
+  .shop-carousel-container,
+  .shop-product-info {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
+@media (max-width: 767px) {
   .shop-image-container {
     max-width: 500px;
   }
