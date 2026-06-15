@@ -148,6 +148,7 @@
           {% endif %}
   
           <!-- Subscribe Gifts (1-5) -->
+          <div class="subscribe-gifts-row">
           {% for i in (1..5) %}
             {% if i > block.settings.number_of_free_gifts %}
               {% break %}
@@ -199,6 +200,7 @@
               </div>
             {% endif %}
           {% endfor %}
+          </div><!-- .subscribe-gifts-row -->
         </div>
       </div>
     </div><!-- .subscribe-save-container -->
@@ -803,19 +805,30 @@
     }
   
     /* Free Gift Container */
+    .subscribe-gifts-row {
+      display: flex;
+      flex-direction: row;
+      gap: 6px;
+      margin-top: 5px;
+      flex-wrap: wrap;
+    }
     .free-gift-container {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
+      text-align: center;
       background: var(--subscribe-gift-bg-unselected);
       border: 1px {% if block.settings.gift_container_border_style == 'solid' %}solid{% else %}dashed{% endif %} var(--subscribe-gift-border-unselected);
       border-radius: var(--subscribe-gift-container-radius);
-      padding: 8px 8px;
-      margin-top: 5px;
+      padding: 8px 6px;
       opacity: 0.6;
       transition: background-color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
+      flex: 1;
+      min-width: 70px;
+      max-width: 120px;
     }
-  
+
     .subscribe-save-container:has(input:checked) .free-gift-container {
       background: var(--subscribe-gift-bg-selected);
       border-color: var(--subscribe-gift-border-selected);
@@ -823,9 +836,10 @@
     }
     .gift-content-left {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 8px;
-      flex: 1;
+      gap: 4px;
+      width: 100%;
     }
     .gift-image {
       width: calc(var(--subscribe-gift-image-size) * 0.53);
@@ -856,8 +870,10 @@
       font-size: var(--subscribe-gift-text-size) !important;
       font-weight: var(--subscribe-gift-text-weight);
       color: var(--subscribe-gift-text-color-unselected);
-      flex: 1;
       transition: color 0.3s ease;
+      text-align: center;
+      line-height: 1.2;
+      word-break: break-word;
     }
     
     .subscribe-save-container:has(input:checked) .gift-text {
@@ -865,10 +881,12 @@
     }
     .gift-price-right {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      margin-left: 10px;
+      margin-left: 0;
       flex-shrink: 0;
-      gap: 6px;
+      gap: 2px;
+      width: 100%;
     }
     .gift-price-locked-wrapper {
       position: relative;
