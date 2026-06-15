@@ -800,8 +800,8 @@
           %}
         {% endif %}
 
-        <!-- Brand Story blocks — rendered in left column under photos -->
-        {% for block in section.blocks %}
+        {% comment %}Brand story is rendered inside product-gallary.liquid, under the carousel{% endcomment %}
+        {% if false %}
           {% if block.type == 'brand_story' %}
             {%- assign bs = block.settings -%}
             {%- assign bs_title_tag = bs.title_tag | default: 'h2' -%}
