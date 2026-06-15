@@ -1542,32 +1542,37 @@
       %}
 
     {% when 'simple_variant_picker' %}
+      {%- liquid
+        assign svp_da = block.settings.desktop_alignment | default: 'inherit'
+        assign svp_ma = block.settings.mobile_alignment | default: 'inherit'
+        if svp_da == 'center'
+          assign svp_da_flex = 'center'
+        elsif svp_da == 'right'
+          assign svp_da_flex = 'flex-end'
+        else
+          assign svp_da_flex = 'flex-start'
+        endif
+        if svp_ma == 'center'
+          assign svp_ma_flex = 'center'
+        elsif svp_ma == 'right'
+          assign svp_ma_flex = 'flex-end'
+        else
+          assign svp_ma_flex = 'flex-start'
+        endif
+      -%}
       <style>
-        #block-{{ block.id }} { text-align: {{ block.settings.desktop_alignment | default: 'inherit' }}; }
-        #block-{{ block.id }} * { text-align: inherit; }
-        #block-{{ block.id }} .flex-container,
-        #block-{{ block.id }} [class*="variant"],
-        #block-{{ block.id }} [class*="picker"],
-        #block-{{ block.id }} [class*="options"],
-        #block-{{ block.id }} [class*="pills"],
-        #block-{{ block.id }} form,
-        #block-{{ block.id }} [class*="button"],
-        #block-{{ block.id }} [class*="price"] {
-          justify-content: {{ block.settings.desktop_alignment | default: 'inherit' }} !important;
-          align-items: {% if block.settings.desktop_alignment == 'center' %}center{% elsif block.settings.desktop_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+        #block-{{ block.id }} .simple-variant-picker__values {
+          justify-content: {{ svp_da_flex }} !important;
+        }
+        #block-{{ block.id }} .simple-variant-picker__option {
+          align-items: {{ svp_da_flex }} !important;
         }
         @media (max-width: 767px) {
-          #block-{{ block.id }} { text-align: {{ block.settings.mobile_alignment | default: 'inherit' }}; }
-          #block-{{ block.id }} .flex-container,
-          #block-{{ block.id }} [class*="variant"],
-          #block-{{ block.id }} [class*="picker"],
-          #block-{{ block.id }} [class*="options"],
-          #block-{{ block.id }} [class*="pills"],
-          #block-{{ block.id }} form,
-          #block-{{ block.id }} [class*="button"],
-          #block-{{ block.id }} [class*="price"] {
-            justify-content: {{ block.settings.mobile_alignment | default: 'inherit' }} !important;
-            align-items: {% if block.settings.mobile_alignment == 'center' %}center{% elsif block.settings.mobile_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+          #block-{{ block.id }} .simple-variant-picker__values {
+            justify-content: {{ svp_ma_flex }} !important;
+          }
+          #block-{{ block.id }} .simple-variant-picker__option {
+            align-items: {{ svp_ma_flex }} !important;
           }
         }
       </style>
@@ -1977,33 +1982,49 @@
       {% render 'product-upsell-block', block: block %}
 
     {% when 'custom_text' %}
+      {%- liquid
+        assign ct_da = block.settings.desktop_alignment | default: 'inherit'
+        assign ct_ma = block.settings.mobile_alignment | default: 'inherit'
+        if ct_da == 'center'
+          assign ct_da_flex = 'center'
+        elsif ct_da == 'right'
+          assign ct_da_flex = 'flex-end'
+        else
+          assign ct_da_flex = 'flex-start'
+        endif
+        if ct_ma == 'center'
+          assign ct_ma_flex = 'center'
+        elsif ct_ma == 'right'
+          assign ct_ma_flex = 'flex-end'
+        else
+          assign ct_ma_flex = 'flex-start'
+        endif
+        assign ct_ds = block.settings.desktop_font_size
+        assign ct_ms = block.settings.mobile_font_size
+      -%}
       <style>
-        #block-{{ block.id }} { text-align: {{ block.settings.desktop_alignment | default: 'inherit' }}; }
+        #block-{{ block.id }} { text-align: {{ ct_da }}; }
         #block-{{ block.id }} * { text-align: inherit; }
-        #block-{{ block.id }} .flex-container,
-        #block-{{ block.id }} [class*="variant"],
-        #block-{{ block.id }} [class*="picker"],
-        #block-{{ block.id }} [class*="options"],
-        #block-{{ block.id }} [class*="pills"],
-        #block-{{ block.id }} form,
-        #block-{{ block.id }} [class*="button"],
-        #block-{{ block.id }} [class*="price"] {
-          justify-content: {{ block.settings.desktop_alignment | default: 'inherit' }} !important;
-          align-items: {% if block.settings.desktop_alignment == 'center' %}center{% elsif block.settings.desktop_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+        #block-{{ block.id }} .custom-text-main {
+          justify-content: {{ ct_da_flex }} !important;
         }
+        {% if ct_ds %}
+        #block-{{ block.id }} .custom-text-main,
+        #block-{{ block.id }} .custom-text-main-text-content {
+          font-size: {{ ct_ds }}px !important;
+        }
+        {% endif %}
         @media (max-width: 767px) {
-          #block-{{ block.id }} { text-align: {{ block.settings.mobile_alignment | default: 'inherit' }}; }
-          #block-{{ block.id }} .flex-container,
-          #block-{{ block.id }} [class*="variant"],
-          #block-{{ block.id }} [class*="picker"],
-          #block-{{ block.id }} [class*="options"],
-          #block-{{ block.id }} [class*="pills"],
-          #block-{{ block.id }} form,
-          #block-{{ block.id }} [class*="button"],
-          #block-{{ block.id }} [class*="price"] {
-            justify-content: {{ block.settings.mobile_alignment | default: 'inherit' }} !important;
-            align-items: {% if block.settings.mobile_alignment == 'center' %}center{% elsif block.settings.mobile_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+          #block-{{ block.id }} { text-align: {{ ct_ma }}; }
+          #block-{{ block.id }} .custom-text-main {
+            justify-content: {{ ct_ma_flex }} !important;
           }
+          {% if ct_ms %}
+          #block-{{ block.id }} .custom-text-main,
+          #block-{{ block.id }} .custom-text-main-text-content {
+            font-size: {{ ct_ms }}px !important;
+          }
+          {% endif %}
         }
       </style>
       <div class="custom-text-block-container-{{ block.id }}">
@@ -3975,7 +3996,31 @@
       {% endif %}
       {% assign sfp_nutrients = sfp_nutrients_raw | split: ';' %}
 
-      <div class="sfp-wrap" {{ block.shopify_attributes }}
+      {%- liquid
+        assign sfp_da = block.settings.desktop_alignment | default: 'inherit'
+        assign sfp_ma = block.settings.mobile_alignment | default: 'inherit'
+        if sfp_da == 'center'
+          assign sfp_da_flex = 'center'
+        elsif sfp_da == 'right'
+          assign sfp_da_flex = 'flex-end'
+        else
+          assign sfp_da_flex = 'flex-start'
+        endif
+        if sfp_ma == 'center'
+          assign sfp_ma_flex = 'center'
+        elsif sfp_ma == 'right'
+          assign sfp_ma_flex = 'flex-end'
+        else
+          assign sfp_ma_flex = 'flex-start'
+        endif
+      -%}
+      <style>
+        #block-sfp-{{ block.id }} { display: flex; justify-content: {{ sfp_da_flex }} !important; text-align: {{ sfp_da }}; }
+        @media (max-width: 767px) {
+          #block-sfp-{{ block.id }} { justify-content: {{ sfp_ma_flex }} !important; text-align: {{ sfp_ma }}; }
+        }
+      </style>
+      <div id="block-sfp-{{ block.id }}" class="sfp-wrap" {{ block.shopify_attributes }}
         style="margin-top:{{ block.settings.margin_top | default: 0 }}px;margin-bottom:{{ block.settings.margin_bottom | default: 8 }}px;">
 
         <button class="sfp-btn" id="sfp-open-{{ block.id }}"

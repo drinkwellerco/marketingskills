@@ -2036,6 +2036,29 @@
             { "value": "center", "label": "Center" },
             { "value": "right", "label": "Right" }
           ]
+        },
+        {
+          "type": "header",
+          "content": "Font Size"
+        },
+        {
+          "type": "range",
+          "id": "desktop_font_size",
+          "label": "Desktop font size (px)",
+          "min": 10,
+          "max": 48,
+          "step": 1,
+          "default": 16,
+          "info": "Leave at default to use the block's built-in font size setting"
+        },
+        {
+          "type": "range",
+          "id": "mobile_font_size",
+          "label": "Mobile font size (px)",
+          "min": 10,
+          "max": 48,
+          "step": 1,
+          "default": 14
         }
       ]
     },
@@ -6064,6 +6087,34 @@
           "id": "site",
           "label": "Website",
           "default": "drinkwellerco.com"
+        },
+        {
+          "type": "header",
+          "content": "Alignment"
+        },
+        {
+          "type": "select",
+          "id": "desktop_alignment",
+          "label": "Desktop alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "mobile_alignment",
+          "label": "Mobile alignment",
+          "default": "inherit",
+          "options": [
+            { "value": "inherit", "label": "Section default" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
         }
       ]
     },
