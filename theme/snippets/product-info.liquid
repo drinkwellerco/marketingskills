@@ -406,6 +406,9 @@
               src="{{ block.settings.nutrition_label_image | image_url: width: 960 }}"
               alt="Nutrition Label"
               class="nutrition-modal-img-{{ block.id }}"
+              width="960"
+              height="960"
+              loading="lazy"
             >
           </div>
         </div>
@@ -3687,7 +3690,7 @@
       {% assign sfp_bp = sfp_brand | split: "'" %}
       {% assign sfp_claims = block.settings.claims | default: '' | split: ',' %}
       {%- assign sfp_pn_tag = block.settings.product_name_font | default: 'h1' -%}
-      {%- assign sfp_acc_tag = block.settings.accent_font | default: 'p' -%}
+      {%- comment -%}accent uses inline span, no block tag needed{%- endcomment -%}
       {%- assign sfp_ct_tag = block.settings.col_title_font | default: 'h2' -%}
       {%- assign sfp_fn_tag = block.settings.flavor_name_font | default: 'h3' -%}
       {%- assign sfp_wm_tag = block.settings.wordmark_font | default: 'p' -%}
@@ -3717,7 +3720,7 @@
 
             <div class="sfp-header">
               {% if block.settings.logo != blank %}
-                <img src="{{ block.settings.logo | image_url: width: 120 }}" alt="{{ sfp_brand }}" class="sfp-logo" loading="lazy">
+                <img src="{{ block.settings.logo | image_url: width: 120 }}" alt="{{ sfp_brand }}" class="sfp-logo" loading="lazy" width="120" height="120">
               {% endif %}
               {% if block.settings.wordmark != blank %}<{{ sfp_wm_tag }} class="sfp-wordmark">{{ block.settings.wordmark }}</{{ sfp_wm_tag }}>{% endif %}
               <{{ sfp_pn_tag }} class="sfp-product">{{ sfp_bp[0] }}{% if sfp_bp.size > 1 %}<span class="sfp-apos">&#8217;</span>{{ sfp_bp[1] }}{% endif %}</{{ sfp_pn_tag }}>
