@@ -1,0 +1,434 @@
+{% comment %}
+  Purchase Options Block
+  One-Time Purchase card at top, then Subscribe & Save section with heading/benefit text,
+  Monthly/Bi-Monthly plan cards, and up to 5 free gifts.
+  Defaults to Monthly subscription selected.
+{% endcomment %}
+
+<div class="po-wrapper" {{ block.shopify_attributes }} data-block-id="{{ block.id }}"
+  style="
+    margin-top: {{ block.settings.margin_top | default: 0 }}px;
+    margin-bottom: {{ block.settings.margin_bottom | default: 12 }}px;
+    --po-gap: {{ block.settings.option_gap | default: 8 }}px;
+    --po-radius: {{ block.settings.option_radius | default: 10 }}px;
+    --po-border: {{ block.settings.border_color | default: '#e0e0e0' }};
+    --po-border-sel: {{ block.settings.border_color_selected | default: '#D32F2F' }};
+    --po-bg: {{ block.settings.bg_color | default: '#ffffff' }};
+    --po-bg-sel: {{ block.settings.bg_color_selected | default: '#fff5f5' }};
+    --po-label-color: {{ block.settings.label_color | default: '#222222' }};
+    --po-label-size: {{ block.settings.label_size | default: 14 }}px;
+    --po-sub-color: {{ block.settings.sublabel_color | default: '#666666' }};
+    --po-sub-size: {{ block.settings.sublabel_size | default: 11 }}px;
+    --po-price-color: {{ block.settings.price_color | default: '#000000' }};
+    --po-price-size: {{ block.settings.price_size | default: 14 }}px;
+    --po-heading-color: {{ block.settings.subscribe_heading_color | default: '#1a2340' }};
+    --po-heading-size: {{ block.settings.subscribe_heading_size | default: 18 }}px;
+    --po-benefit-color: {{ block.settings.benefit_text_color | default: '#D4617A' }};
+    --po-benefit-size: {{ block.settings.benefit_text_size | default: 26 }}px;
+    --po-badge-bg: {{ block.settings.badge_bg | default: '#D32F2F' }};
+    --po-badge-color: {{ block.settings.badge_text_color | default: '#ffffff' }};
+    --po-gift-image-size: {{ block.settings.gift_image_size | default: 44 }}px;
+    --po-gift-text-color: {{ block.settings.gift_text_color | default: '#333333' }};
+    --po-gift-text-size: {{ block.settings.gift_text_size | default: 12 }}px;
+    --po-gift-compare-color: {{ block.settings.gift_compare_color | default: '#999999' }};
+    --po-gift-bg: {{ block.settings.gift_bg | default: '#f9f9f9' }};
+    --po-gift-border: {{ block.settings.gift_border_color | default: '#e0e0e0' }};
+    --po-gift-radius: {{ block.settings.gift_border_radius | default: 8 }}px;
+  ">
+
+  <!-- ONE-TIME PURCHASE -->
+  <div class="po-option po-option--onetime"
+    data-plan-type="onetime"
+    data-plan-id=""
+    role="button" tabindex="0">
+    <div class="po-option__left">
+      <div class="po-option__radio-dot"></div>
+      <div class="po-option__texts">
+        <span class="po-option__label">{{ block.settings.one_time_label | default: 'One-Time Purchase' }}</span>
+        {% if block.settings.one_time_sublabel != blank %}
+          <span class="po-option__sublabel">{{ block.settings.one_time_sublabel }}</span>
+        {% endif %}
+      </div>
+    </div>
+    {% if block.settings.one_time_price != blank %}
+      <span class="po-option__price">{{ block.settings.one_time_price }}</span>
+    {% endif %}
+  </div>
+
+  <!-- SUBSCRIBE & SAVE SECTION -->
+  <div class="po-subscribe-section">
+
+    <!-- Big heading block like the screenshot -->
+    <div class="po-subscribe-header">
+      {% if block.settings.subscribe_heading != blank %}
+        <div class="po-subscribe-heading">{{ block.settings.subscribe_heading }}</div>
+      {% endif %}
+      {% if block.settings.benefit_text != blank %}
+        <div class="po-benefit-text">{{ block.settings.benefit_text }}</div>
+      {% endif %}
+    </div>
+
+    <!-- Plan Cards: Monthly + Bi-Monthly -->
+    <div class="po-plans">
+      <div class="po-option po-option--monthly po-option--selected"
+        data-plan-type="subscribe"
+        data-plan-id="{{ block.settings.monthly_plan_id }}"
+        role="button" tabindex="0">
+        <div class="po-option__left">
+          <div class="po-option__radio-dot"></div>
+          <div class="po-option__texts">
+            <span class="po-option__label">{{ block.settings.monthly_label | default: 'Monthly' }}</span>
+            {% if block.settings.monthly_sublabel != blank %}
+              <span class="po-option__sublabel">{{ block.settings.monthly_sublabel }}</span>
+            {% endif %}
+          </div>
+        </div>
+        {% if block.settings.monthly_price != blank %}
+          <span class="po-option__price">{{ block.settings.monthly_price }}</span>
+        {% endif %}
+      </div>
+
+      <div class="po-option po-option--bimonthly"
+        data-plan-type="subscribe"
+        data-plan-id="{{ block.settings.bimonthly_plan_id }}"
+        role="button" tabindex="0">
+        <div class="po-option__left">
+          <div class="po-option__radio-dot"></div>
+          <div class="po-option__texts">
+            <span class="po-option__label">{{ block.settings.bimonthly_label | default: 'Bi-Monthly' }}</span>
+            {% if block.settings.bimonthly_sublabel != blank %}
+              <span class="po-option__sublabel">{{ block.settings.bimonthly_sublabel }}</span>
+            {% endif %}
+          </div>
+        </div>
+        {% if block.settings.bimonthly_price != blank %}
+          <span class="po-option__price">{{ block.settings.bimonthly_price }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Free Gifts (1-5) -->
+    {% assign has_gifts = false %}
+    {% for i in (1..5) %}
+      {% assign gift_text_key = 'gift_' | append: i | append: '_text' %}
+      {% if block.settings[gift_text_key] != blank %}
+        {% assign has_gifts = true %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+
+    {% if has_gifts %}
+      <div class="po-gifts">
+        {% if block.settings.gifts_heading != blank %}
+          <div class="po-gifts-heading">{{ block.settings.gifts_heading }}</div>
+        {% endif %}
+        {% for i in (1..5) %}
+          {% assign gift_text_key = 'gift_' | append: i | append: '_text' %}
+          {% assign gift_image_key = 'gift_' | append: i | append: '_image' %}
+          {% assign gift_price_key = 'gift_' | append: i | append: '_compare_price' %}
+          {% assign gift_text = block.settings[gift_text_key] %}
+          {% assign gift_image = block.settings[gift_image_key] %}
+          {% assign gift_price = block.settings[gift_price_key] %}
+          {% if gift_text != blank %}
+            <div class="po-gift-item">
+              {% if gift_image != blank %}
+                <img src="{{ gift_image | image_url: width: 100 }}" alt="{{ gift_text }}" class="po-gift-image" width="44" height="44">
+              {% endif %}
+              <span class="po-gift-text">{{ gift_text }}</span>
+              {% if gift_price != blank %}
+                <span class="po-gift-price">{{ gift_price }}</span>
+              {% endif %}
+              <span class="po-gift-free">FREE</span>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  </div><!-- .po-subscribe-section -->
+</div>
+
+<style>
+  .po-wrapper,
+  .po-wrapper * {
+    font-family: var(--font-body-family) !important;
+    letter-spacing: var(--letter-spacing-body);
+  }
+
+  .po-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--po-gap, 8px);
+  }
+
+  /* Option cards */
+  .po-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--po-bg);
+    border: 1.5px solid var(--po-border);
+    border-radius: var(--po-radius);
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .po-option:hover {
+    border-color: var(--po-border-sel);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .po-option--selected {
+    background: var(--po-bg-sel) !important;
+    border-color: var(--po-border-sel) !important;
+    border-width: 2px !important;
+  }
+  .po-option__left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+  .po-option__radio-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--po-border);
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .po-option--selected .po-option__radio-dot {
+    border-color: var(--po-border-sel);
+  }
+  .po-option--selected .po-option__radio-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--po-border-sel);
+  }
+  .po-option__texts {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .po-option__label {
+    font-size: var(--po-label-size);
+    font-weight: 700;
+    color: var(--po-label-color);
+    line-height: 1.2;
+  }
+  .po-option__sublabel {
+    font-size: var(--po-sub-size);
+    color: var(--po-sub-color);
+    line-height: 1.3;
+  }
+  .po-option__price {
+    font-size: var(--po-price-size);
+    font-weight: 700;
+    color: var(--po-price-color);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Subscribe section wrapper */
+  .po-subscribe-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--po-gap, 8px);
+    border: 1.5px solid var(--po-border-sel);
+    border-radius: var(--po-radius);
+    padding: 16px 14px 14px;
+    background: var(--po-bg-sel);
+    transition: opacity 0.3s ease, border-color 0.2s;
+  }
+
+  /* Dim subscribe section when one-time is active — still clickable */
+  .po-wrapper[data-onetime-selected] .po-subscribe-section {
+    border-color: var(--po-border);
+    background: var(--po-bg);
+  }
+  .po-wrapper[data-onetime-selected] .po-subscribe-heading,
+  .po-wrapper[data-onetime-selected] .po-benefit-text,
+  .po-wrapper[data-onetime-selected] .po-plans .po-option,
+  .po-wrapper[data-onetime-selected] .po-gifts {
+    opacity: 0.4;
+    transition: opacity 0.2s ease;
+  }
+  .po-wrapper[data-onetime-selected] .po-plans .po-option:hover {
+    opacity: 1;
+  }
+
+  /* Big heading block */
+  .po-subscribe-header {
+    text-align: center;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    margin-bottom: 4px;
+  }
+  .po-subscribe-heading {
+    font-size: var(--po-heading-size);
+    font-weight: 800;
+    color: var(--po-heading-color);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .po-benefit-text {
+    font-size: var(--po-benefit-size);
+    font-weight: 800;
+    color: var(--po-benefit-color);
+    line-height: 1.2;
+  }
+
+  /* Plan cards inside subscribe section */
+  .po-plans {
+    display: flex;
+    flex-direction: column;
+    gap: var(--po-gap, 8px);
+  }
+
+  /* Gifts */
+  .po-gifts {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .po-gifts-heading {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--po-sub-color);
+    margin-bottom: 2px;
+    width: 100%;
+  }
+  .po-gift-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+    background: var(--po-gift-bg);
+    border: 1px solid var(--po-gift-border);
+    border-radius: var(--po-gift-radius);
+    padding: 8px 6px;
+    flex: 1;
+    min-width: 60px;
+    max-width: 110px;
+  }
+  .po-gift-image {
+    width: var(--po-gift-image-size);
+    height: var(--po-gift-image-size);
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .po-gift-text {
+    font-size: var(--po-gift-text-size);
+    font-weight: 600;
+    color: var(--po-gift-text-color);
+    word-break: break-word;
+    line-height: 1.2;
+  }
+  .po-gift-price {
+    font-size: var(--po-gift-text-size);
+    color: var(--po-gift-compare-color);
+    text-decoration: line-through;
+    white-space: nowrap;
+  }
+  .po-gift-free {
+    font-size: 10px;
+    font-weight: 800;
+    color: #ffffff;
+    background: var(--po-border-sel);
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+</style>
+
+<script>
+(function() {
+  function initPO(wrapper) {
+    var allOptions = wrapper.querySelectorAll('.po-option');
+    var subscribeSection = wrapper.querySelector('.po-subscribe-section');
+    var form = document.getElementById('{{ product_form_id }}') || document.querySelector('form[action*="/cart/add"]');
+
+    function getOrCreateInput(name) {
+      var input = form ? form.querySelector('input[name="' + name + '"]') : null;
+      if (!input && form) {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        form.appendChild(input);
+      }
+      return input;
+    }
+
+    function selectOption(opt) {
+      allOptions.forEach(function(o) { o.classList.remove('po-option--selected'); });
+      opt.classList.add('po-option--selected');
+
+      var planType = opt.getAttribute('data-plan-type');
+      var planId = opt.getAttribute('data-plan-id') || '';
+      var isOnetime = planType === 'onetime';
+
+      if (isOnetime) {
+        wrapper.setAttribute('data-onetime-selected', '');
+      } else {
+        wrapper.removeAttribute('data-onetime-selected');
+      }
+
+      /* Store plan globally so any button on the page can read it */
+      window.__sellingPlan = isOnetime ? '' : planId;
+
+      /* Also update the form input if a native product form exists */
+      if (form) {
+        var planInput = getOrCreateInput('selling_plan');
+        if (planInput) {
+          planInput.value = window.__sellingPlan;
+          planInput.setAttribute('value', window.__sellingPlan);
+        }
+      }
+
+      /* Broadcast so ATC buttons re-calculate totals immediately */
+      document.dispatchEvent(new CustomEvent('sellingPlanChanged', { detail: { planId: window.__sellingPlan } }));
+    }
+
+    allOptions.forEach(function(opt) {
+      opt.addEventListener('click', function() { selectOption(opt); });
+      opt.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectOption(opt); }
+      });
+    });
+
+    /* Default: Monthly selected */
+    var monthly = wrapper.querySelector('.po-option--monthly');
+    if (monthly) selectOption(monthly);
+  }
+
+  function ready() {
+    document.querySelectorAll('.po-wrapper').forEach(initPO);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', ready);
+  } else {
+    ready();
+  }
+})();
+</script>
