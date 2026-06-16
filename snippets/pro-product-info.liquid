@@ -340,7 +340,8 @@
         {% if mod == 1 %}
           {% assign title_html = title_html | append: '<span class="title-accent-' | append: block.id | append: '">' | append: part | append: '</span>' %}
         {% else %}
-          {% assign apos_parts = part | split: "'" %}
+          {% assign normalized_part = part | replace: "'", "'" %}
+          {% assign apos_parts = normalized_part | split: "'" %}
           {% assign apos_html = '' %}
           {% for apos_part in apos_parts %}
             {% unless forloop.first %}
