@@ -2077,7 +2077,7 @@
         {
           "type": "select",
           "id": "title_tag",
-          "label": "HTML tag (font type)",
+          "label": "Title text classification (H1 / H2 / H3 / H4 / Paragraph)",
           "default": "h1",
           "options": [
             {
@@ -2316,14 +2316,14 @@
         },
         {
           "type": "range",
-          "id": "accent_font_size_offset",
-          "min": -8,
-          "max": 8,
+          "id": "accent_font_size",
+          "min": 10,
+          "max": 120,
           "step": 1,
           "unit": "px",
-          "label": "Accent size offset (relative to title)",
-          "default": 0,
-          "info": "Positive = larger, negative = smaller than the title"
+          "label": "Accent text size (px)",
+          "default": 24,
+          "info": "Direct font size for the accented portion of the title"
         },
         {
           "type": "header",

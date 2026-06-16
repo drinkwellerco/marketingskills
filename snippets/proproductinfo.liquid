@@ -340,7 +340,7 @@
         {% if mod == 1 %}
           {% assign title_html = title_html | append: '<span class="title-accent-' | append: block.id | append: '">' | append: part | append: '</span>' %}
         {% else %}
-          {% assign normalized_part = part | replace: "'", "'" %}
+          {% assign normalized_part = part | replace: "'", "'" | replace: "'", "'" | replace: "ʼ", "'" | replace: "`", "'" | replace: "´", "'" %}
           {% assign apos_parts = normalized_part | split: "'" %}
           {% assign apos_html = '' %}
           {% for apos_part in apos_parts %}
@@ -380,8 +380,7 @@
         .title-accent-{{ block.id }} {
           color: {{ block.settings.accent_color | default: '#EF4A65' }} !important;
           font-style: {{ block.settings.accent_font_style | default: 'italic' }} !important;
-          {% assign accent_size = block.settings.font_size | plus: block.settings.accent_font_size_offset | default: block.settings.font_size %}
-          font-size: {{ accent_size }}px !important;
+          font-size: {{ block.settings.accent_font_size | default: block.settings.font_size }}px !important;
           {% assign accent_font_choice = block.settings.accent_font_tag | default: 'p' %}
           {% if accent_font_choice == 'p' %}
             font-family: var(--font-body-family) !important;
