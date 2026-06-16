@@ -354,7 +354,7 @@
       {% endfor %}
 
       <style>
-        .product-title-{{ block.id }} {
+        #block-{{ block.id }} {
           font-size: {{ block.settings.font_size }}px !important;
           margin-top: {{ block.settings.margin_top }}px !important;
           margin-bottom: {{ block.settings.margin_bottom }}px !important;
@@ -369,18 +369,22 @@
           {% if block.settings.custom_font != blank %}
             font-family: '{{ block.settings.custom_font.family }}', {{ block.settings.custom_font.fallback_families }}, serif !important;
           {% endif %}
-          text-align: {{ block.settings.title_desktop_align | default: 'inherit' }} !important;
+          text-align: {{ block.settings.desktop_alignment | default: 'inherit' }} !important;
         }
         @media (max-width: 767px) {
-          .product-title-{{ block.id }} {
+          #block-{{ block.id }} {
             font-size: {{ mobile_font_size }}px !important;
-            text-align: {{ block.settings.title_mobile_align | default: 'inherit' }} !important;
+            text-align: {{ block.settings.mobile_alignment | default: 'inherit' }} !important;
           }
         }
         .title-accent-{{ block.id }} {
           color: {{ block.settings.accent_color | default: '#EF4A65' }} !important;
           font-style: {{ block.settings.accent_font_style | default: 'italic' }} !important;
-          font-size: {{ block.settings.accent_font_size | default: block.settings.font_size }}px !important;
+          {% if block.settings.accent_match_title_size %}
+            font-size: {{ block.settings.font_size }}px !important;
+          {% else %}
+            font-size: {{ block.settings.accent_font_size | default: block.settings.font_size }}px !important;
+          {% endif %}
           {% assign accent_font_choice = block.settings.accent_font_tag | default: 'p' %}
           {% if accent_font_choice == 'p' %}
             font-family: var(--font-body-family) !important;

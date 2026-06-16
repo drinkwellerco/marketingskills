@@ -2315,6 +2315,13 @@
           "default": "italic"
         },
         {
+          "type": "checkbox",
+          "id": "accent_match_title_size",
+          "label": "Match accent size to title size",
+          "default": true,
+          "info": "When on, the accent text is the same size as the title. Turn off to set a custom size below."
+        },
+        {
           "type": "range",
           "id": "accent_font_size",
           "min": 10,
@@ -2323,7 +2330,7 @@
           "unit": "px",
           "label": "Accent text size (px)",
           "default": 24,
-          "info": "Direct font size for the accented portion of the title"
+          "info": "Only applies when 'Match accent size to title size' is off"
         },
         {
           "type": "header",
