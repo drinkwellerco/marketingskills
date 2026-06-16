@@ -1,0 +1,478 @@
+{% endcomment %}
+
+
+{% assign sfp_show = true %}
+{% if block.settings.limit_to_handle != blank and product.handle != block.settings.limit_to_handle %}
+
+  {% assign sfp_show = false %}
+
+{% endif %}
+
+{% if sfp_show %}
+
+{% assign sfp_brand = block.settings.product_name | default: "Her'dration" %}
+{% assign sfp_bp = sfp_brand | split: "'" %}
+{% assign sfp_claims = block.settings.claims | default: '' | split: ',' %}
+{% assign sfp_nutrients = block.settings.nutrients | default: '' | split: "\" %}
+
+<div class="sfp-wrap" {{ block.shopify_attributes }}
+
+  style="
+
+    margin-top: {{ block.settings.margin_top | default: 0 }}px;
+    margin-bottom: {{ block.settings.margin_bottom | default: 8 }}px;
+  ">
+
+
+  <button class="sfp-btn" id="sfp-open-{{ block.id }}"
+    style="
+
+      background: {{ block.settings.btn_bg | default: 'transparent' }};
+      color: {{ block.settings.btn_color | default: '#555555' }};
+      border: 1.5px solid {{ block.settings.btn_border | default: '#cccccc' }};
+      font-size: {{ block.settings.btn_font_size | default: 13 }}px;
+      border-radius: {{ block.settings.btn_radius | default: 6 }}px;
+    ">
+
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    {{ block.settings.btn_text | default: 'View Supplement Facts' }}
+  </button>
+
+  <!-- MODAL -->
+  <div class="sfp-modal" id="sfp-modal-{{ block.id }}" role="dialog" aria-modal="true" aria-label="Supplement Facts">
+    <div class="sfp-backdrop" id="sfp-backdrop-{{ block.id }}"></div>
+    <div class="sfp-panel" id="sfp-panel-{{ block.id }}">
+
+      <button class="sfp-close" id="sfp-close-{{ block.id }}" aria-label="Close">&times;</button>
+
+      <!-- HEADER -->
+      <div class="sfp-header">
+        {% if block.settings.logo != blank %}
+          <img src="{{ block.settings.logo | image_url: width: 140 }}" alt="{{ sfp_brand }}" class="sfp-logo" width="70" height="70" loading="lazy">
+        {% endif %}
+        <div class="sfp-head-text">
+          {% if block.settings.wordmark != blank %}
+            <div class="sfp-wordmark">{{ block.settings.wordmark }}</div>
+          {% endif %}
+          <div class="sfp-product">
+            {{ sfp_bp[0] }}{% if sfp_bp.size > 1 %}<span class="sfp-apos" style="color:{{ block.settings.accent_color | default: '#E8607A' }}">&#8217;</span>{{ sfp_bp[1] }}{% endif %}
+          </div>
+          {% if block.settings.tagline != blank %}
+            <div class="sfp-tagline" style="color:{{ block.settings.accent_color | default: '#E8607A' }}">{{ block.settings.tagline }}</div>
+          {% endif %}
+        </div>
+        {% if block.settings.header_pill != blank %}
+          <div class="sfp-pill" style="background:{{ block.settings.accent_color | default: '#E8607A' }}">{{ block.settings.header_pill }}</div>
+        {% endif %}
+      </div>
+
+      <!-- BODY: 2 columns -->
+      <div class="sfp-body">
+
+        <!-- LEFT: Supplement Facts box -->
+        <div class="sfp-col-left">
+          {% if block.settings.left_eyebrow != blank %}
+            <div class="sfp-eyebrow" style="color:{{ block.settings.accent_color | default: '#E8607A' }}">{{ block.settings.left_eyebrow }}</div>
+          {% endif %}
+          {% if block.settings.left_title != blank %}
+            <div class="sfp-col-title">{{ block.settings.left_title }}</div>
+          {% endif %}
+
+          {% if block.settings.nf_label_image != blank %}
+            <img
+              src="{{ block.settings.nf_label_image | image_url: width: 600 }}"
+              alt="Nutrition Label"
+              style="width: 100%; height: auto; display: block;"
+              loading="lazy"
+            >
+          {% else %}
+          <div class="sfp-nf">
+            <div class="sfp-nf-title">{{ block.settings.nf_title | default: 'Supplement Facts' }}</div>
+            <div class="sfp-rule-x"></div>
+            <div class="sfp-serve"><span>{{ block.settings.servings_label | default: 'Servings Per Container' }}</span><b>{{ block.settings.servings | default: '30' }}</b></div>
+            <div class="sfp-rule-sm"></div>
+            <div class="sfp-serve"><span>{{ block.settings.serving_size_label | default: 'Serving Size' }}</span><b>{{ block.settings.serving_size | default: '2 tsp (8g)' }}</b></div>
+            <div class="sfp-rule-lg"></div>
+            <div class="sfp-calrow">
+              <div class="sfp-cal-label">{{ block.settings.calories_label | default: 'Calories' }}</div>
+              <div class="sfp-cal-val">{{ block.settings.calories | default: '15' }}</div>
+            </div>
+            <div class="sfp-rule-md"></div>
+            <div class="sfp-dvhead">{{ block.settings.dv_label | default: '% Daily Value*' }}</div>
+
+            {% for row in sfp_nutrients %}
+              {% assign row_clean = row | strip %}
+              {% if row_clean == '' %}{% continue %}{% endif %}
+              {% assign cols = row_clean | split: '|' %}
+              {% assign r_label  = cols[0] | strip %}
+              {% assign r_source = cols[1] | strip %}
+              {% assign r_amount = cols[2] | strip %}
+              {% assign r_dv     = cols[3] | strip %}
+              {% assign r_indent = cols[4] | strip | downcase %}
+              {% assign r_group  = cols[5] | strip %}
+
+              {% if r_group != blank %}
+                <div class="sfp-supphead" style="color:{{ block.settings.accent_color | default: '#E8607A' }}">{{ r_group }}</div>
+                <div class="sfp-rule-md"></div>
+              {% else %}
+                <div class="sfp-rule-sm"></div>
+              {% endif %}
+              <div class="sfp-row">
+                <span class="nm{% if r_indent == 'y' %} indent{% endif %}">
+                  {{ r_label }}{% if r_source != blank %} <span class="src">{{ r_source }}</span>{% endif %}{% if r_amount != blank %} {{ r_amount }}{% endif %}
+                </span>
+                <span class="dv">{% if r_dv != blank %}{{ r_dv }}{% else %}&dagger;{% endif %}</span>
+              </div>
+            {% endfor %}
+
+            <div class="sfp-rule-lg"></div>
+            <div class="sfp-foot">
+              {% if block.settings.footnote_star != blank %}<span class="star">{{ block.settings.footnote_star }}</span>{% endif %}
+              {% if block.settings.footnote_dagger != blank %}<span class="star">{{ block.settings.footnote_dagger }}</span>{% endif %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- RIGHT: Flavors -->
+        <div class="sfp-col-right">
+          {% if block.settings.right_eyebrow != blank %}
+            <div class="sfp-eyebrow" style="color:{{ block.settings.accent_color | default: '#E8607A' }}">{{ block.settings.right_eyebrow }}</div>
+          {% endif %}
+          {% if block.settings.right_title != blank %}
+            <div class="sfp-col-title">{{ block.settings.right_title }}</div>
+          {% endif %}
+          {% if block.settings.right_lead != blank %}
+            <p class="sfp-lead">{{ block.settings.right_lead }}</p>
+          {% endif %}
+
+          <div class="sfp-flavors">
+            {% for i in (1..5) %}
+              {% assign f_name  = 'flavor_' | append: i | append: '_name' %}
+              {% assign f_color = 'flavor_' | append: i | append: '_color' %}
+              {% assign f_call  = 'flavor_' | append: i | append: '_callout' %}
+              {% assign f_from  = 'flavor_' | append: i | append: '_from_label' %}
+              {% assign f_ings  = 'flavor_' | append: i | append: '_ingredients' %}
+              {% assign f_ilbl  = 'flavor_' | append: i | append: '_ing_label' %}
+
+              {% if block.settings[f_name] != blank %}
+                {% assign ings = block.settings[f_ings] | split: ',' %}
+                <div class="sfp-flavor">
+                  <span class="sfp-accent" style="background:{{ block.settings[f_color] | default: '#E8607A' }}"></span>
+                  <div class="sfp-flavor-head">
+                    <div class="sfp-flavor-name" style="color:{{ block.settings[f_color] | default: '#E8607A' }}">{{ block.settings[f_name] }}</div>
+                    {% if block.settings[f_call] != blank %}
+                      <div class="sfp-flavor-from">
+                        {{ block.settings[f_from] | default: 'Flavored only with' }}
+                        <em>{{ block.settings[f_call] }}</em>
+                      </div>
+                    {% endif %}
+                  </div>
+                  {% if block.settings[f_ings] != blank %}
+                    <div class="sfp-ing-label">{{ block.settings[f_ilbl] | default: 'Other Ingredients' }}</div>
+                    <div class="sfp-ing-list">
+                      {% for ing in ings %}
+                        <span class="sfp-ing-chip">{{ ing | strip }}</span>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+      </div><!-- .sfp-body -->
+
+      <!-- FOOTER claims -->
+      {% assign has_claims = false %}
+      {% for c in sfp_claims %}{% if c != blank %}{% assign has_claims = true %}{% break %}{% endif %}{% endfor %}
+      {% if has_claims or block.settings.site != blank %}
+        <div class="sfp-footer">
+          {% if has_claims %}
+            <div class="sfp-claims">
+              {% for claim in sfp_claims %}
+                {% assign cl = claim | strip %}
+                {% if cl != blank %}
+                  {% unless forloop.first %}<span class="sfp-claim-dot" style="background:{{ block.settings.accent_color | default: '#E8607A' }}"></span>{% endunless %}
+                  <span class="sfp-claim">{{ cl }}</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+          {% if block.settings.site != blank %}
+            <div class="sfp-site" style="color:{{ block.settings.accent_color | default: '#E8607A' }};border-color:{{ block.settings.accent_color | default: '#E8607A' }}">{{ block.settings.site }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+    </div><!-- .sfp-panel -->
+  </div><!-- .sfp-modal -->
+
+
+</div>
+
+<style>
+
+  .sfp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-family: var(--font-body-family);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    transition: opacity 0.18s, transform 0.12s, box-shadow 0.18s;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+    background: transparent;
+  }
+  .sfp-btn:hover {
+    opacity: 0.75;
+    transform: translateY(-1px);
+  }
+  .sfp-btn:active { transform: scale(0.97); }
+
+  /* Modal overlay */
+  .sfp-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .sfp-modal.open { display: flex; }
+  .sfp-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.52);
+    backdrop-filter: blur(3px);
+    animation: sfp-fade-in 0.22s ease;
+  }
+  @keyframes sfp-fade-in { from { opacity:0; } to { opacity:1; } }
+
+  .sfp-panel {
+    position: relative;
+    z-index: 1;
+    background: #FAF5F0;
+    border-radius: 16px;
+    box-shadow: 0 24px 80px rgba(27,58,92,.22);
+    max-width: 960px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 48px 52px 44px;
+    animation: sfp-slide-up 0.26s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes sfp-slide-up { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+
+  .sfp-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.08);
+    color: #333;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, transform 0.12s;
+  }
+  .sfp-close:hover { background: rgba(0,0,0,0.16); transform: rotate(90deg); }
+
+  /* Header */
+  .sfp-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 24px;
+    border-bottom: 1.5px solid #E8DDD5;
+    margin-bottom: 32px;
+  }
+  .sfp-logo { width: 64px; height: 64px; object-fit: contain; flex-shrink: 0; border-radius: 8px; }
+  .sfp-head-text { flex: 1; }
+  .sfp-wordmark {
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    color: #1B3A5C;
+  }
+  .sfp-product {
+    font-family: 'DM Serif Display', 'Georgia', serif;
+    font-size: 52px;
+    color: #1B3A5C;
+    line-height: .96;
+    letter-spacing: -.01em;
+    margin-top: 2px;
+  }
+  .sfp-tagline {
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+  .sfp-pill {
+    align-self: flex-start;
+    flex-shrink: 0;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 9999px;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(232,96,122,.28);
+  }
+
+  /* Body grid */
+  .sfp-body {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 44px;
+  }
+  .sfp-eyebrow {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .sfp-col-title {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-weight: 900;
+    font-size: 24px;
+    color: #1B3A5C;
+    line-height: 1.1;
+    margin-bottom: 18px;
+  }
+
+  /* Supplement Facts panel */
+  .sfp-nf {
+    background: #fff;
+    border: 2.5px solid #1B3A5C;
+    padding: 12px 16px 14px;
+    box-shadow: 0 4px 20px rgba(27,58,92,.09);
+    transition: box-shadow 0.2s;
+  }
+  .sfp-nf:hover { box-shadow: 0 8px 32px rgba(27,58,92,.15); }
+  .sfp-nf-title { font-family: 'Playfair Display','Georgia',serif; font-weight: 900; font-size: 30px; color: #1B3A5C; line-height: 1; letter-spacing: -.01em; }
+  .sfp-rule-x  { height: 9px;  background: #1B3A5C; margin-top: 6px; }
+  .sfp-rule-lg { height: 5px;  background: #1B3A5C; }
+  .sfp-rule-md { height: 2.5px; background: #1B3A5C; }
+  .sfp-rule-sm { height: 1px;  background: rgba(27,58,92,.25); }
+  .sfp-serve { font-size: 12px; color: #1B3A5C; padding: 4px 0; display: flex; justify-content: space-between; }
+  .sfp-serve b { font-weight: 700; }
+  .sfp-calrow { display: flex; align-items: flex-end; justify-content: space-between; padding: 2px 0 4px; }
+  .sfp-cal-label { font-weight: 800; font-size: 14px; color: #1B3A5C; }
+  .sfp-cal-val { font-family: 'Playfair Display','Georgia',serif; font-weight: 900; font-size: 28px; color: #1B3A5C; line-height: .9; }
+  .sfp-dvhead { text-align: right; font-size: 10.5px; font-weight: 700; color: #1B3A5C; padding: 2px 0; }
+  .sfp-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; color: #1B3A5C; padding: 4px 0; }
+  .sfp-row .nm { font-weight: 700; }
+  .sfp-row .nm .src { font-weight: 400; font-size: 10px; color: #8A7E76; }
+  .sfp-row .nm.indent { font-weight: 400; padding-left: 16px; }
+  .sfp-row .dv { font-weight: 700; flex-shrink: 0; padding-left: 14px; }
+  .sfp-supphead { font-weight: 700; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; padding: 7px 0 2px; }
+  .sfp-foot { font-size: 9px; color: #8A7E76; line-height: 1.5; padding-top: 7px; }
+  .sfp-foot .star { display: block; }
+
+  /* Flavors */
+  .sfp-lead { font-size: 13px; color: #1B3A5C; line-height: 1.6; opacity: .75; margin: -6px 0 12px; }
+  .sfp-flavors { display: flex; flex-direction: column; gap: 12px; }
+  .sfp-flavor {
+    position: relative;
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px 22px 18px 26px;
+    box-shadow: 0 2px 14px rgba(27,58,92,.06);
+    border: 1px solid #E8DDD5;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.15s;
+  }
+  .sfp-flavor:hover { box-shadow: 0 6px 28px rgba(27,58,92,.13); transform: translateY(-2px); }
+  .sfp-accent { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; }
+  .sfp-flavor-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .sfp-flavor-name {
+    font-family: 'Cormorant Garamond','Georgia',serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 1;
+  }
+  .sfp-flavor-from { font-weight: 700; font-size: 9px; letter-spacing: .13em; text-transform: uppercase; color: #8A7E76; text-align: right; line-height: 1.5; flex-shrink: 0; }
+  .sfp-flavor-from em { font-family: 'Cormorant Garamond','Georgia',serif; font-style: italic; font-weight: 600; font-size: 13px; letter-spacing: 0; text-transform: none; display: block; }
+  .sfp-ing-label { font-weight: 700; font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: #1B3A5C; margin: 14px 0 6px; }
+  .sfp-ing-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .sfp-ing-chip {
+    font-weight: 500;
+    font-size: 12px;
+    color: #1B3A5C;
+    background: #F5EEE8;
+    border: 1px solid #E8DDD5;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    transition: background 0.15s, transform 0.12s;
+  }
+  .sfp-ing-chip:hover { background: #E8DDD5; transform: scale(1.04); }
+
+  /* Footer */
+  .sfp-footer { margin-top: 32px; padding-top: 18px; border-top: 1.5px solid #E8DDD5; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .sfp-claims { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .sfp-claim { font-weight: 700; font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase; color: #1B3A5C; }
+  .sfp-claim-dot { width: 4px; height: 4px; border-radius: 50%; }
+  .sfp-site { font-weight: 700; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; border: 1.5px solid; padding: 6px 14px; border-radius: 9999px; transition: opacity 0.15s; }
+  .sfp-site:hover { opacity: 0.7; }
+
+  /* Mobile */
+  @media (max-width: 700px) {
+    .sfp-panel { padding: 32px 20px 28px; border-radius: 12px 12px 0 0; position: fixed; bottom: 0; left: 0; right: 0; max-height: 92vh; border-radius: 16px 16px 0 0; animation: sfp-slide-mobile 0.3s cubic-bezier(.22,1,.36,1); }
+    @keyframes sfp-slide-mobile { from { opacity:0; transform:translateY(60px); } to { opacity:1; transform:translateY(0); } }
+    .sfp-body { grid-template-columns: 1fr; gap: 28px; }
+    .sfp-product { font-size: 38px; }
+    .sfp-pill { display: none; }
+    .sfp-modal { align-items: flex-end; padding: 0; }
+  }
+
+</style>
+
+<script>
+
+(function() {
+  var openBtn = document.getElementById('sfp-open-{{ block.id }}');
+  var modal   = document.getElementById('sfp-modal-{{ block.id }}');
+  var backdrop= document.getElementById('sfp-backdrop-{{ block.id }}');
+  var closeBtn= document.getElementById('sfp-close-{{ block.id }}');
+
+  function openModal() {
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  if (openBtn)  openBtn.addEventListener('click', openModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (backdrop) backdrop.addEventListener('click', closeModal);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+  });
+})();
+
+</script>
+
+{% endif %}
