@@ -2,7 +2,7 @@
 {{ 'variant-selector.css' | asset_url | stylesheet_tag }}
 
 {% style %}
-    .shop-product-section {
+    .pro-product-section {
         letter-spacing: var(--letter-spacing-body);
         background-color: {% if section.settings.use_theme_colors %}{{ settings.global_section_background_color }}{% else %}{{ section.settings.section_bg_color }}{% endif %};
         color: {{ section.settings.text_color }};
@@ -130,12 +130,12 @@
     }
 
     /* Flèches mobiles - version plus spécifique */
-    .shop-product-section .shop-mobile-arrows {
+    .pro-product-section .shop-mobile-arrows {
       display: none !important;
     }
 
     @media screen and (max-width: 767px) {
-      .shop-product-section .shop-mobile-arrows {
+      .pro-product-section .shop-mobile-arrows {
         display: flex !important;
         align-items: center;
         justify-content: space-between;
@@ -148,7 +148,7 @@
         z-index: 5;
       }
 
-      .shop-product-section .shop-mobile-arrow {
+      .pro-product-section .shop-mobile-arrow {
         width: 40px !important;
         height: 40px !important;
         border-radius: var(--arrow-border-radius);
@@ -166,7 +166,7 @@
 
     /* Masquer sur desktop */
     @media screen and (min-width: 768px) {
-      .shop-product-section .shop-mobile-arrows {
+      .pro-product-section .shop-mobile-arrows {
         display: none !important;
       }
     }
@@ -252,12 +252,12 @@
       }
 
       /* When arrows are NOT overlaid (arrows off), remove padding */
-      .shop-product-section[data-show-mobile-arrows="false"] .shop-thumbnails.mobile-2x2-grid {
+      .pro-product-section[data-show-mobile-arrows="false"] .shop-thumbnails.mobile-2x2-grid {
         padding: 0 !important;
       }
 
       /* Full width image + 4 thumbnails specific spacing */
-      .shop-product-section[data-full-width-image="true"] .shop-thumbnails.mobile-2x2-grid {
+      .pro-product-section[data-full-width-image="true"] .shop-thumbnails.mobile-2x2-grid {
         margin: 5px 0px 0px !important;
       }
 
@@ -615,7 +615,7 @@
     /* Add to cart button from blocks */
     {% for block in section.blocks %}
       {% if block.type == 'add_to_cart' %}
-        .shop-product-section .shop-add-to-cart-button,
+        .pro-product-section .shop-add-to-cart-button,
         .shop-add-to-cart-wrapper .shop-add-to-cart-button,
         form .shop-add-to-cart-button,
         .shop-product-details .shop-add-to-cart-button {
@@ -674,7 +674,7 @@
         }
 
         /* Handle button-text and compare-price inside add to cart button */
-        :is(.shop-product-section, .shop-add-to-cart-wrapper, form) .shop-add-to-cart-button :is(.button-text, .compare-price) {
+        :is(.pro-product-section, .shop-add-to-cart-wrapper, form) .shop-add-to-cart-button :is(.button-text, .compare-price) {
           {% if settings.enable_global_button_styling and block.settings.use_global_button_styling %}
             /* Use Global Button Text Styling */
             font-size: var(--global-button-font-size, 14px) !important;
@@ -690,7 +690,7 @@
           {% endif %}
         }
 
-        .shop-product-section .shop-add-to-cart-button:hover,
+        .pro-product-section .shop-add-to-cart-button:hover,
         .shop-add-to-cart-wrapper .shop-add-to-cart-button:hover,
         form .shop-add-to-cart-button:hover,
         .shop-product-details .shop-add-to-cart-button:hover {
@@ -711,13 +711,13 @@
         }
 
         /* Shopify Payment Button Styling */
-        .shop-product-section shopify-payment-button,
-        .shop-product-section .shopify-payment-button {
+        .pro-product-section shopify-payment-button,
+        .pro-product-section .shopify-payment-button {
           margin-top: 5px !important;
         }
 
-        .shop-product-section .shopify-payment-button__button,
-        .shop-product-section .shopify-payment-button__button--unbranded {
+        .pro-product-section .shopify-payment-button__button,
+        .pro-product-section .shopify-payment-button__button--unbranded {
           padding-top: var(--global-button-padding-y, 12px) !important;
           padding-bottom: var(--global-button-padding-y, 12px) !important;
         }
@@ -737,7 +737,7 @@
     {% if section.settings.enable_mobile_full_width_image %}
     /* Mobile full-width image styles - MOBILE AND TABLET ONLY */
     @media screen and (max-width: 799px) and (min-width: 0px) {
-      .shop-product-section {
+      .pro-product-section {
         padding: 0 !important;
       }
       .shop-product-carousel {
@@ -799,7 +799,7 @@
 
     /* Explicitly prevent desktop changes */
     @media screen and (min-width: 800px) {
-      .shop-product-section {
+      .pro-product-section {
         padding: 10px 8px;
       }
       .shop-product-carousel {
@@ -849,7 +849,7 @@
 -%}
 
 <div
-  class="shop-product-section  {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-up{% endif %}"
+  class="pro-product-section  {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-up{% endif %}"
   {% if section.settings.enable_full_width_image %}
     data-full-width-image="true"
   {% endif -%}
@@ -1033,7 +1033,7 @@
 {
   "name": "ProProductPage",
   "tag": "section",
-  "class": "shop-product-section",
+  "class": "pro-product-section",
   "settings": [
     {
       "type": "checkbox",
