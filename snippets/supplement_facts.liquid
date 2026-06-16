@@ -79,6 +79,8 @@
             <img
               src="{{ block.settings.nf_label_image | image_url: width: 600 }}"
               alt="Nutrition Label"
+              width="600"
+              height="{{ block.settings.nf_label_image.height | times: 600 | divided_by: block.settings.nf_label_image.width }}"
               style="width: 100%; height: auto; display: block;"
               loading="lazy"
             >
