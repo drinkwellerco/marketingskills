@@ -25,6 +25,16 @@
 {%- capture rc_ico_guide -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h10a1.5 1.5 0 0 1 1.5 1.5V20H7.5A1.5 1.5 0 0 1 6 18.5V4Z"/><path d="M6 4a1.5 1.5 0 0 0-1.5 1.5v13A1.5 1.5 0 0 1 6 17"/><path d="M9.5 8.5h4.5M9.5 12h3"/></svg>{%- endcapture -%}
 {%- capture rc_ico_gift -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M4 13h16M12 9v11"/><path d="M12 9S10.5 4.5 8 5.2C6 5.8 7 9 12 9ZM12 9s1.5-4.5 4-3.8C18 5.8 17 9 12 9Z"/></svg>{%- endcapture -%}
 
+{%- capture rcvd -%}{
+  {%- for v in p.variants -%}
+    "{{ v.id }}":{"p":{{ v.price }},"a":{
+      {%- for a in v.selling_plan_allocations -%}
+        "{{ a.selling_plan.id }}":{"p":{{ a.per_delivery_price }},"c":{{ a.compare_at_price | default: v.price }}}{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    }}{% unless forloop.last %},{% endunless %}
+  {%- endfor -%}
+}{%- endcapture -%}
+
 <section
   id="rc-{{ block.id }}"
   class="rc rc--light"
@@ -33,6 +43,7 @@
   data-has-plans="{{ has_plans }}"
   data-gift-total="{{ gift_total }}"
   data-manual-discount="{{ block.settings.manual_discount }}"
+  data-variants='{{ rcvd }}'
   {{ block.shopify_attributes }}>
 
   {%- assign rc_form_id = 'rc-form-' | append: block.id -%}
@@ -206,47 +217,47 @@
 
 <style>
   #rc-{{ block.id }}{
-    --rc-blush:#F2C4CE; --rc-peach:#E8A87C; --rc-sage:#8A9B6E; --rc-sky:#4A90B8;
-    --rc-navy:#1B3A5C; --rc-rose:#E8607A; --rc-cream:#FAF5F0; --rc-cream-dk:#F0E8E0;
+    --rc-blush:#F2C4CE; --rc-peach:#E8A87C; --rc-navy:#1B3A5C; --rc-rose:{{ block.settings.accent_color | default: '#E8607A' }};
     --rc-lime:#7DB642; --rc-fog:#F5EEE8; --rc-mist:#E8DDD5; --rc-stone:#8A7E76;
     --rc-serif:'Playfair Display','Georgia',serif;
-    --rc-display:'Cormorant Garamond','Georgia',serif;
     --rc-script:'Dancing Script',cursive;
     --rc-sans:'DM Sans','Helvetica Neue',sans-serif;
     --rc-spring:cubic-bezier(.34,1.4,.5,1);
-
-    --rc-card-bg:#fff;
-    --rc-surface:#fff;
-    --rc-border:var(--rc-mist);
-    --rc-text:var(--rc-navy);
-    --rc-text-muted:var(--rc-stone);
-    --rc-radio:var(--rc-mist);
-    --rc-gift-bg:var(--rc-fog);
+    --rc-card-bg:{{ block.settings.card_bg | default: '#ffffff' }};
+    --rc-surface:{{ block.settings.card_bg | default: '#ffffff' }};
+    --rc-border:{{ block.settings.border_color | default: '#E8DDD5' }};
+    --rc-text:{{ block.settings.card_text | default: '#1B3A5C' }};
+    --rc-text-muted:{{ block.settings.card_muted | default: '#8A7E76' }};
+    --rc-radio:{{ block.settings.border_color | default: '#E8DDD5' }};
+    --rc-gift-bg:{{ block.settings.gift_bg | default: '#F5EEE8' }};
     --rc-gift-ico-bg:rgba(232,96,122,.12);
-    --rc-freq-bg:var(--rc-fog);
-    --rc-freq-on-bg:#fff;
-    --rc-freq-on-text:var(--rc-navy);
-    --rc-tally-bg:var(--rc-navy);
+    --rc-freq-bg:{{ block.settings.freq_bg | default: '#F5EEE8' }};
+    --rc-freq-on-bg:{{ block.settings.freq_active_bg | default: '#ffffff' }};
+    --rc-freq-on-text:{{ block.settings.freq_active_text | default: '#1B3A5C' }};
+    --rc-tally-bg:{{ block.settings.tally_bg | default: '#1B3A5C' }};
     --rc-tally-border:transparent;
-    --rc-tally-num:#fff;
-    --rc-tally-lbl:rgba(250,245,240,.82);
+    --rc-tally-num:{{ block.settings.tally_text_color | default: '#ffffff' }};
+    --rc-tally-lbl:{{ block.settings.tally_label_color | default: '#FAF5F0' }};
     --rc-card-shadow:0 8px 40px rgba(27,58,92,.12);
     --rc-on-bg:rgba(232,96,122,.06);
-    --rc-blob1:var(--rc-blush); --rc-blob1-op:.35;
-    --rc-blob2:var(--rc-peach); --rc-blob2-op:.25;
-
+    --rc-blob1:#F2C4CE; --rc-blob1-op:.35;
+    --rc-blob2:#E8A87C; --rc-blob2-op:.25;
     display:block; font-family:var(--rc-sans); color:var(--rc-text);
-    max-width:520px; margin:0 auto; padding:0; background:transparent;
+    max-width:{{ block.settings.max_width | default: 520 }}px;
+    margin:0 auto;
+    padding:{{ block.settings.section_padding_y | default: 0 }}px {{ block.settings.section_padding_x | default: 0 }}px;
+    background:transparent;
+    text-align:{{ block.settings.text_align | default: 'left' }};
   }
   #rc-{{ block.id }} *{ box-sizing:border-box; }
   /* suppress subscription app injections into the product form */
   #rc-{{ block.id }} .rc-card > *:not(input):not(.rc-blob1):not(.rc-blob2):not(.rc-sel){ display:none !important; }
-  #rc-{{ block.id }} .rc-card{ background:var(--rc-card-bg); border-radius:28px; padding:30px; box-shadow:var(--rc-card-shadow); position:relative; overflow:hidden; margin:0; }
+  #rc-{{ block.id }} .rc-card{ background:var(--rc-card-bg); border-radius:{{ block.settings.card_radius | default: 28 }}px; padding:{{ block.settings.card_padding_y | default: 30 }}px {{ block.settings.card_padding_x | default: 30 }}px; box-shadow:var(--rc-card-shadow); position:relative; overflow:hidden; margin:0; }
   #rc-{{ block.id }} .rc-blob{ position:absolute; border-radius:50%; pointer-events:none; z-index:0; }
   #rc-{{ block.id }} .rc-blob1{ width:200px; height:200px; background:var(--rc-blob1); opacity:var(--rc-blob1-op); top:-70px; right:-60px; }
   #rc-{{ block.id }} .rc-blob2{ width:130px; height:130px; background:var(--rc-blob2); opacity:var(--rc-blob2-op); bottom:-50px; left:-40px; }
   #rc-{{ block.id }} .rc-sel{ position:relative; z-index:1; }
-  #rc-{{ block.id }} .rc-q{ font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-text-muted); margin-bottom:12px; }
+  #rc-{{ block.id }} .rc-q{ font-size:{{ block.settings.heading_size | default: 11 }}px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-text-muted); margin-bottom:12px; }
   #rc-{{ block.id }} .rc-plan{ position:relative; display:block; width:100%; text-align:left; background:var(--rc-surface); border:1.5px solid var(--rc-border); border-radius:20px; padding:18px 20px; margin-bottom:12px; cursor:pointer; transition:border-color .18s, background .18s, box-shadow .18s; }
   #rc-{{ block.id }} .rc-plan:hover{ border-color:rgba(232,96,122,.45); }
   #rc-{{ block.id }} .rc-plan.rc-on{ border-color:var(--rc-rose); background:var(--rc-on-bg); box-shadow:0 6px 24px rgba(232,96,122,.2); }
@@ -254,11 +265,11 @@
   #rc-{{ block.id }} .rc-radio{ width:22px; height:22px; border-radius:50%; border:2px solid var(--rc-radio); flex-shrink:0; position:relative; transition:border-color .18s; }
   #rc-{{ block.id }} .rc-plan.rc-on .rc-radio{ border-color:var(--rc-rose); }
   #rc-{{ block.id }} .rc-plan.rc-on .rc-radio::after{ content:''; position:absolute; inset:3px; border-radius:50%; background:var(--rc-rose); }
-  #rc-{{ block.id }} .rc-plan-name{ font-family:var(--rc-sans); font-weight:700; font-size:16px; color:var(--rc-text); }
+  #rc-{{ block.id }} .rc-plan-name{ font-family:var(--rc-sans); font-weight:700; font-size:{{ block.settings.plan_name_size | default: 16 }}px; color:var(--rc-text); }
   #rc-{{ block.id }} .rc-save{ font-family:var(--rc-script); font-weight:700; font-size:22px; color:var(--rc-rose); margin-left:2px; }
   #rc-{{ block.id }} .rc-plan-sub{ display:block; font-size:12px; color:var(--rc-text-muted); margin-top:2px; }
   #rc-{{ block.id }} .rc-plan-price{ margin-left:auto; text-align:right; flex-shrink:0; }
-  #rc-{{ block.id }} .rc-now{ font-family:var(--rc-serif); font-weight:800; font-size:24px; color:var(--rc-text); }
+  #rc-{{ block.id }} .rc-now{ font-family:var(--rc-serif); font-weight:800; font-size:{{ block.settings.price_size | default: 24 }}px; color:var(--rc-text); }
   #rc-{{ block.id }} .rc-was{ display:block; font-size:12px; color:var(--rc-text-muted); text-decoration:line-through; }
   #rc-{{ block.id }} .rc-badge{ position:absolute; top:-11px; right:18px; background:var(--rc-rose); color:#fff; font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; padding:5px 12px; border-radius:999px; box-shadow:0 6px 24px rgba(232,96,122,.28); }
   #rc-{{ block.id }} .rc-reveal{ overflow:hidden; max-height:0; opacity:0; transition:max-height .45s var(--rc-spring), opacity .35s, margin .35s; margin-top:0; }
@@ -294,10 +305,16 @@
   #rc-{{ block.id }} .rc-gift-lost .rc-free{ color:var(--rc-stone); }
   #rc-{{ block.id }} .rc-gift-enter{ opacity:1; transform:none; }
   #rc-{{ block.id }} .rc-gift-enter.rc-enter-hidden{ opacity:0; transform:translateY(12px) scale(.94); }
-  #rc-{{ block.id }} .rc-cta{ width:100%; display:flex; align-items:center; justify-content:center; gap:6px; margin-top:20px; padding:16px; border:none; border-radius:999px; background:var(--rc-rose); color:#fff; font-family:var(--rc-sans); font-weight:600; font-size:13px; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 24px rgba(232,96,122,.28); transition:transform .2s, box-shadow .2s; }
+  #rc-{{ block.id }} .rc-cta{ width:100%; display:flex; align-items:center; justify-content:center; gap:6px; margin-top:20px; padding:{{ block.settings.cta_padding_y | default: 16 }}px; border:none; border-radius:{{ block.settings.cta_radius | default: 100 }}px; background:{{ block.settings.cta_bg | default: 'var(--rc-rose)' }}; color:{{ block.settings.cta_text | default: '#fff' }}; font-family:var(--rc-sans); font-weight:600; font-size:{{ block.settings.cta_size | default: 13 }}px; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 24px rgba(232,96,122,.28); transition:transform .2s, box-shadow .2s; }
   #rc-{{ block.id }} .rc-cta:hover{ transform:translateY(-2px); box-shadow:0 10px 32px rgba(232,96,122,.35); }
   #rc-{{ block.id }} .rc-fine{ text-align:center; font-size:11px; color:var(--rc-text-muted); margin-top:12px; }
-  @media (max-width:520px){ #rc-{{ block.id }} .rc-card{ padding:22px; } }
+  @media (max-width:767px){
+    #rc-{{ block.id }}{ max-width:{% if block.settings.mobile_full_width %}100%{% else %}{{ block.settings.mobile_max_width | default: 420 }}px{% endif %}; padding:{{ block.settings.mobile_section_padding_y | default: 0 }}px {{ block.settings.mobile_section_padding_x | default: 0 }}px; }
+    #rc-{{ block.id }} .rc-card{ padding:{{ block.settings.mobile_card_padding_y | default: 22 }}px {{ block.settings.mobile_card_padding_x | default: 22 }}px; }
+    #rc-{{ block.id }} .rc-plan-name{ font-size:{{ block.settings.mobile_plan_name_size | default: block.settings.plan_name_size | default: 16 }}px; }
+    #rc-{{ block.id }} .rc-now{ font-size:{{ block.settings.mobile_price_size | default: block.settings.price_size | default: 24 }}px; }
+    #rc-{{ block.id }} .rc-cta{ font-size:{{ block.settings.mobile_cta_size | default: block.settings.cta_size | default: 13 }}px; }
+  }
 </style>
 
 <script>
@@ -385,5 +402,34 @@
 
   if(activeFreq) applyFreq(activeFreq);
   if(tally) tally.textContent = sym + GIFT_TOTAL;
+
+  var variantData = {};
+  try { variantData = JSON.parse(root.dataset.variants || '{}'); } catch(e) {}
+
+  function updateForVariant(vid) {
+    var vd = variantData[String(vid)];
+    if(!vd) return;
+    var viInput = root.querySelector('[data-variant-id]');
+    if(viInput) viInput.value = vid;
+    var onePriceEl = onePlan ? onePlan.querySelector('.rc-now') : null;
+    if(onePriceEl) onePriceEl.textContent = money(vd.p);
+    freqBtns.forEach(function(b){
+      var pid = b.dataset.planId;
+      var a = vd.a && vd.a[pid];
+      if(a){ b.dataset.price = a.p; b.dataset.compare = a.c; }
+      else { b.dataset.price = vd.p; b.dataset.compare = vd.p; }
+    });
+    if(current === 'sub' && activeFreq) applyFreq(activeFreq);
+    else if(totalEl) totalEl.textContent = money(vd.p);
+  }
+
+  document.addEventListener('variant:changed', function(e){
+    if(e.detail && e.detail.variant) updateForVariant(e.detail.variant.id);
+  });
+  document.querySelectorAll('input[name="id"]').forEach(function(inp){
+    if(inp !== root.querySelector('[data-variant-id]')){
+      inp.addEventListener('change', function(){ updateForVariant(this.value); });
+    }
+  });
 })();
 </script>
