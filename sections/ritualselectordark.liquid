@@ -1,0 +1,454 @@
+{%- comment -%}
+  ============================================================
+  WELLER CO. — Ritual Cards Purchase Selector  (DARK)
+  ------------------------------------------------------------
+  One-time vs. Subscribe & Save, the "Ritual Cards" design:
+    • Plans  -> One-time + native Shopify selling plans
+                (product.selling_plan_groups, read LIVE).
+    • Freq   -> one button per selling plan (Monthly, Bi-monthly…).
+    • Gifts  -> editable "gift" blocks; values tally on the
+                subscribe card and strike out on one-time.
+    • Manual fallback: if the product has no selling plans,
+      the subscribe card renders from section settings
+      (discount % + cadence labels) so the design stays intact.
+
+  Styles + JS are namespaced under #rc-{{ section.id }}.
+  LIGHT twin: herdration-ritual-selector-light.liquid
+  ============================================================
+{%- endcomment -%}
+
+{%- assign p = section.settings.current_product | default: product -%}
+{%- assign cv = p.selected_or_first_available_variant | default: p.variants.first -%}
+{%- assign sym = section.settings.currency_symbol | default: '$' -%}
+{%- assign has_plans = false -%}
+{%- if p.selling_plan_groups.size > 0 -%}{%- assign has_plans = true -%}{%- endif -%}
+
+{%- comment -%} gift blocks -> tally {%- endcomment -%}
+{%- assign gift_total = 0 -%}
+{%- for block in section.blocks -%}
+  {%- if block.type == 'gift' -%}{%- assign gift_total = gift_total | plus: block.settings.value -%}{%- endif -%}
+{%- endfor -%}
+
+{%- capture rc_ico_scoop -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13.5a5.5 5.5 0 0 1 5.5-5.5H12v11H9.5A5.5 5.5 0 0 1 4 13.5Z"/><path d="M12 8l3.8-3.8a2.6 2.6 0 1 1 3.7 3.7L16 11.4"/></svg>{%- endcapture -%}
+{%- capture rc_ico_pouch -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 8h11l-.7 11.2a1.8 1.8 0 0 1-1.8 1.8H9a1.8 1.8 0 0 1-1.8-1.8L6.5 8Z"/><path d="M6.5 8 8.2 4.8a1.5 1.5 0 0 1 1.3-.8h5a1.5 1.5 0 0 1 1.3.8L17.5 8"/><path d="M9.5 12.5h5"/></svg>{%- endcapture -%}
+{%- capture rc_ico_guide -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h10a1.5 1.5 0 0 1 1.5 1.5V20H7.5A1.5 1.5 0 0 1 6 18.5V4Z"/><path d="M6 4a1.5 1.5 0 0 0-1.5 1.5v13A1.5 1.5 0 0 1 6 17"/><path d="M9.5 8.5h4.5M9.5 12h3"/></svg>{%- endcapture -%}
+{%- capture rc_ico_gift -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M4 13h16M12 9v11"/><path d="M12 9S10.5 4.5 8 5.2C6 5.8 7 9 12 9ZM12 9s1.5-4.5 4-3.8C18 5.8 17 9 12 9Z"/></svg>{%- endcapture -%}
+
+<section
+  id="rc-{{ section.id }}"
+  class="rc rc--dark"
+  data-section-id="{{ section.id }}"
+  data-symbol="{{ sym }}"
+  data-has-plans="{{ has_plans }}"
+  data-gift-total="{{ gift_total }}"
+  data-manual-discount="{{ section.settings.manual_discount }}">
+
+  {%- if p == blank -%}
+    <p style="padding:48px;text-align:center;">Select a product in the section settings.</p>
+  {%- else -%}
+
+  {%- assign rc_form_id = 'rc-form-' | append: section.id -%}
+  {%- form 'product', p, id: rc_form_id, class: 'rc-card' -%}
+    <input type="hidden" name="id" value="{{ cv.id }}" data-variant-id>
+    <input type="hidden" name="selling_plan" value="" data-selling-plan>
+
+    <span class="rc-blob rc-blob1"></span>
+    <span class="rc-blob rc-blob2"></span>
+
+    <div class="rc-sel">
+      <div class="rc-q">{{ section.settings.heading }}</div>
+
+      <!-- ===== ONE-TIME ===== -->
+      <div class="rc-plan" data-plan="one" role="button" tabindex="0">
+        <div class="rc-plan-top">
+          <span class="rc-radio"></span>
+          <span>
+            <span class="rc-plan-name">{{ section.settings.onetime_name }}</span>
+            <span class="rc-plan-sub">{{ section.settings.onetime_sub }}</span>
+          </span>
+          <span class="rc-plan-price"><span class="rc-now">{{ cv.price | money }}</span></span>
+        </div>
+        <div class="rc-reveal">
+          <div class="rc-reveal-inner">
+            <div class="rc-loss-h">✕ {{ section.settings.skip_heading }}</div>
+            <div class="rc-gifts" data-gifts-lost>
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'gift' -%}
+                  <div class="rc-gift rc-gift-enter rc-gift-lost" {{ block.shopify_attributes }}>
+                    <span class="rc-g-ico">{%- case block.settings.icon -%}{%- when 'pouch' -%}{{ rc_ico_pouch }}{%- when 'guide' -%}{{ rc_ico_guide }}{%- when 'gift' -%}{{ rc_ico_gift }}{%- else -%}{{ rc_ico_scoop }}{%- endcase -%}</span>
+                    <span><span class="rc-g-name">{{ block.settings.name }}</span><span class="rc-g-tag">{{ block.settings.tag }}</span></span>
+                    <span class="rc-g-val"><span class="rc-strike">{{ sym }}{{ block.settings.value }} value</span><span class="rc-free">Gone</span></span>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+            <div class="rc-loss-note">{{ section.settings.skip_note }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SUBSCRIBE & SAVE ===== -->
+      <div class="rc-plan rc-on" data-plan="sub" role="button" tabindex="0">
+        {%- if section.settings.badge_text != blank -%}<span class="rc-badge">{{ section.settings.badge_text }}</span>{%- endif -%}
+        <div class="rc-plan-top">
+          <span class="rc-radio"></span>
+          <span>
+            <span class="rc-plan-name">{{ section.settings.sub_name }} <span class="rc-save">&amp; save</span></span>
+            <span class="rc-plan-sub"><span data-cadence>{{ section.settings.cadence_prefix }}</span> · {{ section.settings.sub_sub }}</span>
+          </span>
+          <span class="rc-plan-price">
+            <span class="rc-now" data-sub-price>{{ cv.price | money }}</span>
+            <span class="rc-was" data-sub-was>{{ cv.price | money }}</span>
+          </span>
+        </div>
+        <div class="rc-reveal">
+          <div class="rc-reveal-inner">
+
+            <div class="rc-freq-row">
+              <span class="rc-freq-label">{{ section.settings.deliver_label }}</span>
+              <div class="rc-freq" data-freq>
+                {%- if has_plans -%}
+                  {%- assign fi = 0 -%}
+                  {%- for group in p.selling_plan_groups -%}
+                    {%- for plan in group.selling_plans -%}
+                      {%- assign alloc = nil -%}
+                      {%- for a in cv.selling_plan_allocations -%}
+                        {%- if a.selling_plan.id == plan.id -%}{%- assign alloc = a -%}{%- break -%}{%- endif -%}
+                      {%- endfor -%}
+                      <button type="button"
+                        class="{% if fi == 0 %}rc-on{% endif %}"
+                        data-plan-id="{{ plan.id }}"
+                        data-price="{% if alloc %}{{ alloc.per_delivery_price }}{% else %}{{ cv.price }}{% endif %}"
+                        data-compare="{% if alloc and alloc.compare_at_price %}{{ alloc.compare_at_price }}{% else %}{{ cv.price }}{% endif %}"
+                        data-cadence="{{ plan.name }}">
+                        {{ plan.name }}<span>{{ plan.options.first.value | default: plan.name }}</span>
+                      </button>
+                      {%- assign fi = fi | plus: 1 -%}
+                    {%- endfor -%}
+                  {%- endfor -%}
+                {%- else -%}
+                  {%- assign labels = section.settings.manual_cadences | split: ',' -%}
+                  {%- assign disc = section.settings.manual_discount | default: 10 -%}
+                  {%- assign sub_cents = cv.price | times: 100 | minus: cv.price | times: disc | divided_by: 100 -%}
+                  {%- for lab in labels -%}
+                    {%- assign parts = lab | split: ':' -%}
+                    <button type="button"
+                      class="{% if forloop.first %}rc-on{% endif %}"
+                      data-plan-id=""
+                      data-price="{{ sub_cents }}"
+                      data-compare="{{ cv.price }}"
+                      data-cadence="{{ parts[0] | strip }}">
+                      {{ parts[0] | strip }}<span>{{ parts[1] | strip }}</span>
+                    </button>
+                  {%- endfor -%}
+                {%- endif -%}
+              </div>
+            </div>
+
+            <div class="rc-reveal-h">{{ section.settings.gifts_heading }}</div>
+            <div class="rc-gifts" data-gifts>
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'gift' -%}
+                  <div class="rc-gift rc-gift-enter" {{ block.shopify_attributes }}>
+                    <span class="rc-g-ico">{%- case block.settings.icon -%}{%- when 'pouch' -%}{{ rc_ico_pouch }}{%- when 'guide' -%}{{ rc_ico_guide }}{%- when 'gift' -%}{{ rc_ico_gift }}{%- else -%}{{ rc_ico_scoop }}{%- endcase -%}</span>
+                    <span><span class="rc-g-name">{{ block.settings.name }}</span><span class="rc-g-tag">{{ block.settings.tag }}</span></span>
+                    <span class="rc-g-val"><span class="rc-strike">{{ sym }}{{ block.settings.value }} value</span><span class="rc-free">Free</span></span>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+
+            <div class="rc-tally">
+              <span class="rc-big" data-tally>{{ sym }}{{ gift_total }}</span>
+              <span class="rc-lbl">{{ section.settings.tally_text }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" name="add" class="rc-cta" data-add-btn>
+        {{ section.settings.cta_label }} — <span data-total>{{ cv.price | money }}</span>
+      </button>
+      <div class="rc-fine">{{ section.settings.fine_print }}</div>
+    </div>
+  {%- endform -%}
+
+  {%- endif -%}
+</section>
+
+{%- comment -%} ============ STYLES (namespaced + themed via CSS vars) ============ {%- endcomment -%}
+<style>
+  #rc-{{ section.id }}{
+    /* brand palette */
+    --rc-blush:#F2C4CE; --rc-peach:#E8A87C; --rc-sage:#8A9B6E; --rc-sky:#4A90B8;
+    --rc-navy:#1B3A5C; --rc-rose:#E8607A; --rc-cream:#FAF5F0; --rc-cream-dk:#F0E8E0;
+    --rc-lime:#7DB642; --rc-fog:#F5EEE8; --rc-mist:#E8DDD5; --rc-stone:#8A7E76;
+    --rc-serif:'Playfair Display','Georgia',serif;
+    --rc-display:'Cormorant Garamond','Georgia',serif;
+    --rc-script:'Dancing Script',cursive;
+    --rc-sans:'DM Sans','Helvetica Neue',sans-serif;
+    --rc-spring:cubic-bezier(.34,1.4,.5,1);
+
+    /* ===== THEME: DARK ===== */
+    --rc-card-bg:var(--rc-navy);
+    --rc-surface:rgba(255,255,255,.04);
+    --rc-border:rgba(255,255,255,.13);
+    --rc-text:#fff;
+    --rc-text-muted:rgba(250,245,240,.6);
+    --rc-radio:rgba(255,255,255,.32);
+    --rc-gift-bg:rgba(255,255,255,.06);
+    --rc-gift-ico-bg:rgba(232,96,122,.2);
+    --rc-freq-bg:rgba(255,255,255,.07);
+    --rc-freq-on-bg:var(--rc-cream);
+    --rc-freq-on-text:var(--rc-navy);
+    --rc-tally-bg:rgba(232,96,122,.16);
+    --rc-tally-border:rgba(232,96,122,.32);
+    --rc-tally-num:#fff;
+    --rc-tally-lbl:rgba(250,245,240,.85);
+    --rc-card-shadow:0 18px 60px rgba(10,22,38,.45);
+    --rc-on-bg:rgba(232,96,122,.13);
+    --rc-blob1:var(--rc-rose); --rc-blob1-op:.16;
+    --rc-blob2:var(--rc-sky); --rc-blob2-op:.18;
+
+    display:block; font-family:var(--rc-sans); color:var(--rc-text);
+    max-width:520px; margin:0 auto; padding:8px;
+  }
+  #rc-{{ section.id }} *{ box-sizing:border-box; }
+
+  #rc-{{ section.id }} .rc-card{
+    background:var(--rc-card-bg); border-radius:28px; padding:30px;
+    box-shadow:var(--rc-card-shadow); position:relative; overflow:hidden; margin:0;
+  }
+  #rc-{{ section.id }} .rc-blob{ position:absolute; border-radius:50%; pointer-events:none; z-index:0; }
+  #rc-{{ section.id }} .rc-blob1{ width:200px; height:200px; background:var(--rc-blob1); opacity:var(--rc-blob1-op); top:-70px; right:-60px; }
+  #rc-{{ section.id }} .rc-blob2{ width:130px; height:130px; background:var(--rc-blob2); opacity:var(--rc-blob2-op); bottom:-50px; left:-40px; }
+  #rc-{{ section.id }} .rc-sel{ position:relative; z-index:1; }
+  #rc-{{ section.id }} .rc-q{ font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-text-muted); margin-bottom:12px; }
+
+  /* plan card */
+  #rc-{{ section.id }} .rc-plan{
+    position:relative; display:block; width:100%; text-align:left;
+    background:var(--rc-surface); border:1.5px solid var(--rc-border); border-radius:20px;
+    padding:18px 20px; margin-bottom:12px; cursor:pointer;
+    transition:border-color .18s, background .18s, box-shadow .18s;
+  }
+  #rc-{{ section.id }} .rc-plan:hover{ border-color:rgba(232,96,122,.45); }
+  #rc-{{ section.id }} .rc-plan.rc-on{ border-color:var(--rc-rose); background:var(--rc-on-bg); box-shadow:0 6px 24px rgba(232,96,122,.2); }
+  #rc-{{ section.id }} .rc-plan-top{ display:flex; align-items:center; gap:14px; }
+  #rc-{{ section.id }} .rc-radio{ width:22px; height:22px; border-radius:50%; border:2px solid var(--rc-radio); flex-shrink:0; position:relative; transition:border-color .18s; }
+  #rc-{{ section.id }} .rc-plan.rc-on .rc-radio{ border-color:var(--rc-rose); }
+  #rc-{{ section.id }} .rc-plan.rc-on .rc-radio::after{ content:''; position:absolute; inset:3px; border-radius:50%; background:var(--rc-rose); }
+  #rc-{{ section.id }} .rc-plan-name{ font-family:var(--rc-sans); font-weight:700; font-size:16px; color:var(--rc-text); }
+  #rc-{{ section.id }} .rc-save{ font-family:var(--rc-script); font-weight:700; font-size:22px; color:var(--rc-rose); margin-left:2px; }
+  #rc-{{ section.id }} .rc-plan-sub{ display:block; font-size:12px; color:var(--rc-text-muted); margin-top:2px; }
+  #rc-{{ section.id }} .rc-plan-price{ margin-left:auto; text-align:right; flex-shrink:0; }
+  #rc-{{ section.id }} .rc-now{ font-family:var(--rc-serif); font-weight:800; font-size:24px; color:var(--rc-text); }
+  #rc-{{ section.id }} .rc-was{ display:block; font-size:12px; color:var(--rc-text-muted); text-decoration:line-through; }
+  #rc-{{ section.id }} .rc-badge{ position:absolute; top:-11px; right:18px; background:var(--rc-rose); color:#fff; font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; padding:5px 12px; border-radius:999px; box-shadow:0 6px 24px rgba(232,96,122,.28); }
+
+  /* reveal */
+  #rc-{{ section.id }} .rc-reveal{ overflow:hidden; max-height:0; opacity:0; transition:max-height .45s var(--rc-spring), opacity .35s, margin .35s; margin-top:0; }
+  #rc-{{ section.id }} .rc-plan.rc-on .rc-reveal{ max-height:520px; opacity:1; margin-top:14px; }
+  #rc-{{ section.id }} .rc-reveal-inner{ border-top:1.5px dashed rgba(232,96,122,.4); padding-top:16px; }
+  #rc-{{ section.id }} .rc-reveal-h, #rc-{{ section.id }} .rc-loss-h{ font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-rose); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  #rc-{{ section.id }} .rc-reveal-h::after, #rc-{{ section.id }} .rc-loss-h::after{ content:''; flex:1; height:1px; background:rgba(232,96,122,.22); }
+
+  /* freq */
+  #rc-{{ section.id }} .rc-freq-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:15px; }
+  #rc-{{ section.id }} .rc-freq-label{ font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-text-muted); }
+  #rc-{{ section.id }} .rc-freq{ display:flex; flex:1; gap:5px; background:var(--rc-freq-bg); border-radius:999px; padding:4px; }
+  #rc-{{ section.id }} .rc-freq button{ flex:1; border:none; background:none; padding:6px 13px; border-radius:999px; cursor:pointer; font-family:var(--rc-sans); font-weight:700; font-size:12px; color:var(--rc-text-muted); display:flex; flex-direction:column; align-items:center; line-height:1.05; transition:background .2s,color .2s,box-shadow .2s; }
+  #rc-{{ section.id }} .rc-freq button span{ font-weight:600; font-size:9px; letter-spacing:.08em; text-transform:uppercase; opacity:.75; margin-top:2px; }
+  #rc-{{ section.id }} .rc-freq button.rc-on{ background:var(--rc-freq-on-bg); color:var(--rc-freq-on-text); box-shadow:0 2px 12px rgba(27,58,92,.12); }
+  #rc-{{ section.id }} .rc-freq button.rc-on span{ color:var(--rc-rose); opacity:1; }
+
+  /* gifts */
+  #rc-{{ section.id }} .rc-gifts{ display:flex; flex-direction:column; gap:8px; }
+  #rc-{{ section.id }} .rc-gift{ display:flex; align-items:center; gap:12px; background:var(--rc-gift-bg); border-radius:14px; padding:9px 14px; transition:opacity .4s ease, transform .5s var(--rc-spring); }
+  #rc-{{ section.id }} .rc-g-ico{ display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; background:var(--rc-gift-ico-bg); color:var(--rc-rose); flex-shrink:0; }
+  #rc-{{ section.id }} .rc-g-ico svg{ width:22px; height:22px; }
+  #rc-{{ section.id }} .rc-g-name{ display:block; font-weight:600; font-size:13px; color:var(--rc-text); line-height:1.2; }
+  #rc-{{ section.id }} .rc-g-tag{ display:block; font-size:11px; color:var(--rc-text-muted); line-height:1.2; margin-top:1px; }
+  #rc-{{ section.id }} .rc-g-val{ margin-left:auto; text-align:right; }
+  #rc-{{ section.id }} .rc-strike{ font-size:11px; color:var(--rc-text-muted); text-decoration:line-through; }
+  #rc-{{ section.id }} .rc-free{ display:block; font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--rc-lime); }
+
+  /* tally */
+  #rc-{{ section.id }} .rc-tally{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:14px; background:var(--rc-tally-bg); border:1px solid var(--rc-tally-border); border-radius:14px; padding:12px 16px; }
+  #rc-{{ section.id }} .rc-big{ font-family:var(--rc-serif); font-weight:900; font-size:26px; color:var(--rc-tally-num); line-height:1; }
+  #rc-{{ section.id }} .rc-lbl{ font-size:12px; line-height:1.35; color:var(--rc-tally-lbl); }
+  #rc-{{ section.id }} .rc-lbl b{ color:var(--rc-rose); }
+
+  /* loss */
+  #rc-{{ section.id }} .rc-loss-note{ font-size:12px; line-height:1.45; color:var(--rc-text-muted); margin-top:12px; }
+  #rc-{{ section.id }} .rc-loss-note b{ color:var(--rc-rose); }
+  #rc-{{ section.id }} .rc-gift-lost{ filter:grayscale(.85) brightness(.9); opacity:.5; }
+  #rc-{{ section.id }} .rc-gift-lost .rc-g-ico{ background:rgba(250,245,240,.1); color:rgba(250,245,240,.5); }
+  #rc-{{ section.id }} .rc-gift-lost .rc-g-name{ text-decoration:line-through; text-decoration-color:rgba(232,96,122,.5); }
+  #rc-{{ section.id }} .rc-gift-lost .rc-free{ color:var(--rc-stone); }
+
+  /* entrance */
+  #rc-{{ section.id }} .rc-gift-enter{ opacity:1; transform:none; }
+  #rc-{{ section.id }} .rc-gift-enter.rc-enter-hidden{ opacity:0; transform:translateY(12px) scale(.94); }
+
+  /* cta */
+  #rc-{{ section.id }} .rc-cta{ width:100%; display:flex; align-items:center; justify-content:center; gap:6px; margin-top:20px; padding:16px; border:none; border-radius:999px; background:var(--rc-rose); color:#fff; font-family:var(--rc-sans); font-weight:600; font-size:13px; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 24px rgba(232,96,122,.28); transition:transform .2s, box-shadow .2s; }
+  #rc-{{ section.id }} .rc-cta:hover{ transform:translateY(-2px); box-shadow:0 10px 32px rgba(232,96,122,.35); }
+  #rc-{{ section.id }} .rc-fine{ text-align:center; font-size:11px; color:var(--rc-text-muted); margin-top:12px; }
+  #rc-{{ section.id }} .rc-fine .rc-heart{ color:var(--rc-rose); }
+
+  @media (max-width:520px){ #rc-{{ section.id }} .rc-card{ padding:22px; } }
+</style>
+
+{%- comment -%} ============ BEHAVIOUR ============ {%- endcomment -%}
+<script>
+(function(){
+  var root = document.getElementById('rc-{{ section.id }}');
+  if(!root) return;
+  var sym = root.dataset.symbol || '$';
+  var GIFT_TOTAL = parseInt(root.dataset.giftTotal, 10) || 0;
+  var money = function(c){ return sym + (c/100).toFixed(2); };
+  var slice = function(c){ return Array.prototype.slice.call(c); };
+
+  var subPlan = root.querySelector('.rc-plan[data-plan="sub"]');
+  var onePlan = root.querySelector('.rc-plan[data-plan="one"]');
+  var giftsEl = root.querySelector('[data-gifts]');
+  var lostEl  = root.querySelector('[data-gifts-lost]');
+  var items = giftsEl ? slice(giftsEl.children) : [];
+  var lost  = lostEl ? slice(lostEl.children) : [];
+  var tally = root.querySelector('[data-tally]');
+  var subPrice = root.querySelector('[data-sub-price]');
+  var subWas = root.querySelector('[data-sub-was]');
+  var totalEl = root.querySelector('[data-total]');
+  var cadenceEl = root.querySelector('[data-cadence]');
+  var sellingPlanInput = root.querySelector('[data-selling-plan]');
+  var onePrice = onePlan ? onePlan.querySelector('.rc-now').textContent : '';
+
+  var freqBtns = slice(root.querySelectorAll('[data-freq] button'));
+  var current = 'sub';
+  var activeFreq = freqBtns[0] || null;
+
+  function staggerIn(list, gap){
+    gap = gap || 95;
+    list.forEach(function(el){ el.classList.add('rc-enter-hidden'); });
+    if(list[0]) void list[0].offsetWidth;
+    list.forEach(function(el,i){ setTimeout(function(){ el.classList.remove('rc-enter-hidden'); }, 40 + i*gap); });
+  }
+  function animateNum(el, from, to, dur){
+    if(!el) return; dur = dur || 600;
+    var start = performance.now();
+    (function step(t){
+      var pr = Math.min(1,(t-start)/dur), e = 1-Math.pow(1-pr,3);
+      el.textContent = sym + Math.round(from + (to-from)*e);
+      if(pr<1) requestAnimationFrame(step); else el.textContent = sym + to;
+    })(performance.now());
+  }
+
+  function applyFreq(btn){
+    if(!btn) return;
+    activeFreq = btn;
+    freqBtns.forEach(function(b){ b.classList.toggle('rc-on', b === btn); });
+    var price = parseInt(btn.dataset.price,10);
+    var cmp = parseInt(btn.dataset.compare,10);
+    if(subPrice) subPrice.textContent = money(price);
+    if(subWas){ if(cmp && cmp > price){ subWas.textContent = money(cmp); subWas.style.display=''; } else { subWas.style.display='none'; } }
+    if(cadenceEl) cadenceEl.textContent = 'Every ' + (btn.querySelector('span') ? btn.querySelector('span').textContent : btn.dataset.cadence);
+    if(current === 'sub'){
+      if(totalEl) totalEl.textContent = money(price);
+      if(sellingPlanInput) sellingPlanInput.value = btn.dataset.planId || '';
+    }
+  }
+
+  function toSub(){
+    if(current === 'sub') return;
+    current = 'sub';
+    onePlan.classList.remove('rc-on'); subPlan.classList.add('rc-on');
+    if(sellingPlanInput) sellingPlanInput.value = activeFreq ? (activeFreq.dataset.planId || '') : '';
+    if(totalEl && activeFreq) totalEl.textContent = money(parseInt(activeFreq.dataset.price,10));
+    animateNum(tally, 0, GIFT_TOTAL, 600);
+    staggerIn(items);
+  }
+  function toOne(){
+    if(current === 'one') return;
+    current = 'one';
+    subPlan.classList.remove('rc-on'); onePlan.classList.add('rc-on');
+    if(sellingPlanInput) sellingPlanInput.value = '';
+    if(totalEl) totalEl.textContent = onePrice;
+    staggerIn(lost);
+  }
+
+  root.querySelectorAll('.rc-plan').forEach(function(pl){
+    pl.addEventListener('click', function(){ pl.dataset.plan === 'one' ? toOne() : toSub(); });
+    pl.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pl.dataset.plan==='one'?toOne():toSub(); } });
+  });
+  freqBtns.forEach(function(b){ b.addEventListener('click', function(e){ e.stopPropagation(); applyFreq(b); }); });
+
+  // init
+  if(activeFreq) applyFreq(activeFreq);
+  if(tally) tally.textContent = sym + GIFT_TOTAL;
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Ritual Selector · Dark",
+  "tag": "section",
+  "class": "shopify-section--rc-dark",
+  "settings": [
+    { "type": "header", "content": "Product" },
+    { "type": "product", "id": "current_product", "label": "Selected product", "info": "Leave empty on a product page (auto-detects). Subscribe options read live from the product's selling plans." },
+
+    { "type": "header", "content": "Copy" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Choose your ritual" },
+    { "type": "text", "id": "onetime_name", "label": "One-time name", "default": "One-time purchase" },
+    { "type": "text", "id": "onetime_sub", "label": "One-time subtext", "default": "Ships once · no commitment" },
+    { "type": "text", "id": "sub_name", "label": "Subscribe name", "default": "Subscribe" },
+    { "type": "text", "id": "sub_sub", "label": "Subscribe subtext", "default": "skip or cancel anytime" },
+    { "type": "text", "id": "cadence_prefix", "label": "Cadence fallback label", "default": "Every 30 days" },
+    { "type": "text", "id": "badge_text", "label": "Badge", "default": "Most loved ♡" },
+    { "type": "text", "id": "deliver_label", "label": "Deliver label", "default": "Deliver" },
+    { "type": "text", "id": "gifts_heading", "label": "Gifts heading", "default": "Free welcome gifts · first box" },
+    { "type": "richtext", "id": "tally_text", "label": "Tally text", "default": "<p>in <b>welcome gifts</b> on your 1st box + 10% off &amp; free shipping, always</p>" },
+    { "type": "text", "id": "skip_heading", "label": "One-time skip heading", "default": "You'd be skipping" },
+    { "type": "richtext", "id": "skip_note", "label": "One-time skip note", "default": "<p>No welcome gifts, <b>no 10% off</b>, and shipping's back to <b>$5.95</b>. 🥺</p>" },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Add to cart" },
+    { "type": "text", "id": "fine_print", "label": "Fine print", "default": "Free shipping always on subscriptions ♡" },
+
+    { "type": "header", "content": "Pricing" },
+    { "type": "text", "id": "currency_symbol", "label": "Currency symbol", "default": "$" },
+
+    { "type": "header", "content": "Manual fallback (no selling plans)", "info": "Used only when the product has no Shopify selling plans." },
+    { "type": "range", "id": "manual_discount", "label": "Subscribe discount %", "min": 0, "max": 50, "step": 1, "default": 10 },
+    { "type": "text", "id": "manual_cadences", "label": "Cadences (Label:sub,Label:sub)", "default": "Monthly:30 days, Bi-monthly:60 days" }
+  ],
+  "blocks": [
+    {
+      "type": "gift",
+      "name": "Welcome gift",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Weller Go Scoop" },
+        { "type": "text", "id": "tag", "label": "Tagline", "default": "Travel-size measuring scoop" },
+        { "type": "number", "id": "value", "label": "Value", "default": 5 },
+        { "type": "select", "id": "icon", "label": "Icon", "default": "scoop",
+          "options": [
+            { "value": "scoop", "label": "Scoop" },
+            { "value": "pouch", "label": "Pouch" },
+            { "value": "guide", "label": "Guide / book" },
+            { "value": "gift", "label": "Gift" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ritual Selector · Dark",
+      "blocks": [
+        { "type": "gift", "settings": { "name": "Weller Go Scoop", "tag": "Travel-size measuring scoop", "value": 5, "icon": "scoop" } },
+        { "type": "gift", "settings": { "name": "Weller Go Pouch", "tag": "Single-serve stash pouch", "value": 2, "icon": "pouch" } },
+        { "type": "gift", "settings": { "name": "Wellness Guide", "tag": "Cycle & hydration handbook", "value": 3, "icon": "guide" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

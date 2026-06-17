@@ -1,0 +1,353 @@
+{%- comment -%}
+  ritualselectorlight.liquid
+  Usage: {% render 'ritualselectorlight', block: block, product: product %}
+  Block settings mirror the schema defined in proproductpage.liquid.
+{%- endcomment -%}
+
+{%- assign p = product -%}
+{%- assign cv = p.selected_or_first_available_variant | default: p.variants.first -%}
+{%- assign sym = block.settings.currency_symbol | default: '$' -%}
+{%- assign has_plans = false -%}
+{%- if p.selling_plan_groups.size > 0 -%}{%- assign has_plans = true -%}{%- endif -%}
+
+{%- assign gift_total = 0 -%}
+{%- for i in (1..4) -%}
+  {%- assign _gnk = 'gift_' | append: i | append: '_name' -%}
+  {%- assign _gn  = block.settings[_gnk] -%}
+  {%- if _gn != blank -%}
+    {%- assign _gvk = 'gift_' | append: i | append: '_value' -%}
+    {%- assign gift_total = gift_total | plus: block.settings[_gvk] -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- capture rc_ico_scoop -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13.5a5.5 5.5 0 0 1 5.5-5.5H12v11H9.5A5.5 5.5 0 0 1 4 13.5Z"/><path d="M12 8l3.8-3.8a2.6 2.6 0 1 1 3.7 3.7L16 11.4"/></svg>{%- endcapture -%}
+{%- capture rc_ico_pouch -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 8h11l-.7 11.2a1.8 1.8 0 0 1-1.8 1.8H9a1.8 1.8 0 0 1-1.8-1.8L6.5 8Z"/><path d="M6.5 8 8.2 4.8a1.5 1.5 0 0 1 1.3-.8h5a1.5 1.5 0 0 1 1.3.8L17.5 8"/><path d="M9.5 12.5h5"/></svg>{%- endcapture -%}
+{%- capture rc_ico_guide -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h10a1.5 1.5 0 0 1 1.5 1.5V20H7.5A1.5 1.5 0 0 1 6 18.5V4Z"/><path d="M6 4a1.5 1.5 0 0 0-1.5 1.5v13A1.5 1.5 0 0 1 6 17"/><path d="M9.5 8.5h4.5M9.5 12h3"/></svg>{%- endcapture -%}
+{%- capture rc_ico_gift -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M4 13h16M12 9v11"/><path d="M12 9S10.5 4.5 8 5.2C6 5.8 7 9 12 9ZM12 9s1.5-4.5 4-3.8C18 5.8 17 9 12 9Z"/></svg>{%- endcapture -%}
+
+<section
+  id="rc-{{ block.id }}"
+  class="rc rc--light"
+  data-block-id="{{ block.id }}"
+  data-symbol="{{ sym }}"
+  data-has-plans="{{ has_plans }}"
+  data-gift-total="{{ gift_total }}"
+  data-manual-discount="{{ block.settings.manual_discount }}"
+  {{ block.shopify_attributes }}>
+
+  {%- assign rc_form_id = 'rc-form-' | append: block.id -%}
+  {%- form 'product', p, id: rc_form_id, class: 'rc-card' -%}
+    <input type="hidden" name="id" value="{{ cv.id }}" data-variant-id>
+    <input type="hidden" name="selling_plan" value="" data-selling-plan>
+
+    <span class="rc-blob rc-blob1"></span>
+    <span class="rc-blob rc-blob2"></span>
+
+    <div class="rc-sel">
+      <div class="rc-q">{{ block.settings.heading }}</div>
+
+      <!-- ONE-TIME -->
+      <div class="rc-plan" data-plan="one" role="button" tabindex="0">
+        <div class="rc-plan-top">
+          <span class="rc-radio"></span>
+          <span>
+            <span class="rc-plan-name">{{ block.settings.onetime_name }}</span>
+            <span class="rc-plan-sub">{{ block.settings.onetime_sub }}</span>
+          </span>
+          <span class="rc-plan-price"><span class="rc-now">{{ cv.price | money }}</span></span>
+        </div>
+        <div class="rc-reveal">
+          <div class="rc-reveal-inner">
+            <div class="rc-loss-h">✕ {{ block.settings.skip_heading }}</div>
+            <div class="rc-gifts" data-gifts-lost>
+              {%- for i in (1..4) -%}
+                {%- assign _gnk = 'gift_' | append: i | append: '_name' -%}
+                {%- assign _gn  = block.settings[_gnk] -%}
+                {%- if _gn != blank -%}
+                  {%- assign _gtk = 'gift_' | append: i | append: '_tag' -%}
+                  {%- assign _gvk = 'gift_' | append: i | append: '_value' -%}
+                  {%- assign _gik = 'gift_' | append: i | append: '_icon' -%}
+                  <div class="rc-gift rc-gift-enter rc-gift-lost">
+                    <span class="rc-g-ico">{%- case block.settings[_gik] -%}{%- when 'pouch' -%}{{ rc_ico_pouch }}{%- when 'guide' -%}{{ rc_ico_guide }}{%- when 'gift' -%}{{ rc_ico_gift }}{%- else -%}{{ rc_ico_scoop }}{%- endcase -%}</span>
+                    <span><span class="rc-g-name">{{ _gn }}</span><span class="rc-g-tag">{{ block.settings[_gtk] }}</span></span>
+                    <span class="rc-g-val"><span class="rc-strike">{{ sym }}{{ block.settings[_gvk] }} value</span><span class="rc-free">Gone</span></span>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+            <div class="rc-loss-note">{{ block.settings.skip_note }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBSCRIBE & SAVE -->
+      <div class="rc-plan rc-on" data-plan="sub" role="button" tabindex="0">
+        {%- if block.settings.badge_text != blank -%}<span class="rc-badge">{{ block.settings.badge_text }}</span>{%- endif -%}
+        <div class="rc-plan-top">
+          <span class="rc-radio"></span>
+          <span>
+            <span class="rc-plan-name">{{ block.settings.sub_name }} <span class="rc-save">&amp; save</span></span>
+            <span class="rc-plan-sub"><span data-cadence>{{ block.settings.cadence_prefix }}</span> · {{ block.settings.sub_sub }}</span>
+          </span>
+          <span class="rc-plan-price">
+            <span class="rc-now" data-sub-price>{{ cv.price | money }}</span>
+            <span class="rc-was" data-sub-was>{{ cv.price | money }}</span>
+          </span>
+        </div>
+        <div class="rc-reveal">
+          <div class="rc-reveal-inner">
+
+            <div class="rc-freq-row">
+              <span class="rc-freq-label">{{ block.settings.deliver_label }}</span>
+              <div class="rc-freq" data-freq>
+                {%- if has_plans -%}
+                  {%- assign fi = 0 -%}
+                  {%- for group in p.selling_plan_groups -%}
+                    {%- for plan in group.selling_plans -%}
+                      {%- assign alloc = nil -%}
+                      {%- for a in cv.selling_plan_allocations -%}
+                        {%- if a.selling_plan.id == plan.id -%}{%- assign alloc = a -%}{%- break -%}{%- endif -%}
+                      {%- endfor -%}
+                      <button type="button"
+                        class="{% if fi == 0 %}rc-on{% endif %}"
+                        data-plan-id="{{ plan.id }}"
+                        data-price="{% if alloc %}{{ alloc.per_delivery_price }}{% else %}{{ cv.price }}{% endif %}"
+                        data-compare="{% if alloc and alloc.compare_at_price %}{{ alloc.compare_at_price }}{% else %}{{ cv.price }}{% endif %}"
+                        data-cadence="{{ plan.name }}">
+                        {{ plan.name }}<span>{{ plan.options.first.value | default: plan.name }}</span>
+                      </button>
+                      {%- assign fi = fi | plus: 1 -%}
+                    {%- endfor -%}
+                  {%- endfor -%}
+                {%- else -%}
+                  {%- assign labels = block.settings.manual_cadences | split: ',' -%}
+                  {%- assign disc = block.settings.manual_discount | default: 10 -%}
+                  {%- assign sub_cents = cv.price | times: 100 | minus: cv.price | times: disc | divided_by: 100 -%}
+                  {%- for lab in labels -%}
+                    {%- assign parts = lab | split: ':' -%}
+                    <button type="button"
+                      class="{% if forloop.first %}rc-on{% endif %}"
+                      data-plan-id=""
+                      data-price="{{ sub_cents }}"
+                      data-compare="{{ cv.price }}"
+                      data-cadence="{{ parts[0] | strip }}">
+                      {{ parts[0] | strip }}<span>{{ parts[1] | strip }}</span>
+                    </button>
+                  {%- endfor -%}
+                {%- endif -%}
+              </div>
+            </div>
+
+            <div class="rc-reveal-h">{{ block.settings.gifts_heading }}</div>
+            <div class="rc-gifts" data-gifts>
+              {%- for i in (1..4) -%}
+                {%- assign _gnk = 'gift_' | append: i | append: '_name' -%}
+                {%- assign _gn  = block.settings[_gnk] -%}
+                {%- if _gn != blank -%}
+                  {%- assign _gtk = 'gift_' | append: i | append: '_tag' -%}
+                  {%- assign _gvk = 'gift_' | append: i | append: '_value' -%}
+                  {%- assign _gik = 'gift_' | append: i | append: '_icon' -%}
+                  <div class="rc-gift rc-gift-enter">
+                    <span class="rc-g-ico">{%- case block.settings[_gik] -%}{%- when 'pouch' -%}{{ rc_ico_pouch }}{%- when 'guide' -%}{{ rc_ico_guide }}{%- when 'gift' -%}{{ rc_ico_gift }}{%- else -%}{{ rc_ico_scoop }}{%- endcase -%}</span>
+                    <span><span class="rc-g-name">{{ _gn }}</span><span class="rc-g-tag">{{ block.settings[_gtk] }}</span></span>
+                    <span class="rc-g-val"><span class="rc-strike">{{ sym }}{{ block.settings[_gvk] }} value</span><span class="rc-free">Free</span></span>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+
+            <div class="rc-tally">
+              <span class="rc-big" data-tally>{{ sym }}{{ gift_total }}</span>
+              <span class="rc-lbl">{{ block.settings.tally_text }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" name="add" class="rc-cta" data-add-btn>
+        {{ block.settings.cta_label }} — <span data-total>{{ cv.price | money }}</span>
+      </button>
+      <div class="rc-fine">{{ block.settings.fine_print }}</div>
+    </div>
+  {%- endform -%}
+
+</section>
+
+<style>
+  #rc-{{ block.id }}{
+    --rc-blush:#F2C4CE; --rc-peach:#E8A87C; --rc-sage:#8A9B6E; --rc-sky:#4A90B8;
+    --rc-navy:#1B3A5C; --rc-rose:#E8607A; --rc-cream:#FAF5F0; --rc-cream-dk:#F0E8E0;
+    --rc-lime:#7DB642; --rc-fog:#F5EEE8; --rc-mist:#E8DDD5; --rc-stone:#8A7E76;
+    --rc-serif:'Playfair Display','Georgia',serif;
+    --rc-display:'Cormorant Garamond','Georgia',serif;
+    --rc-script:'Dancing Script',cursive;
+    --rc-sans:'DM Sans','Helvetica Neue',sans-serif;
+    --rc-spring:cubic-bezier(.34,1.4,.5,1);
+
+    --rc-card-bg:#fff;
+    --rc-surface:#fff;
+    --rc-border:var(--rc-mist);
+    --rc-text:var(--rc-navy);
+    --rc-text-muted:var(--rc-stone);
+    --rc-radio:var(--rc-mist);
+    --rc-gift-bg:var(--rc-fog);
+    --rc-gift-ico-bg:rgba(232,96,122,.12);
+    --rc-freq-bg:var(--rc-fog);
+    --rc-freq-on-bg:#fff;
+    --rc-freq-on-text:var(--rc-navy);
+    --rc-tally-bg:var(--rc-navy);
+    --rc-tally-border:transparent;
+    --rc-tally-num:#fff;
+    --rc-tally-lbl:rgba(250,245,240,.82);
+    --rc-card-shadow:0 8px 40px rgba(27,58,92,.12);
+    --rc-on-bg:rgba(232,96,122,.06);
+    --rc-blob1:var(--rc-blush); --rc-blob1-op:.35;
+    --rc-blob2:var(--rc-peach); --rc-blob2-op:.25;
+
+    display:block; font-family:var(--rc-sans); color:var(--rc-text);
+    max-width:520px; margin:0 auto; padding:8px;
+  }
+  #rc-{{ block.id }} *{ box-sizing:border-box; }
+  #rc-{{ block.id }} .rc-card{ background:var(--rc-card-bg); border-radius:28px; padding:30px; box-shadow:var(--rc-card-shadow); position:relative; overflow:hidden; margin:0; }
+  #rc-{{ block.id }} .rc-blob{ position:absolute; border-radius:50%; pointer-events:none; z-index:0; }
+  #rc-{{ block.id }} .rc-blob1{ width:200px; height:200px; background:var(--rc-blob1); opacity:var(--rc-blob1-op); top:-70px; right:-60px; }
+  #rc-{{ block.id }} .rc-blob2{ width:130px; height:130px; background:var(--rc-blob2); opacity:var(--rc-blob2-op); bottom:-50px; left:-40px; }
+  #rc-{{ block.id }} .rc-sel{ position:relative; z-index:1; }
+  #rc-{{ block.id }} .rc-q{ font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-text-muted); margin-bottom:12px; }
+  #rc-{{ block.id }} .rc-plan{ position:relative; display:block; width:100%; text-align:left; background:var(--rc-surface); border:1.5px solid var(--rc-border); border-radius:20px; padding:18px 20px; margin-bottom:12px; cursor:pointer; transition:border-color .18s, background .18s, box-shadow .18s; }
+  #rc-{{ block.id }} .rc-plan:hover{ border-color:rgba(232,96,122,.45); }
+  #rc-{{ block.id }} .rc-plan.rc-on{ border-color:var(--rc-rose); background:var(--rc-on-bg); box-shadow:0 6px 24px rgba(232,96,122,.2); }
+  #rc-{{ block.id }} .rc-plan-top{ display:flex; align-items:center; gap:14px; }
+  #rc-{{ block.id }} .rc-radio{ width:22px; height:22px; border-radius:50%; border:2px solid var(--rc-radio); flex-shrink:0; position:relative; transition:border-color .18s; }
+  #rc-{{ block.id }} .rc-plan.rc-on .rc-radio{ border-color:var(--rc-rose); }
+  #rc-{{ block.id }} .rc-plan.rc-on .rc-radio::after{ content:''; position:absolute; inset:3px; border-radius:50%; background:var(--rc-rose); }
+  #rc-{{ block.id }} .rc-plan-name{ font-family:var(--rc-sans); font-weight:700; font-size:16px; color:var(--rc-text); }
+  #rc-{{ block.id }} .rc-save{ font-family:var(--rc-script); font-weight:700; font-size:22px; color:var(--rc-rose); margin-left:2px; }
+  #rc-{{ block.id }} .rc-plan-sub{ display:block; font-size:12px; color:var(--rc-text-muted); margin-top:2px; }
+  #rc-{{ block.id }} .rc-plan-price{ margin-left:auto; text-align:right; flex-shrink:0; }
+  #rc-{{ block.id }} .rc-now{ font-family:var(--rc-serif); font-weight:800; font-size:24px; color:var(--rc-text); }
+  #rc-{{ block.id }} .rc-was{ display:block; font-size:12px; color:var(--rc-text-muted); text-decoration:line-through; }
+  #rc-{{ block.id }} .rc-badge{ position:absolute; top:-11px; right:18px; background:var(--rc-rose); color:#fff; font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; padding:5px 12px; border-radius:999px; box-shadow:0 6px 24px rgba(232,96,122,.28); }
+  #rc-{{ block.id }} .rc-reveal{ overflow:hidden; max-height:0; opacity:0; transition:max-height .45s var(--rc-spring), opacity .35s, margin .35s; margin-top:0; }
+  #rc-{{ block.id }} .rc-plan.rc-on .rc-reveal{ max-height:520px; opacity:1; margin-top:14px; }
+  #rc-{{ block.id }} .rc-reveal-inner{ border-top:1.5px dashed rgba(232,96,122,.4); padding-top:16px; }
+  #rc-{{ block.id }} .rc-reveal-h, #rc-{{ block.id }} .rc-loss-h{ font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-rose); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  #rc-{{ block.id }} .rc-reveal-h::after, #rc-{{ block.id }} .rc-loss-h::after{ content:''; flex:1; height:1px; background:rgba(232,96,122,.22); }
+  #rc-{{ block.id }} .rc-freq-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:15px; }
+  #rc-{{ block.id }} .rc-freq-label{ font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-text-muted); }
+  #rc-{{ block.id }} .rc-freq{ display:flex; flex:1; gap:5px; background:var(--rc-freq-bg); border-radius:999px; padding:4px; }
+  #rc-{{ block.id }} .rc-freq button{ flex:1; border:none; background:none; padding:6px 13px; border-radius:999px; cursor:pointer; font-family:var(--rc-sans); font-weight:700; font-size:12px; color:var(--rc-text-muted); display:flex; flex-direction:column; align-items:center; line-height:1.05; transition:background .2s,color .2s,box-shadow .2s; }
+  #rc-{{ block.id }} .rc-freq button span{ font-weight:600; font-size:9px; letter-spacing:.08em; text-transform:uppercase; opacity:.75; margin-top:2px; }
+  #rc-{{ block.id }} .rc-freq button.rc-on{ background:var(--rc-freq-on-bg); color:var(--rc-freq-on-text); box-shadow:0 2px 12px rgba(27,58,92,.12); }
+  #rc-{{ block.id }} .rc-freq button.rc-on span{ color:var(--rc-rose); opacity:1; }
+  #rc-{{ block.id }} .rc-gifts{ display:flex; flex-direction:column; gap:8px; }
+  #rc-{{ block.id }} .rc-gift{ display:flex; align-items:center; gap:12px; background:var(--rc-gift-bg); border-radius:14px; padding:9px 14px; transition:opacity .4s ease, transform .5s var(--rc-spring); }
+  #rc-{{ block.id }} .rc-g-ico{ display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; background:var(--rc-gift-ico-bg); color:var(--rc-rose); flex-shrink:0; }
+  #rc-{{ block.id }} .rc-g-ico svg{ width:22px; height:22px; }
+  #rc-{{ block.id }} .rc-g-name{ display:block; font-weight:600; font-size:13px; color:var(--rc-text); line-height:1.2; }
+  #rc-{{ block.id }} .rc-g-tag{ display:block; font-size:11px; color:var(--rc-text-muted); line-height:1.2; margin-top:1px; }
+  #rc-{{ block.id }} .rc-g-val{ margin-left:auto; text-align:right; }
+  #rc-{{ block.id }} .rc-strike{ font-size:11px; color:var(--rc-text-muted); text-decoration:line-through; }
+  #rc-{{ block.id }} .rc-free{ display:block; font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--rc-lime); }
+  #rc-{{ block.id }} .rc-tally{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:14px; background:var(--rc-tally-bg); border:1px solid var(--rc-tally-border); border-radius:14px; padding:12px 16px; }
+  #rc-{{ block.id }} .rc-big{ font-family:var(--rc-serif); font-weight:900; font-size:26px; color:var(--rc-tally-num); line-height:1; }
+  #rc-{{ block.id }} .rc-lbl{ font-size:12px; line-height:1.35; color:var(--rc-tally-lbl); }
+  #rc-{{ block.id }} .rc-lbl b{ color:var(--rc-rose); }
+  #rc-{{ block.id }} .rc-loss-note{ font-size:12px; line-height:1.45; color:var(--rc-text-muted); margin-top:12px; }
+  #rc-{{ block.id }} .rc-loss-note b{ color:var(--rc-rose); }
+  #rc-{{ block.id }} .rc-gift-lost{ filter:grayscale(.95); opacity:.62; }
+  #rc-{{ block.id }} .rc-gift-lost .rc-g-ico{ background:rgba(138,126,118,.16); color:var(--rc-stone); }
+  #rc-{{ block.id }} .rc-gift-lost .rc-g-name{ text-decoration:line-through; text-decoration-color:rgba(232,96,122,.5); }
+  #rc-{{ block.id }} .rc-gift-lost .rc-free{ color:var(--rc-stone); }
+  #rc-{{ block.id }} .rc-gift-enter{ opacity:1; transform:none; }
+  #rc-{{ block.id }} .rc-gift-enter.rc-enter-hidden{ opacity:0; transform:translateY(12px) scale(.94); }
+  #rc-{{ block.id }} .rc-cta{ width:100%; display:flex; align-items:center; justify-content:center; gap:6px; margin-top:20px; padding:16px; border:none; border-radius:999px; background:var(--rc-rose); color:#fff; font-family:var(--rc-sans); font-weight:600; font-size:13px; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 24px rgba(232,96,122,.28); transition:transform .2s, box-shadow .2s; }
+  #rc-{{ block.id }} .rc-cta:hover{ transform:translateY(-2px); box-shadow:0 10px 32px rgba(232,96,122,.35); }
+  #rc-{{ block.id }} .rc-fine{ text-align:center; font-size:11px; color:var(--rc-text-muted); margin-top:12px; }
+  @media (max-width:520px){ #rc-{{ block.id }} .rc-card{ padding:22px; } }
+</style>
+
+<script>
+(function(){
+  var root = document.getElementById('rc-{{ block.id }}');
+  if(!root) return;
+  var sym = root.dataset.symbol || '$';
+  var GIFT_TOTAL = parseInt(root.dataset.giftTotal, 10) || 0;
+  var money = function(c){ return sym + (c/100).toFixed(2); };
+  var slice = function(c){ return Array.prototype.slice.call(c); };
+
+  var subPlan = root.querySelector('.rc-plan[data-plan="sub"]');
+  var onePlan = root.querySelector('.rc-plan[data-plan="one"]');
+  var giftsEl = root.querySelector('[data-gifts]');
+  var lostEl  = root.querySelector('[data-gifts-lost]');
+  var items = giftsEl ? slice(giftsEl.children) : [];
+  var lost  = lostEl  ? slice(lostEl.children)  : [];
+  var tally = root.querySelector('[data-tally]');
+  var subPrice = root.querySelector('[data-sub-price]');
+  var subWas   = root.querySelector('[data-sub-was]');
+  var totalEl  = root.querySelector('[data-total]');
+  var cadenceEl = root.querySelector('[data-cadence]');
+  var sellingPlanInput = root.querySelector('[data-selling-plan]');
+  var onePrice = onePlan ? onePlan.querySelector('.rc-now').textContent : '';
+
+  var freqBtns = slice(root.querySelectorAll('[data-freq] button'));
+  var current = 'sub';
+  var activeFreq = freqBtns[0] || null;
+
+  function staggerIn(list, gap){
+    gap = gap || 95;
+    list.forEach(function(el){ el.classList.add('rc-enter-hidden'); });
+    if(list[0]) void list[0].offsetWidth;
+    list.forEach(function(el,i){ setTimeout(function(){ el.classList.remove('rc-enter-hidden'); }, 40 + i*gap); });
+  }
+  function animateNum(el, from, to, dur){
+    if(!el) return; dur = dur || 600;
+    var start = performance.now();
+    (function step(t){
+      var pr = Math.min(1,(t-start)/dur), e = 1-Math.pow(1-pr,3);
+      el.textContent = sym + Math.round(from + (to-from)*e);
+      if(pr<1) requestAnimationFrame(step); else el.textContent = sym + to;
+    })(performance.now());
+  }
+  function applyFreq(btn){
+    if(!btn) return;
+    activeFreq = btn;
+    freqBtns.forEach(function(b){ b.classList.toggle('rc-on', b === btn); });
+    var price = parseInt(btn.dataset.price, 10);
+    var cmp   = parseInt(btn.dataset.compare, 10);
+    if(subPrice) subPrice.textContent = money(price);
+    if(subWas){ if(cmp && cmp > price){ subWas.textContent = money(cmp); subWas.style.display=''; } else { subWas.style.display='none'; } }
+    if(cadenceEl) cadenceEl.textContent = 'Every ' + (btn.querySelector('span') ? btn.querySelector('span').textContent : btn.dataset.cadence);
+    if(current === 'sub'){
+      if(totalEl) totalEl.textContent = money(price);
+      if(sellingPlanInput) sellingPlanInput.value = btn.dataset.planId || '';
+    }
+  }
+  function toSub(){
+    if(current === 'sub') return;
+    current = 'sub';
+    onePlan.classList.remove('rc-on'); subPlan.classList.add('rc-on');
+    if(sellingPlanInput) sellingPlanInput.value = activeFreq ? (activeFreq.dataset.planId || '') : '';
+    if(totalEl && activeFreq) totalEl.textContent = money(parseInt(activeFreq.dataset.price, 10));
+    animateNum(tally, 0, GIFT_TOTAL, 600);
+    staggerIn(items);
+  }
+  function toOne(){
+    if(current === 'one') return;
+    current = 'one';
+    subPlan.classList.remove('rc-on'); onePlan.classList.add('rc-on');
+    if(sellingPlanInput) sellingPlanInput.value = '';
+    if(totalEl) totalEl.textContent = onePrice;
+    staggerIn(lost);
+  }
+
+  root.querySelectorAll('.rc-plan').forEach(function(pl){
+    pl.addEventListener('click', function(){ pl.dataset.plan === 'one' ? toOne() : toSub(); });
+    pl.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pl.dataset.plan==='one'?toOne():toSub(); } });
+  });
+  freqBtns.forEach(function(b){ b.addEventListener('click', function(e){ e.stopPropagation(); applyFreq(b); }); });
+
+  if(activeFreq) applyFreq(activeFreq);
+  if(tally) tally.textContent = sym + GIFT_TOTAL;
+})();
+</script>
