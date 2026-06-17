@@ -242,9 +242,9 @@
 
 <style>
   #hb-{{ block.id }}{
-    --hb-blush:{{ block.settings.blob1_color | default: '#F2C4CE' }};
-    --hb-peach:{{ block.settings.blob2_color | default: '#E8A87C' }};
-    --hb-sage:{{ block.settings.blob3_color | default: '#8A9B6E' }};
+    --hb-blush:#F2C4CE;
+    --hb-peach:#E8A87C;
+    --hb-sage:#8A9B6E;
     --hb-navy:{{ block.settings.text_color | default: '#1B3A5C' }};
     --hb-rose:{{ block.settings.accent_color | default: '#E8607A' }};
     --hb-cream:{{ block.settings.bg_color | default: '#FAF5F0' }};
@@ -265,7 +265,7 @@
   }
   #hb-{{ block.id }} *{ box-sizing:border-box; }
   #hb-{{ block.id }} .hb-inner{
-    display:{% if block.settings.show_gallery %}grid; grid-template-columns:1fr 1fr; gap:{{ block.settings.gallery_gap | default: 48 }}px; align-items:start{% else %}block{% endif %};
+    display:{% if block.settings.show_gallery %}grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start{% else %}block{% endif %};
   }
 
   #hb-{{ block.id }} .hb-gallery{ position:sticky; top:24px; }
@@ -368,7 +368,7 @@
   #hb-{{ block.id }} .hb-form > *:not(input):not(.hb-selector):not(.hb-add-row):not(.hb-dynamic){ display:none !important; }
 
   @media (max-width:820px){
-    #hb-{{ block.id }}{ padding:{{ block.settings.mobile_padding_y | default: 0 }}px {{ block.settings.mobile_padding_x | default: 0 }}px; max-width:{{ block.settings.mobile_max_width | default: 100 }}%; }
+    #hb-{{ block.id }}{ padding:0; max-width:{{ block.settings.mobile_max_width | default: 100 }}%; }
     #hb-{{ block.id }} .hb-inner{ {% if block.settings.show_gallery %}grid-template-columns:1fr; gap:24px;{% endif %} }
     #hb-{{ block.id }} .hb-gallery{ position:relative; top:auto; max-width:460px; margin:0 auto; width:100%; }
     #hb-{{ block.id }} .hb-permeta{ width:100%; margin-left:0; }
