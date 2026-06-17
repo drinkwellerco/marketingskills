@@ -12,11 +12,11 @@
 
 {%- assign gift_total = 0 -%}
 {%- for i in (1..4) -%}
-  {%- assign _gnk = 'gift_' | append: i | append: '_name' -%}
-  {%- assign _gn  = block.settings[_gnk] -%}
-  {%- if _gn != blank -%}
-    {%- assign _gvk = 'gift_' | append: i | append: '_value' -%}
-    {%- assign gift_total = gift_total | plus: block.settings[_gvk] -%}
+  {%- assign gnk = 'gift_' | append: i | append: '_name' -%}
+  {%- assign gn  = block.settings[gnk] -%}
+  {%- if gn != blank -%}
+    {%- assign gvk = 'gift_' | append: i | append: '_value' -%}
+    {%- assign gift_total = gift_total | plus: block.settings[gvk] -%}
   {%- endif -%}
 {%- endfor -%}
 
@@ -61,16 +61,16 @@
             <div class="rc-loss-h">✕ {{ block.settings.skip_heading }}</div>
             <div class="rc-gifts" data-gifts-lost>
               {%- for i in (1..4) -%}
-                {%- assign _gnk = 'gift_' | append: i | append: '_name' -%}
-                {%- assign _gn  = block.settings[_gnk] -%}
-                {%- if _gn != blank -%}
-                  {%- assign _gtk = 'gift_' | append: i | append: '_tag' -%}
-                  {%- assign _gvk = 'gift_' | append: i | append: '_value' -%}
-                  {%- assign _gik = 'gift_' | append: i | append: '_icon' -%}
+                {%- assign gnk = 'gift_' | append: i | append: '_name' -%}
+                {%- assign gn  = block.settings[gnk] -%}
+                {%- if gn != blank -%}
+                  {%- assign gtk = 'gift_' | append: i | append: '_tag' -%}
+                  {%- assign gvk = 'gift_' | append: i | append: '_value' -%}
+                  {%- assign gik = 'gift_' | append: i | append: '_icon' -%}
                   <div class="rc-gift rc-gift-enter rc-gift-lost">
-                    <span class="rc-g-ico">{%- case block.settings[_gik] -%}{%- when 'pouch' -%}{{ rc_ico_pouch }}{%- when 'guide' -%}{{ rc_ico_guide }}{%- when 'gift' -%}{{ rc_ico_gift }}{%- else -%}{{ rc_ico_scoop }}{%- endcase -%}</span>
-                    <span><span class="rc-g-name">{{ _gn }}</span><span class="rc-g-tag">{{ block.settings[_gtk] }}</span></span>
-                    <span class="rc-g-val"><span class="rc-strike">{{ sym }}{{ block.settings[_gvk] }} value</span><span class="rc-free">Gone</span></span>
+                    <span class="rc-g-ico">{%- case block.settings[gik] -%}{%- when 'pouch' -%}{{ rc_ico_pouch }}{%- when 'guide' -%}{{ rc_ico_guide }}{%- when 'gift' -%}{{ rc_ico_gift }}{%- else -%}{{ rc_ico_scoop }}{%- endcase -%}</span>
+                    <span><span class="rc-g-name">{{ gn }}</span><span class="rc-g-tag">{{ block.settings[gtk] }}</span></span>
+                    <span class="rc-g-val"><span class="rc-strike">{{ sym }}{{ block.settings[gvk] }} value</span><span class="rc-free">Gone</span></span>
                   </div>
                 {%- endif -%}
               {%- endfor -%}
@@ -141,16 +141,16 @@
             <div class="rc-reveal-h">{{ block.settings.gifts_heading }}</div>
             <div class="rc-gifts" data-gifts>
               {%- for i in (1..4) -%}
-                {%- assign _gnk = 'gift_' | append: i | append: '_name' -%}
-                {%- assign _gn  = block.settings[_gnk] -%}
-                {%- if _gn != blank -%}
-                  {%- assign _gtk = 'gift_' | append: i | append: '_tag' -%}
-                  {%- assign _gvk = 'gift_' | append: i | append: '_value' -%}
-                  {%- assign _gik = 'gift_' | append: i | append: '_icon' -%}
+                {%- assign gnk = 'gift_' | append: i | append: '_name' -%}
+                {%- assign gn  = block.settings[gnk] -%}
+                {%- if gn != blank -%}
+                  {%- assign gtk = 'gift_' | append: i | append: '_tag' -%}
+                  {%- assign gvk = 'gift_' | append: i | append: '_value' -%}
+                  {%- assign gik = 'gift_' | append: i | append: '_icon' -%}
                   <div class="rc-gift rc-gift-enter">
-                    <span class="rc-g-ico">{%- case block.settings[_gik] -%}{%- when 'pouch' -%}{{ rc_ico_pouch }}{%- when 'guide' -%}{{ rc_ico_guide }}{%- when 'gift' -%}{{ rc_ico_gift }}{%- else -%}{{ rc_ico_scoop }}{%- endcase -%}</span>
-                    <span><span class="rc-g-name">{{ _gn }}</span><span class="rc-g-tag">{{ block.settings[_gtk] }}</span></span>
-                    <span class="rc-g-val"><span class="rc-strike">{{ sym }}{{ block.settings[_gvk] }} value</span><span class="rc-free">Free</span></span>
+                    <span class="rc-g-ico">{%- case block.settings[gik] -%}{%- when 'pouch' -%}{{ rc_ico_pouch }}{%- when 'guide' -%}{{ rc_ico_guide }}{%- when 'gift' -%}{{ rc_ico_gift }}{%- else -%}{{ rc_ico_scoop }}{%- endcase -%}</span>
+                    <span><span class="rc-g-name">{{ gn }}</span><span class="rc-g-tag">{{ block.settings[gtk] }}</span></span>
+                    <span class="rc-g-val"><span class="rc-strike">{{ sym }}{{ block.settings[gvk] }} value</span><span class="rc-free">Free</span></span>
                   </div>
                 {%- endif -%}
               {%- endfor -%}
