@@ -108,13 +108,15 @@
                       {%- for a in cv.selling_plan_allocations -%}
                         {%- if a.selling_plan.id == plan.id -%}{%- assign alloc = a -%}{%- break -%}{%- endif -%}
                       {%- endfor -%}
+                      {%- assign freqlabel = plan.options.first.value | default: plan.name -%}
+                      {%- assign freqparts = freqlabel | split: ' | ' -%}
                       <button type="button"
                         class="{% if fi == 0 %}rc-on{% endif %}"
                         data-plan-id="{{ plan.id }}"
                         data-price="{% if alloc %}{{ alloc.per_delivery_price }}{% else %}{{ cv.price }}{% endif %}"
                         data-compare="{% if alloc and alloc.compare_at_price %}{{ alloc.compare_at_price }}{% else %}{{ cv.price }}{% endif %}"
-                        data-cadence="{{ plan.name }}">
-                        {{ plan.name }}<span>{{ plan.options.first.value | default: plan.name }}</span>
+                        data-cadence="{{ freqparts.first | strip }}">
+                        {{ freqparts.first | strip }}<span>{% if freqparts.size > 1 %}{{ freqparts.last | strip }}{% endif %}</span>
                       </button>
                       {%- assign fi = fi | plus: 1 -%}
                     {%- endfor -%}
@@ -208,6 +210,8 @@
     max-width:520px; margin:0 auto; padding:8px;
   }
   #rc-{{ block.id }} *{ box-sizing:border-box; }
+  /* suppress subscription app injections into the product form */
+  #rc-{{ block.id }} .rc-card > *:not(input):not(.rc-blob1):not(.rc-blob2):not(.rc-sel){ display:none !important; }
   #rc-{{ block.id }} .rc-card{ background:var(--rc-card-bg); border-radius:28px; padding:30px; box-shadow:var(--rc-card-shadow); position:relative; overflow:hidden; margin:0; }
   #rc-{{ block.id }} .rc-blob{ position:absolute; border-radius:50%; pointer-events:none; z-index:0; }
   #rc-{{ block.id }} .rc-blob1{ width:200px; height:200px; background:var(--rc-blob1); opacity:var(--rc-blob1-op); top:-70px; right:-60px; }
@@ -317,7 +321,7 @@
     var cmp   = parseInt(btn.dataset.compare, 10);
     if(subPrice) subPrice.textContent = money(price);
     if(subWas){ if(cmp && cmp > price){ subWas.textContent = money(cmp); subWas.style.display=''; } else { subWas.style.display='none'; } }
-    if(cadenceEl) cadenceEl.textContent = 'Every ' + (btn.querySelector('span') ? btn.querySelector('span').textContent : btn.dataset.cadence);
+    if(cadenceEl) cadenceEl.textContent = 'Every ' + btn.dataset.cadence;
     if(current === 'sub'){
       if(totalEl) totalEl.textContent = money(price);
       if(sellingPlanInput) sellingPlanInput.value = btn.dataset.planId || '';
