@@ -99,7 +99,7 @@
 
             <div class="rc-freq-row">
               <span class="rc-freq-label">{{ block.settings.deliver_label }}</span>
-              <div class="rc-freq" data-freq>
+              <div class="rc-freq" data-freq style="display:flex;gap:5px;background:var(--rc-freq-bg);border-radius:999px;padding:4px;">
                 {%- if has_plans -%}
                   {%- assign fi = 0 -%}
                   {%- for group in p.selling_plan_groups -%}
@@ -110,14 +110,15 @@
                       {%- endfor -%}
                       {%- assign freqlabel = plan.options.first.value | default: plan.name -%}
                       {%- assign freqparts = freqlabel | split: ' | ' -%}
-                      <button type="button"
-                        class="{% if fi == 0 %}rc-on{% endif %}"
+                      <span role="button" tabindex="0"
+                        class="rcfreqbtn {% if fi == 0 %}rc-on{% endif %}"
                         data-plan-id="{{ plan.id }}"
                         data-price="{% if alloc %}{{ alloc.per_delivery_price }}{% else %}{{ cv.price }}{% endif %}"
                         data-compare="{% if alloc and alloc.compare_at_price %}{{ alloc.compare_at_price }}{% else %}{{ cv.price }}{% endif %}"
-                        data-cadence="{{ freqparts.first | strip }}">
-                        {{ freqparts.first | strip }}<span>{% if freqparts.size > 1 %}{{ freqparts.last | strip }}{% endif %}</span>
-                      </button>
+                        data-cadence="{{ freqparts.first | strip }}"
+                        style="flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 13px;border-radius:999px;cursor:pointer;font-family:var(--rc-sans);font-weight:700;font-size:12px;color:var(--rc-text-muted);line-height:1.05;">
+                        {{ freqparts.first | strip }}<span style="font-weight:600;font-size:9px;letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin-top:2px;">{% if freqparts.size > 1 %}{{ freqparts.last | strip }}{% endif %}</span>
+                      </span>
                       {%- assign fi = fi | plus: 1 -%}
                     {%- endfor -%}
                   {%- endfor -%}
@@ -127,14 +128,15 @@
                   {%- assign sub_cents = cv.price | times: 100 | minus: cv.price | times: disc | divided_by: 100 -%}
                   {%- for lab in labels -%}
                     {%- assign parts = lab | split: ':' -%}
-                    <button type="button"
-                      class="{% if forloop.first %}rc-on{% endif %}"
+                    <span role="button" tabindex="0"
+                      class="rcfreqbtn {% if forloop.first %}rc-on{% endif %}"
                       data-plan-id=""
                       data-price="{{ sub_cents }}"
                       data-compare="{{ cv.price }}"
-                      data-cadence="{{ parts[0] | strip }}">
-                      {{ parts[0] | strip }}<span>{{ parts[1] | strip }}</span>
-                    </button>
+                      data-cadence="{{ parts[0] | strip }}"
+                      style="flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 13px;border-radius:999px;cursor:pointer;font-family:var(--rc-sans);font-weight:700;font-size:12px;color:var(--rc-text-muted);line-height:1.05;">
+                      {{ parts[0] | strip }}<span style="font-weight:600;font-size:9px;letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin-top:2px;">{{ parts[1] | strip }}</span>
+                    </span>
                   {%- endfor -%}
                 {%- endif -%}
               </div>
@@ -240,10 +242,10 @@
   #rc-{{ block.id }} .rc-freq-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:15px; }
   #rc-{{ block.id }} .rc-freq-label{ font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-text-muted); }
   #rc-{{ block.id }} .rc-freq{ display:flex !important; flex:1; gap:5px; background:var(--rc-freq-bg) !important; border-radius:999px !important; padding:4px !important; }
-  #rc-{{ block.id }} .rc-freq button{ flex:1 !important; border:none !important; background:none !important; padding:6px 13px !important; border-radius:999px !important; cursor:pointer; font-family:var(--rc-sans) !important; font-weight:700 !important; font-size:12px !important; color:var(--rc-text-muted) !important; display:flex !important; flex-direction:column !important; align-items:center !important; line-height:1.05 !important; transition:background .2s,color .2s,box-shadow .2s; width:auto !important; }
-  #rc-{{ block.id }} .rc-freq button span{ font-weight:600; font-size:9px; letter-spacing:.08em; text-transform:uppercase; opacity:.75; margin-top:2px; }
-  #rc-{{ block.id }} .rc-freq button.rc-on{ background:var(--rc-freq-on-bg); color:var(--rc-freq-on-text); box-shadow:0 2px 12px rgba(27,58,92,.12); }
-  #rc-{{ block.id }} .rc-freq button.rc-on span{ color:var(--rc-rose); opacity:1; }
+  #rc-{{ block.id }} .rc-freq .rcfreqbtn{ flex:1; background:none; padding:6px 13px; border-radius:999px; cursor:pointer; font-family:var(--rc-sans); font-weight:700; font-size:12px; color:var(--rc-text-muted); display:flex; flex-direction:column; align-items:center; line-height:1.05; transition:background .2s,color .2s,box-shadow .2s; user-select:none; }
+  #rc-{{ block.id }} .rc-freq .rcfreqbtn span{ font-weight:600; font-size:9px; letter-spacing:.08em; text-transform:uppercase; opacity:.75; margin-top:2px; }
+  #rc-{{ block.id }} .rc-freq .rcfreqbtn.rc-on{ background:var(--rc-freq-on-bg); color:var(--rc-freq-on-text); box-shadow:0 2px 12px rgba(27,58,92,.12); }
+  #rc-{{ block.id }} .rc-freq .rcfreqbtn.rc-on span{ color:var(--rc-rose); opacity:1; }
   #rc-{{ block.id }} .rc-gifts{ display:flex; flex-direction:column; gap:8px; }
   #rc-{{ block.id }} .rc-gift{ display:flex; align-items:center; gap:12px; background:var(--rc-gift-bg); border-radius:14px; padding:9px 14px; transition:opacity .4s ease, transform .5s var(--rc-spring); }
   #rc-{{ block.id }} .rc-g-ico{ display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; background:var(--rc-gift-ico-bg); color:var(--rc-rose); flex-shrink:0; }
@@ -294,7 +296,7 @@
   var sellingPlanInput = root.querySelector('[data-selling-plan]');
   var onePrice = onePlan ? onePlan.querySelector('.rc-now').textContent : '';
 
-  var freqBtns = slice(root.querySelectorAll('[data-freq] button'));
+  var freqBtns = slice(root.querySelectorAll('[data-freq] .rcfreqbtn'));
   var current = 'sub';
   var activeFreq = freqBtns[0] || null;
 
@@ -349,7 +351,10 @@
     pl.addEventListener('click', function(){ pl.dataset.plan === 'one' ? toOne() : toSub(); });
     pl.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pl.dataset.plan==='one'?toOne():toSub(); } });
   });
-  freqBtns.forEach(function(b){ b.addEventListener('click', function(e){ e.stopPropagation(); applyFreq(b); }); });
+  freqBtns.forEach(function(b){
+    b.addEventListener('click', function(e){ e.stopPropagation(); applyFreq(b); });
+    b.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); applyFreq(b); } });
+  });
 
   if(activeFreq) applyFreq(activeFreq);
   if(tally) tally.textContent = sym + GIFT_TOTAL;
