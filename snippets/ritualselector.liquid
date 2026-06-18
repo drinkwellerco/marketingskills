@@ -420,7 +420,7 @@
   #rc-{{ block.id }} .rc-chip-qty{ font-family:var(--rc-sans); font-weight:700; font-size:13px; color:var(--rc-fc); }
   #rc-{{ block.id }} .rc-chip-x{ margin-left:auto; width:26px; height:26px; border-radius:50%; border:none; background:var(--rc-gift-bg); color:var(--rc-text-muted); cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .15s,color .15s; }
   #rc-{{ block.id }} .rc-chip-x:hover{ background:rgba(232,96,122,.14); color:var(--rc-rose); }
-  #rc-{{ block.id }} .rc-divider{ height:1px; background:var(--rc-border); margin-top:var(--rc-divider-mg); margin-bottom:var(--rc-divider-mg); }
+  #rc-{{ block.id }} .rc-divider{ height:1px; background:var(--rc-border); margin-top:{{ block.settings.sp_divider | default: 22 }}px; margin-bottom:{{ block.settings.sp_divider | default: 22 }}px; }
   #rc-{{ block.id }} .rc-flavors-empty .rc-plan{ opacity:.42; pointer-events:none; }
   #rc-{{ block.id }} .rc-flavors-empty .rc-plan.rc-on{ box-shadow:none; }
   @media (max-width:520px){ #rc-{{ block.id }} .rc-card{ padding:max(18px, calc(var(--rc-card-pad) - 8px)); } }
