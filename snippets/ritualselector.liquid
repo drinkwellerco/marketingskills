@@ -322,8 +322,8 @@
   #rc-{{ block.id }} .rc-plan.rc-on .rc-radio{ border-color:var(--rc-rose); }
   #rc-{{ block.id }} .rc-plan.rc-on .rc-radio::after{ content:''; position:absolute; inset:3px; border-radius:50%; background:var(--rc-rose); }
   #rc-{{ block.id }} .rc-plan-name{ font-family:var(--rc-sans); font-weight:700; font-size:var(--rc-fs-plan-name); color:var(--rc-text); }
-  #rc-{{ block.id }} .rc-plan[data-plan="sub"] .rc-plan-name{ font-size:{{ block.settings.fs_sub_name | default: 16 }}px; }
-  #rc-{{ block.id }} .rc-save{ font-family:var(--rc-script); font-weight:700; font-size:22px; color:var(--rc-rose); margin-left:2px; }
+  #rc-{{ block.id }} .rc-plan[data-plan="sub"] .rc-plan-name{ font-size:{{ block.settings.fs_sub_name | default: 20 }}px; }
+  #rc-{{ block.id }} .rc-save{ font-family:var(--rc-script); font-weight:700; font-size:1.4em; color:var(--rc-rose); margin-left:2px; }
   #rc-{{ block.id }} .rc-plan-sub{ display:block; font-size:var(--rc-fs-plan-sub); color:var(--rc-text-muted); margin-top:2px; }
   #rc-{{ block.id }} .rc-sub-text{ flex:1; text-align:center; }
   #rc-{{ block.id }} .rc-sub-perks{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px; margin-top:4px; }
@@ -333,9 +333,6 @@
   #rc-{{ block.id }} .rc-plan[data-plan="one"] .rc-plan-top{ flex-direction:column; align-items:center; gap:6px; }
   #rc-{{ block.id }} .rc-plan[data-plan="sub"] .rc-plan-price,
   #rc-{{ block.id }} .rc-plan[data-plan="one"] .rc-plan-price{ order:-1; margin-left:0; text-align:center; }
-  /* Radio circle sits at the bottom of each card on desktop */
-  #rc-{{ block.id }} .rc-plan[data-plan="sub"] .rc-plan-top > .rc-radio,
-  #rc-{{ block.id }} .rc-plan[data-plan="one"] .rc-plan-top > .rc-radio{ order:1; }
   /* Center the one-time text span */
   #rc-{{ block.id }} .rc-plan[data-plan="one"] .rc-plan-top > span:not(.rc-radio):not(.rc-plan-price){ text-align:center; }
   /* Hide radio on mobile for both cards */
