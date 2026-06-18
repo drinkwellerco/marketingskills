@@ -376,6 +376,10 @@
   #rc-{{ block.id }} .rc-g-ico svg{ width:22px; height:22px; }
   #rc-{{ block.id }} .rc-g-name{ display:block; font-weight:600; font-size:var(--rc-fs-gift-name); color:var(--rc-text); line-height:1.2; text-align:left; }
   #rc-{{ block.id }} .rc-g-tag{ display:block; font-size:var(--rc-fs-gift-tag); color:var(--rc-text-muted); line-height:1.2; margin-top:1px; text-align:left; }
+  @media (max-width:520px){
+    #rc-{{ block.id }} .rc-g-name,
+    #rc-{{ block.id }} .rc-g-tag{ text-align:center; }
+  }
   #rc-{{ block.id }} .rc-g-val{ margin-left:auto; text-align:right; }
   #rc-{{ block.id }} .rc-strike{ font-size:{{ block.settings.fs_gift_value | default: 11 }}px; color:var(--rc-text-muted); text-decoration:line-through; }
   #rc-{{ block.id }} .rc-free{ display:block; font-size:{{ block.settings.fs_gift_free | default: 11 }}px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--rc-lime); }
