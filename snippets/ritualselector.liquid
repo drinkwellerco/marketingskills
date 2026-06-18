@@ -327,10 +327,18 @@
   #rc-{{ block.id }} .rc-sub-text{ flex:1; text-align:center; }
   #rc-{{ block.id }} .rc-sub-perks{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px; margin-top:4px; }
 
-  /* Subscribe card: column layout so text is truly centered */
-  #rc-{{ block.id }} .rc-plan[data-plan="sub"] .rc-plan-top{ flex-direction:column; align-items:center; gap:6px; }
-  #rc-{{ block.id }} .rc-plan[data-plan="sub"] .rc-plan-top > .rc-radio{ display:none; }
-  #rc-{{ block.id }} .rc-plan[data-plan="sub"] .rc-plan-price{ order:-1; margin-left:0; text-align:center; }
+  /* Both plan cards: column layout so text is truly centered */
+  #rc-{{ block.id }} .rc-plan[data-plan="sub"] .rc-plan-top,
+  #rc-{{ block.id }} .rc-plan[data-plan="one"] .rc-plan-top{ flex-direction:column; align-items:center; gap:6px; }
+  #rc-{{ block.id }} .rc-plan[data-plan="sub"] .rc-plan-price,
+  #rc-{{ block.id }} .rc-plan[data-plan="one"] .rc-plan-price{ order:-1; margin-left:0; text-align:center; }
+  /* Center the one-time text span */
+  #rc-{{ block.id }} .rc-plan[data-plan="one"] .rc-plan-top > span:not(.rc-radio):not(.rc-plan-price){ text-align:center; }
+  /* Hide radio on mobile for both cards */
+  @media (max-width:520px){
+    #rc-{{ block.id }} .rc-plan[data-plan="sub"] .rc-plan-top > .rc-radio,
+    #rc-{{ block.id }} .rc-plan[data-plan="one"] .rc-plan-top > .rc-radio{ display:none; }
+  }
   #rc-{{ block.id }} .rc-perk--disc{ font-family:var(--rc-script); font-size:20px; font-weight:700; color:var(--rc-rose); line-height:1.1; }
   #rc-{{ block.id }} .rc-perk-sep{ font-size:14px; color:var(--rc-text-muted); line-height:1; }
   #rc-{{ block.id }} .rc-perk--ship{ font-family:var(--rc-script); font-size:20px; font-weight:700; color:var(--rc-text); line-height:1.1; }
@@ -439,10 +447,6 @@
   #rc-{{ block.id }} .rc-flavors-empty .rc-plan.rc-on{ box-shadow:none; }
   @media (max-width:520px){
     #rc-{{ block.id }} .rc-card{ padding:max(18px, calc(var(--rc-card-pad) - 8px)); }
-    #rc-{{ block.id }} .rc-plan-top{ flex-wrap:wrap; }
-    #rc-{{ block.id }} .rc-plan-price{ order:-1; width:100%; text-align:center; margin-left:0; margin-bottom:6px; }
-    #rc-{{ block.id }} .rc-plan-price .rc-now{ display:block; }
-    #rc-{{ block.id }} .rc-plan-price .rc-was{ text-align:center; }
   }
 </style>
 
