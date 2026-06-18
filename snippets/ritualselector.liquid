@@ -338,10 +338,15 @@
   #rc-{{ block.id }} .rc-reveal{ overflow:hidden; max-height:0; opacity:0; transition:max-height .45s var(--rc-spring),opacity .35s,margin .35s; margin-top:0; }
   #rc-{{ block.id }} .rc-plan.rc-on .rc-reveal{ max-height:600px; opacity:1; margin-top:14px; }
   #rc-{{ block.id }} .rc-reveal-inner{ border-top:1.5px dashed rgba(232,96,122,.4); padding-top:16px; }
-  #rc-{{ block.id }} .rc-reveal-h, #rc-{{ block.id }} .rc-loss-h{ font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-rose); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  #rc-{{ block.id }} .rc-reveal-h, #rc-{{ block.id }} .rc-loss-h{ font-size:{{ block.settings.fs_gifts_heading | default: 10 }}px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-rose); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
   #rc-{{ block.id }} .rc-reveal-h::after, #rc-{{ block.id }} .rc-loss-h::after{ content:''; flex:1; height:1px; background:rgba(232,96,122,.22); }
 
   #rc-{{ block.id }} .rc-freq-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:15px; }
+  @media (max-width:520px){
+    #rc-{{ block.id }} .rc-freq-row{ flex-direction:column; align-items:stretch; gap:8px; }
+    #rc-{{ block.id }} .rc-freq-label{ width:100%; text-align:center; }
+    #rc-{{ block.id }} .rc-freq{ flex:1; }
+  }
   #rc-{{ block.id }} .rc-freq-label{ font-size:{{ block.settings.fs_freq_label | default: 10 }}px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--rc-text-muted); text-align:center; line-height:1.3; }
   #rc-{{ block.id }} .rc-freq{ display:flex; flex:1; gap:5px; background:var(--rc-freq-bg); border-radius:999px; padding:4px; }
   #rc-{{ block.id }} .rc-freq button{ flex:1; border:none; background:none; padding:6px 13px; border-radius:999px; cursor:pointer; font-family:var(--rc-sans); font-weight:700; font-size:{{ block.settings.fs_freq | default: 12 }}px; color:var(--rc-text-muted); display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1.2; transition:background .2s,color .2s,box-shadow .2s; }
