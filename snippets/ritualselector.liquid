@@ -152,13 +152,16 @@
                       {%- for a in cv.selling_plan_allocations -%}
                         {%- if a.selling_plan.id == plan.id -%}{%- assign alloc = a -%}{%- break -%}{%- endif -%}
                       {%- endfor -%}
+                      {%- assign plan_parts = plan.name | split: ' | ' -%}
+                      {%- assign plan_label = plan_parts[0] | strip -%}
+                      {%- assign plan_detail = plan_parts[1] | strip -%}
                       <button type="button"
                         class="{% if fi == 0 %}rc-on{% endif %}"
                         data-plan-id="{{ plan.id }}"
                         data-price="{% if alloc %}{{ alloc.per_delivery_price }}{% else %}{{ cv.price }}{% endif %}"
                         data-compare="{% if alloc and alloc.compare_at_price %}{{ alloc.compare_at_price }}{% else %}{{ cv.price }}{% endif %}"
-                        data-cadence="{{ plan.name }}">
-                        {{ plan.name }}<span>{{ plan.options.first.value | default: plan.name }}</span>
+                        data-cadence="{{ plan_label }}">
+                        {{ plan_label }}<span>{{ plan_detail }}</span>
                       </button>
                       {%- assign fi = fi | plus: 1 -%}
                     {%- endfor -%}
@@ -479,7 +482,7 @@
     if(!btn) return;
     activeFreq = btn;
     freqBtns.forEach(function(b){ b.classList.toggle('rc-on', b===btn); });
-    if(cadenceEl) cadenceEl.textContent = 'Every ' + (btn.querySelector('span') ? btn.querySelector('span').textContent : btn.dataset.cadence);
+    if(cadenceEl) cadenceEl.textContent = btn.dataset.cadence;
     if(current==='sub' && spInput) spInput.value = btn.dataset.planId||'';
     refresh();
   }
