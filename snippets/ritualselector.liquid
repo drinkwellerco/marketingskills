@@ -137,7 +137,7 @@
         <div class="rc-plan-top">
           <span class="rc-radio"></span>
           <span class="rc-sub-text">
-            <span class="rc-plan-name">{{ block.settings.sub_name | default: 'Subscribe' }} <span class="rc-save">&amp; save</span></span>
+            <span class="rc-plan-name">{{ block.settings.sub_name | default: 'Subscribe' }} <span class="rc-save">{{ block.settings.sub_save_text | default: '& Save' }}</span></span>
             <span data-cadence style="display:none"></span>
             <span class="rc-sub-perks">
               <span class="rc-perk--disc">{{ block.settings.sub_perk_discount | default: '10% off' }}</span>
@@ -323,7 +323,7 @@
   #rc-{{ block.id }} .rc-plan.rc-on .rc-radio::after{ content:''; position:absolute; inset:3px; border-radius:50%; background:var(--rc-rose); }
   #rc-{{ block.id }} .rc-plan-name{ font-family:var(--rc-sans); font-weight:700; font-size:var(--rc-fs-plan-name); color:var(--rc-text); }
   #rc-{{ block.id }} .rc-plan[data-plan="sub"] .rc-plan-name{ font-size:{{ block.settings.fs_sub_name | default: 20 }}px; }
-  #rc-{{ block.id }} .rc-save{ font-family:var(--rc-script); font-weight:700; font-size:1.4em; color:var(--rc-rose); margin-left:2px; }
+  #rc-{{ block.id }} .rc-save{ font-family:var(--rc-script); font-weight:700; font-size:{{ block.settings.fs_sub_save | default: 22 }}px; color:var(--rc-rose); margin-left:2px; }
   #rc-{{ block.id }} .rc-plan-sub{ display:block; font-size:var(--rc-fs-plan-sub); color:var(--rc-text-muted); margin-top:2px; }
   #rc-{{ block.id }} .rc-sub-text{ flex:1; text-align:center; }
   #rc-{{ block.id }} .rc-sub-perks{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px; margin-top:4px; }
