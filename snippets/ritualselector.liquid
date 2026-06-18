@@ -433,7 +433,13 @@
   #rc-{{ block.id }} .rc-divider{ height:1px; background:var(--rc-border); margin-top:{{ block.settings.sp_divider | default: 22 }}px; margin-bottom:{{ block.settings.sp_divider | default: 22 }}px; }
   #rc-{{ block.id }} .rc-flavors-empty .rc-plan{ opacity:.42; pointer-events:none; }
   #rc-{{ block.id }} .rc-flavors-empty .rc-plan.rc-on{ box-shadow:none; }
-  @media (max-width:520px){ #rc-{{ block.id }} .rc-card{ padding:max(18px, calc(var(--rc-card-pad) - 8px)); } }
+  @media (max-width:520px){
+    #rc-{{ block.id }} .rc-card{ padding:max(18px, calc(var(--rc-card-pad) - 8px)); }
+    #rc-{{ block.id }} .rc-plan-top{ flex-wrap:wrap; }
+    #rc-{{ block.id }} .rc-plan-price{ order:-1; width:100%; text-align:center; margin-left:0; margin-bottom:6px; }
+    #rc-{{ block.id }} .rc-plan-price .rc-now{ display:block; }
+    #rc-{{ block.id }} .rc-plan-price .rc-was{ text-align:center; }
+  }
 </style>
 
 <script>
