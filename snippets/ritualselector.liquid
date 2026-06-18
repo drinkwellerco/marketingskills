@@ -363,6 +363,10 @@
   #rc-{{ block.id }} .rc-tally{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:14px; background:var(--rc-tally-bg); border:1px solid var(--rc-tally-border); border-radius:14px; padding:12px 16px; }
   #rc-{{ block.id }} .rc-big{ font-family:var(--rc-serif); font-weight:900; font-size:var(--rc-fs-tally-num); color:var(--rc-tally-num); line-height:1; }
   #rc-{{ block.id }} .rc-lbl{ font-size:var(--rc-fs-tally-lbl); line-height:1.35; color:var(--rc-tally-lbl); }
+  @media (max-width:520px){
+    #rc-{{ block.id }} .rc-tally{ flex-direction:column; gap:6px; text-align:center; }
+    #rc-{{ block.id }} .rc-lbl{ text-align:center; }
+  }
   #rc-{{ block.id }} .rc-lbl b{ color:var(--rc-rose); }
 
   #rc-{{ block.id }} .rc-loss-note{ font-size:var(--rc-fs-loss); line-height:1.45; color:var(--rc-text-muted); margin-top:12px; }
