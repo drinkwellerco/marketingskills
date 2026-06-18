@@ -142,7 +142,7 @@
             <span class="rc-sub-perks">
               <span class="rc-perk--disc">{{ block.settings.sub_perk_discount | default: '10% off' }}</span>
               <span class="rc-perk-sep">·</span>
-              <span class="rc-perk--ship"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h13v13H1z"/><path d="M14 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>{{ block.settings.sub_perk_shipping | default: 'Free shipping always' }}</span>
+              <span class="rc-perk--ship">{{ block.settings.sub_perk_shipping | default: 'Free shipping always' }}</span>
             </span>
           </span>
           <span class="rc-plan-price">
@@ -328,8 +328,7 @@
   #rc-{{ block.id }} .rc-sub-perks{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px; margin-top:4px; }
   #rc-{{ block.id }} .rc-perk--disc{ font-family:var(--rc-script); font-size:20px; font-weight:700; color:var(--rc-rose); line-height:1.1; }
   #rc-{{ block.id }} .rc-perk-sep{ font-size:14px; color:var(--rc-text-muted); line-height:1; }
-  #rc-{{ block.id }} .rc-perk--ship{ display:inline-flex; align-items:center; gap:4px; font-family:var(--rc-script); font-size:20px; font-weight:700; color:var(--rc-text); line-height:1.1; }
-  #rc-{{ block.id }} .rc-perk--ship svg{ width:16px; height:16px; flex-shrink:0; stroke:var(--rc-rose); position:relative; top:1px; }
+  #rc-{{ block.id }} .rc-perk--ship{ font-family:var(--rc-script); font-size:20px; font-weight:700; color:var(--rc-text); line-height:1.1; }
   #rc-{{ block.id }} .rc-plan-price{ margin-left:auto; text-align:right; flex-shrink:0; }
   #rc-{{ block.id }} .rc-now{ font-family:var(--rc-serif); font-weight:800; font-size:var(--rc-fs-price); color:var(--rc-text); }
   #rc-{{ block.id }} .rc-was{ display:block; font-size:12px; color:var(--rc-text-muted); text-decoration:line-through; }
