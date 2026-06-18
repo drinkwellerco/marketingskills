@@ -4410,5 +4410,8 @@
     {% when 'brand_story' %}
       {%- comment -%}Rendered below the product layout in shop-product-details.liquid{%- endcomment -%}
 
+    {% when 'ritualselector' %}
+      {% render 'ritualselector', block: block, product: product %}
+
   {% endcase %}
 {% endfor %}
