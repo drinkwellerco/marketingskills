@@ -65,15 +65,15 @@
             {%- assign fvk = 'flavor_' | append: i | append: '_variant_id' -%}
             {%- assign fik = 'flavor_' | append: i | append: '_image' -%}
             {%- assign fsk = 'flavor_' | append: i | append: '_size' -%}
-            {%- assign fsz = block.settings[fsk] | default: 0 -%}
+            {%- assign fsz = block.settings[fsk] | default: 74 -%}
             <div class="rc-fa-pick">
               <button class="rc-circle" type="button"
-                style="--rc-fc:{{ block.settings[fck] | default: '#D64C6F' }}{% if fsz > 0 %};width:{{ fsz }}px;height:{{ fsz }}px{% endif %}"
+                style="--rc-fc:{{ block.settings[fck] | default: '#D64C6F' }}"
                 data-flavor="{{ i }}"
                 data-variant="{{ block.settings[fvk] }}"
                 data-name="{{ fn | escape }}"
                 aria-label="Add {{ fn | escape }}">
-                {%- if block.settings[fik] != blank -%}<img src="{{ block.settings[fik] | image_url: width: 220 }}" alt="{{ fn | escape }}" width="220" height="220" loading="lazy">{%- endif -%}
+                {%- if block.settings[fik] != blank -%}<img src="{{ block.settings[fik] | image_url: width: 220 }}" alt="{{ fn | escape }}" width="220" height="220" loading="lazy" style="width:{{ fsz }}%;height:{{ fsz }}%">{%- endif -%}
                 <span class="rc-fc-badge">0</span>
               </button>
               <span class="rc-fa-name">{{ fn }}</span>
