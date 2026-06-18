@@ -1,7 +1,7 @@
 {%- comment -%}
   WELLER CO. — Ritual Cards Purchase Selector (LIGHT) — block snippet
-  Adapted for block context: section.id→block.id, section.settings→block.settings.
-  Flavor selector removed. Gifts via block.settings gift_1..4 inline loop.
+  Source: herdrationritualselectorlight.liquid (section) → adapted for block context.
+  section.id→block.id | section.settings→block.settings | flavors+gifts via numbered settings
 {%- endcomment -%}
 
 {%- assign p = product -%}
@@ -19,6 +19,12 @@
   {%- endif -%}
 {%- endfor -%}
 
+{%- assign flavor_count = 0 -%}
+{%- for i in (1..4) -%}
+  {%- assign fnk = 'flavor_' | append: i | append: '_name' -%}
+  {%- if block.settings[fnk] != blank -%}{%- assign flavor_count = flavor_count | plus: 1 -%}{%- endif -%}
+{%- endfor -%}
+
 {%- capture rc_ico_scoop -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13.5a5.5 5.5 0 0 1 5.5-5.5H12v11H9.5A5.5 5.5 0 0 1 4 13.5Z"/><path d="M12 8l3.8-3.8a2.6 2.6 0 1 1 3.7 3.7L16 11.4"/></svg>{%- endcapture -%}
 {%- capture rc_ico_pouch -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 8h11l-.7 11.2a1.8 1.8 0 0 1-1.8 1.8H9a1.8 1.8 0 0 1-1.8-1.8L6.5 8Z"/><path d="M6.5 8 8.2 4.8a1.5 1.5 0 0 1 1.3-.8h5a1.5 1.5 0 0 1 1.3.8L17.5 8"/><path d="M9.5 12.5h5"/></svg>{%- endcapture -%}
 {%- capture rc_ico_guide -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h10a1.5 1.5 0 0 1 1.5 1.5V20H7.5A1.5 1.5 0 0 1 6 18.5V4Z"/><path d="M6 4a1.5 1.5 0 0 0-1.5 1.5v13A1.5 1.5 0 0 1 6 17"/><path d="M9.5 8.5h4.5M9.5 12h3"/></svg>{%- endcapture -%}
@@ -28,7 +34,9 @@
   id="rc-{{ block.id }}"
   class="rc rc--light"
   data-symbol="{{ sym }}"
+  data-has-plans="{{ has_plans }}"
   data-gift-total="{{ gift_total }}"
+  data-flavor-count="{{ flavor_count }}"
   data-one-cents="{{ cv.price }}"
   data-manual-discount="{{ block.settings.manual_discount }}"
   {{ block.shopify_attributes }}>
@@ -43,9 +51,42 @@
     <span class="rc-blob rc-blob2"></span>
 
     <div class="rc-sel">
+
+      {%- if flavor_count > 0 -%}
+      <div class="rc-q">{{ block.settings.flavor_heading }}</div>
+      <div class="rc-fa-row">
+        {%- for i in (1..4) -%}
+          {%- assign fnk = 'flavor_' | append: i | append: '_name' -%}
+          {%- assign fn = block.settings[fnk] -%}
+          {%- if fn != blank -%}
+            {%- assign fck = 'flavor_' | append: i | append: '_color' -%}
+            {%- assign fvk = 'flavor_' | append: i | append: '_variant_id' -%}
+            {%- assign fik = 'flavor_' | append: i | append: '_image' -%}
+            <div class="rc-fa-pick">
+              <button class="rc-circle" type="button"
+                style="--rc-fc:{{ block.settings[fck] }}"
+                data-flavor="{{ i }}"
+                data-variant="{{ block.settings[fvk] }}"
+                data-name="{{ fn | escape }}"
+                aria-label="Add {{ fn | escape }}">
+                {%- if block.settings[fik] != blank -%}<img src="{{ block.settings[fik] | image_url: width: 220 }}" alt="{{ fn | escape }}" loading="lazy">{%- endif -%}
+                <span class="rc-fc-badge">0</span>
+              </button>
+              <span class="rc-fa-name">{{ fn }}</span>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      <div class="rc-fa-mix">
+        <div class="rc-fa-mix-head">{{ block.settings.order_label }} · <b><span data-count>0</span> {{ block.settings.unit_label }}</b></div>
+        <div class="rc-fa-chips" data-chips></div>
+      </div>
+      <div class="rc-divider"></div>
+      {%- endif -%}
+
       <div class="rc-q">{{ block.settings.heading }}</div>
 
-      <!-- ===== ONE-TIME ===== -->
+      <!-- ONE-TIME -->
       <div class="rc-plan" data-plan="one" role="button" tabindex="0">
         <div class="rc-plan-top">
           <span class="rc-radio"></span>
@@ -79,7 +120,7 @@
         </div>
       </div>
 
-      <!-- ===== SUBSCRIBE & SAVE ===== -->
+      <!-- SUBSCRIBE & SAVE -->
       <div class="rc-plan rc-on" data-plan="sub" role="button" tabindex="0">
         {%- if block.settings.badge_text != blank -%}<span class="rc-badge">{{ block.settings.badge_text }}</span>{%- endif -%}
         <div class="rc-plan-top">
@@ -171,40 +212,28 @@
   {%- endform -%}
 </div>
 
-{%- comment -%} ============ STYLES ============ {%- endcomment -%}
 <style>
-  /* suppress subscription app injection into form */
+  /* suppress subscription app injection */
   #rc-{{ block.id }} .rc-card > *:not(input):not(.rc-blob1):not(.rc-blob2):not(.rc-sel){ display:none !important; }
 
   #rc-{{ block.id }}{
-    /* brand palette */
     --rc-blush:#F2C4CE; --rc-peach:#E8A87C; --rc-sage:#8A9B6E; --rc-sky:#4A90B8;
     --rc-navy:#1B3A5C; --rc-rose:#E8607A; --rc-cream:#FAF5F0; --rc-cream-dk:#F0E8E0;
     --rc-lime:#7DB642; --rc-fog:#F5EEE8; --rc-mist:#E8DDD5; --rc-stone:#8A7E76;
     --rc-serif:'Playfair Display','Georgia',serif;
-    --rc-display:'Cormorant Garamond','Georgia',serif;
     --rc-script:'Dancing Script',cursive;
     --rc-sans:'DM Sans','Helvetica Neue',sans-serif;
     --rc-spring:cubic-bezier(.34,1.4,.5,1);
 
-    /* ===== THEME: LIGHT ===== */
-    --rc-card-bg:#fff;
-    --rc-surface:#fff;
-    --rc-border:var(--rc-mist);
-    --rc-text:var(--rc-navy);
-    --rc-text-muted:var(--rc-stone);
-    --rc-radio:var(--rc-mist);
-    --rc-gift-bg:var(--rc-fog);
-    --rc-gift-ico-bg:rgba(232,96,122,.12);
-    --rc-freq-bg:var(--rc-fog);
-    --rc-freq-on-bg:#fff;
-    --rc-freq-on-text:var(--rc-navy);
-    --rc-tally-bg:var(--rc-navy);
-    --rc-tally-border:transparent;
-    --rc-tally-num:#fff;
-    --rc-tally-lbl:rgba(250,245,240,.82);
-    --rc-card-shadow:0 8px 40px rgba(27,58,92,.12);
-    --rc-on-bg:rgba(232,96,122,.06);
+    /* LIGHT theme */
+    --rc-card-bg:#fff; --rc-surface:#fff; --rc-border:var(--rc-mist);
+    --rc-text:var(--rc-navy); --rc-text-muted:var(--rc-stone); --rc-radio:var(--rc-mist);
+    --rc-gift-bg:var(--rc-fog); --rc-gift-ico-bg:rgba(232,96,122,.12);
+    --rc-freq-bg:var(--rc-fog); --rc-freq-on-bg:#fff; --rc-freq-on-text:var(--rc-navy);
+    --rc-tally-bg:var(--rc-navy); --rc-tally-border:transparent;
+    --rc-tally-num:#fff; --rc-tally-lbl:rgba(250,245,240,.82);
+    --rc-card-shadow:0 8px 40px rgba(27,58,92,.12); --rc-on-bg:rgba(232,96,122,.06);
+    --rc-circle-base:#fff; --rc-chip-bg:#fff;
     --rc-blob1:var(--rc-blush); --rc-blob1-op:.35;
     --rc-blob2:var(--rc-peach); --rc-blob2-op:.25;
 
@@ -212,24 +241,14 @@
     max-width:520px; margin:0 auto; padding:8px;
   }
   #rc-{{ block.id }} *{ box-sizing:border-box; }
-
-  #rc-{{ block.id }} .rc-card{
-    background:var(--rc-card-bg); border-radius:28px; padding:30px;
-    box-shadow:var(--rc-card-shadow); position:relative; overflow:hidden; margin:0;
-  }
+  #rc-{{ block.id }} .rc-card{ background:var(--rc-card-bg); border-radius:28px; padding:30px; box-shadow:var(--rc-card-shadow); position:relative; overflow:hidden; margin:0; }
   #rc-{{ block.id }} .rc-blob{ position:absolute; border-radius:50%; pointer-events:none; z-index:0; }
   #rc-{{ block.id }} .rc-blob1{ width:200px; height:200px; background:var(--rc-blob1); opacity:var(--rc-blob1-op); top:-70px; right:-60px; }
   #rc-{{ block.id }} .rc-blob2{ width:130px; height:130px; background:var(--rc-blob2); opacity:var(--rc-blob2-op); bottom:-50px; left:-40px; }
   #rc-{{ block.id }} .rc-sel{ position:relative; z-index:1; }
   #rc-{{ block.id }} .rc-q{ font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-text-muted); margin-bottom:12px; }
 
-  /* plan card */
-  #rc-{{ block.id }} .rc-plan{
-    position:relative; display:block; width:100%; text-align:left;
-    background:var(--rc-surface); border:1.5px solid var(--rc-border); border-radius:20px;
-    padding:18px 20px; margin-bottom:12px; cursor:pointer;
-    transition:border-color .18s, background .18s, box-shadow .18s, opacity .3s;
-  }
+  #rc-{{ block.id }} .rc-plan{ position:relative; display:block; width:100%; text-align:left; background:var(--rc-surface); border:1.5px solid var(--rc-border); border-radius:20px; padding:18px 20px; margin-bottom:12px; cursor:pointer; transition:border-color .18s,background .18s,box-shadow .18s,opacity .3s; }
   #rc-{{ block.id }} .rc-plan:hover{ border-color:rgba(232,96,122,.45); }
   #rc-{{ block.id }} .rc-plan.rc-on{ border-color:var(--rc-rose); background:var(--rc-on-bg); box-shadow:0 6px 24px rgba(232,96,122,.2); }
   #rc-{{ block.id }} .rc-plan-top{ display:flex; align-items:center; gap:14px; }
@@ -244,14 +263,12 @@
   #rc-{{ block.id }} .rc-was{ display:block; font-size:12px; color:var(--rc-text-muted); text-decoration:line-through; }
   #rc-{{ block.id }} .rc-badge{ position:absolute; top:-11px; right:18px; background:var(--rc-rose); color:#fff; font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; padding:5px 12px; border-radius:999px; box-shadow:0 6px 24px rgba(232,96,122,.28); }
 
-  /* reveal */
-  #rc-{{ block.id }} .rc-reveal{ overflow:hidden; max-height:0; opacity:0; transition:max-height .45s var(--rc-spring), opacity .35s, margin .35s; margin-top:0; }
+  #rc-{{ block.id }} .rc-reveal{ overflow:hidden; max-height:0; opacity:0; transition:max-height .45s var(--rc-spring),opacity .35s,margin .35s; margin-top:0; }
   #rc-{{ block.id }} .rc-plan.rc-on .rc-reveal{ max-height:520px; opacity:1; margin-top:14px; }
   #rc-{{ block.id }} .rc-reveal-inner{ border-top:1.5px dashed rgba(232,96,122,.4); padding-top:16px; }
   #rc-{{ block.id }} .rc-reveal-h, #rc-{{ block.id }} .rc-loss-h{ font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-rose); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
   #rc-{{ block.id }} .rc-reveal-h::after, #rc-{{ block.id }} .rc-loss-h::after{ content:''; flex:1; height:1px; background:rgba(232,96,122,.22); }
 
-  /* freq */
   #rc-{{ block.id }} .rc-freq-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:15px; }
   #rc-{{ block.id }} .rc-freq-label{ font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-text-muted); }
   #rc-{{ block.id }} .rc-freq{ display:flex; flex:1; gap:5px; background:var(--rc-freq-bg); border-radius:999px; padding:4px; }
@@ -260,9 +277,8 @@
   #rc-{{ block.id }} .rc-freq button.rc-on{ background:var(--rc-freq-on-bg); color:var(--rc-freq-on-text); box-shadow:0 2px 12px rgba(27,58,92,.12); }
   #rc-{{ block.id }} .rc-freq button.rc-on span{ color:var(--rc-rose); opacity:1; }
 
-  /* gifts */
   #rc-{{ block.id }} .rc-gifts{ display:flex; flex-direction:column; gap:8px; }
-  #rc-{{ block.id }} .rc-gift{ display:flex; align-items:center; gap:12px; background:var(--rc-gift-bg); border-radius:14px; padding:9px 14px; transition:opacity .4s ease, transform .5s var(--rc-spring); }
+  #rc-{{ block.id }} .rc-gift{ display:flex; align-items:center; gap:12px; background:var(--rc-gift-bg); border-radius:14px; padding:9px 14px; transition:opacity .4s ease,transform .5s var(--rc-spring); }
   #rc-{{ block.id }} .rc-g-ico{ display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; background:var(--rc-gift-ico-bg); color:var(--rc-rose); flex-shrink:0; }
   #rc-{{ block.id }} .rc-g-ico svg{ width:22px; height:22px; }
   #rc-{{ block.id }} .rc-g-name{ display:block; font-weight:600; font-size:13px; color:var(--rc-text); line-height:1.2; }
@@ -271,13 +287,11 @@
   #rc-{{ block.id }} .rc-strike{ font-size:11px; color:var(--rc-text-muted); text-decoration:line-through; }
   #rc-{{ block.id }} .rc-free{ display:block; font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--rc-lime); }
 
-  /* tally */
   #rc-{{ block.id }} .rc-tally{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:14px; background:var(--rc-tally-bg); border:1px solid var(--rc-tally-border); border-radius:14px; padding:12px 16px; }
   #rc-{{ block.id }} .rc-big{ font-family:var(--rc-serif); font-weight:900; font-size:26px; color:var(--rc-tally-num); line-height:1; }
   #rc-{{ block.id }} .rc-lbl{ font-size:12px; line-height:1.35; color:var(--rc-tally-lbl); }
   #rc-{{ block.id }} .rc-lbl b{ color:var(--rc-rose); }
 
-  /* loss */
   #rc-{{ block.id }} .rc-loss-note{ font-size:12px; line-height:1.45; color:var(--rc-text-muted); margin-top:12px; }
   #rc-{{ block.id }} .rc-loss-note b{ color:var(--rc-rose); }
   #rc-{{ block.id }} .rc-gift-lost{ filter:grayscale(.95); opacity:.62; }
@@ -285,30 +299,60 @@
   #rc-{{ block.id }} .rc-gift-lost .rc-g-name{ text-decoration:line-through; text-decoration-color:rgba(232,96,122,.5); }
   #rc-{{ block.id }} .rc-gift-lost .rc-free{ color:var(--rc-stone); }
 
-  /* entrance */
   #rc-{{ block.id }} .rc-gift-enter{ opacity:1; transform:none; }
   #rc-{{ block.id }} .rc-gift-enter.rc-enter-hidden{ opacity:0; transform:translateY(12px) scale(.94); }
 
-  /* cta */
-  #rc-{{ block.id }} .rc-cta{ width:100%; display:flex; align-items:center; justify-content:center; gap:6px; margin-top:20px; padding:16px; border:none; border-radius:999px; background:var(--rc-rose); color:#fff; font-family:var(--rc-sans); font-weight:600; font-size:13px; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 24px rgba(232,96,122,.28); transition:transform .2s, box-shadow .2s; }
+  #rc-{{ block.id }} .rc-cta{ width:100%; display:flex; align-items:center; justify-content:center; gap:6px; margin-top:20px; padding:16px; border:none; border-radius:999px; background:var(--rc-rose); color:#fff; font-family:var(--rc-sans); font-weight:600; font-size:13px; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 24px rgba(232,96,122,.28); transition:transform .2s,box-shadow .2s; }
   #rc-{{ block.id }} .rc-cta:hover{ transform:translateY(-2px); box-shadow:0 10px 32px rgba(232,96,122,.35); }
   #rc-{{ block.id }} .rc-fine{ text-align:center; font-size:11px; color:var(--rc-text-muted); margin-top:12px; }
   #rc-{{ block.id }} .rc-fine .rc-heart{ color:var(--rc-rose); }
 
+  /* flavor selector */
+  #rc-{{ block.id }} .rc-fa-row{ display:flex; gap:12px; justify-content:space-between; }
+  #rc-{{ block.id }} .rc-fa-pick{ flex:1; display:flex; flex-direction:column; align-items:center; gap:10px; }
+  #rc-{{ block.id }} .rc-fa-name{ font-family:var(--rc-sans); font-weight:600; font-size:12px; line-height:1.25; text-align:center; color:var(--rc-text); }
+  #rc-{{ block.id }} .rc-circle{ width:96px; height:96px; border-radius:50%; padding:0; background:color-mix(in srgb, var(--rc-fc) 9%, var(--rc-circle-base)); border:2px solid color-mix(in srgb, var(--rc-fc) 24%, var(--rc-border)); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:transform .18s var(--rc-spring),border-color .18s,box-shadow .18s,background .18s; }
+  #rc-{{ block.id }} .rc-circle img{ width:76%; height:76%; object-fit:contain; pointer-events:none; }
+  #rc-{{ block.id }} .rc-circle:hover{ transform:translateY(-3px); border-color:var(--rc-fc); }
+  #rc-{{ block.id }} .rc-circle.rc-active{ border-color:var(--rc-fc); background:color-mix(in srgb, var(--rc-fc) 16%, var(--rc-circle-base)); box-shadow:0 8px 22px color-mix(in srgb, var(--rc-fc) 32%, transparent); }
+  #rc-{{ block.id }} .rc-circle.rc-bump{ animation:rcbump-{{ block.id }} .42s var(--rc-spring); }
+  @keyframes rcbump-{{ block.id }}{ 0%{transform:scale(1)} 40%{transform:scale(1.11)} 100%{transform:scale(1)} }
+  #rc-{{ block.id }} .rc-fc-badge{ position:absolute; top:-7px; right:-7px; min-width:26px; height:26px; padding:0 6px; border-radius:999px; background:var(--rc-fc); color:#fff; font-family:var(--rc-sans); font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(27,58,92,.22); border:2px solid var(--rc-circle-base); transform:scale(0); transition:transform .3s var(--rc-spring); }
+  #rc-{{ block.id }} .rc-fc-badge.rc-show{ transform:scale(1); }
+  #rc-{{ block.id }} .rc-fc-clear{ position:absolute; top:-7px; left:-7px; width:24px; height:24px; border-radius:999px; background:var(--rc-circle-base); color:var(--rc-text-muted); border:1.5px solid var(--rc-border); display:flex; align-items:center; justify-content:center; font-size:11px; line-height:1; cursor:pointer; box-shadow:0 2px 6px rgba(27,58,92,.16); transform:scale(0); transition:transform .25s var(--rc-spring),background .15s,color .15s,border-color .15s; }
+  #rc-{{ block.id }} .rc-fc-clear.rc-show{ transform:scale(1); }
+  #rc-{{ block.id }} .rc-fc-clear:hover{ background:rgba(232,96,122,.14); color:var(--rc-rose); border-color:rgba(232,96,122,.45); }
+  #rc-{{ block.id }} .rc-fa-mix{ margin-top:22px; background:var(--rc-gift-bg); border-radius:18px; padding:16px; min-height:96px; }
+  #rc-{{ block.id }} .rc-fa-mix-head{ font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--rc-text-muted); margin-bottom:12px; }
+  #rc-{{ block.id }} .rc-fa-mix-head b{ color:var(--rc-rose); }
+  #rc-{{ block.id }} .rc-fa-chips{ display:flex; flex-direction:column; gap:8px; }
+  #rc-{{ block.id }} .rc-fa-empty{ font-family:var(--rc-sans); font-size:13px; color:var(--rc-text-muted); font-style:italic; }
+  #rc-{{ block.id }} .rc-chip{ display:flex; align-items:center; gap:10px; background:var(--rc-chip-bg); border:1.5px solid var(--rc-border); border-radius:12px; padding:9px 9px 9px 13px; animation:rcchip-{{ block.id }} .35s var(--rc-spring); }
+  @keyframes rcchip-{{ block.id }}{ from{opacity:0; transform:translateY(6px) scale(.96)} to{opacity:1; transform:none} }
+  #rc-{{ block.id }} .rc-chip-dot{ width:12px; height:12px; border-radius:50%; background:var(--rc-fc); flex-shrink:0; }
+  #rc-{{ block.id }} .rc-chip-name{ font-family:var(--rc-sans); font-weight:600; font-size:13px; color:var(--rc-text); }
+  #rc-{{ block.id }} .rc-chip-qty{ font-family:var(--rc-sans); font-weight:700; font-size:13px; color:var(--rc-fc); }
+  #rc-{{ block.id }} .rc-chip-x{ margin-left:auto; width:26px; height:26px; border-radius:50%; border:none; background:var(--rc-gift-bg); color:var(--rc-text-muted); cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .15s,color .15s; }
+  #rc-{{ block.id }} .rc-chip-x:hover{ background:rgba(232,96,122,.14); color:var(--rc-rose); }
+  #rc-{{ block.id }} .rc-divider{ height:1px; background:var(--rc-border); margin:24px 0; }
+  #rc-{{ block.id }} .rc-flavors-empty .rc-plan{ opacity:.42; }
+  #rc-{{ block.id }} .rc-flavors-empty .rc-plan.rc-on{ box-shadow:none; }
+  #rc-{{ block.id }} .rc-cta[disabled]{ opacity:.45; cursor:not-allowed; box-shadow:none; transform:none; }
   @media (max-width:520px){ #rc-{{ block.id }} .rc-card{ padding:22px; } }
 </style>
 
-{%- comment -%} ============ BEHAVIOUR ============ {%- endcomment -%}
 <script>
 (function(){
   var root = document.getElementById('rc-{{ block.id }}');
   if(!root) return;
   var sym = root.dataset.symbol || '$';
   var GIFT_TOTAL = parseInt(root.dataset.giftTotal, 10) || 0;
+  var FLAVOR_COUNT = parseInt(root.dataset.flavorCount, 10) || 0;
   var ONE_CENTS = parseInt(root.dataset.oneCents, 10) || 0;
   var money = function(c){ return sym + (c/100).toFixed(2); };
   var slice = function(c){ return Array.prototype.slice.call(c); };
 
+  var form = root.querySelector('form');
   var subPlan = root.querySelector('.rc-plan[data-plan="sub"]');
   var onePlan = root.querySelector('.rc-plan[data-plan="one"]');
   var oneNow  = onePlan ? onePlan.querySelector('.rc-now') : null;
@@ -322,11 +366,19 @@
   var totalEl = root.querySelector('[data-total]');
   var cadenceEl = root.querySelector('[data-cadence]');
   var sellingPlanInput = root.querySelector('[data-selling-plan]');
+  var qtyInput = root.querySelector('[data-qty]');
   var addBtn = root.querySelector('[data-add-btn]');
+  var chipsEl = root.querySelector('[data-chips]');
+  var countEl = root.querySelector('[data-count]');
 
   var freqBtns = slice(root.querySelectorAll('[data-freq] button'));
   var current = 'sub';
   var activeFreq = freqBtns[0] || null;
+
+  /* flavor state */
+  var counts = {};
+  var flavorInfo = {};
+  var totalQty = 0;
 
   function staggerIn(list, gap){ gap=gap||95; list.forEach(function(el){ el.classList.add('rc-enter-hidden'); }); if(list[0]) void list[0].offsetWidth; list.forEach(function(el,i){ setTimeout(function(){ el.classList.remove('rc-enter-hidden'); }, 40+i*gap); }); }
   function animateNum(el, from, to, dur){ if(!el) return; dur=dur||600; var start=performance.now(); (function step(t){ var pr=Math.min(1,(t-start)/dur), e=1-Math.pow(1-pr,3); el.textContent=sym+Math.round(from+(to-from)*e); if(pr<1) requestAnimationFrame(step); else el.textContent=sym+to; })(performance.now()); }
@@ -335,13 +387,70 @@
   function subCompare(){ return activeFreq ? parseInt(activeFreq.dataset.compare,10) : ONE_CENTS; }
 
   function refresh(){
+    var hasF = FLAVOR_COUNT > 0;
+    if(hasF && totalQty === 0){
+      if(subPrice) subPrice.textContent='';
+      if(subWas) subWas.style.display='none';
+      if(oneNow) oneNow.textContent='';
+      if(totalEl) totalEl.textContent='';
+      root.classList.add('rc-flavors-empty');
+      if(addBtn) addBtn.setAttribute('disabled','');
+      return;
+    }
+    root.classList.remove('rc-flavors-empty');
+    if(addBtn) addBtn.removeAttribute('disabled');
+    var m = hasF ? totalQty : 1;
     var su = subUnit(), sc = subCompare();
-    if(subPrice) subPrice.textContent = money(su);
-    if(subWas){ if(sc > su){ subWas.textContent = money(sc); subWas.style.display=''; } else { subWas.style.display='none'; } }
-    if(oneNow) oneNow.textContent = money(ONE_CENTS);
+    if(subPrice) subPrice.textContent = money(su * m);
+    if(subWas){ if(sc > su){ subWas.textContent = money(sc * m); subWas.style.display=''; } else { subWas.style.display='none'; } }
+    if(oneNow) oneNow.textContent = money(ONE_CENTS * m);
     var unit = current === 'sub' ? su : ONE_CENTS;
-    if(totalEl) totalEl.textContent = ' — ' + money(unit);
+    if(totalEl) totalEl.textContent = ' — ' + money(unit * m);
   }
+
+  function renderMix(){
+    if(!chipsEl) return;
+    var picked = Object.keys(counts).filter(function(k){ return counts[k] > 0; });
+    if(countEl) countEl.textContent = totalQty;
+    if(!picked.length){
+      chipsEl.innerHTML = '<div class="rc-fa-empty">' + {{ block.settings.empty_text | json }} + '</div>';
+    } else {
+      chipsEl.innerHTML = picked.map(function(k){
+        var f = flavorInfo[k];
+        return '<div class="rc-chip" style="--rc-fc:'+f.color+'">'
+          +'<span class="rc-chip-dot"></span>'
+          +'<span class="rc-chip-name">'+f.name+'</span>'
+          +'<span class="rc-chip-qty">×'+counts[k]+'</span>'
+          +'<button class="rc-chip-x" type="button" data-rm="'+k+'" aria-label="Remove">✕</button>'
+          +'</div>';
+      }).join('');
+      slice(chipsEl.querySelectorAll('.rc-chip-x')).forEach(function(x){ x.addEventListener('click', function(){ setCount(x.dataset.rm, 0); }); });
+    }
+    Object.keys(flavorInfo).forEach(function(k){
+      var f = flavorInfo[k], n = counts[k] || 0;
+      f.circle.classList.toggle('rc-active', n > 0);
+      if(f.badge){ f.badge.textContent = n; f.badge.classList.toggle('rc-show', n > 0); }
+      if(f.clear) f.clear.classList.toggle('rc-show', n > 0);
+    });
+  }
+
+  function recompute(){ totalQty = Object.keys(counts).reduce(function(s,k){ return s + (counts[k]||0); }, 0); }
+  function setCount(k, n){ counts[k] = n < 0 ? 0 : n; recompute(); renderMix(); refresh(); }
+  function bump(el){ el.classList.remove('rc-bump'); void el.offsetWidth; el.classList.add('rc-bump'); }
+
+  slice(root.querySelectorAll('.rc-circle')).forEach(function(c){
+    var k = c.dataset.flavor;
+    counts[k] = 0;
+    var badge = c.querySelector('.rc-fc-badge');
+    var clr = document.createElement('span');
+    clr.className = 'rc-fc-clear'; clr.innerHTML = '✕';
+    clr.setAttribute('role','button'); clr.setAttribute('aria-label','Clear ' + (c.dataset.name||''));
+    clr.addEventListener('click', function(e){ e.stopPropagation(); setCount(k, 0); });
+    c.appendChild(clr);
+    var col = (c.style.getPropertyValue('--rc-fc')||'').trim() || 'var(--rc-rose)';
+    flavorInfo[k] = { name: c.dataset.name||'', variant: c.dataset.variant||'', color: col, badge: badge, clear: clr, circle: c };
+    c.addEventListener('click', function(){ bump(c); setCount(k, (counts[k]||0)+1); });
+  });
 
   function applyFreq(btn){
     if(!btn) return;
@@ -360,8 +469,35 @@
   });
   freqBtns.forEach(function(b){ b.addEventListener('click', function(e){ e.stopPropagation(); applyFreq(b); }); });
 
+  if(form){
+    form.addEventListener('submit', function(e){
+      if(FLAVOR_COUNT === 0) return;
+      var planId = (current==='sub' && activeFreq) ? (activeFreq.dataset.planId||'') : '';
+      var lineItems = [];
+      Object.keys(counts).forEach(function(k){
+        var f = flavorInfo[k];
+        if(counts[k] > 0 && f.variant){
+          var it = { id: f.variant, quantity: counts[k] };
+          if(planId) it.selling_plan = planId;
+          lineItems.push(it);
+        }
+      });
+      if(lineItems.length){
+        e.preventDefault();
+        if(addBtn) addBtn.setAttribute('disabled','');
+        fetch('/cart/add.js', { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify({ items: lineItems }) })
+          .then(function(r){ return r.json(); })
+          .then(function(){ window.location.href = '/cart'; })
+          .catch(function(){ if(addBtn) addBtn.removeAttribute('disabled'); form.submit(); });
+      } else {
+        if(qtyInput) qtyInput.value = totalQty > 0 ? totalQty : 1;
+        if(planId && sellingPlanInput) sellingPlanInput.value = planId;
+      }
+    });
+  }
+
   if(activeFreq) applyFreq(activeFreq);
   if(tally) tally.textContent = sym + GIFT_TOTAL;
-  refresh();
+  recompute(); renderMix(); refresh();
 })();
 </script>
