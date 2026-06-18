@@ -219,7 +219,9 @@
       </div>
 
       <button type="submit" name="add" class="rc-cta" data-add-btn>
-        {{ block.settings.cta_label | default: 'Add to cart' }}<span data-total></span>
+        <span class="rc-cta-label">{{ block.settings.cta_label | default: 'Add to cart' }}</span>
+        <span data-total></span>
+        <span class="rc-cta-spinner" aria-hidden="true"></span>
       </button>
       <div class="rc-fine">{{ block.settings.fine_print | default: 'Free shipping always on subscriptions ♡' }}</div>
     </div>
@@ -364,9 +366,16 @@
   #rc-{{ block.id }} .rc-gift-enter{ opacity:1; transform:none; }
   #rc-{{ block.id }} .rc-gift-enter.rc-enter-hidden{ opacity:0; transform:translateY(12px) scale(.94); }
 
-  #rc-{{ block.id }} .rc-cta{ width:100%; display:flex; align-items:center; justify-content:center; gap:6px; margin-top:var(--rc-cta-top); padding:16px; border:none; border-radius:999px; background:var(--rc-rose); color:#fff; font-family:var(--rc-sans); font-weight:600; font-size:var(--rc-fs-cta); letter-spacing:.06em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 24px rgba(232,96,122,.28); transition:transform .2s,box-shadow .2s; }
-  #rc-{{ block.id }} .rc-cta:hover{ transform:translateY(-2px); box-shadow:0 10px 32px rgba(232,96,122,.35); }
-  #rc-{{ block.id }} .rc-cta[disabled]{ opacity:.45; cursor:not-allowed; box-shadow:none; transform:none; }
+  #rc-{{ block.id }} .rc-cta{ width:100%; display:flex; align-items:center; justify-content:center; gap:8px; margin-top:var(--rc-cta-top); padding:16px; border:none; border-radius:999px; background:var(--rc-rose); color:#fff; font-family:var(--rc-sans); font-weight:600; font-size:var(--rc-fs-cta); letter-spacing:.06em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 24px rgba(232,96,122,.28); transition:transform .2s,box-shadow .2s,background .3s; }
+  #rc-{{ block.id }} .rc-cta:hover:not([disabled]){ transform:translateY(-2px); box-shadow:0 10px 32px rgba(232,96,122,.35); }
+  #rc-{{ block.id }} .rc-cta[disabled]{ opacity:.55; cursor:not-allowed; box-shadow:none; transform:none; }
+  @keyframes rcspin{{ block.id | replace: '-', '' }}{ to{ transform:rotate(360deg); } }
+  #rc-{{ block.id }} .rc-cta-spinner{ display:none; width:15px; height:15px; border:2px solid rgba(255,255,255,.35); border-top-color:#fff; border-radius:50%; flex-shrink:0; }
+  #rc-{{ block.id }} .rc-cta--loading .rc-cta-spinner{ display:block; animation:rcspin{{ block.id | replace: '-', '' }} .7s linear infinite; }
+  #rc-{{ block.id }} .rc-cta--loading .rc-cta-label,
+  #rc-{{ block.id }} .rc-cta--loading [data-total]{ opacity:.7; }
+  #rc-{{ block.id }} .rc-cta--success{ background:#2d9e5f !important; box-shadow:0 6px 24px rgba(45,158,95,.32) !important; }
+  #rc-{{ block.id }} .rc-cta--error{ background:#b83232 !important; box-shadow:0 6px 24px rgba(184,50,50,.32) !important; }
   #rc-{{ block.id }} .rc-fine{ text-align:center; font-size:var(--rc-fs-fine); color:var(--rc-text-muted); margin-top:12px; }
 
   /* FLAVOR SELECTOR */
@@ -527,6 +536,34 @@
   });
   freqBtns.forEach(function(b){ b.addEventListener('click', function(e){ e.stopPropagation(); applyFreq(b); }); });
 
+  var addLabel = addBtn ? addBtn.querySelector('.rc-cta-label') : null;
+  var ctaDefault = {{ block.settings.cta_label | default: 'Add to cart' | json }};
+  var btnTimer = null;
+
+  function setBtn(state, msg){
+    if(!addBtn) return;
+    clearTimeout(btnTimer);
+    addBtn.classList.remove('rc-cta--loading','rc-cta--success','rc-cta--error');
+    if(state === 'loading'){
+      addBtn.setAttribute('disabled','');
+      addBtn.classList.add('rc-cta--loading');
+      if(addLabel) addLabel.textContent = 'Adding…';
+    } else if(state === 'success'){
+      addBtn.removeAttribute('disabled');
+      addBtn.classList.add('rc-cta--success');
+      if(addLabel) addLabel.textContent = '✓ Added to cart';
+      btnTimer = setTimeout(function(){ setBtn('idle'); }, 2200);
+    } else if(state === 'error'){
+      addBtn.removeAttribute('disabled');
+      addBtn.classList.add('rc-cta--error');
+      if(addLabel) addLabel.textContent = msg || 'Something went wrong';
+      btnTimer = setTimeout(function(){ setBtn('idle'); }, 3500);
+    } else {
+      addBtn.removeAttribute('disabled');
+      if(addLabel) addLabel.textContent = ctaDefault;
+    }
+  }
+
   if(form){
     form.addEventListener('submit', function(e){
       if(FLAVOR_COUNT===0) return;
@@ -535,18 +572,23 @@
       Object.keys(counts).forEach(function(k){
         var f=flavorInfo[k];
         if(counts[k]>0 && f.variant){
-          var it={id:f.variant, quantity:counts[k]};
-          if(planId) it.selling_plan=planId;
+          var it={id:parseInt(f.variant,10), quantity:counts[k]};
+          if(planId) it.selling_plan=parseInt(planId,10);
           lineItems.push(it);
         }
       });
       if(lineItems.length){
         e.preventDefault();
-        if(addBtn) addBtn.setAttribute('disabled','');
+        setBtn('loading');
         fetch('/cart/add.js',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({items:lineItems})})
-          .then(function(r){ return r.json(); })
-          .then(function(){ if(addBtn) addBtn.removeAttribute('disabled'); })
-          .catch(function(){ if(addBtn) addBtn.removeAttribute('disabled'); form.submit(); });
+          .then(function(r){
+            return r.json().then(function(d){ return {ok:r.ok, data:d}; });
+          })
+          .then(function(res){
+            if(res.ok){ setBtn('success'); }
+            else{ setBtn('error', res.data.description || res.data.message || 'Could not add to cart'); }
+          })
+          .catch(function(){ setBtn('error', 'Network error — please try again'); });
       } else {
         if(qtyInput) qtyInput.value = totalQty>0 ? totalQty : 1;
         if(planId && spInput) spInput.value = planId;
