@@ -333,6 +333,9 @@
   #rc-{{ block.id }} .rc-plan[data-plan="one"] .rc-plan-top{ flex-direction:column; align-items:center; gap:6px; }
   #rc-{{ block.id }} .rc-plan[data-plan="sub"] .rc-plan-price,
   #rc-{{ block.id }} .rc-plan[data-plan="one"] .rc-plan-price{ order:-1; margin-left:0; text-align:center; }
+  /* Radio circle sits at the bottom of each card on desktop */
+  #rc-{{ block.id }} .rc-plan[data-plan="sub"] .rc-plan-top > .rc-radio,
+  #rc-{{ block.id }} .rc-plan[data-plan="one"] .rc-plan-top > .rc-radio{ order:1; }
   /* Center the one-time text span */
   #rc-{{ block.id }} .rc-plan[data-plan="one"] .rc-plan-top > span:not(.rc-radio):not(.rc-plan-price){ text-align:center; }
   /* Hide radio on mobile for both cards */
