@@ -65,7 +65,7 @@
             {%- assign fvk = 'flavor_' | append: i | append: '_variant_id' -%}
             {%- assign fik = 'flavor_' | append: i | append: '_image' -%}
             {%- assign fsk = 'flavor_' | append: i | append: '_size' -%}
-            {%- assign fsz = block.settings[fsk] | default: 74 -%}
+            {%- assign fsz = block.settings[fsk] | default: 75 -%}
             <div class="rc-fa-pick">
               <button class="rc-circle" type="button"
                 style="--rc-fc:{{ block.settings[fck] | default: '#D64C6F' }}"
