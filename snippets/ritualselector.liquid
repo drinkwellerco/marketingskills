@@ -166,7 +166,8 @@
                 {%- else -%}
                   {%- assign labels = block.settings.manual_cadences | default: 'Monthly:30 days,Bi-monthly:60 days' | split: ',' -%}
                   {%- assign disc = block.settings.manual_discount | default: 10 -%}
-                  {%- assign sub_cents = cv.price | times: 100 | minus: cv.price | times: disc | divided_by: 100 -%}
+                  {%- assign disc_amount = cv.price | times: disc | divided_by: 100 -%}
+                  {%- assign sub_cents = cv.price | minus: disc_amount -%}
                   {%- for lab in labels -%}
                     {%- assign parts = lab | split: ':' -%}
                     <button type="button"
@@ -202,7 +203,7 @@
 
             <div class="rc-tally">
               <span class="rc-big" data-tally>{{ sym }}{{ gift_total }}</span>
-              <span class="rc-lbl">{{ block.settings.tally_text }}</span>
+              <div class="rc-lbl">{{ block.settings.tally_text }}</div>
             </div>
           </div>
         </div>
@@ -337,10 +338,10 @@
   #rc-{{ block.id }} .rc-fa-row{ display:flex; gap:12px; justify-content:space-between; flex-wrap:wrap; }
   #rc-{{ block.id }} .rc-fa-pick{ flex:1; min-width:72px; display:flex; flex-direction:column; align-items:center; gap:10px; }
   #rc-{{ block.id }} .rc-fa-name{ font-family:var(--rc-sans); font-weight:600; font-size:12px; line-height:1.25; text-align:center; color:var(--rc-text); }
-  #rc-{{ block.id }} .rc-circle{ width:90px; height:90px; border-radius:50%; padding:0; background:color-mix(in srgb, var(--rc-fc) 9%, var(--rc-circle-base)); border:2px solid color-mix(in srgb, var(--rc-fc) 24%, var(--rc-border)); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:transform .18s var(--rc-spring),border-color .18s,box-shadow .18s,background .18s; }
+  #rc-{{ block.id }} .rc-circle{ width:90px; height:90px; border-radius:50%; padding:0; background:var(--rc-circle-base); border:2px solid var(--rc-border); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:transform .18s var(--rc-spring),border-color .18s,box-shadow .18s,background .18s; }
   #rc-{{ block.id }} .rc-circle img{ width:74%; height:74%; object-fit:contain; pointer-events:none; border-radius:50%; }
   #rc-{{ block.id }} .rc-circle:hover{ transform:translateY(-3px); border-color:var(--rc-fc); }
-  #rc-{{ block.id }} .rc-circle.rc-active{ border-color:var(--rc-fc); background:color-mix(in srgb, var(--rc-fc) 16%, var(--rc-circle-base)); box-shadow:0 8px 22px color-mix(in srgb, var(--rc-fc) 32%, transparent); }
+  #rc-{{ block.id }} .rc-circle.rc-active{ border-color:var(--rc-fc); background:var(--rc-circle-base); box-shadow:0 8px 22px rgba(0,0,0,.18); }
   #rc-{{ block.id }} .rc-circle.rc-bump{ animation:rcbump{{ block.id | replace: '-', '' }} .42s var(--rc-spring); }
   @keyframes rcbump{{ block.id | replace: '-', '' }}{ 0%{transform:scale(1)} 40%{transform:scale(1.13)} 100%{transform:scale(1)} }
   #rc-{{ block.id }} .rc-fc-badge{ position:absolute; top:-7px; right:-7px; min-width:26px; height:26px; padding:0 6px; border-radius:999px; background:var(--rc-fc); color:#fff; font-family:var(--rc-sans); font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(27,58,92,.22); border:2px solid var(--rc-circle-base); transform:scale(0); transition:transform .3s var(--rc-spring); }
