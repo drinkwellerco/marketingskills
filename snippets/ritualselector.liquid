@@ -117,8 +117,9 @@
                   {%- assign gtk = 'gift_' | append: i | append: '_tag' -%}
                   {%- assign gvk = 'gift_' | append: i | append: '_value' -%}
                   {%- assign gik = 'gift_' | append: i | append: '_icon' -%}
+                  {%- assign gimk = 'gift_' | append: i | append: '_image' -%}
                   <div class="rc-gift rc-gift-enter rc-gift-lost">
-                    <span class="rc-g-ico">{%- case block.settings[gik] -%}{%- when 'pouch' -%}{{ rc_ico_pouch }}{%- when 'guide' -%}{{ rc_ico_guide }}{%- when 'gift' -%}{{ rc_ico_gift }}{%- else -%}{{ rc_ico_scoop }}{%- endcase -%}</span>
+                    <span class="rc-g-ico">{%- if block.settings[gimk] != blank -%}<img src="{{ block.settings[gimk] | image_url: width: 80 }}" alt="{{ gn | escape }}" width="80" height="80" loading="lazy">{%- else -%}{%- case block.settings[gik] -%}{%- when 'pouch' -%}{{ rc_ico_pouch }}{%- when 'guide' -%}{{ rc_ico_guide }}{%- when 'gift' -%}{{ rc_ico_gift }}{%- else -%}{{ rc_ico_scoop }}{%- endcase -%}{%- endif -%}</span>
                     <span><span class="rc-g-name">{{ gn }}</span><span class="rc-g-tag">{{ block.settings[gtk] }}</span></span>
                     <span class="rc-g-val"><span class="rc-strike">{{ sym }}{{ block.settings[gvk] }} value</span><span class="rc-free">Gone</span></span>
                   </div>
@@ -201,8 +202,9 @@
                   {%- assign gtk = 'gift_' | append: i | append: '_tag' -%}
                   {%- assign gvk = 'gift_' | append: i | append: '_value' -%}
                   {%- assign gik = 'gift_' | append: i | append: '_icon' -%}
+                  {%- assign gimk = 'gift_' | append: i | append: '_image' -%}
                   <div class="rc-gift rc-gift-enter">
-                    <span class="rc-g-ico">{%- case block.settings[gik] -%}{%- when 'pouch' -%}{{ rc_ico_pouch }}{%- when 'guide' -%}{{ rc_ico_guide }}{%- when 'gift' -%}{{ rc_ico_gift }}{%- else -%}{{ rc_ico_scoop }}{%- endcase -%}</span>
+                    <span class="rc-g-ico">{%- if block.settings[gimk] != blank -%}<img src="{{ block.settings[gimk] | image_url: width: 80 }}" alt="{{ gn | escape }}" width="80" height="80" loading="lazy">{%- else -%}{%- case block.settings[gik] -%}{%- when 'pouch' -%}{{ rc_ico_pouch }}{%- when 'guide' -%}{{ rc_ico_guide }}{%- when 'gift' -%}{{ rc_ico_gift }}{%- else -%}{{ rc_ico_scoop }}{%- endcase -%}{%- endif -%}</span>
                     <span><span class="rc-g-name">{{ gn }}</span><span class="rc-g-tag">{{ block.settings[gtk] }}</span></span>
                     <span class="rc-g-val"><span class="rc-strike">{{ sym }}{{ block.settings[gvk] }} value</span><span class="rc-free">Free</span></span>
                   </div>
@@ -338,7 +340,8 @@
 
   #rc-{{ block.id }} .rc-gifts{ display:flex; flex-direction:column; gap:var(--rc-gift-gap); }
   #rc-{{ block.id }} .rc-gift{ display:flex; align-items:center; gap:12px; background:var(--rc-gift-bg); border-radius:14px; padding:9px 14px; transition:opacity .4s ease,transform .5s var(--rc-spring); }
-  #rc-{{ block.id }} .rc-g-ico{ display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; background:var(--rc-gift-ico-bg); color:var(--rc-rose); flex-shrink:0; }
+  #rc-{{ block.id }} .rc-g-ico{ display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; background:var(--rc-gift-ico-bg); color:var(--rc-rose); flex-shrink:0; overflow:hidden; }
+  #rc-{{ block.id }} .rc-g-ico img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
   #rc-{{ block.id }} .rc-g-ico svg{ width:22px; height:22px; }
   #rc-{{ block.id }} .rc-g-name{ display:block; font-weight:600; font-size:var(--rc-fs-gift-name); color:var(--rc-text); line-height:1.2; }
   #rc-{{ block.id }} .rc-g-tag{ display:block; font-size:var(--rc-fs-gift-tag); color:var(--rc-text-muted); line-height:1.2; margin-top:1px; }
