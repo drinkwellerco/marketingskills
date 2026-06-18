@@ -545,7 +545,7 @@
         if(addBtn) addBtn.setAttribute('disabled','');
         fetch('/cart/add.js',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({items:lineItems})})
           .then(function(r){ return r.json(); })
-          .then(function(){ window.location.href='/cart'; })
+          .then(function(){ if(addBtn) addBtn.removeAttribute('disabled'); })
           .catch(function(){ if(addBtn) addBtn.removeAttribute('disabled'); form.submit(); });
       } else {
         if(qtyInput) qtyInput.value = totalQty>0 ? totalQty : 1;
