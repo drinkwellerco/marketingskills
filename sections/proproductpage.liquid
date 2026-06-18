@@ -90,7 +90,7 @@
         flex-direction: row !important;
         flex-wrap: wrap;
         align-items: flex-start !important;
-        gap: {{ section.settings.columns_gap | default: 40 }}px;
+        justify-content: space-between;
     }
     @media (max-width: 767px) {
         .shop-product-inner-container {
@@ -1221,16 +1221,6 @@
       "type": "range",
       "id": "section_padding_sides",
       "label": "Section side padding",
-      "min": 0,
-      "max": 80,
-      "step": 4,
-      "unit": "px",
-      "default": 40
-    },
-    {
-      "type": "range",
-      "id": "columns_gap",
-      "label": "Gap between image and content",
       "min": 0,
       "max": 80,
       "step": 4,
