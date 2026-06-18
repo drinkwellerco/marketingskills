@@ -81,7 +81,21 @@
         flex: 0 0 {{ iw }}% !important;
         max-width: {{ iw }}% !important;
     }
+    .shop-product-inner-container {
+        padding: {{ section.settings.section_padding_top | default: 40 }}px {{ section.settings.section_padding_sides | default: 40 }}px {{ section.settings.section_padding_bottom | default: 40 }}px;
+        box-sizing: border-box;
+    }
+    .shop-product-layout {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        align-items: flex-start !important;
+        gap: {{ section.settings.columns_gap | default: 40 }}px;
+    }
     @media (max-width: 767px) {
+        .shop-product-inner-container {
+            padding: 24px 16px 32px;
+        }
         .shop-carousel-container {
             flex: 0 0 100% !important;
             max-width: 100% !important;
@@ -91,8 +105,8 @@
             flex: 0 0 100% !important;
             max-width: 100% !important;
             width: 100% !important;
-            padding-left: 16px !important;
-            padding-right: 16px !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
             box-sizing: border-box !important;
         }
         .shop-product-info .simple-variant-picker__values {
@@ -1182,6 +1196,46 @@
       "step": 1,
       "unit": "%",
       "default": 55
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Section top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Section bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "section_padding_sides",
+      "label": "Section side padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "columns_gap",
+      "label": "Gap between image and content",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
     },
     {
       "type": "checkbox",
