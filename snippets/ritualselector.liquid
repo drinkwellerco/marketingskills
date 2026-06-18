@@ -65,7 +65,11 @@
             {%- assign fvk = 'flavor_' | append: i | append: '_variant_id' -%}
             {%- assign fik = 'flavor_' | append: i | append: '_image' -%}
             {%- assign fsk = 'flavor_' | append: i | append: '_size' -%}
+            {%- assign fxk = 'flavor_' | append: i | append: '_offset_x' -%}
+            {%- assign fyk = 'flavor_' | append: i | append: '_offset_y' -%}
             {%- assign fsz = block.settings[fsk] | default: 75 -%}
+            {%- assign fox = block.settings[fxk] | default: 0 -%}
+            {%- assign foy = block.settings[fyk] | default: 0 -%}
             <div class="rc-fa-pick">
               <button class="rc-circle" type="button"
                 style="--rc-fc:{{ block.settings[fck] | default: '#D64C6F' }}"
@@ -73,7 +77,7 @@
                 data-variant="{{ block.settings[fvk] }}"
                 data-name="{{ fn | escape }}"
                 aria-label="Add {{ fn | escape }}">
-                {%- if block.settings[fik] != blank -%}<img src="{{ block.settings[fik] | image_url: width: 220 }}" alt="{{ fn | escape }}" width="220" height="220" loading="lazy" style="width:{{ fsz }}%;height:{{ fsz }}%">{%- endif -%}
+                {%- if block.settings[fik] != blank -%}<img src="{{ block.settings[fik] | image_url: width: 220 }}" alt="{{ fn | escape }}" width="220" height="220" loading="lazy" style="width:{{ fsz }}%;height:{{ fsz }}%;transform:translate({{ fox }}%,{{ foy }}%)">{%- endif -%}
                 <span class="rc-fc-badge">0</span>
               </button>
               <span class="rc-fa-name">{{ fn }}</span>
