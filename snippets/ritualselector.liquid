@@ -311,8 +311,8 @@
   #rc-{{ block.id }} .rc-blob1{ width:200px; height:200px; background:var(--rc-blob1); opacity:var(--rc-blob1-op); top:-70px; right:-60px; }
   #rc-{{ block.id }} .rc-blob2{ width:130px; height:130px; background:var(--rc-blob2); opacity:var(--rc-blob2-op); bottom:-50px; left:-40px; }
   #rc-{{ block.id }} .rc-sel{ position:relative; z-index:1; }
-  #rc-{{ block.id }} .rc-q{ font-size:var(--rc-fs-q); font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-text-muted); margin-bottom:12px; }
-  #rc-{{ block.id }} .rc-q.rc-q-plan{ font-size:var(--rc-fs-plan-q); }
+  #rc-{{ block.id }} .rc-q{ font-size:{{ block.settings.fs_flavor_heading | default: 11 }}px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--rc-text-muted); margin-bottom:12px; }
+  #rc-{{ block.id }} .rc-q.rc-q-plan{ font-size:{{ block.settings.fs_plan_heading | default: 11 }}px; margin-top:{{ block.settings.sp_ritual_gap | default: 0 }}px; }
 
   #rc-{{ block.id }} .rc-plan{ position:relative; display:block; width:100%; text-align:left; background:var(--rc-surface); border:1.5px solid var(--rc-border); border-radius:20px; padding:18px 20px; margin-bottom:var(--rc-plan-gap); cursor:pointer; transition:border-color .18s,background .18s,box-shadow .18s,opacity .3s; }
   #rc-{{ block.id }} .rc-plan:hover{ border-color:rgba(232,96,122,.45); }
