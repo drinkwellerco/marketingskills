@@ -175,7 +175,13 @@
               <button type="submit">Apply</button>
             </form>
             <div class="cd-promo-msg" data-cd-promo-msg></div>
-            <div class="cd-promo-note">Code is applied at checkout automatically.</div>
+            <div class="cd-promo-applied" data-cd-promo-applied style="display:none">
+              <span class="cd-promo-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                <span data-cd-promo-code-label></span>
+              </span>
+              <button type="button" data-cd-promo-remove aria-label="Remove code">✕</button>
+            </div>
           {%- endif -%}
 
           <div class="cd-grand">
@@ -183,7 +189,7 @@
             <span class="val">{{ cart.total_price | money }} <small>{{ cart.currency.iso_code }}</small></span>
           </div>
 
-          <a href="/checkout" class="cd-checkout">
+          <a href="/checkout" class="cd-checkout" data-cd-checkout>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
             {{ section.settings.checkout_label | default: 'Checkout securely' }}
           </a>
@@ -335,7 +341,11 @@
   #cd-{{ section.id }} .cd-promo-msg{ font-size:12px; line-height:1.4; margin-bottom:4px; min-height:0; }
   #cd-{{ section.id }} .cd-promo-msg.ok{ color:var(--cd-sage); font-weight:600; }
   #cd-{{ section.id }} .cd-promo-msg.err{ color:var(--cd-rose); font-weight:600; }
-  #cd-{{ section.id }} .cd-promo-note{ font-size:11px; color:var(--cd-stone); margin-bottom:14px; }
+  #cd-{{ section.id }} .cd-promo-applied{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding:10px 14px; background:rgba(125,182,66,.10); border:1px solid rgba(125,182,66,.30); border-radius:10px; }
+  #cd-{{ section.id }} .cd-promo-badge{ display:flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:#4e7d1f; }
+  #cd-{{ section.id }} .cd-promo-badge svg{ width:16px; height:16px; color:var(--cd-sage); }
+  #cd-{{ section.id }} .cd-promo-applied button{ background:none; border:none; cursor:pointer; font-size:14px; color:var(--cd-stone); padding:2px 4px; transition:color .15s; }
+  #cd-{{ section.id }} .cd-promo-applied button:hover{ color:var(--cd-rose); }
   #cd-{{ section.id }} .cd-grand{ display:flex; align-items:baseline; justify-content:space-between; padding-top:14px; margin-bottom:16px; border-top:2px solid var(--cd-mist); }
   #cd-{{ section.id }} .cd-grand .lbl{ font-family:var(--cd-serif); font-weight:800; font-size:17px; color:var(--cd-navy); }
   #cd-{{ section.id }} .cd-grand .val{ font-family:var(--cd-serif); font-weight:900; font-size:var(--cd-total-size); color:var(--cd-navy); letter-spacing:-.01em; }
@@ -420,7 +430,39 @@
     .catch(function(){ overlay.classList.remove('is-busy'); });
   }
 
-  /* Discount code — validates via /discount/<code> then stores for checkout */
+  /* Discount code — hits /discount/<code> to set session cookie,
+     then stores code so checkout URL includes ?discount=<code>.
+     Shopify only applies discount codes at checkout, not in the cart API. */
+  var savedDiscount = '';
+
+  function updateCheckoutHref(){
+    var link = overlay.querySelector('[data-cd-checkout]');
+    if(!link) return;
+    link.href = savedDiscount ? '/checkout?discount=' + encodeURIComponent(savedDiscount) : '/checkout';
+  }
+
+  function showAppliedBadge(code){
+    var form = overlay.querySelector('[data-cd-promo]');
+    var applied = overlay.querySelector('[data-cd-promo-applied]');
+    var label = overlay.querySelector('[data-cd-promo-code-label]');
+    var msg = overlay.querySelector('[data-cd-promo-msg]');
+    if(form) form.style.display = 'none';
+    if(msg) { msg.textContent = ''; msg.className = 'cd-promo-msg'; }
+    if(applied) applied.style.display = 'flex';
+    if(label) label.textContent = code;
+  }
+
+  function clearAppliedBadge(){
+    var form = overlay.querySelector('[data-cd-promo]');
+    var applied = overlay.querySelector('[data-cd-promo-applied]');
+    var msg = overlay.querySelector('[data-cd-promo-msg]');
+    if(form) form.style.display = 'flex';
+    if(applied) applied.style.display = 'none';
+    if(msg) { msg.textContent = ''; msg.className = 'cd-promo-msg'; }
+    savedDiscount = '';
+    updateCheckoutHref();
+  }
+
   overlay.addEventListener('submit', function(e){
     var form = e.target.closest('[data-cd-promo]');
     if(!form) return;
@@ -432,17 +474,23 @@
     var btn = form.querySelector('button');
     btn.textContent = '...';
     btn.disabled = true;
-    fetch('/discount/' + encodeURIComponent(code), { method:'GET', redirect:'follow' })
+
+    fetch('/discount/' + encodeURIComponent(code), { method:'GET', redirect:'manual' })
       .then(function(r){
-        if(r.redirected || r.ok){
-          if(msg){ msg.textContent='✓ Code "' + code + '" applied! Discount shows at checkout.'; msg.className='cd-promo-msg ok'; }
+        if(r.status === 0 || r.ok || r.status === 302 || r.type === 'opaqueredirect'){
+          savedDiscount = code;
+          updateCheckoutHref();
           input.value = '';
+          showAppliedBadge(code);
         } else {
-          if(msg){ msg.textContent='Code not found. Please check and try again.'; msg.className='cd-promo-msg err'; }
+          if(msg){ msg.textContent='Code not found. Check spelling and try again.'; msg.className='cd-promo-msg err'; }
         }
       })
       .catch(function(){
-        if(msg){ msg.textContent='Something went wrong. Try again.'; msg.className='cd-promo-msg err'; }
+        savedDiscount = code;
+        updateCheckoutHref();
+        input.value = '';
+        showAppliedBadge(code);
       })
       .finally(function(){
         btn.textContent = 'Apply';
@@ -461,6 +509,9 @@
     if(dec){ changeLine(dec.getAttribute('data-cd-key'), Math.max(0,(parseInt(dec.getAttribute('data-cd-qty'),10)||0) - 1)); return; }
     var rm = e.target.closest('[data-cd-remove]');
     if(rm){ changeLine(rm.getAttribute('data-cd-key'), 0); return; }
+
+    var removeCode = e.target.closest('[data-cd-promo-remove]');
+    if(removeCode){ clearAppliedBadge(); return; }
   });
 
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && overlay.classList.contains('open')) close(); });
