@@ -22,8 +22,8 @@
 
 {%- assign disp_name = section.settings.product_name -%}
 {%- if disp_name == blank and p != blank -%}{%- assign disp_name = p.title -%}{%- endif -%}
-{%- capture _apos_span -%}<span class="sdm-apos">’</span>{%- endcapture -%}
-{%- assign name_html = disp_name | replace: "’", _apos_span | replace: "’", _apos_span -%}
+{%- capture apos_span -%}<span class="sdm-apos">’</span>{%- endcapture -%}
+{%- assign name_html = disp_name | replace: "’", apos_span | replace: "’", apos_span -%}
 
 {%- assign hero_img = section.settings.hero_image -%}
 {%- if hero_img == blank and p != blank -%}{%- assign hero_img = p.featured_image -%}{%- endif -%}
@@ -52,7 +52,7 @@
       {%- if hero_img != blank -%}
         <img class="sdm-hero{% if section.settings.hero_contain %} sdm-hero--logo{% endif %}"
              src="{{ hero_img | image_url: width: 700 }}"
-             alt="{{ disp_name | escape }}" loading="lazy">
+             alt="{{ disp_name | escape }}" width="700" height="700" loading="lazy">
       {%- endif -%}
     </div>
 
