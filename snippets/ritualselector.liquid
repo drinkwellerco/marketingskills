@@ -4,7 +4,7 @@
   Flavors always rendered. Theme (light/dark) controlled by block.settings.theme.
 {%- endcomment -%}
 
-{%- assign p = product -%}
+{%- assign p = block.settings.override_product | default: product -%}
 {%- assign cv = p.selected_or_first_available_variant | default: p.variants.first -%}
 {%- assign sym = block.settings.currency_symbol | default: '$' -%}
 {%- assign has_plans = false -%}
