@@ -70,11 +70,24 @@
             {%- assign fsz = block.settings[fsk] | default: 75 -%}
             {%- assign fox = block.settings[fxk] | default: 0 -%}
             {%- assign foy = block.settings[fyk] | default: 0 -%}
+            {%- comment -%} Auto-match variant from selected product by flavor name {%- endcomment -%}
+            {%- assign fv = block.settings[fvk] -%}
+            {%- if block.settings.override_product and fn != blank -%}
+              {%- assign fn_cmp = fn | downcase | strip -%}
+              {%- for variant in p.variants -%}
+                {%- for opt in variant.options -%}
+                  {%- assign opt_cmp = opt | downcase | strip -%}
+                  {%- if opt_cmp == fn_cmp -%}
+                    {%- assign fv = variant.id -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endfor -%}
+            {%- endif -%}
             <div class="rc-fa-pick">
               <button class="rc-circle" type="button"
                 style="--rc-fc:{{ block.settings[fck] | default: '#D64C6F' }}"
                 data-flavor="{{ i }}"
-                data-variant="{{ block.settings[fvk] }}"
+                data-variant="{{ fv }}"
                 data-name="{{ fn | escape }}"
                 aria-label="Add {{ fn | escape }}">
                 {%- if block.settings[fik] != blank -%}<img src="{{ block.settings[fik] | image_url: width: 220 }}" alt="{{ fn | escape }}" width="220" height="220" loading="lazy" style="width:{{ fsz }}%;height:{{ fsz }}%;transform:translate({{ fox }}%,{{ foy }}%)">{%- endif -%}
