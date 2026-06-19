@@ -74,35 +74,43 @@
     {%- assign gw = section.settings.gallery_width | default: 55 -%}
     {%- assign iw = 100 | minus: gw | minus: 2 -%}
     .shop-carousel-container {
-        flex: 0 0 {{ gw }}% !important;
-        max-width: {{ gw }}% !important;
+        grid-area: gallery;
+        max-width: 100% !important;
     }
     .shop-product-info {
-        flex: 0 0 {{ iw }}% !important;
-        max-width: {{ iw }}% !important;
+        grid-area: info;
+        max-width: 100% !important;
     }
     .shop-product-inner-container {
         padding: {{ section.settings.section_padding_top | default: 40 }}px {{ section.settings.section_padding_sides | default: 40 }}px {{ section.settings.section_padding_bottom | default: 40 }}px;
         box-sizing: border-box;
     }
     .shop-product-layout {
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: wrap;
-        align-items: flex-start !important;
-        justify-content: space-between;
+        display: grid !important;
+        grid-template-columns: {{ gw }}% {{ iw }}%;
+        grid-template-areas: "gallery info" "story info";
+        column-gap: 2%;
+        align-items: start;
+    }
+    .shop-brand-story {
+        grid-area: story;
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: none !important;
     }
     @media (max-width: 767px) {
         .shop-product-inner-container {
             padding: 24px 16px 32px;
         }
+        .shop-product-layout {
+            grid-template-columns: 1fr !important;
+            grid-template-areas: "gallery" "info" "story" !important;
+        }
         .shop-carousel-container {
-            flex: 0 0 100% !important;
             max-width: 100% !important;
             width: 100% !important;
         }
         .shop-product-info {
-            flex: 0 0 100% !important;
             max-width: 100% !important;
             width: 100% !important;
             padding-left: 0 !important;
@@ -904,8 +912,6 @@
             {%- assign bs_title_tag = bs.title_tag | default: 'h2' -%}
             {%- assign bs_sub_tag = bs.subtitle_tag | default: 'h3' -%}
             <div class="shop-brand-story" {{ block.shopify_attributes }} style="
-              flex: 0 0 55%;
-              max-width: 55%;
               margin-top: {{ bs.margin_top | default: 24 }}px;
               margin-bottom: {{ bs.margin_bottom | default: 0 }}px;
               background: {{ bs.bg_color | default: 'transparent' }};
