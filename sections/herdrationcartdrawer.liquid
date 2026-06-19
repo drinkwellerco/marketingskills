@@ -128,8 +128,18 @@
 
           {%- comment -%} ===== free welcome gifts ===== {%- endcomment -%}
           {%- if section.settings.show_gifts and section.blocks.size > 0 -%}
-            <div class="cd-gifts">
-              <div class="cd-gifts-h">{{ section.settings.gifts_title | default: 'Free welcome gifts · 1st box' }}</div>
+            <div class="cd-gifts{% unless has_sub %} cd-gifts--locked{% endunless %}">
+              {%- if has_sub -%}
+                <div class="cd-gifts-h">{{ section.settings.gifts_sub_title | default: 'Items Free With First Subscription Order' }}</div>
+              {%- else -%}
+                <div class="cd-gifts-h cd-gifts-h--lock">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Gifts Locked
+                </div>
+                <div class="cd-gifts-unlock">
+                  Subscribe &amp; Save to unlock <b>10% off + Free Shipping</b> along with these gifts worth <b>{{ section.settings.gifts_total_value | default: '$10' }}</b>
+                </div>
+              {%- endif -%}
               {%- for block in section.blocks -%}
                 {%- if block.type == 'gift' -%}
                   <div class="cd-gift" {{ block.shopify_attributes }}>
@@ -295,6 +305,16 @@
   #cd-{{ section.id }} .cd-gift-val .strike{ font-size:11px; color:var(--cd-stone); text-decoration:line-through; }
   #cd-{{ section.id }} .cd-gift-val .free{ display:block; font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--cd-sage); text-align:right; }
 
+  /* Locked gifts (one-time order) */
+  #cd-{{ section.id }} .cd-gifts-h--lock{ color:var(--cd-stone); gap:6px; }
+  #cd-{{ section.id }} .cd-gifts-h--lock svg{ width:13px; height:13px; flex-shrink:0; }
+  #cd-{{ section.id }} .cd-gifts-h--lock::after{ background:rgba(138,126,118,.2); }
+  #cd-{{ section.id }} .cd-gifts-unlock{ font-size:11.5px; color:var(--cd-stone); line-height:1.5; margin-bottom:12px; padding:10px 12px; background:rgba(138,126,118,.08); border-radius:10px; border:1px dashed var(--cd-mist); }
+  #cd-{{ section.id }} .cd-gifts-unlock b{ color:var(--cd-navy); }
+  #cd-{{ section.id }} .cd-gifts--locked .cd-gift{ opacity:.45; filter:grayscale(.6); }
+  #cd-{{ section.id }} .cd-gifts--locked .cd-gift-ic{ background:rgba(138,126,118,.12); color:var(--cd-stone); }
+  #cd-{{ section.id }} .cd-gifts--locked .cd-gift-val .free{ color:var(--cd-stone); }
+
   #cd-{{ section.id }} .cd-empty{ text-align:center; padding:64px 24px; margin:auto; }
   #cd-{{ section.id }} .cd-empty svg{ width:52px; height:52px; color:var(--cd-mist); margin:0 auto 18px; }
   #cd-{{ section.id }} .cd-empty p{ font-size:15px; color:var(--cd-stone); margin:0 0 22px; }
@@ -430,7 +450,8 @@
 
     { "type": "header", "content": "Welcome gifts" },
     { "type": "checkbox", "id": "show_gifts", "label": "Show free welcome gifts", "default": true },
-    { "type": "text", "id": "gifts_title", "label": "Gifts heading", "default": "Free welcome gifts · 1st box" }
+    { "type": "text", "id": "gifts_sub_title", "label": "Gifts heading (subscription orders)", "default": "Items Free With First Subscription Order" },
+    { "type": "text", "id": "gifts_total_value", "label": "Total gift value shown in locked message (e.g. $10)", "default": "$10" }
   ],
   "blocks": [
     {
