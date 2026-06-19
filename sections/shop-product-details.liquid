@@ -852,6 +852,18 @@
         {% endunless %}
       {% endif %}
     {% endfor %}
+    /* Brand story accordion (mobile only) */
+    @media (max-width: 767px) {
+      .shop-brand-story .bs-expandable { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+      .shop-brand-story.bs-open .bs-expandable { max-height: 1200px; }
+      .shop-brand-story .bs-toggle { display:flex; align-items:center; gap:6px; margin-top:14px; padding:10px 18px; border:1.5px solid currentColor; border-radius:999px; background:transparent; cursor:pointer; font-size:13px; font-weight:600; letter-spacing:.04em; }
+      .shop-brand-story .bs-chevron { transition:transform .3s ease; flex-shrink:0; }
+      .shop-brand-story.bs-open .bs-chevron { transform:rotate(180deg); }
+    }
+    @media (min-width: 768px) {
+      .shop-brand-story .bs-toggle { display:none !important; }
+      .shop-brand-story .bs-expandable { max-height:none !important; overflow:visible !important; }
+    }
 {% endstyle %}
 
 {%- liquid
@@ -921,27 +933,9 @@
                 </{{ bs_title_tag }}>
               {%- endif -%}
 
-              {%- if bs.subtitle != blank -%}
-                <{{ bs_sub_tag }} class="bs-subtitle" style="
-                  font-size: {{ bs.subtitle_size | default: 20 }}px;
-                  color: {{ bs.subtitle_color | default: '#444444' }};
-                  font-family: {% if bs.subtitle_font == 'body' %}var(--font-body-family){% else %}var(--font-heading-family){% endif %};
-                  margin-bottom: 12px;
-                ">{{ bs.subtitle }}</{{ bs_sub_tag }}>
-              {%- endif -%}
-
-              {%- if bs.description != blank -%}
-                <div class="bs-desc" style="
-                  font-size: {{ bs.desc_size | default: 15 }}px;
-                  color: {{ bs.desc_color | default: '#444444' }};
-                  font-family: {% if bs.desc_font == 'body' %}var(--font-body-family){% else %}var(--font-heading-family){% endif %};
-                  line-height: 1.7;
-                ">{{ bs.description }}</div>
-              {%- endif -%}
-
               {%- if bs.image != blank -%}
                 <div class="bs-image-wrap" style="
-                  margin-top: 20px;
+                  margin-top: 12px;
                   border-radius: {{ bs.image_radius | default: 12 }}px;
                   overflow: hidden;
                 ">
@@ -954,6 +948,31 @@
                     style="width:100%;height:{{ bs.image_height | default: 400 }}px;object-fit:{{ bs.image_fit | default: 'cover' }};display:block;border-radius:{{ bs.image_radius | default: 12 }}px;">
                 </div>
               {%- endif -%}
+
+              {%- if bs.subtitle != blank or bs.description != blank -%}
+                <button class="bs-toggle" type="button" aria-expanded="false" style="color:{{ bs.title_color | default: '#222222' }};">
+                  <span class="bs-toggle-label">Read more</span>
+                  <svg class="bs-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="bs-expandable">
+                  {%- if bs.subtitle != blank -%}
+                    <{{ bs_sub_tag }} class="bs-subtitle" style="
+                      font-size: {{ bs.subtitle_size | default: 20 }}px;
+                      color: {{ bs.subtitle_color | default: '#444444' }};
+                      font-family: {% if bs.subtitle_font == 'body' %}var(--font-body-family){% else %}var(--font-heading-family){% endif %};
+                      margin-top: 14px; margin-bottom: 12px;
+                    ">{{ bs.subtitle }}</{{ bs_sub_tag }}>
+                  {%- endif -%}
+                  {%- if bs.description != blank -%}
+                    <div class="bs-desc" style="
+                      font-size: {{ bs.desc_size | default: 15 }}px;
+                      color: {{ bs.desc_color | default: '#444444' }};
+                      font-family: {% if bs.desc_font == 'body' %}var(--font-body-family){% else %}var(--font-heading-family){% endif %};
+                      line-height: 1.7;
+                    ">{{ bs.description }}</div>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
             </div>
             {% break %}
           {% endif %}
@@ -963,6 +982,21 @@
     {% endif %}
   </div>
 </div>
+
+<script>
+(function(){
+  document.querySelectorAll('.shop-brand-story').forEach(function(el){
+    var btn = el.querySelector('.bs-toggle');
+    if(!btn) return;
+    btn.addEventListener('click', function(){
+      var open = el.classList.toggle('bs-open');
+      btn.setAttribute('aria-expanded', String(open));
+      var lbl = btn.querySelector('.bs-toggle-label');
+      if(lbl) lbl.textContent = open ? 'Read less' : 'Read more';
+    });
+  });
+})();
+</script>
 
 {% if section.settings.control_app_subscription_preselect %}
   <script>
