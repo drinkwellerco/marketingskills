@@ -1,31 +1,6 @@
 {%- comment -%}
   ============================================================
   WELLER CO. — Her'dration Cart Drawer  (Shopify Section)
-  ------------------------------------------------------------
-  A slide-out drawer that summarizes the cart: free-shipping
-  progress bar, line items with qty steppers + remove, free
-  welcome gifts, discount code field, savings banner, totals,
-  and a secure checkout button.
-
-  HOW TO INSTALL (global drawer):
-    1. Upload this file to /sections as
-       `herdrationcartdrawer.liquid`.
-    2. In `layout/theme.liquid`, just before </body>, add:
-         {% section 'herdrationcartdrawer' %}
-    3. The drawer auto-binds to any cart trigger on the page:
-         • <a href="/cart"> links
-         • elements with [data-cart-drawer-open]
-         • a window event:  document.dispatchEvent(
-             new CustomEvent('cart-drawer:open'))
-         • JS API:  window.HerdrationCartDrawer.open()
-       To make your existing "add to cart" buttons pop the
-       drawer, call HerdrationCartDrawer.open() after a
-       successful /cart/add.js (or dispatch 'cart-drawer:open').
-
-  • Updates use /cart/change.js + the Section Rendering API,
-    so every price re-renders through Liquid `| money` and stays
-    correct in any currency.
-  • Styles + JS are namespaced under #cd-{{ section.id }}.
   ============================================================
 {%- endcomment -%}
 
@@ -195,11 +170,12 @@
           </div>
 
           {%- if section.settings.show_discount -%}
-            <form class="cd-promo" data-cd-promo method="get" action="{{ routes.cart_url }}">
+            <form class="cd-promo" data-cd-promo>
               <input type="text" name="discount" placeholder="Discount code" aria-label="Discount code" autocomplete="off">
               <button type="submit">Apply</button>
             </form>
-            <div class="cd-promo-note">Codes apply at checkout. Tap a code to save it to your cart.</div>
+            <div class="cd-promo-msg" data-cd-promo-msg></div>
+            <div class="cd-promo-note">Code is applied at checkout automatically.</div>
           {%- endif -%}
 
           <div class="cd-grand">
@@ -207,7 +183,7 @@
             <span class="val">{{ cart.total_price | money }} <small>{{ cart.currency.iso_code }}</small></span>
           </div>
 
-          <a href="{{ routes.cart_url }}/checkout" class="cd-checkout">
+          <a href="/checkout" class="cd-checkout">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
             {{ section.settings.checkout_label | default: 'Checkout securely' }}
           </a>
@@ -237,24 +213,43 @@
 {%- comment -%} ============ STYLES (namespaced) ============ {%- endcomment -%}
 <style>
   #cd-{{ section.id }}{
-    --cd-cream:#FAF5F0; --cd-fog:#F5EEE8; --cd-mist:#E8DDD5; --cd-stone:#8A7E76;
-    --cd-navy:#1B3A5C; --cd-rose:#E8607A; --cd-sage:#8A9B6E; --cd-peach:#E8A87C; --cd-lime:#7DB642; --cd-blush:#F2C4CE;
+    --cd-bg:{{ section.settings.color_bg | default: '#FAF5F0' }};
+    --cd-fog:{{ section.settings.color_fog | default: '#F5EEE8' }};
+    --cd-mist:{{ section.settings.color_border | default: '#E8DDD5' }};
+    --cd-stone:{{ section.settings.color_muted | default: '#8A7E76' }};
+    --cd-navy:{{ section.settings.color_text | default: '#1B3A5C' }};
+    --cd-rose:{{ section.settings.color_accent | default: '#E8607A' }};
+    --cd-sage:#8A9B6E; --cd-peach:#E8A87C; --cd-lime:#7DB642; --cd-blush:#F2C4CE;
+    --cd-btn-bg:{{ section.settings.color_btn_bg | default: '#E8607A' }};
+    --cd-btn-text:{{ section.settings.color_btn_text | default: '#ffffff' }};
     --cd-serif:'Playfair Display','Georgia',serif; --cd-sans:'DM Sans','Helvetica Neue',sans-serif;
+
+    --cd-title-size:{{ section.settings.dt_title_size | default: 22 }}px;
+    --cd-name-size:{{ section.settings.dt_name_size | default: 15 }}px;
+    --cd-price-size:{{ section.settings.dt_price_size | default: 15 }}px;
+    --cd-tag-size:{{ section.settings.dt_tag_size | default: 11 }}px;
+    --cd-total-size:{{ section.settings.dt_total_size | default: 26 }}px;
+    --cd-img-size:{{ section.settings.dt_img_size | default: 66 }}px;
+    --cd-img-radius:{{ section.settings.dt_img_radius | default: 16 }}px;
+    --cd-btn-size:{{ section.settings.dt_btn_size | default: 13 }}px;
+    --cd-btn-radius:{{ section.settings.dt_btn_radius | default: 999 }}px;
+    --cd-panel-width:{{ section.settings.dt_panel_width | default: 430 }}px;
+
     position:fixed; inset:0; z-index:9999; background:rgba(27,58,92,.32); backdrop-filter:blur(3px);
     opacity:0; visibility:hidden; transition:opacity .35s ease, visibility .35s ease; font-family:var(--cd-sans);
   }
   #cd-{{ section.id }}.open{ opacity:1; visibility:visible; }
   #cd-{{ section.id }} *{ box-sizing:border-box; }
   #cd-{{ section.id }} .cd-panel{
-    position:fixed; top:0; right:0; height:100%; width:430px; max-width:92vw;
-    background:var(--cd-cream); box-shadow:-18px 0 60px rgba(27,58,92,.20);
+    position:fixed; top:0; right:0; height:100%; width:var(--cd-panel-width); max-width:92vw;
+    background:var(--cd-bg); box-shadow:-18px 0 60px rgba(27,58,92,.20);
     display:flex; flex-direction:column; transform:translateX(100%);
     transition:transform .42s cubic-bezier(.34,1.1,.4,1);
   }
   #cd-{{ section.id }}.open .cd-panel{ transform:translateX(0); }
 
   #cd-{{ section.id }} .cd-head{ flex-shrink:0; padding:24px 26px 18px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--cd-mist); }
-  #cd-{{ section.id }} .cd-head h3{ font-family:var(--cd-serif); font-weight:800; font-size:22px; color:var(--cd-navy); margin:0; letter-spacing:-.01em; white-space:nowrap; flex-shrink:0; }
+  #cd-{{ section.id }} .cd-head h3{ font-family:var(--cd-serif); font-weight:800; font-size:var(--cd-title-size); color:var(--cd-navy); margin:0; letter-spacing:-.01em; white-space:nowrap; flex-shrink:0; }
   #cd-{{ section.id }} .cd-count{ font-size:12px; font-weight:600; letter-spacing:.04em; color:var(--cd-stone); }
   #cd-{{ section.id }} .cd-close{ margin-left:auto; width:38px; height:38px; border-radius:50%; border:1px solid var(--cd-mist); background:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; color:var(--cd-navy); transition:transform .2s, border-color .2s, color .2s; }
   #cd-{{ section.id }} .cd-close:hover{ transform:rotate(90deg); border-color:var(--cd-rose); color:var(--cd-rose); }
@@ -273,12 +268,12 @@
   #cd-{{ section.id }} .cd-body{ flex:1; overflow-y:auto; padding:20px 26px; }
   #cd-{{ section.id }} .cd-lines{ display:flex; flex-direction:column; gap:18px; }
   #cd-{{ section.id }} .cd-line{ display:flex; gap:14px; }
-  #cd-{{ section.id }} .cd-line-img{ width:66px; height:66px; border-radius:16px; flex-shrink:0; position:relative; background:var(--cd-fog); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  #cd-{{ section.id }} .cd-line-img{ width:var(--cd-img-size); height:var(--cd-img-size); border-radius:var(--cd-img-radius); flex-shrink:0; position:relative; background:var(--cd-fog); display:flex; align-items:center; justify-content:center; overflow:hidden; }
   #cd-{{ section.id }} .cd-line-img .lblob{ position:absolute; width:130%; height:130%; border-radius:50%; background:var(--lc,var(--cd-blush)); opacity:.5; top:-15%; left:-15%; }
   #cd-{{ section.id }} .cd-line-img img{ position:relative; z-index:1; width:78%; height:78%; object-fit:contain; filter:drop-shadow(0 4px 8px rgba(27,58,92,.18)); }
   #cd-{{ section.id }} .cd-line-info{ flex:1; min-width:0; }
-  #cd-{{ section.id }} .cd-line-name{ font-family:var(--cd-serif); font-weight:700; font-size:15px; color:var(--cd-navy); line-height:1.15; }
-  #cd-{{ section.id }} .cd-line-tag{ font-size:11.5px; color:var(--cd-stone); margin-top:3px; }
+  #cd-{{ section.id }} .cd-line-name{ font-family:var(--cd-serif); font-weight:700; font-size:var(--cd-name-size); color:var(--cd-navy); line-height:1.15; }
+  #cd-{{ section.id }} .cd-line-tag{ font-size:var(--cd-tag-size); color:var(--cd-stone); margin-top:3px; }
   #cd-{{ section.id }} .cd-line-controls{ display:flex; align-items:center; gap:12px; margin-top:10px; }
   #cd-{{ section.id }} .cd-stepper{ display:inline-flex; align-items:center; gap:2px; background:#fff; border:1px solid var(--cd-mist); border-radius:999px; padding:3px; }
   #cd-{{ section.id }} .cd-stepper button{ width:26px; height:26px; border-radius:50%; border:none; cursor:pointer; background:transparent; color:var(--cd-navy); font-size:16px; font-weight:700; line-height:1; display:inline-flex; align-items:center; justify-content:center; transition:background .15s, color .15s, transform .1s; }
@@ -288,8 +283,8 @@
   #cd-{{ section.id }} .cd-rm{ background:none; border:none; cursor:pointer; color:var(--cd-stone); font-size:11px; font-weight:600; letter-spacing:.04em; padding:4px 2px; transition:color .15s; }
   #cd-{{ section.id }} .cd-rm:hover{ color:var(--cd-rose); }
   #cd-{{ section.id }} .cd-line-price{ text-align:right; flex-shrink:0; }
-  #cd-{{ section.id }} .cd-line-price .now{ font-weight:700; font-size:15px; color:var(--cd-navy); }
-  #cd-{{ section.id }} .cd-line-price .was{ display:block; font-size:11.5px; color:var(--cd-stone); text-decoration:line-through; }
+  #cd-{{ section.id }} .cd-line-price .now{ font-weight:700; font-size:var(--cd-price-size); color:var(--cd-navy); }
+  #cd-{{ section.id }} .cd-line-price .was{ display:block; font-size:var(--cd-tag-size); color:var(--cd-stone); text-decoration:line-through; }
 
   #cd-{{ section.id }} .cd-gifts{ margin-top:22px; padding-top:18px; border-top:1px dashed var(--cd-mist); }
   #cd-{{ section.id }} .cd-gifts-h{ display:flex; align-items:center; gap:8px; margin-bottom:12px; font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--cd-rose); }
@@ -318,7 +313,7 @@
   #cd-{{ section.id }} .cd-empty{ text-align:center; padding:64px 24px; margin:auto; }
   #cd-{{ section.id }} .cd-empty svg{ width:52px; height:52px; color:var(--cd-mist); margin:0 auto 18px; }
   #cd-{{ section.id }} .cd-empty p{ font-size:15px; color:var(--cd-stone); margin:0 0 22px; }
-  #cd-{{ section.id }} .cd-empty-btn{ display:inline-block; background:var(--cd-rose); color:#fff; text-decoration:none; padding:13px 26px; border-radius:999px; font-weight:600; font-size:13px; letter-spacing:.04em; }
+  #cd-{{ section.id }} .cd-empty-btn{ display:inline-block; background:var(--cd-btn-bg); color:var(--cd-btn-text); text-decoration:none; padding:13px 26px; border-radius:var(--cd-btn-radius); font-weight:600; font-size:13px; letter-spacing:.04em; }
 
   #cd-{{ section.id }} .cd-foot{ flex-shrink:0; padding:20px 26px 24px; background:#fff; border-top:1px solid var(--cd-mist); }
   #cd-{{ section.id }} .cd-savings{ display:flex; align-items:center; gap:10px; margin-bottom:16px; background:rgba(125,182,66,.12); border:1px solid rgba(125,182,66,.28); border-radius:12px; padding:11px 14px; }
@@ -332,17 +327,20 @@
   #cd-{{ section.id }} .cd-trow.save .val{ color:var(--cd-rose); font-weight:700; }
   #cd-{{ section.id }} .cd-trow .free{ color:var(--cd-sage); font-weight:700; }
   #cd-{{ section.id }} .cd-promo{ display:flex; gap:8px; margin-bottom:8px; }
-  #cd-{{ section.id }} .cd-promo input{ flex:1; min-width:0; height:44px; padding:0 14px; border-radius:11px; background:#fff; border:1.5px solid var(--cd-mist); color:var(--cd-navy); font-family:var(--cd-sans); font-size:14px; text-transform:uppercase; letter-spacing:.04em; }
-  #cd-{{ section.id }} .cd-promo input::placeholder{ text-transform:none; letter-spacing:0; color:var(--cd-stone); }
+  #cd-{{ section.id }} .cd-promo input{ flex:1; min-width:0; height:44px; padding:0 14px; border-radius:11px; background:#fff; border:1.5px solid var(--cd-mist); color:var(--cd-navy); font-family:var(--cd-sans); font-size:14px; }
+  #cd-{{ section.id }} .cd-promo input::placeholder{ color:var(--cd-stone); }
   #cd-{{ section.id }} .cd-promo input:focus{ outline:none; border-color:var(--cd-rose); }
   #cd-{{ section.id }} .cd-promo button{ flex-shrink:0; height:44px; padding:0 18px; border-radius:11px; border:1.5px solid var(--cd-mist); background:var(--cd-fog); color:var(--cd-navy); font-family:var(--cd-sans); font-weight:700; font-size:12px; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; transition:background .15s, border-color .15s, color .15s; }
   #cd-{{ section.id }} .cd-promo button:hover{ border-color:var(--cd-rose); color:var(--cd-rose); }
+  #cd-{{ section.id }} .cd-promo-msg{ font-size:12px; line-height:1.4; margin-bottom:4px; min-height:0; }
+  #cd-{{ section.id }} .cd-promo-msg.ok{ color:var(--cd-sage); font-weight:600; }
+  #cd-{{ section.id }} .cd-promo-msg.err{ color:var(--cd-rose); font-weight:600; }
   #cd-{{ section.id }} .cd-promo-note{ font-size:11px; color:var(--cd-stone); margin-bottom:14px; }
   #cd-{{ section.id }} .cd-grand{ display:flex; align-items:baseline; justify-content:space-between; padding-top:14px; margin-bottom:16px; border-top:2px solid var(--cd-mist); }
   #cd-{{ section.id }} .cd-grand .lbl{ font-family:var(--cd-serif); font-weight:800; font-size:17px; color:var(--cd-navy); }
-  #cd-{{ section.id }} .cd-grand .val{ font-family:var(--cd-serif); font-weight:900; font-size:26px; color:var(--cd-navy); letter-spacing:-.01em; }
+  #cd-{{ section.id }} .cd-grand .val{ font-family:var(--cd-serif); font-weight:900; font-size:var(--cd-total-size); color:var(--cd-navy); letter-spacing:-.01em; }
   #cd-{{ section.id }} .cd-grand .val small{ font-size:12px; font-weight:600; color:var(--cd-stone); margin-left:3px; }
-  #cd-{{ section.id }} .cd-checkout{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:17px 24px; border:none; border-radius:999px; background:var(--cd-rose); color:#fff; text-decoration:none; font-family:var(--cd-sans); font-weight:600; font-size:13px; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; box-shadow:0 4px 20px rgba(232,96,122,.20); transition:transform .2s, box-shadow .2s; }
+  #cd-{{ section.id }} .cd-checkout{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:17px 24px; border:none; border-radius:var(--cd-btn-radius); background:var(--cd-btn-bg); color:var(--cd-btn-text); text-decoration:none; font-family:var(--cd-sans); font-weight:600; font-size:var(--cd-btn-size); letter-spacing:.06em; text-transform:uppercase; cursor:pointer; box-shadow:0 4px 20px rgba(232,96,122,.20); transition:transform .2s, box-shadow .2s; }
   #cd-{{ section.id }} .cd-checkout:hover{ transform:translateY(-2px); box-shadow:0 10px 32px rgba(232,96,122,.35); }
   #cd-{{ section.id }} .cd-checkout svg{ width:16px; height:16px; }
   #cd-{{ section.id }} .cd-continue{ display:block; width:100%; text-align:center; margin-top:12px; background:none; border:none; cursor:pointer; font-family:var(--cd-sans); font-size:12px; font-weight:600; letter-spacing:.04em; color:var(--cd-stone); text-decoration:underline; text-underline-offset:3px; text-decoration-color:var(--cd-mist); transition:color .15s; }
@@ -352,9 +350,34 @@
 
   #cd-{{ section.id }}.is-busy .cd-scroll{ opacity:.55; pointer-events:none; transition:opacity .15s; }
 
+  /* ===== MOBILE OVERRIDES ===== */
   @media (max-width:480px){
+    #cd-{{ section.id }}{
+      --cd-title-size:{{ section.settings.mb_title_size | default: 20 }}px;
+      --cd-name-size:{{ section.settings.mb_name_size | default: 14 }}px;
+      --cd-price-size:{{ section.settings.mb_price_size | default: 14 }}px;
+      --cd-tag-size:{{ section.settings.mb_tag_size | default: 10 }}px;
+      --cd-total-size:{{ section.settings.mb_total_size | default: 22 }}px;
+      --cd-img-size:{{ section.settings.mb_img_size | default: 56 }}px;
+      --cd-img-radius:{{ section.settings.mb_img_radius | default: 12 }}px;
+      --cd-btn-size:{{ section.settings.mb_btn_size | default: 12 }}px;
+    }
     #cd-{{ section.id }} .cd-head, #cd-{{ section.id }} .cd-ship,
-    #cd-{{ section.id }} .cd-body, #cd-{{ section.id }} .cd-foot{ padding-left:18px; padding-right:18px; }
+    #cd-{{ section.id }} .cd-body, #cd-{{ section.id }} .cd-foot{ padding-left:16px; padding-right:16px; }
+    #cd-{{ section.id }} .cd-head{ padding-top:18px; padding-bottom:14px; }
+    #cd-{{ section.id }} .cd-head h3{ white-space:normal; }
+    #cd-{{ section.id }} .cd-close{ width:34px; height:34px; }
+    #cd-{{ section.id }} .cd-close svg{ width:16px; height:16px; }
+    #cd-{{ section.id }} .cd-line{ gap:10px; }
+    #cd-{{ section.id }} .cd-stepper button{ width:24px; height:24px; font-size:14px; }
+    #cd-{{ section.id }} .cd-checkout{ padding:15px 20px; }
+    #cd-{{ section.id }} .cd-foot{ padding-top:16px; padding-bottom:20px; }
+    #cd-{{ section.id }} .cd-gift{ gap:10px; }
+    #cd-{{ section.id }} .cd-gift-ic{ width:34px; height:34px; border-radius:10px; }
+    #cd-{{ section.id }} .cd-gift-ic svg{ width:16px; height:16px; }
+    #cd-{{ section.id }} .cd-gift-name{ font-size:12px; }
+    #cd-{{ section.id }} .cd-gift-tag{ font-size:10px; }
+    #cd-{{ section.id }} .cd-grand .lbl{ font-size:15px; }
   }
 </style>
 
@@ -397,6 +420,36 @@
     .catch(function(){ overlay.classList.remove('is-busy'); });
   }
 
+  /* Discount code — validates via /discount/<code> then stores for checkout */
+  overlay.addEventListener('submit', function(e){
+    var form = e.target.closest('[data-cd-promo]');
+    if(!form) return;
+    e.preventDefault();
+    var input = form.querySelector('input[name="discount"]');
+    var msg = overlay.querySelector('[data-cd-promo-msg]');
+    var code = (input.value || '').trim();
+    if(!code){ if(msg){ msg.textContent='Please enter a code.'; msg.className='cd-promo-msg err'; } return; }
+    var btn = form.querySelector('button');
+    btn.textContent = '...';
+    btn.disabled = true;
+    fetch('/discount/' + encodeURIComponent(code), { method:'GET', redirect:'follow' })
+      .then(function(r){
+        if(r.redirected || r.ok){
+          if(msg){ msg.textContent='✓ Code "' + code + '" applied! Discount shows at checkout.'; msg.className='cd-promo-msg ok'; }
+          input.value = '';
+        } else {
+          if(msg){ msg.textContent='Code not found. Please check and try again.'; msg.className='cd-promo-msg err'; }
+        }
+      })
+      .catch(function(){
+        if(msg){ msg.textContent='Something went wrong. Try again.'; msg.className='cd-promo-msg err'; }
+      })
+      .finally(function(){
+        btn.textContent = 'Apply';
+        btn.disabled = false;
+      });
+  });
+
   overlay.addEventListener('click', function(e){
     var close_ = e.target.closest('[data-cd-close]');
     if(close_){ e.preventDefault(); close(); return; }
@@ -433,7 +486,7 @@
   "tag": "section",
   "class": "shopify-section--herdration-cart-drawer",
   "settings": [
-    { "type": "paragraph", "content": "Add {% section 'herdrationcartdrawer' %} to layout/theme.liquid (before </body>). The drawer opens from any /cart link, any [data-cart-drawer-open] element, or HerdrationCartDrawer.open()." },
+    { "type": "paragraph", "content": "Cart drawer with subscription-aware gifts, discount validation, and full style controls." },
 
     { "type": "header", "content": "Copy" },
     { "type": "text", "id": "heading", "label": "Drawer title", "default": "Your cart" },
@@ -443,15 +496,47 @@
 
     { "type": "header", "content": "Free shipping bar" },
     { "type": "checkbox", "id": "show_free_ship", "label": "Show free-shipping progress bar", "default": true },
-    { "type": "number", "id": "free_ship_threshold", "label": "Free shipping over (in your store currency, whole units)", "default": 45 },
+    { "type": "number", "id": "free_ship_threshold", "label": "Free shipping over (whole units)", "default": 45 },
 
     { "type": "header", "content": "Discount code" },
     { "type": "checkbox", "id": "show_discount", "label": "Show discount-code field", "default": true },
 
     { "type": "header", "content": "Welcome gifts" },
     { "type": "checkbox", "id": "show_gifts", "label": "Show free welcome gifts", "default": true },
-    { "type": "text", "id": "gifts_sub_title", "label": "Gifts heading (subscription orders)", "default": "Items Free With First Subscription Order" },
-    { "type": "text", "id": "gifts_total_value", "label": "Total gift value shown in locked message (e.g. $10)", "default": "$10" }
+    { "type": "text", "id": "gifts_sub_title", "label": "Gifts heading (subscription)", "default": "Items Free With First Subscription Order" },
+    { "type": "text", "id": "gifts_total_value", "label": "Total gift value in locked message", "default": "$10" },
+
+    { "type": "header", "content": "── Colors ──" },
+    { "type": "color", "id": "color_bg", "label": "Drawer background", "default": "#FAF5F0" },
+    { "type": "color", "id": "color_text", "label": "Text color", "default": "#1B3A5C" },
+    { "type": "color", "id": "color_accent", "label": "Accent (rose)", "default": "#E8607A" },
+    { "type": "color", "id": "color_muted", "label": "Muted text", "default": "#8A7E76" },
+    { "type": "color", "id": "color_border", "label": "Borders / dividers", "default": "#E8DDD5" },
+    { "type": "color", "id": "color_fog", "label": "Subtle background", "default": "#F5EEE8" },
+    { "type": "color", "id": "color_btn_bg", "label": "Checkout button background", "default": "#E8607A" },
+    { "type": "color", "id": "color_btn_text", "label": "Checkout button text", "default": "#ffffff" },
+
+    { "type": "header", "content": "── Desktop Sizes ──" },
+    { "type": "range", "id": "dt_panel_width", "label": "Drawer width (px)", "min": 320, "max": 600, "step": 10, "default": 430 },
+    { "type": "range", "id": "dt_title_size", "label": "Title font size (px)", "min": 14, "max": 36, "step": 1, "default": 22 },
+    { "type": "range", "id": "dt_name_size", "label": "Product name font size (px)", "min": 10, "max": 24, "step": 1, "default": 15 },
+    { "type": "range", "id": "dt_price_size", "label": "Price font size (px)", "min": 10, "max": 24, "step": 1, "default": 15 },
+    { "type": "range", "id": "dt_tag_size", "label": "Tag / subtitle font size (px)", "min": 8, "max": 18, "step": 1, "default": 11 },
+    { "type": "range", "id": "dt_total_size", "label": "Grand total font size (px)", "min": 16, "max": 40, "step": 1, "default": 26 },
+    { "type": "range", "id": "dt_img_size", "label": "Product image size (px)", "min": 40, "max": 120, "step": 2, "default": 66 },
+    { "type": "range", "id": "dt_img_radius", "label": "Product image corner radius (px)", "min": 0, "max": 30, "step": 1, "default": 16 },
+    { "type": "range", "id": "dt_btn_size", "label": "Checkout button font size (px)", "min": 10, "max": 20, "step": 1, "default": 13 },
+    { "type": "range", "id": "dt_btn_radius", "label": "Checkout button corner radius (px)", "min": 0, "max": 999, "step": 1, "default": 999 },
+
+    { "type": "header", "content": "── Mobile Sizes (≤480px) ──" },
+    { "type": "range", "id": "mb_title_size", "label": "Title font size (px)", "min": 14, "max": 30, "step": 1, "default": 20 },
+    { "type": "range", "id": "mb_name_size", "label": "Product name font size (px)", "min": 10, "max": 20, "step": 1, "default": 14 },
+    { "type": "range", "id": "mb_price_size", "label": "Price font size (px)", "min": 10, "max": 20, "step": 1, "default": 14 },
+    { "type": "range", "id": "mb_tag_size", "label": "Tag / subtitle font size (px)", "min": 8, "max": 16, "step": 1, "default": 10 },
+    { "type": "range", "id": "mb_total_size", "label": "Grand total font size (px)", "min": 16, "max": 34, "step": 1, "default": 22 },
+    { "type": "range", "id": "mb_img_size", "label": "Product image size (px)", "min": 36, "max": 100, "step": 2, "default": 56 },
+    { "type": "range", "id": "mb_img_radius", "label": "Product image corner radius (px)", "min": 0, "max": 24, "step": 1, "default": 12 },
+    { "type": "range", "id": "mb_btn_size", "label": "Checkout button font size (px)", "min": 10, "max": 18, "step": 1, "default": 12 }
   ],
   "blocks": [
     {
