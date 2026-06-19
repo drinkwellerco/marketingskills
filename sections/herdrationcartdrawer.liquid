@@ -168,7 +168,13 @@
             {%- endif -%}
             {%- for discount in cart.cart_level_discount_applications -%}
               <div class="cd-trow save">
-                <span class="lbl">{{ discount.title }}</span>
+                <span class="lbl">
+                  {%- if discount.type == 'discount_code' -%}
+                    Code: {{ discount.title }}
+                  {%- else -%}
+                    {{ discount.title }}
+                  {%- endif -%}
+                </span>
                 <span class="val">−{{ discount.total_allocated_amount | money }}</span>
               </div>
             {%- endfor -%}
@@ -185,18 +191,25 @@
           </div>
 
           {%- if section.settings.show_discount -%}
-            {%- comment -%} Active codes from Shopify session (applied via /discount/<code>) {%- endcomment -%}
-            {%- if cart.cart_level_discount_applications.size > 0 -%}
+            {%- comment -%} Separate code-based vs automatic discounts {%- endcomment -%}
+            {%- assign has_code_discounts = false -%}
+            {%- for disc in cart.cart_level_discount_applications -%}
+              {%- if disc.type == 'discount_code' -%}{%- assign has_code_discounts = true -%}{%- endif -%}
+            {%- endfor -%}
+
+            {%- if has_code_discounts -%}
               <div class="cd-active-codes">
                 <div class="cd-active-codes-label">Active discount codes</div>
                 {%- for disc in cart.cart_level_discount_applications -%}
-                  <div class="cd-active-code" data-cd-active-code="{{ disc.title }}">
-                    <span class="cd-active-code-badge">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                      {{ disc.title }}
-                    </span>
-                    <button type="button" class="cd-clear-code" data-cd-clear-code="{{ disc.title }}" aria-label="Remove {{ disc.title }}">✕ Remove</button>
-                  </div>
+                  {%- if disc.type == 'discount_code' -%}
+                    <div class="cd-active-code" data-cd-active-code="{{ disc.title }}">
+                      <span class="cd-active-code-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                        {{ disc.title }}
+                      </span>
+                      <button type="button" class="cd-clear-code" data-cd-clear-code="{{ disc.title }}" aria-label="Remove {{ disc.title }}">✕ Remove</button>
+                    </div>
+                  {%- endif -%}
                 {%- endfor -%}
               </div>
             {%- endif -%}
