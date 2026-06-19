@@ -232,7 +232,7 @@
     --cd-img-size:{{ section.settings.dt_img_size | default: 66 }}px;
     --cd-img-radius:{{ section.settings.dt_img_radius | default: 16 }}px;
     --cd-btn-size:{{ section.settings.dt_btn_size | default: 13 }}px;
-    --cd-btn-radius:{{ section.settings.dt_btn_radius | default: 999 }}px;
+    --cd-btn-radius:{{ section.settings.dt_btn_radius | default: 500 }}px;
     --cd-panel-width:{{ section.settings.dt_panel_width | default: 430 }}px;
 
     position:fixed; inset:0; z-index:9999; background:rgba(27,58,92,.32); backdrop-filter:blur(3px);
@@ -526,7 +526,7 @@
     { "type": "range", "id": "dt_img_size", "label": "Product image size (px)", "min": 40, "max": 120, "step": 2, "default": 66 },
     { "type": "range", "id": "dt_img_radius", "label": "Product image corner radius (px)", "min": 0, "max": 30, "step": 1, "default": 16 },
     { "type": "range", "id": "dt_btn_size", "label": "Checkout button font size (px)", "min": 10, "max": 20, "step": 1, "default": 13 },
-    { "type": "range", "id": "dt_btn_radius", "label": "Checkout button corner radius (px)", "min": 0, "max": 999, "step": 1, "default": 999 },
+    { "type": "range", "id": "dt_btn_radius", "label": "Checkout button corner radius (px)", "min": 0, "max": 500, "step": 5, "default": 500 },
 
     { "type": "header", "content": "── Mobile Sizes (≤480px) ──" },
     { "type": "range", "id": "mb_title_size", "label": "Title font size (px)", "min": 14, "max": 30, "step": 1, "default": 20 },
