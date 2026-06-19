@@ -43,12 +43,6 @@
 
   <article class="sdm-card">
 
-    {%- if section.settings.flag_text != blank -%}
-      <div class="sdm-flag-wrap">
-        <span class="sdm-flag">{{ section.settings.flag_text }}</span>
-      </div>
-    {%- endif -%}
-
     <div class="sdm-visual">
       {%- if section.settings.show_blobs -%}
         <span class="sdm-blob sdm-blob1"></span>
@@ -63,6 +57,9 @@
     </div>
 
     <div class="sdm-body">
+      {%- if section.settings.flag_text != blank -%}
+        <span class="sdm-flag">{{ section.settings.flag_text }}</span>
+      {%- endif -%}
       {%- if section.settings.wordmark != blank -%}
         <div class="sdm-wordmark">{{ section.settings.wordmark }}</div>
       {%- endif -%}
@@ -206,18 +203,9 @@
   #sdm-{{ section.id }} .sdm-card{
     display:grid;
     grid-template-columns:var(--img-col) calc(100% - var(--img-col));
-    grid-template-rows:auto 1fr;
     background:var(--card-bg); border-radius:28px; overflow:hidden;
     box-shadow:var(--shadow-md);
   }
-  #sdm-{{ section.id }} .sdm-flag-wrap{
-    grid-column:1 / -1; grid-row:1;
-    display:flex; align-items:center;
-    padding:10px 20px;
-    background:var(--flag-bg); border-bottom:1px solid rgba(0,0,0,.06);
-  }
-  #sdm-{{ section.id }} .sdm-visual{ grid-row:2; }
-  #sdm-{{ section.id }} .sdm-body{ grid-row:2; }
   #sdm-{{ section.id }}.sdm--img-right .sdm-visual{ order:2; }
   #sdm-{{ section.id }}.sdm--img-right .sdm-body{ order:1; }
 
@@ -240,6 +228,7 @@
     display:inline-flex; align-items:center; gap:6px; padding:5px 14px; border-radius:999px;
     background:var(--flag-bg); color:var(--flag-txt);
     font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+    margin-bottom:14px; align-self:flex-start;
   }
 
   #sdm-{{ section.id }} .sdm-body{ padding:32px var(--body-pad) 30px; display:flex; flex-direction:column; }
