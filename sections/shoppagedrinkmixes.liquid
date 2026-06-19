@@ -97,13 +97,13 @@
               <button type="button" class="sdm-swatch"
                       data-variant="{{ block.settings.variant_id }}"
                       data-name="{{ block.settings.name | escape }}"
-                      style="--sc:{{ block.settings.color }}"
+                      style="--sc:{{ block.settings.color }};--fi-size:{{ block.settings.img_size | default: 70 }}%;--fi-x:{{ block.settings.img_x | default: 50 }}%;--fi-y:{{ block.settings.img_y | default: 50 }}%"
                       aria-label="{{ block.settings.name | escape }}"
                       {{ block.shopify_attributes }}>
                 <span class="sdm-disc">
                   <span class="sdm-sblob"></span>
                   {%- if block.settings.image != blank -%}
-                    <img src="{{ block.settings.image | image_url: width: 200 }}" alt="" loading="lazy">
+                    <img src="{{ block.settings.image | image_url: width: 200 }}" alt="" width="200" height="200" loading="lazy">
                   {%- endif -%}
                 </span>
                 <span class="sdm-swatch-name">{{ block.settings.name }}</span>
@@ -271,7 +271,7 @@
   #sdm-{{ section.id }} .sdm-swatch{ position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; background:none; border:none; padding:0; cursor:pointer; width:calc(var(--sw-size) + 8px); font-family:var(--sans); }
   #sdm-{{ section.id }} .sdm-disc{ position:relative; width:var(--sw-size); height:var(--sw-size); border-radius:50%; background:var(--disc-bg); display:flex; align-items:center; justify-content:center; overflow:hidden; transition:transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s; outline:2.5px solid transparent; outline-offset:2px; }
   #sdm-{{ section.id }} .sdm-sblob{ position:absolute; inset:0; border-radius:50%; background:var(--sc,var(--blush)); opacity:.22; }
-  #sdm-{{ section.id }} .sdm-disc img{ position:relative; z-index:1; width:70%; height:70%; object-fit:contain; }
+  #sdm-{{ section.id }} .sdm-disc img{ position:absolute; z-index:1; width:var(--fi-size,70%); height:auto; left:var(--fi-x,50%); top:var(--fi-y,50%); transform:translate(-50%,-50%); object-fit:contain; }
   #sdm-{{ section.id }} .sdm-swatch:hover .sdm-disc{ transform:translateY(-3px) scale(1.05); box-shadow:0 2px 12px rgba(27,58,92,.12); }
   #sdm-{{ section.id }} .sdm-swatch.sdm-active .sdm-disc{ outline-color:var(--sc,var(--rose)); box-shadow:0 2px 12px rgba(27,58,92,.12); }
   #sdm-{{ section.id }} .sdm-swatch.sdm-active .sdm-sblob{ opacity:.4; }
@@ -427,7 +427,11 @@
         { "type": "text", "id": "name", "label": "Flavor name", "default": "Lime Margarita" },
         { "type": "image_picker", "id": "image", "label": "Flavor art (fruit icon)" },
         { "type": "color", "id": "color", "label": "Accent color", "default": "#7DB642" },
-        { "type": "text", "id": "variant_id", "label": "Variant ID", "info": "From the variant URL ?variant=… — the View button links here." }
+        { "type": "text", "id": "variant_id", "label": "Variant ID", "info": "From the variant URL ?variant=… — the View button links here." },
+        { "type": "header", "content": "Flavor image position" },
+        { "type": "range", "id": "img_size", "label": "Image size", "min": 30, "max": 150, "step": 5, "default": 70, "unit": "%", "info": "Size of the fruit icon inside the swatch circle." },
+        { "type": "range", "id": "img_x", "label": "X position (50 = center)", "min": 0, "max": 100, "step": 2, "default": 50, "unit": "%" },
+        { "type": "range", "id": "img_y", "label": "Y position (50 = center)", "min": 0, "max": 100, "step": 2, "default": 50, "unit": "%" }
       ]
     },
     {
