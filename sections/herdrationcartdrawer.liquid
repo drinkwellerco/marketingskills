@@ -191,16 +191,20 @@
           </div>
 
           {%- if section.settings.show_discount -%}
-            {%- comment -%} Separate code-based vs automatic discounts {%- endcomment -%}
+            {%- comment -%}
+              cart.discount_applications covers ALL applied discounts including
+              product-specific codes. cart.cart_level_discount_applications only
+              covers order-level discounts and misses product-targeted codes.
+            {%- endcomment -%}
             {%- assign has_code_discounts = false -%}
-            {%- for disc in cart.cart_level_discount_applications -%}
+            {%- for disc in cart.discount_applications -%}
               {%- if disc.type == 'discount_code' -%}{%- assign has_code_discounts = true -%}{%- endif -%}
             {%- endfor -%}
 
             {%- if has_code_discounts -%}
               <div class="cd-active-codes">
                 <div class="cd-active-codes-label">Active discount codes</div>
-                {%- for disc in cart.cart_level_discount_applications -%}
+                {%- for disc in cart.discount_applications -%}
                   {%- if disc.type == 'discount_code' -%}
                     <div class="cd-active-code" data-cd-active-code="{{ disc.title }}">
                       <span class="cd-active-code-badge">
