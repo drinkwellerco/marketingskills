@@ -50,7 +50,7 @@
         <span class="sgc-vblob sgc-vblob2"></span>
         <div class="sgc-art">
           <div class="sgc-art-top">
-            {%- if section.settings.card_logo != blank -%}<img src="{{ section.settings.card_logo | image_url: width: 80 }}" alt="">{%- endif -%}
+            {%- if section.settings.card_logo != blank -%}<img src="{{ section.settings.card_logo | image_url: width: 80 }}" alt="" width="80" height="80">{%- endif -%}
             <span>{{ section.settings.card_wordmark }}</span>
           </div>
           <div class="sgc-art-amt" data-gift-amt>{{ sym }}{{ def_amt }}</div>

@@ -52,7 +52,7 @@
             <span class="soi-flag{% if block.settings.highlight %} soi-flag--hl{% endif %}">{{ block.settings.flag }}</span>
           {%- endif -%}
           {%- if block.settings.use_image and bp != blank and bp.featured_image != blank -%}
-            <img class="soi-ware-img" src="{{ bp.featured_image | image_url: width: 400 }}" alt="{{ nm | escape }}" loading="lazy">
+            <img class="soi-ware-img" src="{{ bp.featured_image | image_url: width: 400 }}" alt="{{ nm | escape }}" width="400" height="400" loading="lazy">
           {%- else -%}
             <span class="soi-ware{% if block.settings.icon == 'bundle' %} soi-ware--duo{% endif %}">
               {%- case block.settings.icon -%}
