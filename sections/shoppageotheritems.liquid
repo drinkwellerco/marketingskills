@@ -1,0 +1,200 @@
+{%- comment -%}
+  ============================================================
+  WELLER CO. — Shop Page · Cups & Accessories
+  ------------------------------------------------------------
+  A responsive card grid. Each ITEM is a block:
+    • pick the PRODUCT (title, price, link, image pull from it)
+    • optional name / blurb / corner-flag overrides
+    • pick an ICON (or use the product image) + accent color
+  Reorder the blocks to set the display order — the first block
+  shows first (put the Bundle first to lead with it, etc.).
+  Each card's "View" button links to that product's page.
+  Namespaced under #soi-{{ section.id }}.
+  ============================================================
+{%- endcomment -%}
+
+{%- assign sym = section.settings.currency_symbol | default: '$' -%}
+
+{%- capture ico_cup -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-.7 16.2a2 2 0 0 1-2 1.8H9.7a2 2 0 0 1-2-1.8L7 3Z"/><path d="M6.6 8h10.8"/><path d="M10 3V1.5h4V3"/></svg>{%- endcapture -%}
+{%- capture ico_scoop -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a6 6 0 0 1 12 0Z"/><path d="M4 14h12"/><path d="m15.5 11 5-7"/><circle cx="20.5" cy="3.5" r="1.4"/></svg>{%- endcapture -%}
+{%- capture ico_pouch -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l-.6 13.5a1.6 1.6 0 0 1-1.6 1.5H9.2a1.6 1.6 0 0 1-1.6-1.5L7 6Z"/><path d="M9 6V5a3 3 0 0 1 6 0v1"/><path d="M9.5 10h5"/></svg>{%- endcapture -%}
+{%- capture ico_bundle -%}<span class="soi-duo">{{ ico_scoop }}{{ ico_pouch }}</span>{%- endcapture -%}
+{%- capture ico_gift -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M4 13h16M12 9v11"/><path d="M12 9S10.5 4.5 8 5.2C6 5.8 7 9 12 9ZM12 9s1.5-4.5 4-3.8C18 5.8 17 9 12 9Z"/></svg>{%- endcapture -%}
+
+<section id="soi-{{ section.id }}" class="soi" {{ section.shopify_attributes }}>
+
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank -%}
+  <div class="soi-head">
+    <div class="soi-titles">
+      {%- if section.settings.eyebrow != blank -%}<span class="soi-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2 class="soi-h2">{{ section.settings.heading }}</h2>{%- endif -%}
+      {%- if section.settings.subtitle != blank -%}<p class="soi-sub">{{ section.settings.subtitle }}</p>{%- endif -%}
+    </div>
+    {%- if section.settings.count_label != blank -%}<span class="soi-count">{{ section.settings.count_label }}</span>{%- endif -%}
+  </div>
+  {%- endif -%}
+
+  {%- if section.blocks.size == 0 -%}
+    <div class="soi-empty">Add product blocks in the section settings.</div>
+  {%- else -%}
+  <div class="soi-grid" style="--cols:{{ section.settings.columns }}">
+    {%- for block in section.blocks -%}
+      {%- assign bp = block.settings.product -%}
+      {%- assign nm = block.settings.name_override -%}
+      {%- if nm == blank and bp != blank -%}{%- assign nm = bp.title -%}{%- endif -%}
+      {%- assign url = '#' -%}
+      {%- if bp != blank -%}{%- assign url = bp.url -%}{%- endif -%}
+      <article class="soi-card{% if block.settings.highlight %} soi-card--hl{% endif %}" style="--accent:{{ block.settings.color }}" {{ block.shopify_attributes }}>
+        <div class="soi-visual">
+          <span class="soi-vblob soi-vblob1"></span>
+          <span class="soi-vblob soi-vblob2"></span>
+          {%- if block.settings.flag != blank -%}
+            <span class="soi-flag{% if block.settings.highlight %} soi-flag--hl{% endif %}">{{ block.settings.flag }}</span>
+          {%- endif -%}
+          {%- if block.settings.use_image and bp != blank and bp.featured_image != blank -%}
+            <img class="soi-ware-img" src="{{ bp.featured_image | image_url: width: 400 }}" alt="{{ nm | escape }}" loading="lazy">
+          {%- else -%}
+            <span class="soi-ware{% if block.settings.icon == 'bundle' %} soi-ware--duo{% endif %}">
+              {%- case block.settings.icon -%}
+                {%- when 'cup' -%}{{ ico_cup }}
+                {%- when 'scoop' -%}{{ ico_scoop }}
+                {%- when 'pouch' -%}{{ ico_pouch }}
+                {%- when 'bundle' -%}{{ ico_bundle }}
+                {%- when 'gift' -%}{{ ico_gift }}
+                {%- else -%}{{ ico_cup }}
+              {%- endcase -%}
+            </span>
+          {%- endif -%}
+        </div>
+        <div class="soi-body">
+          <div class="soi-name">{{ nm }}</div>
+          {%- if block.settings.blurb != blank -%}<p class="soi-desc">{{ block.settings.blurb }}</p>{%- endif -%}
+          <div class="soi-foot">
+            <span class="soi-price">
+              {%- if bp != blank -%}{{ bp.price | money }}{%- else -%}{{ sym }}0{%- endif -%}
+              {%- if block.settings.unit != blank -%}<small>{{ block.settings.unit }}</small>{%- endif -%}
+            </span>
+            <a class="soi-add" href="{{ url }}">
+              {{ section.settings.view_label }}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+            </a>
+          </div>
+        </div>
+      </article>
+    {%- endfor -%}
+  </div>
+  {%- endif -%}
+</section>
+
+<style>
+  #soi-{{ section.id }}{
+    --blush:#F2C4CE; --peach:#E8A87C; --sage:#8A9B6E; --sky:#4A90B8;
+    --navy:#1B3A5C; --rose:#E8607A; --cream:#FAF5F0; --cream-dk:#F0E8E0;
+    --fog:#F5EEE8; --mist:#E8DDD5; --stone:#8A7E76;
+    --serif:'Playfair Display','Georgia',serif;
+    --display:'Cormorant Garamond','Georgia',serif;
+    --sans:'DM Sans','Helvetica Neue',sans-serif;
+    --shadow-sm:0 2px 12px rgba(27,58,92,.08);
+    --shadow-lg:0 8px 40px rgba(27,58,92,.12);
+    --shadow-md:0 4px 24px rgba(27,58,92,.10);
+
+    display:block; font-family:var(--sans); color:var(--navy);
+    max-width:1180px; margin:0 auto; padding:16px;
+  }
+  #soi-{{ section.id }} *{ box-sizing:border-box; }
+
+  #soi-{{ section.id }} .soi-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:40px; flex-wrap:wrap; }
+  #soi-{{ section.id }} .soi-eyebrow{ font-size:11px; font-weight:600; letter-spacing:.24em; text-transform:uppercase; color:var(--rose); }
+  #soi-{{ section.id }} .soi-h2{ font-family:var(--serif); font-weight:800; font-size:clamp(34px,4vw,52px); line-height:1.1; letter-spacing:-.01em; color:var(--navy); margin:10px 0 0; }
+  #soi-{{ section.id }} .soi-sub{ font-size:14px; color:var(--stone); line-height:1.6; margin:12px 0 0; max-width:520px; }
+  #soi-{{ section.id }} .soi-count{ font-family:var(--serif); font-weight:700; font-size:15px; color:var(--rose); white-space:nowrap; }
+  #soi-{{ section.id }} .soi-empty{ padding:48px; text-align:center; color:var(--stone); background:var(--fog); border-radius:24px; }
+
+  #soi-{{ section.id }} .soi-grid{ display:grid; grid-template-columns:repeat(var(--cols,3), 1fr); gap:24px; }
+  #soi-{{ section.id }} .soi-card{ display:flex; flex-direction:column; background:#fff; border-radius:24px; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .25s, box-shadow .25s; }
+  #soi-{{ section.id }} .soi-card:hover{ transform:translateY(-5px); box-shadow:var(--shadow-lg); }
+  #soi-{{ section.id }} .soi-card--hl{ border:1.5px solid rgba(232,96,122,.32); box-shadow:var(--shadow-md); }
+
+  #soi-{{ section.id }} .soi-visual{ position:relative; height:220px; overflow:hidden; background:var(--cream); display:flex; align-items:center; justify-content:center; }
+  #soi-{{ section.id }} .soi-card--hl .soi-visual{ background:linear-gradient(135deg, rgba(242,196,206,.45), rgba(232,168,124,.28)); }
+  #soi-{{ section.id }} .soi-vblob{ position:absolute; border-radius:50%; }
+  #soi-{{ section.id }} .soi-vblob1{ width:220px; height:220px; background:color-mix(in srgb, var(--accent) 26%, var(--blush)); opacity:.42; top:-30px; left:-30px; }
+  #soi-{{ section.id }} .soi-vblob2{ width:130px; height:130px; background:var(--peach); opacity:.3; bottom:-20px; right:-10px; }
+  #soi-{{ section.id }} .soi-ware{ position:relative; z-index:2; color:var(--navy); display:flex; align-items:center; justify-content:center; }
+  #soi-{{ section.id }} .soi-ware svg{ width:88px; height:88px; }
+  #soi-{{ section.id }} .soi-ware--duo .soi-duo{ display:flex; align-items:center; }
+  #soi-{{ section.id }} .soi-ware--duo .soi-duo svg{ width:70px; height:70px; }
+  #soi-{{ section.id }} .soi-ware--duo .soi-duo svg:last-child{ margin-left:-18px; }
+  #soi-{{ section.id }} .soi-ware-img{ position:relative; z-index:2; width:54%; max-width:150px; height:auto; filter:drop-shadow(0 10px 20px rgba(27,58,92,.16)); }
+  #soi-{{ section.id }} .soi-flag{ position:absolute; top:16px; left:16px; z-index:3; padding:5px 12px; border-radius:999px; background:rgba(255,255,255,.9); color:var(--navy); font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; box-shadow:0 1px 4px rgba(27,58,92,.06); }
+  #soi-{{ section.id }} .soi-flag--hl{ background:var(--rose); color:#fff; box-shadow:0 6px 24px rgba(232,96,122,.28); }
+
+  #soi-{{ section.id }} .soi-body{ padding:24px 26px 26px; display:flex; flex-direction:column; flex:1; }
+  #soi-{{ section.id }} .soi-name{ font-family:var(--serif); font-weight:800; font-size:21px; color:var(--navy); line-height:1.15; }
+  #soi-{{ section.id }} .soi-desc{ font-size:13px; line-height:1.55; color:var(--stone); margin:8px 0 0; }
+  #soi-{{ section.id }} .soi-foot{ margin-top:20px; padding-top:18px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:1px solid var(--mist); }
+  #soi-{{ section.id }} .soi-price{ font-family:var(--serif); font-weight:700; font-size:22px; color:var(--navy); }
+  #soi-{{ section.id }} .soi-price small{ font-size:12px; font-weight:500; color:var(--stone); }
+  #soi-{{ section.id }} .soi-add{ display:inline-flex; align-items:center; gap:6px; padding:10px 18px; border-radius:999px; border:none; cursor:pointer; background:var(--navy); color:var(--cream); font-family:var(--sans); font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; text-decoration:none; transition:background .18s, transform .18s; }
+  #soi-{{ section.id }} .soi-add:hover{ background:var(--rose); transform:translateY(-2px); }
+  #soi-{{ section.id }} .soi-add svg{ width:13px; height:13px; }
+
+  @media (max-width:900px){ #soi-{{ section.id }} .soi-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:560px){ #soi-{{ section.id }} .soi-grid{ grid-template-columns:1fr; } }
+</style>
+
+{% schema %}
+{
+  "name": "Shop · Accessories",
+  "tag": "section",
+  "class": "shopify-section--soi",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "header", "content": "Heading" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Sip in style" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Cups & accessories" },
+    { "type": "textarea", "id": "subtitle", "label": "Subtitle", "default": "The little extras that make hydration a habit — shake, scoop, and stash on the go." },
+    { "type": "text", "id": "count_label", "label": "Count label", "default": "4 items" },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "columns", "label": "Columns", "min": 2, "max": 4, "step": 1, "default": 3 },
+    { "type": "text", "id": "view_label", "label": "Button label", "default": "View" },
+    { "type": "text", "id": "currency_symbol", "label": "Currency symbol", "default": "$" }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Product",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" },
+        { "type": "text", "id": "name_override", "label": "Name override", "info": "Leave blank to use the product title." },
+        { "type": "textarea", "id": "blurb", "label": "Short blurb" },
+        { "type": "text", "id": "flag", "label": "Corner flag", "info": "Leave blank to hide." },
+        { "type": "text", "id": "unit", "label": "Price unit suffix", "info": "e.g. “/ 10”. Optional." },
+        { "type": "checkbox", "id": "use_image", "label": "Use product image instead of icon", "default": false },
+        { "type": "select", "id": "icon", "label": "Icon", "default": "cup",
+          "options": [
+            { "value": "cup", "label": "Tumbler / cup" },
+            { "value": "scoop", "label": "Scoop" },
+            { "value": "pouch", "label": "Pouch" },
+            { "value": "bundle", "label": "Bundle (scoop + pouch)" },
+            { "value": "gift", "label": "Gift" }
+          ] },
+        { "type": "color", "id": "color", "label": "Accent color", "default": "#4A90B8" },
+        { "type": "checkbox", "id": "highlight", "label": "Highlight this card", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop · Accessories",
+      "blocks": [
+        { "type": "item", "settings": { "name_override": "Weller Go Bundle", "blurb": "The Scoop Set plus 10 Go Pouches — everything you need to take your ritual anywhere.", "flag": "Bundle · Save $3", "icon": "bundle", "color": "#E8A87C", "highlight": true } },
+        { "type": "item", "settings": { "name_override": "Weller Tumbler", "blurb": "24oz insulated stainless tumbler with the uterus-droplet mark.", "flag": "Keeps cold 12h", "icon": "cup", "color": "#4A90B8" } },
+        { "type": "item", "settings": { "name_override": "Weller Scoop Set", "blurb": "Two perfectly-portioned measuring scoops — one for the tub, one for travel.", "flag": "Set of 2", "icon": "scoop", "color": "#E8A87C" } },
+        { "type": "item", "settings": { "name_override": "Go Pouches", "blurb": "Refillable single-serve stash pouches — pre-load your mix and go.", "flag": "10-pack", "unit": "/ 10", "icon": "pouch", "color": "#8A9B6E" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,368 @@
+{%- comment -%}
+  ============================================================
+  WELLER CO. — Shop Page · Drink Mix Feature Card
+  ------------------------------------------------------------
+  One configurable drink-mix card. Per section instance you can:
+    • pick the PRODUCT
+    • add FLAVOR blocks (the variants you want shown) and reorder them
+    • choose THEME  -> Light (cream) or Dark (navy)
+    • choose LAYOUT -> Image left or Image right
+  Clicking a flavor selects it; the "View product" button links to
+  the product page with that variant pre-selected (?variant=…).
+  Add the section twice (e.g. Her'dration light/left, Pro'dration
+  dark/right) to recreate the full lineup.
+  Namespaced under #sdm-{{ section.id }}.
+  ============================================================
+{%- endcomment -%}
+
+{%- assign p = section.settings.product | default: product -%}
+{%- assign sym = section.settings.currency_symbol | default: '$' -%}
+{%- assign theme = section.settings.theme -%}
+{%- assign orient = section.settings.orientation -%}
+
+{%- assign disp_name = section.settings.product_name -%}
+{%- if disp_name == blank and p != blank -%}{%- assign disp_name = p.title -%}{%- endif -%}
+{%- assign name_html = disp_name | replace: "’", "<span class='sdm-apos'>’</span>" | replace: "'", "<span class='sdm-apos'>'</span>" -%}
+
+{%- assign hero_img = section.settings.hero_image -%}
+{%- if hero_img == blank and p != blank -%}{%- assign hero_img = p.featured_image -%}{%- endif -%}
+
+{%- assign flavor_count = 0 -%}
+{%- for block in section.blocks -%}{%- if block.type == 'flavor' -%}{%- assign flavor_count = flavor_count | plus: 1 -%}{%- endif -%}{%- endfor -%}
+
+<section
+  id="sdm-{{ section.id }}"
+  class="sdm sdm--{{ theme }} sdm--img-{{ orient }}"
+  data-product-url="{% if p != blank %}{{ p.url }}{% else %}#{% endif %}"
+  {{ section.shopify_attributes }}>
+
+  {%- if p == blank and hero_img == blank -%}
+    <div class="sdm-empty">Select a product in the section settings.</div>
+  {%- else -%}
+
+  <article class="sdm-card">
+
+    <div class="sdm-visual">
+      {%- if section.settings.show_blobs -%}
+        <span class="sdm-blob sdm-blob1"></span>
+        <span class="sdm-blob sdm-blob2"></span>
+        <span class="sdm-blob sdm-blob3"></span>
+      {%- endif -%}
+      {%- if section.settings.flag_text != blank -%}
+        <span class="sdm-flag">{{ section.settings.flag_text }}</span>
+      {%- endif -%}
+      {%- if hero_img != blank -%}
+        <img class="sdm-hero{% if section.settings.hero_contain %} sdm-hero--logo{% endif %}"
+             src="{{ hero_img | image_url: width: 700 }}"
+             alt="{{ disp_name | escape }}" loading="lazy">
+      {%- endif -%}
+    </div>
+
+    <div class="sdm-body">
+      {%- if section.settings.wordmark != blank -%}
+        <div class="sdm-wordmark">{{ section.settings.wordmark }}</div>
+      {%- endif -%}
+      <h3 class="sdm-name">{{ name_html }}</h3>
+      {%- if section.settings.tagline != blank -%}
+        <div class="sdm-tag">{{ section.settings.tagline }}</div>
+      {%- endif -%}
+      {%- if section.settings.description != blank -%}
+        <p class="sdm-desc">{{ section.settings.description }}</p>
+      {%- endif -%}
+
+      {%- comment -%} ---- benefit pills ---- {%- endcomment -%}
+      {%- assign pill_count = 0 -%}
+      {%- for block in section.blocks -%}{%- if block.type == 'pill' -%}{%- assign pill_count = pill_count | plus: 1 -%}{%- endif -%}{%- endfor -%}
+      {%- if pill_count > 0 -%}
+        <div class="sdm-pills">
+          {%- for block in section.blocks -%}{%- if block.type == 'pill' -%}
+            <span class="sdm-pill" style="--pill:{{ block.settings.color }}" {{ block.shopify_attributes }}>{{ block.settings.label }}</span>
+          {%- endif -%}{%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} ---- flavor variants ---- {%- endcomment -%}
+      {%- if flavor_count > 0 -%}
+        <div class="sdm-flavor-pick">
+          <div class="sdm-flavor-label">
+            <span class="sdm-lab">{{ section.settings.flavor_heading }}</span>
+            <span class="sdm-chosen" data-chosen></span>
+          </div>
+          <div class="sdm-swatch-row" data-swatches>
+            {%- for block in section.blocks -%}{%- if block.type == 'flavor' -%}
+              <button type="button" class="sdm-swatch"
+                      data-variant="{{ block.settings.variant_id }}"
+                      data-name="{{ block.settings.name | escape }}"
+                      style="--sc:{{ block.settings.color }}"
+                      aria-label="{{ block.settings.name | escape }}"
+                      {{ block.shopify_attributes }}>
+                <span class="sdm-disc">
+                  <span class="sdm-sblob"></span>
+                  {%- if block.settings.image != blank -%}
+                    <img src="{{ block.settings.image | image_url: width: 200 }}" alt="" loading="lazy">
+                  {%- endif -%}
+                </span>
+                <span class="sdm-swatch-name">{{ block.settings.name }}</span>
+              </button>
+            {%- endif -%}{%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      <div class="sdm-buy">
+        <div class="sdm-price">
+          {%- if section.settings.price_label != blank -%}
+            <span class="sdm-from">{{ section.settings.price_label }}</span>
+          {%- endif -%}
+          <span class="sdm-price-row">
+            {%- if p != blank -%}
+              <span class="sdm-now">{{ p.price | money }}</span>
+              {%- if p.compare_at_price > p.price -%}
+                <span class="sdm-was">{{ p.compare_at_price | money }}</span>
+                {%- assign pct = p.compare_at_price | minus: p.price | times: 100 | divided_by: p.compare_at_price -%}
+                <span class="sdm-save">−{{ pct }}%</span>
+              {%- endif -%}
+            {%- else -%}
+              <span class="sdm-now">{{ sym }}0.00</span>
+            {%- endif -%}
+          </span>
+        </div>
+        <a class="sdm-btn" data-view href="{% if p != blank %}{{ p.url }}{% else %}#{% endif %}">
+          {{ section.settings.view_label }}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+  </article>
+  {%- endif -%}
+</section>
+
+<style>
+  #sdm-{{ section.id }}{
+    --blush:#F2C4CE; --peach:#E8A87C; --sage:#8A9B6E; --sky:#4A90B8;
+    --navy:#1B3A5C; --rose:#E8607A; --cream:#FAF5F0; --cream-dk:#F0E8E0;
+    --lime:#7DB642; --fog:#F5EEE8; --mist:#E8DDD5; --stone:#8A7E76;
+    --serif:'Playfair Display','Georgia',serif;
+    --display:'Cormorant Garamond','Georgia',serif;
+    --script:'Dancing Script',cursive;
+    --sans:'DM Sans','Helvetica Neue',sans-serif;
+    --shadow-md:0 4px 24px rgba(27,58,92,.10);
+    --shadow-rose:0 6px 24px rgba(232,96,122,.28);
+
+    /* THEME · LIGHT (default) */
+    --card-bg:#fff;
+    --visual-bg:var(--cream);
+    --txt:var(--navy);
+    --txt-muted:var(--stone);
+    --wordmark:var(--stone);
+    --disc-bg:var(--cream);
+    --swname:var(--stone);
+    --swname-on:var(--navy);
+    --flag-bg:var(--navy); --flag-txt:var(--cream);
+
+    display:block; font-family:var(--sans); color:var(--txt);
+    max-width:1180px; margin:0 auto; padding:16px;
+  }
+  #sdm-{{ section.id }}.sdm--dark{
+    --card-bg:var(--navy);
+    --visual-bg:#16324f;
+    --txt:var(--cream);
+    --txt-muted:rgba(250,245,240,.62);
+    --wordmark:rgba(250,245,240,.55);
+    --disc-bg:rgba(255,255,255,.06);
+    --swname:rgba(250,245,240,.55);
+    --swname-on:var(--cream);
+  }
+  #sdm-{{ section.id }} *{ box-sizing:border-box; }
+
+  #sdm-{{ section.id }} .sdm-empty{ padding:48px; text-align:center; color:var(--stone); background:var(--fog); border-radius:24px; }
+
+  #sdm-{{ section.id }} .sdm-card{
+    display:grid; grid-template-columns:.9fr 1.1fr; gap:0;
+    background:var(--card-bg); border-radius:28px; overflow:hidden;
+    box-shadow:var(--shadow-md);
+  }
+  /* image-right swaps the columns */
+  #sdm-{{ section.id }}.sdm--img-right .sdm-visual{ order:2; }
+  #sdm-{{ section.id }}.sdm--img-right .sdm-body{ order:1; }
+
+  #sdm-{{ section.id }} .sdm-visual{
+    position:relative; overflow:hidden; background:var(--visual-bg);
+    min-height:280px; display:flex; align-items:center; justify-content:center;
+  }
+  #sdm-{{ section.id }} .sdm-blob{ position:absolute; border-radius:50%; }
+  #sdm-{{ section.id }} .sdm-blob1{ width:300px; height:300px; background:var(--blush); opacity:.5; top:-40px; left:-40px; }
+  #sdm-{{ section.id }} .sdm-blob2{ width:180px; height:180px; background:var(--peach); opacity:.35; bottom:-30px; right:-20px; }
+  #sdm-{{ section.id }} .sdm-blob3{ width:120px; height:120px; background:var(--sage); opacity:.25; top:40px; right:30px; }
+  #sdm-{{ section.id }}.sdm--dark .sdm-blob1{ background:var(--sky); opacity:.18; }
+  #sdm-{{ section.id }}.sdm--dark .sdm-blob2{ background:var(--blush); opacity:.5; }
+  #sdm-{{ section.id }}.sdm--dark .sdm-blob3{ background:var(--rose); opacity:.18; }
+
+  #sdm-{{ section.id }} .sdm-hero{ position:relative; z-index:2; width:70%; max-width:250px; height:auto; filter:drop-shadow(0 18px 32px rgba(27,58,92,.18)); }
+  #sdm-{{ section.id }} .sdm-hero--logo{ width:46%; max-width:175px; }
+  #sdm-{{ section.id }} .sdm-flag{
+    position:absolute; top:20px; left:20px; z-index:3;
+    display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:999px;
+    background:var(--flag-bg); color:var(--flag-txt);
+    font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  }
+  #sdm-{{ section.id }}.sdm--img-right .sdm-flag{ left:auto; right:20px; }
+
+  #sdm-{{ section.id }} .sdm-body{ padding:32px 34px 30px; display:flex; flex-direction:column; }
+  #sdm-{{ section.id }} .sdm-wordmark{ font-family:var(--display); font-weight:400; font-size:13px; letter-spacing:.24em; text-transform:uppercase; color:var(--wordmark); margin-bottom:6px; }
+  #sdm-{{ section.id }} .sdm-name{ font-family:var(--serif); font-weight:900; font-size:clamp(30px,3vw,38px); line-height:1; letter-spacing:-.02em; color:var(--txt); margin:0; }
+  #sdm-{{ section.id }} .sdm-apos{ color:var(--rose); }
+  #sdm-{{ section.id }} .sdm-tag{ font-family:var(--display); font-weight:400; font-size:17px; letter-spacing:.02em; color:var(--txt); margin:7px 0 4px; }
+  #sdm-{{ section.id }} .sdm-desc{ font-size:14px; line-height:1.6; color:var(--txt-muted); margin:12px 0 0; max-width:440px; }
+
+  #sdm-{{ section.id }} .sdm-pills{ display:flex; gap:7px; flex-wrap:wrap; margin:18px 0 0; }
+  #sdm-{{ section.id }} .sdm-pill{
+    display:inline-flex; align-items:center; padding:6px 14px; border-radius:999px;
+    font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+    background:color-mix(in srgb, var(--pill) 16%, transparent);
+    color:color-mix(in srgb, var(--pill) 70%, var(--navy));
+  }
+  #sdm-{{ section.id }}.sdm--dark .sdm-pill{
+    background:color-mix(in srgb, var(--pill) 34%, transparent);
+    color:color-mix(in srgb, var(--pill) 55%, #ffffff);
+  }
+
+  #sdm-{{ section.id }} .sdm-flavor-pick{ margin-top:20px; }
+  #sdm-{{ section.id }} .sdm-flavor-label{ display:flex; align-items:baseline; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  #sdm-{{ section.id }} .sdm-lab{ font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--txt); }
+  #sdm-{{ section.id }} .sdm-chosen{ font-family:var(--script); font-weight:700; font-size:22px; line-height:1; color:var(--rose); white-space:nowrap; }
+  #sdm-{{ section.id }} .sdm-swatch-row{ display:flex; gap:12px; flex-wrap:wrap; }
+  #sdm-{{ section.id }} .sdm-swatch{ position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; background:none; border:none; padding:0; cursor:pointer; width:72px; font-family:var(--sans); }
+  #sdm-{{ section.id }} .sdm-disc{ position:relative; width:64px; height:64px; border-radius:50%; background:var(--disc-bg); display:flex; align-items:center; justify-content:center; overflow:hidden; transition:transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s; outline:2.5px solid transparent; outline-offset:2px; }
+  #sdm-{{ section.id }} .sdm-sblob{ position:absolute; inset:0; border-radius:50%; background:var(--sc,var(--blush)); opacity:.22; }
+  #sdm-{{ section.id }} .sdm-disc img{ position:relative; z-index:1; width:70%; height:70%; object-fit:contain; }
+  #sdm-{{ section.id }} .sdm-swatch:hover .sdm-disc{ transform:translateY(-3px) scale(1.05); box-shadow:0 2px 12px rgba(27,58,92,.12); }
+  #sdm-{{ section.id }} .sdm-swatch.sdm-active .sdm-disc{ outline-color:var(--sc,var(--rose)); box-shadow:0 2px 12px rgba(27,58,92,.12); }
+  #sdm-{{ section.id }} .sdm-swatch.sdm-active .sdm-sblob{ opacity:.4; }
+  #sdm-{{ section.id }} .sdm-swatch-name{ font-size:9.5px; font-weight:600; line-height:1.2; color:var(--swname); text-align:center; }
+  #sdm-{{ section.id }} .sdm-swatch.sdm-active .sdm-swatch-name{ color:var(--swname-on); }
+
+  #sdm-{{ section.id }} .sdm-buy{ margin-top:auto; padding-top:22px; display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+  #sdm-{{ section.id }} .sdm-price{ display:flex; flex-direction:column; }
+  #sdm-{{ section.id }} .sdm-from{ font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--txt-muted); }
+  #sdm-{{ section.id }} .sdm-price-row{ display:inline-flex; align-items:baseline; gap:8px; }
+  #sdm-{{ section.id }} .sdm-now{ font-family:var(--serif); font-weight:800; font-size:26px; color:var(--txt); letter-spacing:-.01em; }
+  #sdm-{{ section.id }} .sdm-was{ font-size:15px; color:var(--txt-muted); text-decoration:line-through; }
+  #sdm-{{ section.id }} .sdm-save{ font-size:11px; font-weight:700; color:var(--rose); letter-spacing:.04em; }
+
+  #sdm-{{ section.id }} .sdm-btn{
+    display:inline-flex; align-items:center; gap:8px; border:none; border-radius:999px; cursor:pointer;
+    font-family:var(--sans); font-weight:600; font-size:13px; letter-spacing:.08em; text-transform:uppercase;
+    padding:14px 28px; background:var(--rose); color:#fff; box-shadow:var(--shadow-rose);
+    transition:transform .2s, box-shadow .2s; text-decoration:none;
+  }
+  #sdm-{{ section.id }} .sdm-btn:hover{ transform:translateY(-2px); box-shadow:0 10px 32px rgba(232,96,122,.35); }
+  #sdm-{{ section.id }} .sdm-btn svg{ width:16px; height:16px; }
+
+  @media (max-width:900px){
+    #sdm-{{ section.id }} .sdm-card{ grid-template-columns:1fr; }
+    #sdm-{{ section.id }} .sdm-visual{ min-height:240px; order:1 !important; }
+    #sdm-{{ section.id }} .sdm-body{ order:2 !important; }
+  }
+  @media (max-width:560px){ #sdm-{{ section.id }} .sdm-body{ padding:28px 24px 26px; } }
+</style>
+
+<script>
+(function(){
+  var root = document.getElementById('sdm-{{ section.id }}');
+  if(!root) return;
+  var base = root.dataset.productUrl || '#';
+  var row = root.querySelector('[data-swatches]');
+  var chosenEl = root.querySelector('[data-chosen]');
+  var viewLink = root.querySelector('[data-view]');
+  if(!row) return;
+  var swatches = Array.prototype.slice.call(row.querySelectorAll('.sdm-swatch'));
+  if(!swatches.length) return;
+
+  function syncLink(sw){
+    if(!viewLink) return;
+    var v = sw.dataset.variant;
+    viewLink.href = (v && base !== '#') ? (base + '?variant=' + v) : base;
+  }
+  function select(sw){
+    swatches.forEach(function(s){ s.classList.toggle('sdm-active', s === sw); });
+    if(chosenEl){
+      chosenEl.textContent = sw.dataset.name || '';
+      chosenEl.style.color = (sw.style.getPropertyValue('--sc') || '').trim() || 'var(--rose)';
+    }
+    syncLink(sw);
+  }
+  swatches.forEach(function(sw){ sw.addEventListener('click', function(){ select(sw); }); });
+  select(swatches[0]);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Shop · Drink Mix",
+  "tag": "section",
+  "class": "shopify-section--sdm",
+  "settings": [
+    { "type": "header", "content": "Product" },
+    { "type": "product", "id": "product", "label": "Product", "info": "Leave empty on a product page to auto-detect." },
+    { "type": "text", "id": "product_name", "label": "Display name", "info": "Overrides the product title. Apostrophes render in rose (e.g. Her'dration). Leave blank to use the product title." },
+
+    { "type": "header", "content": "Theme & layout" },
+    { "type": "select", "id": "theme", "label": "Theme", "default": "light",
+      "options": [ { "value": "light", "label": "Light (cream)" }, { "value": "dark", "label": "Dark (navy)" } ] },
+    { "type": "select", "id": "orientation", "label": "Image side", "default": "left",
+      "options": [ { "value": "left", "label": "Image left" }, { "value": "right", "label": "Image right" } ] },
+
+    { "type": "header", "content": "Copy" },
+    { "type": "text", "id": "wordmark", "label": "Wordmark", "default": "Weller Co." },
+    { "type": "text", "id": "tagline", "label": "Tagline", "default": "Mood & Hormone Support Drink Mix" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Electrolytes paired with hormone-support botanicals and mood co-factors — crafted for women through PMS, PCOS & menopause." },
+    { "type": "text", "id": "flavor_heading", "label": "Flavor label", "default": "Flavor —" },
+    { "type": "text", "id": "price_label", "label": "Price label", "default": "Subscribe & save" },
+    { "type": "text", "id": "view_label", "label": "Button label", "default": "View product" },
+    { "type": "text", "id": "flag_text", "label": "Corner flag", "default": "Bestseller", "info": "Leave blank to hide." },
+
+    { "type": "header", "content": "Image" },
+    { "type": "image_picker", "id": "hero_image", "label": "Hero image", "info": "Defaults to the product's featured image." },
+    { "type": "checkbox", "id": "hero_contain", "label": "Smaller image (logo / transparent art)", "default": false },
+    { "type": "checkbox", "id": "show_blobs", "label": "Show decorative blobs", "default": true },
+
+    { "type": "header", "content": "Pricing" },
+    { "type": "text", "id": "currency_symbol", "label": "Currency symbol", "default": "$" }
+  ],
+  "blocks": [
+    {
+      "type": "flavor",
+      "name": "Flavor",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Flavor name", "default": "Lime Margarita" },
+        { "type": "image_picker", "id": "image", "label": "Flavor art (fruit icon)" },
+        { "type": "color", "id": "color", "label": "Accent color", "default": "#7DB642" },
+        { "type": "text", "id": "variant_id", "label": "Variant ID", "info": "From the variant URL ?variant=… — the View button links here." }
+      ]
+    },
+    {
+      "type": "pill",
+      "name": "Benefit pill",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Gluten Free" },
+        { "type": "color", "id": "color", "label": "Color", "default": "#E8607A" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop · Drink Mix",
+      "blocks": [
+        { "type": "pill", "settings": { "label": "Gluten Free", "color": "#E8607A" } },
+        { "type": "pill", "settings": { "label": "No Artificial Sweeteners", "color": "#8A9B6E" } },
+        { "type": "pill", "settings": { "label": "Vegan", "color": "#E8A87C" } },
+        { "type": "flavor", "settings": { "name": "Lime Margarita", "color": "#7DB642" } },
+        { "type": "flavor", "settings": { "name": "Raspberry Lemonade", "color": "#D64C6F" } },
+        { "type": "flavor", "settings": { "name": "Strawberry Coconut", "color": "#E8607A" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

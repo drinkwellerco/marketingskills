@@ -1,0 +1,272 @@
+{%- comment -%}
+  ============================================================
+  WELLER CO. — Shop Page · Gift Card
+  ------------------------------------------------------------
+  The gift-card tile (tilted card art + denomination chips) and
+  a perks panel. You:
+    • pick the gift-card PRODUCT
+    • add DENOMINATION blocks — each is a $ amount + its variant ID
+  Clicking a denomination updates the card art, the price, and the
+  "View" button's link (product page with that variant selected).
+  Perks are editable blocks too.
+  Namespaced under #sgc-{{ section.id }}.
+  ============================================================
+{%- endcomment -%}
+
+{%- assign p = section.settings.product -%}
+{%- assign sym = section.settings.currency_symbol | default: '$' -%}
+{%- assign gc_url = '#' -%}
+{%- if p != blank -%}{%- assign gc_url = p.url -%}{%- endif -%}
+
+{%- capture ico_send -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7Z"/></svg>{%- endcapture -%}
+{%- capture ico_clock -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{%- endcapture -%}
+{%- capture ico_gift -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M4 13h16M12 9v11"/><path d="M12 9S10.5 4.5 8 5.2C6 5.8 7 9 12 9ZM12 9s1.5-4.5 4-3.8C18 5.8 17 9 12 9Z"/></svg>{%- endcapture -%}
+{%- capture ico_heart -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 11.3 12 20l-8.8-8.7a4 4 0 0 1 5.6-5.6L12 8l3.2-2.3a4 4 0 0 1 5.6 5.6Z"/></svg>{%- endcapture -%}
+
+{%- comment -%} default denomination = first flagged, else first block {%- endcomment -%}
+{%- assign def_amt = '' -%}{%- assign def_var = '' -%}
+{%- for block in section.blocks -%}{%- if block.type == 'denom' and block.settings.is_default and def_amt == '' -%}{%- assign def_amt = block.settings.amount -%}{%- assign def_var = block.settings.variant_id -%}{%- endif -%}{%- endfor -%}
+{%- if def_amt == '' -%}{%- for block in section.blocks -%}{%- if block.type == 'denom' and def_amt == '' -%}{%- assign def_amt = block.settings.amount -%}{%- assign def_var = block.settings.variant_id -%}{%- endif -%}{%- endfor -%}{%- endif -%}
+
+<section id="sgc-{{ section.id }}" class="sgc" data-product-url="{{ gc_url }}" {{ section.shopify_attributes }}>
+
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank -%}
+  <div class="sgc-head">
+    <div class="sgc-titles">
+      {%- if section.settings.eyebrow != blank -%}<span class="sgc-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2 class="sgc-h2">{{ section.settings.heading }}</h2>{%- endif -%}
+      {%- if section.settings.subtitle != blank -%}<p class="sgc-sub">{{ section.settings.subtitle }}</p>{%- endif -%}
+    </div>
+    {%- if section.settings.count_label != blank -%}<span class="sgc-count">{{ section.settings.count_label }}</span>{%- endif -%}
+  </div>
+  {%- endif -%}
+
+  <div class="sgc-grid">
+
+    <!-- PICKER -->
+    <article class="sgc-card">
+      <div class="sgc-visual">
+        <span class="sgc-vblob sgc-vblob1"></span>
+        <span class="sgc-vblob sgc-vblob2"></span>
+        <div class="sgc-art">
+          <div class="sgc-art-top">
+            {%- if section.settings.card_logo != blank -%}<img src="{{ section.settings.card_logo | image_url: width: 80 }}" alt="">{%- endif -%}
+            <span>{{ section.settings.card_wordmark }}</span>
+          </div>
+          <div class="sgc-art-amt" data-gift-amt>{{ sym }}{{ def_amt }}</div>
+          <div class="sgc-art-foot">{{ section.settings.card_footer }} <span class="sgc-heart">♡</span></div>
+        </div>
+      </div>
+      <div class="sgc-body">
+        <div class="sgc-name">{{ section.settings.card_name }}</div>
+        {%- if section.settings.card_blurb != blank -%}<p class="sgc-desc">{{ section.settings.card_blurb }}</p>{%- endif -%}
+
+        {%- if section.blocks.size > 0 -%}
+        <div class="sgc-denoms" data-denoms>
+          {%- for block in section.blocks -%}{%- if block.type == 'denom' -%}
+            <button type="button"
+              class="sgc-denom{% if block.settings.amount == def_amt and block.settings.variant_id == def_var %} sgc-active{% endif %}"
+              data-amount="{{ block.settings.amount }}"
+              data-variant="{{ block.settings.variant_id }}"
+              {{ block.shopify_attributes }}>{{ sym }}{{ block.settings.amount }}</button>
+          {%- endif -%}{%- endfor -%}
+        </div>
+        {%- endif -%}
+
+        <div class="sgc-foot">
+          <span class="sgc-price" data-gift-price>{{ sym }}{{ def_amt }}</span>
+          <a class="sgc-add" data-view href="{% if p != blank and def_var != blank %}{{ gc_url }}?variant={{ def_var }}{% else %}{{ gc_url }}{% endif %}">
+            {{ section.settings.view_label }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- PERKS -->
+    <article class="sgc-card">
+      <div class="sgc-perkwrap">
+        {%- for block in section.blocks -%}{%- if block.type == 'perk' -%}
+          <div class="sgc-perk" {{ block.shopify_attributes }}>
+            <span class="sgc-perk-ic">
+              {%- case block.settings.icon -%}
+                {%- when 'send' -%}{{ ico_send }}
+                {%- when 'clock' -%}{{ ico_clock }}
+                {%- when 'gift' -%}{{ ico_gift }}
+                {%- when 'heart' -%}{{ ico_heart }}
+                {%- else -%}{{ ico_send }}
+              {%- endcase -%}
+            </span>
+            <div><div class="sgc-perk-t">{{ block.settings.title }}</div><div class="sgc-perk-d">{{ block.settings.text }}</div></div>
+          </div>
+        {%- endif -%}{%- endfor -%}
+      </div>
+      <div class="sgc-body">
+        <div class="sgc-name">{{ section.settings.why_title }}</div>
+        {%- if section.settings.why_text != blank -%}<p class="sgc-desc">{{ section.settings.why_text }} <span style="color:var(--rose);">♡</span></p>{%- endif -%}
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<style>
+  #sgc-{{ section.id }}{
+    --blush:#F2C4CE; --peach:#E8A87C; --sage:#8A9B6E; --sky:#4A90B8;
+    --navy:#1B3A5C; --rose:#E8607A; --cream:#FAF5F0; --cream-dk:#F0E8E0;
+    --fog:#F5EEE8; --mist:#E8DDD5; --stone:#8A7E76;
+    --serif:'Playfair Display','Georgia',serif;
+    --display:'Cormorant Garamond','Georgia',serif;
+    --sans:'DM Sans','Helvetica Neue',sans-serif;
+    --shadow-sm:0 2px 12px rgba(27,58,92,.08);
+    --shadow-lg:0 8px 40px rgba(27,58,92,.12);
+
+    display:block; font-family:var(--sans); color:var(--navy);
+    max-width:1180px; margin:0 auto; padding:16px;
+  }
+  #sgc-{{ section.id }} *{ box-sizing:border-box; }
+
+  #sgc-{{ section.id }} .sgc-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:40px; flex-wrap:wrap; }
+  #sgc-{{ section.id }} .sgc-eyebrow{ font-size:11px; font-weight:600; letter-spacing:.24em; text-transform:uppercase; color:var(--rose); }
+  #sgc-{{ section.id }} .sgc-h2{ font-family:var(--serif); font-weight:800; font-size:clamp(34px,4vw,52px); line-height:1.1; letter-spacing:-.01em; color:var(--navy); margin:10px 0 0; }
+  #sgc-{{ section.id }} .sgc-sub{ font-size:14px; color:var(--stone); line-height:1.6; margin:12px 0 0; max-width:520px; }
+  #sgc-{{ section.id }} .sgc-count{ font-family:var(--serif); font-weight:700; font-size:15px; color:var(--rose); white-space:nowrap; }
+
+  #sgc-{{ section.id }} .sgc-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:24px; }
+  #sgc-{{ section.id }} .sgc-card{ display:flex; flex-direction:column; background:#fff; border-radius:24px; overflow:hidden; box-shadow:var(--shadow-sm); }
+
+  #sgc-{{ section.id }} .sgc-visual{ position:relative; height:260px; overflow:hidden; background:var(--cream); display:flex; align-items:center; justify-content:center; }
+  #sgc-{{ section.id }} .sgc-vblob{ position:absolute; border-radius:50%; }
+  #sgc-{{ section.id }} .sgc-vblob1{ width:260px; height:260px; background:var(--blush); opacity:.5; top:-40px; left:-40px; }
+  #sgc-{{ section.id }} .sgc-vblob2{ width:150px; height:150px; background:var(--peach); opacity:.32; bottom:-30px; right:-20px; }
+  #sgc-{{ section.id }} .sgc-art{ position:relative; z-index:2; width:240px; height:150px; border-radius:16px; background:linear-gradient(135deg, var(--navy), #14507a); box-shadow:var(--shadow-lg); display:flex; flex-direction:column; justify-content:space-between; padding:18px 20px; color:var(--cream); transform:rotate(-4deg); }
+  #sgc-{{ section.id }} .sgc-art-top{ display:flex; align-items:center; gap:8px; }
+  #sgc-{{ section.id }} .sgc-art-top img{ height:22px; filter:brightness(0) invert(1); }
+  #sgc-{{ section.id }} .sgc-art-top span{ font-family:var(--display); font-size:13px; letter-spacing:.2em; }
+  #sgc-{{ section.id }} .sgc-art-amt{ font-family:var(--serif); font-weight:900; font-size:34px; }
+  #sgc-{{ section.id }} .sgc-art-foot{ font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:rgba(250,245,240,.7); }
+  #sgc-{{ section.id }} .sgc-heart{ color:var(--rose); }
+
+  #sgc-{{ section.id }} .sgc-body{ padding:24px 26px 26px; display:flex; flex-direction:column; flex:1; }
+  #sgc-{{ section.id }} .sgc-name{ font-family:var(--serif); font-weight:800; font-size:21px; color:var(--navy); line-height:1.15; }
+  #sgc-{{ section.id }} .sgc-desc{ font-size:13px; line-height:1.55; color:var(--stone); margin:8px 0 0; }
+
+  #sgc-{{ section.id }} .sgc-denoms{ display:flex; gap:8px; flex-wrap:wrap; margin:16px 0 0; }
+  #sgc-{{ section.id }} .sgc-denom{ padding:8px 16px; border-radius:12px; cursor:pointer; background:var(--cream); border:1.5px solid var(--mist); font-family:var(--serif); font-weight:700; font-size:16px; color:var(--navy); transition:border-color .15s, background .15s, color .15s; }
+  #sgc-{{ section.id }} .sgc-denom:hover{ border-color:var(--rose); }
+  #sgc-{{ section.id }} .sgc-denom.sgc-active{ background:var(--rose); border-color:var(--rose); color:#fff; }
+
+  #sgc-{{ section.id }} .sgc-foot{ margin-top:20px; padding-top:18px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:1px solid var(--mist); }
+  #sgc-{{ section.id }} .sgc-price{ font-family:var(--serif); font-weight:700; font-size:22px; color:var(--navy); }
+  #sgc-{{ section.id }} .sgc-add{ display:inline-flex; align-items:center; gap:6px; padding:10px 18px; border-radius:999px; border:none; cursor:pointer; background:var(--navy); color:var(--cream); font-family:var(--sans); font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; text-decoration:none; transition:background .18s, transform .18s; }
+  #sgc-{{ section.id }} .sgc-add:hover{ background:var(--rose); transform:translateY(-2px); }
+  #sgc-{{ section.id }} .sgc-add svg{ width:13px; height:13px; }
+
+  #sgc-{{ section.id }} .sgc-perkwrap{ padding:40px 32px; display:flex; flex-direction:column; gap:14px; background:var(--cream); }
+  #sgc-{{ section.id }} .sgc-perk{ display:flex; align-items:center; gap:14px; padding:16px 18px; border-radius:18px; background:rgba(255,255,255,.7); border:1px solid var(--mist); }
+  #sgc-{{ section.id }} .sgc-perk-ic{ width:44px; height:44px; border-radius:50%; flex-shrink:0; background:rgba(232,96,122,.12); color:var(--rose); display:inline-flex; align-items:center; justify-content:center; }
+  #sgc-{{ section.id }} .sgc-perk-ic svg{ width:22px; height:22px; }
+  #sgc-{{ section.id }} .sgc-perk-t{ font-family:var(--serif); font-weight:700; font-size:16px; color:var(--navy); line-height:1.2; }
+  #sgc-{{ section.id }} .sgc-perk-d{ font-size:12px; color:var(--stone); margin-top:2px; }
+
+  @media (max-width:760px){ #sgc-{{ section.id }} .sgc-grid{ grid-template-columns:1fr; } }
+</style>
+
+<script>
+(function(){
+  var root = document.getElementById('sgc-{{ section.id }}');
+  if(!root) return;
+  var base = root.dataset.productUrl || '#';
+  var amtEl = root.querySelector('[data-gift-amt]');
+  var priceEl = root.querySelector('[data-gift-price]');
+  var viewLink = root.querySelector('[data-view]');
+  var denoms = Array.prototype.slice.call(root.querySelectorAll('[data-denoms] .sgc-denom'));
+  if(!denoms.length) return;
+  var sym = '{{ sym }}';
+
+  function select(d){
+    denoms.forEach(function(x){ x.classList.toggle('sgc-active', x === d); });
+    var amt = d.dataset.amount, v = d.dataset.variant;
+    if(amtEl) amtEl.textContent = sym + amt;
+    if(priceEl) priceEl.textContent = sym + amt;
+    if(viewLink) viewLink.href = (v && base !== '#') ? (base + '?variant=' + v) : base;
+  }
+  denoms.forEach(function(d){ d.addEventListener('click', function(){ select(d); }); });
+  var initial = root.querySelector('[data-denoms] .sgc-denom.sgc-active') || denoms[0];
+  select(initial);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Shop · Gift Card",
+  "tag": "section",
+  "class": "shopify-section--sgc",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "header", "content": "Heading" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Give the glow" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Gift cards" },
+    { "type": "textarea", "id": "subtitle", "label": "Subtitle", "default": "The easiest way to share the ritual. Delivered by email, never expires, redeemable on everything." },
+    { "type": "text", "id": "count_label", "label": "Count label", "default": "Any amount" },
+
+    { "type": "header", "content": "Product" },
+    { "type": "product", "id": "product", "label": "Gift card product", "info": "Add a denomination block per $ amount with its variant ID below." },
+    { "type": "text", "id": "view_label", "label": "Button label", "default": "View gift card" },
+    { "type": "text", "id": "currency_symbol", "label": "Currency symbol", "default": "$" },
+
+    { "type": "header", "content": "Card art" },
+    { "type": "image_picker", "id": "card_logo", "label": "Card logo" },
+    { "type": "text", "id": "card_wordmark", "label": "Card wordmark", "default": "WELLER CO." },
+    { "type": "text", "id": "card_footer", "label": "Card footer", "default": "Digital gift card" },
+
+    { "type": "header", "content": "Picker copy" },
+    { "type": "text", "id": "card_name", "label": "Title", "default": "Weller Co. Gift Card" },
+    { "type": "textarea", "id": "card_blurb", "label": "Blurb", "default": "Let her pick her own flavor. Choose an amount, add a note at checkout, and it lands in her inbox instantly." },
+
+    { "type": "header", "content": "“Why a gift card?” panel" },
+    { "type": "text", "id": "why_title", "label": "Title", "default": "Why a gift card?" },
+    { "type": "textarea", "id": "why_text", "label": "Text", "default": "Flavor is personal. A gift card lets her find her favorite — whether that's a zingy Lime Margarita or a creamy Strawberry Coconut — on you." }
+  ],
+  "blocks": [
+    {
+      "type": "denom",
+      "name": "Denomination",
+      "settings": [
+        { "type": "number", "id": "amount", "label": "Amount", "default": 50 },
+        { "type": "text", "id": "variant_id", "label": "Variant ID", "info": "The gift-card product variant for this amount (from ?variant=…)." },
+        { "type": "checkbox", "id": "is_default", "label": "Selected by default", "default": false }
+      ]
+    },
+    {
+      "type": "perk",
+      "name": "Perk",
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "default": "send",
+          "options": [
+            { "value": "send", "label": "Send / delivery" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "heart", "label": "Heart" }
+          ] },
+        { "type": "text", "id": "title", "label": "Title", "default": "Instant delivery" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Emailed the moment you check out." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop · Gift Card",
+      "blocks": [
+        { "type": "denom", "settings": { "amount": 25 } },
+        { "type": "denom", "settings": { "amount": 50, "is_default": true } },
+        { "type": "denom", "settings": { "amount": 100 } },
+        { "type": "denom", "settings": { "amount": 150 } },
+        { "type": "perk", "settings": { "icon": "send", "title": "Instant delivery", "text": "Emailed the moment you check out." } },
+        { "type": "perk", "settings": { "icon": "clock", "title": "Never expires", "text": "No deadlines, no fine print." } },
+        { "type": "perk", "settings": { "icon": "gift", "title": "Redeemable on everything", "text": "Mixes, tumblers, the whole shop." } }
+      ]
+    }
+  ]
+}
+{% endschema %}
