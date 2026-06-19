@@ -20,6 +20,25 @@
 {%- assign theme = section.settings.theme -%}
 {%- assign orient = section.settings.orientation -%}
 
+{%- comment -%} Resolve Subscribe & Save pricing from first selling plan {%- endcomment -%}
+{%- assign sub_price = blank -%}
+{%- assign sub_save_pct = 0 -%}
+{%- if p != blank and p.selling_plan_groups.size > 0 -%}
+  {%- assign sp_first = p.selling_plan_groups.first.selling_plans.first -%}
+  {%- if sp_first != blank -%}
+    {%- assign sp_adj = sp_first.price_adjustments.first -%}
+    {%- if sp_adj != blank -%}
+      {%- if sp_adj.value_type == 'percentage' -%}
+        {%- assign sub_save_pct = sp_adj.value -%}
+        {%- assign sp_remaining = 100 | minus: sub_save_pct -%}
+        {%- assign sub_price = p.price | times: sp_remaining | divided_by: 100 -%}
+      {%- elsif sp_adj.value_type == 'fixed_amount' -%}
+        {%- assign sub_price = p.price | minus: sp_adj.value -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endif -%}
+
 {%- assign disp_name = section.settings.product_name -%}
 {%- if disp_name == blank and p != blank -%}{%- assign disp_name = p.title -%}{%- endif -%}
 {%- capture apos_span -%}<span class="sdm-apos">’</span>{%- endcapture -%}
@@ -117,11 +136,19 @@
           {%- endif -%}
           <span class="sdm-price-row">
             {%- if p != blank -%}
-              <span class="sdm-now">{{ p.price | money }}</span>
-              {%- if p.compare_at_price > p.price -%}
-                <span class="sdm-was">{{ p.compare_at_price | money }}</span>
-                {%- assign pct = p.compare_at_price | minus: p.price | times: 100 | divided_by: p.compare_at_price -%}
-                <span class="sdm-save">−{{ pct }}%</span>
+              {%- if sub_price != blank -%}
+                <span class="sdm-now">{{ sub_price | money }}</span>
+                <span class="sdm-was">{{ p.price | money }}</span>
+                {%- if sub_save_pct > 0 -%}
+                  <span class="sdm-save">−{{ sub_save_pct }}%</span>
+                {%- endif -%}
+              {%- else -%}
+                <span class="sdm-now">{{ p.price | money }}</span>
+                {%- if p.compare_at_price > p.price -%}
+                  <span class="sdm-was">{{ p.compare_at_price | money }}</span>
+                  {%- assign pct = p.compare_at_price | minus: p.price | times: 100 | divided_by: p.compare_at_price -%}
+                  <span class="sdm-save">−{{ pct }}%</span>
+                {%- endif -%}
               {%- endif -%}
             {%- else -%}
               <span class="sdm-now">{{ sym }}0.00</span>
