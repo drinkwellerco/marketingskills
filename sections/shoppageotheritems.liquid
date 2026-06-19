@@ -44,14 +44,16 @@
       {%- if nm == blank and bp != blank -%}{%- assign nm = bp.title -%}{%- endif -%}
       {%- assign url = '#' -%}
       {%- if bp != blank -%}{%- assign url = bp.url -%}{%- endif -%}
-      <article class="soi-card{% if block.settings.highlight %} soi-card--hl{% endif %}" style="--accent:{{ block.settings.color }}" {{ block.shopify_attributes }}>
+      <article class="soi-card{% if block.settings.highlight %} soi-card--hl{% endif %}" style="--accent:{{ block.settings.color }};--img-sz:{{ block.settings.image_size | default: 54 }}%;--img-va:{{ block.settings.image_valign | default: 'center' }}" {{ block.shopify_attributes }}>
         <div class="soi-visual">
           <span class="soi-vblob soi-vblob1"></span>
           <span class="soi-vblob soi-vblob2"></span>
           {%- if block.settings.flag != blank -%}
             <span class="soi-flag{% if block.settings.highlight %} soi-flag--hl{% endif %}">{{ block.settings.flag }}</span>
           {%- endif -%}
-          {%- if block.settings.use_image and bp != blank and bp.featured_image != blank -%}
+          {%- if block.settings.custom_image != blank -%}
+            <img class="soi-ware-img" src="{{ block.settings.custom_image | image_url: width: 600 }}" alt="{{ nm | escape }}" width="600" height="600" loading="lazy">
+          {%- elsif block.settings.use_image and bp != blank and bp.featured_image != blank -%}
             <img class="soi-ware-img" src="{{ bp.featured_image | image_url: width: 400 }}" alt="{{ nm | escape }}" width="400" height="400" loading="lazy">
           {%- else -%}
             <span class="soi-ware{% if block.settings.icon == 'bundle' %} soi-ware--duo{% endif %}">
@@ -125,7 +127,7 @@
   #soi-{{ section.id }} .soi-ware--duo .soi-duo{ display:flex; align-items:center; }
   #soi-{{ section.id }} .soi-ware--duo .soi-duo svg{ width:70px; height:70px; }
   #soi-{{ section.id }} .soi-ware--duo .soi-duo svg:last-child{ margin-left:-18px; }
-  #soi-{{ section.id }} .soi-ware-img{ position:relative; z-index:2; width:54%; max-width:150px; height:auto; filter:drop-shadow(0 10px 20px rgba(27,58,92,.16)); }
+  #soi-{{ section.id }} .soi-ware-img{ position:relative; z-index:2; width:var(--img-sz,54%); max-width:none; height:auto; align-self:var(--img-va,center); object-fit:contain; filter:drop-shadow(0 10px 20px rgba(27,58,92,.16)); }
   #soi-{{ section.id }} .soi-flag{ position:absolute; top:16px; left:16px; z-index:3; padding:5px 12px; border-radius:999px; background:rgba(255,255,255,.9); color:var(--navy); font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; box-shadow:0 1px 4px rgba(27,58,92,.06); }
   #soi-{{ section.id }} .soi-flag--hl{ background:var(--rose); color:#fff; box-shadow:0 6px 24px rgba(232,96,122,.28); }
 
@@ -181,7 +183,17 @@
             { "value": "gift", "label": "Gift" }
           ] },
         { "type": "color", "id": "color", "label": "Accent color", "default": "#4A90B8" },
-        { "type": "checkbox", "id": "highlight", "label": "Highlight this card", "default": false }
+        { "type": "checkbox", "id": "highlight", "label": "Highlight this card", "default": false },
+        { "type": "header", "content": "Custom image" },
+        { "type": "image_picker", "id": "custom_image", "label": "Custom image", "info": "Overrides the product image and icon when set." },
+        { "type": "range", "id": "image_size", "label": "Image size", "min": 20, "max": 100, "step": 5, "default": 54, "unit": "%" },
+        { "type": "select", "id": "image_valign", "label": "Vertical position", "default": "center",
+          "options": [
+            { "value": "flex-start", "label": "Top" },
+            { "value": "center", "label": "Center" },
+            { "value": "flex-end", "label": "Bottom" }
+          ]
+        }
       ]
     }
   ],
