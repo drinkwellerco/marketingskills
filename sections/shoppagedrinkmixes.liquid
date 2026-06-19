@@ -137,17 +137,13 @@
           <span class="sdm-price-row">
             {%- if p != blank -%}
               {%- if sub_price != blank -%}
-                <span class="sdm-now">{{ sub_price | money }}</span>
                 <span class="sdm-was">{{ p.price | money }}</span>
-                {%- if sub_save_pct > 0 -%}
-                  <span class="sdm-save">−{{ sub_save_pct }}%</span>
-                {%- endif -%}
+                <span class="sdm-now">{{ sub_price | money }}</span>
+                <span class="sdm-free-ship">+ Free Shipping Always</span>
               {%- else -%}
                 <span class="sdm-now">{{ p.price | money }}</span>
                 {%- if p.compare_at_price > p.price -%}
                   <span class="sdm-was">{{ p.compare_at_price | money }}</span>
-                  {%- assign pct = p.compare_at_price | minus: p.price | times: 100 | divided_by: p.compare_at_price -%}
-                  <span class="sdm-save">−{{ pct }}%</span>
                 {%- endif -%}
               {%- endif -%}
             {%- else -%}
@@ -295,12 +291,12 @@
   #sdm-{{ section.id }} .sdm-swatch.sdm-active .sdm-swatch-name{ color:var(--swname-on); }
 
   #sdm-{{ section.id }} .sdm-buy{ margin-top:auto; padding-top:22px; display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
-  #sdm-{{ section.id }} .sdm-price{ display:flex; flex-direction:column; }
-  #sdm-{{ section.id }} .sdm-from{ font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--txt-muted); }
-  #sdm-{{ section.id }} .sdm-price-row{ display:inline-flex; align-items:baseline; gap:8px; }
+  #sdm-{{ section.id }} .sdm-price{ display:flex; flex-direction:column; align-items:center; }
+  #sdm-{{ section.id }} .sdm-from{ font-size:16px; font-weight:700; letter-spacing:.04em; color:var(--txt); text-align:center; width:100%; margin-bottom:4px; }
+  #sdm-{{ section.id }} .sdm-price-row{ display:inline-flex; align-items:baseline; gap:8px; flex-wrap:wrap; justify-content:center; }
   #sdm-{{ section.id }} .sdm-now{ font-family:var(--serif); font-weight:800; font-size:var(--sz-price); color:var(--txt); letter-spacing:-.01em; }
-  #sdm-{{ section.id }} .sdm-was{ font-size:15px; color:var(--txt-muted); text-decoration:line-through; }
-  #sdm-{{ section.id }} .sdm-save{ font-size:11px; font-weight:700; color:var(--rose); letter-spacing:.04em; }
+  #sdm-{{ section.id }} .sdm-was{ font-family:var(--serif); font-weight:800; font-size:var(--sz-price); color:var(--txt-muted); text-decoration:line-through; }
+  #sdm-{{ section.id }} .sdm-free-ship{ font-size:12px; font-weight:600; color:var(--rose); letter-spacing:.02em; white-space:nowrap; }
 
   #sdm-{{ section.id }} .sdm-btn{
     display:inline-flex; align-items:center; gap:8px; border:none; border-radius:999px; cursor:pointer;
