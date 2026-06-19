@@ -46,21 +46,24 @@
         {%- comment -%} ===== free shipping progress ===== {%- endcomment -%}
         {%- if section.settings.show_free_ship -%}
           <div class="cd-ship">
-            <div class="cd-ship-txt">
-              {%- if remaining > 0 -%}
+            {%- if has_sub -%}
+              <div class="cd-ship-txt sub-ship">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                <span class="won">✓ Free shipping always with Subscribe &amp; Save</span>
+              </div>
+              <div class="cd-ship-bar"><div class="cd-ship-fill full" style="width:100%"></div></div>
+            {%- elsif remaining > 0 -%}
+              <div class="cd-ship-txt">
                 You're <b>{{ remaining | money }}</b> away from free shipping.
-              {%- else -%}
-                <span class="won">✓ You've unlocked free shipping!</span>
-              {%- endif -%}
-            </div>
-            <div class="cd-ship-bar">
-              {%- if remaining > 0 -%}
+              </div>
+              <div class="cd-ship-bar">
                 {%- assign pct = cart.total_price | times: 100 | divided_by: threshold_cents -%}
                 <div class="cd-ship-fill" style="width:{{ pct | at_most: 100 }}%"></div>
-              {%- else -%}
-                <div class="cd-ship-fill full" style="width:100%"></div>
-              {%- endif -%}
-            </div>
+              </div>
+            {%- else -%}
+              <div class="cd-ship-txt"><span class="won">✓ You've unlocked free shipping!</span></div>
+              <div class="cd-ship-bar"><div class="cd-ship-fill full" style="width:100%"></div></div>
+            {%- endif -%}
           </div>
         {%- endif -%}
 
@@ -171,7 +174,9 @@
             {%- endfor -%}
             <div class="cd-trow">
               <span class="lbl">Shipping</span>
-              {%- if remaining > 0 -%}
+              {%- if has_sub -%}
+                <span class="val free">FREE</span>
+              {%- elsif remaining > 0 -%}
                 <span class="val">Calculated at checkout</span>
               {%- else -%}
                 <span class="val free">FREE</span>
@@ -180,6 +185,21 @@
           </div>
 
           {%- if section.settings.show_discount -%}
+            {%- comment -%} Active codes from Shopify session (applied via /discount/<code>) {%- endcomment -%}
+            {%- if cart.cart_level_discount_applications.size > 0 -%}
+              <div class="cd-active-codes">
+                <div class="cd-active-codes-label">Active discount codes</div>
+                {%- for disc in cart.cart_level_discount_applications -%}
+                  <div class="cd-active-code" data-cd-active-code="{{ disc.title }}">
+                    <span class="cd-active-code-badge">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                      {{ disc.title }}
+                    </span>
+                    <button type="button" class="cd-clear-code" data-cd-clear-code="{{ disc.title }}" aria-label="Remove {{ disc.title }}">✕ Remove</button>
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
             <form class="cd-promo" data-cd-promo>
               <input type="text" name="discount" placeholder="Discount code" aria-label="Discount code" autocomplete="off">
               <button type="submit">Apply</button>
@@ -190,7 +210,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                 <span data-cd-promo-code-label></span>
               </span>
-              <button type="button" data-cd-promo-remove aria-label="Remove code">✕</button>
+              <button type="button" data-cd-promo-remove aria-label="Remove code">✕ Remove</button>
             </div>
           {%- endif -%}
 
@@ -277,6 +297,8 @@
   #cd-{{ section.id }} .cd-ship-txt{ font-size:12.5px; color:var(--cd-navy); margin-bottom:9px; line-height:1.4; }
   #cd-{{ section.id }} .cd-ship-txt b{ color:var(--cd-rose); }
   #cd-{{ section.id }} .cd-ship-txt .won{ color:var(--cd-sage); font-weight:700; }
+  #cd-{{ section.id }} .cd-ship-txt.sub-ship{ display:flex; align-items:center; gap:7px; }
+  #cd-{{ section.id }} .cd-ship-txt.sub-ship svg{ width:14px; height:14px; color:var(--cd-sage); flex-shrink:0; }
   #cd-{{ section.id }} .cd-ship-bar{ height:7px; border-radius:999px; background:var(--cd-mist); overflow:hidden; }
   #cd-{{ section.id }} .cd-ship-fill{ height:100%; border-radius:999px; background:linear-gradient(90deg,var(--cd-rose),var(--cd-peach)); transition:width .5s cubic-bezier(.4,0,.2,1); }
   #cd-{{ section.id }} .cd-ship-fill.full{ background:linear-gradient(90deg,var(--cd-sage),var(--cd-lime)); }
@@ -350,6 +372,13 @@
   #cd-{{ section.id }} .cd-promo input:focus{ outline:none; border-color:var(--cd-rose); }
   #cd-{{ section.id }} .cd-promo button{ flex-shrink:0; height:44px; padding:0 18px; border-radius:11px; border:1.5px solid var(--cd-mist); background:var(--cd-fog); color:var(--cd-navy); font-family:var(--cd-sans); font-weight:700; font-size:12px; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; transition:background .15s, border-color .15s, color .15s; }
   #cd-{{ section.id }} .cd-promo button:hover{ border-color:var(--cd-rose); color:var(--cd-rose); }
+  #cd-{{ section.id }} .cd-active-codes{ margin-bottom:10px; display:flex; flex-direction:column; gap:6px; }
+  #cd-{{ section.id }} .cd-active-codes-label{ font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--cd-stone); margin-bottom:2px; }
+  #cd-{{ section.id }} .cd-active-code{ display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:rgba(125,182,66,.10); border:1px solid rgba(125,182,66,.30); border-radius:10px; }
+  #cd-{{ section.id }} .cd-active-code-badge{ display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; color:#4e7d1f; }
+  #cd-{{ section.id }} .cd-active-code-badge svg{ width:14px; height:14px; flex-shrink:0; }
+  #cd-{{ section.id }} .cd-clear-code{ background:none; border:1px solid rgba(232,96,122,.3); border-radius:6px; cursor:pointer; font-size:11px; font-weight:600; color:var(--cd-rose); padding:3px 8px; transition:background .15s, color .15s; }
+  #cd-{{ section.id }} .cd-clear-code:hover{ background:var(--cd-rose); color:#fff; }
   #cd-{{ section.id }} .cd-promo-msg{ font-size:12px; line-height:1.4; margin-bottom:4px; min-height:0; }
   #cd-{{ section.id }} .cd-promo-msg.ok{ color:var(--cd-sage); font-weight:600; }
   #cd-{{ section.id }} .cd-promo-msg.err{ color:var(--cd-rose); font-weight:600; }
@@ -527,6 +556,27 @@
 
     var removeCode = e.target.closest('[data-cd-promo-remove]');
     if(removeCode){ clearAppliedBadge(); return; }
+
+    var clearCode = e.target.closest('[data-cd-clear-code]');
+    if(clearCode){
+      var code = clearCode.getAttribute('data-cd-clear-code');
+      overlay.classList.add('is-busy');
+      fetch('/discount/' + encodeURIComponent(''), { method:'GET', redirect:'manual' })
+        .finally(function(){
+          return fetch('/cart/update.js', {
+            method:'POST',
+            headers:{'Content-Type':'application/json','Accept':'application/json'},
+            body: JSON.stringify({ discount: '' })
+          });
+        })
+        .then(function(){ return refresh(); })
+        .then(function(){ overlay.classList.remove('is-busy'); })
+        .catch(function(){ overlay.classList.remove('is-busy'); });
+      if(savedDiscount && savedDiscount.toUpperCase() === code.toUpperCase()){
+        clearAppliedBadge();
+      }
+      return;
+    }
   });
 
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && overlay.classList.contains('open')) close(); });
