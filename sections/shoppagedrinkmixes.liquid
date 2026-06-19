@@ -76,7 +76,7 @@
     </div>
 
     <div class="sdm-body">
-      {%- if section.settings.flag_text != blank -%}
+      {%- if section.settings.show_flag and section.settings.flag_text != blank -%}
         <span class="sdm-flag">{{ section.settings.flag_text }}</span>
       {%- endif -%}
       {%- if section.settings.wordmark != blank -%}
@@ -189,12 +189,38 @@
     --flag-txt:{{ section.settings.color_flag_txt | default: '#FAF5F0' }};
 
     /* Size tokens */
+    --sz-wordmark:{{ section.settings.size_wordmark | default: 13 }}px;
     --sz-name-d:{{ section.settings.size_name | default: 38 }}px;
     --sz-name-m:{{ section.settings.size_name_mobile | default: 30 }}px;
     --sz-tagline:{{ section.settings.size_tagline | default: 17 }}px;
     --sz-desc:{{ section.settings.size_desc | default: 14 }}px;
-    --sz-price:{{ section.settings.size_price | default: 26 }}px;
+    --sz-pill:{{ section.settings.size_pill | default: 10 }}px;
+    --sz-flavor-lab:{{ section.settings.size_flavor_lab | default: 11 }}px;
+    --sz-flavor-chosen:{{ section.settings.size_flavor_chosen | default: 22 }}px;
+    --sz-swatch-name:{{ section.settings.size_swatch_name | default: 10 }}px;
+    --sz-sub-save:{{ section.settings.size_sub_save | default: 16 }}px;
+    --sz-price-was:{{ section.settings.size_price_was | default: 26 }}px;
+    --sz-price-now:{{ section.settings.size_price_now | default: 26 }}px;
+    --sz-free-ship:{{ section.settings.size_free_ship | default: 12 }}px;
     --sz-btn:{{ section.settings.size_btn | default: 13 }}px;
+
+    /* Spacing tokens */
+    --mt-wordmark:{{ section.settings.pad_top_wordmark | default: 0 }}px;
+    --mb-wordmark:{{ section.settings.pad_bot_wordmark | default: 6 }}px;
+    --mt-name:{{ section.settings.pad_top_name | default: 0 }}px;
+    --mb-name:{{ section.settings.pad_bot_name | default: 0 }}px;
+    --mt-tagline:{{ section.settings.pad_top_tagline | default: 7 }}px;
+    --mb-tagline:{{ section.settings.pad_bot_tagline | default: 4 }}px;
+    --mt-desc:{{ section.settings.pad_top_desc | default: 12 }}px;
+    --mb-desc:{{ section.settings.pad_bot_desc | default: 0 }}px;
+    --mt-pills:{{ section.settings.pad_top_pills | default: 18 }}px;
+    --mb-pills:{{ section.settings.pad_bot_pills | default: 0 }}px;
+    --mt-flavor:{{ section.settings.pad_top_flavor | default: 20 }}px;
+    --mb-flavor-lab:{{ section.settings.pad_bot_flavor_lab | default: 16 }}px;
+    --mt-buy:{{ section.settings.pad_top_buy | default: 22 }}px;
+    --mb-sub-save:{{ section.settings.pad_bot_sub_save | default: 4 }}px;
+
+    /* Layout tokens */
     --img-col:{{ section.settings.img_col_pct | default: 45 }}%;
     --hero-w:{{ section.settings.hero_size | default: 70 }}%;
     --hero-max:{{ section.settings.hero_max_w | default: 250 }}px;
@@ -255,18 +281,18 @@
   }
 
   #sdm-{{ section.id }} .sdm-body{ padding:32px var(--body-pad) 30px; display:flex; flex-direction:column; }
-  #sdm-{{ section.id }} .sdm-wordmark{ font-family:var(--display); font-weight:400; font-size:13px; letter-spacing:.24em; text-transform:uppercase; color:var(--wordmark); margin-bottom:6px; }
-  #sdm-{{ section.id }} .sdm-name{ font-family:var(--serif); font-weight:900; font-size:clamp(var(--sz-name-m),3vw,var(--sz-name-d)); line-height:1; letter-spacing:-.02em; color:var(--txt); margin:0; }
+  #sdm-{{ section.id }} .sdm-wordmark{ font-family:var(--display); font-weight:400; font-size:var(--sz-wordmark); letter-spacing:.24em; text-transform:uppercase; color:var(--wordmark); margin-top:var(--mt-wordmark); margin-bottom:var(--mb-wordmark); }
+  #sdm-{{ section.id }} .sdm-name{ font-family:var(--serif); font-weight:900; font-size:clamp(var(--sz-name-m),3vw,var(--sz-name-d)); line-height:1; letter-spacing:-.02em; color:var(--txt); margin-top:var(--mt-name); margin-bottom:var(--mb-name); }
   #sdm-{{ section.id }}.sdm--dark .sdm-name{ color:var(--txt) !important; }
   #sdm-{{ section.id }} .sdm-apos{ color:var(--rose); }
   #sdm-{{ section.id }}.sdm--dark .sdm-apos{ color:var(--rose) !important; }
-  #sdm-{{ section.id }} .sdm-tag{ font-family:var(--display); font-weight:400; font-size:var(--sz-tagline); letter-spacing:.02em; color:var(--txt); margin:7px 0 4px; }
-  #sdm-{{ section.id }} .sdm-desc{ font-size:var(--sz-desc); line-height:1.6; color:var(--txt-muted); margin:12px 0 0; max-width:440px; }
+  #sdm-{{ section.id }} .sdm-tag{ font-family:var(--display); font-weight:400; font-size:var(--sz-tagline); letter-spacing:.02em; color:var(--txt); margin-top:var(--mt-tagline); margin-bottom:var(--mb-tagline); }
+  #sdm-{{ section.id }} .sdm-desc{ font-size:var(--sz-desc); line-height:1.6; color:var(--txt-muted); margin-top:var(--mt-desc); margin-bottom:var(--mb-desc); max-width:440px; }
 
-  #sdm-{{ section.id }} .sdm-pills{ display:flex; gap:7px; flex-wrap:wrap; margin:18px 0 0; }
+  #sdm-{{ section.id }} .sdm-pills{ display:flex; gap:7px; flex-wrap:wrap; margin-top:var(--mt-pills); margin-bottom:var(--mb-pills); }
   #sdm-{{ section.id }} .sdm-pill{
     display:inline-flex; align-items:center; padding:6px 14px; border-radius:999px;
-    font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+    font-size:var(--sz-pill); font-weight:600; letter-spacing:.12em; text-transform:uppercase;
     background:color-mix(in srgb, var(--pill) 16%, transparent);
     color:color-mix(in srgb, var(--pill) 70%, var(--navy));
   }
@@ -275,10 +301,10 @@
     color:color-mix(in srgb, var(--pill) 55%, #ffffff);
   }
 
-  #sdm-{{ section.id }} .sdm-flavor-pick{ margin-top:20px; }
-  #sdm-{{ section.id }} .sdm-flavor-label{ display:flex; align-items:baseline; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
-  #sdm-{{ section.id }} .sdm-lab{ font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--txt); }
-  #sdm-{{ section.id }} .sdm-chosen{ font-family:var(--script); font-weight:700; font-size:22px; line-height:1; color:var(--rose); white-space:nowrap; }
+  #sdm-{{ section.id }} .sdm-flavor-pick{ margin-top:var(--mt-flavor); }
+  #sdm-{{ section.id }} .sdm-flavor-label{ display:flex; align-items:baseline; gap:8px; margin-bottom:var(--mb-flavor-lab); flex-wrap:wrap; }
+  #sdm-{{ section.id }} .sdm-lab{ font-size:var(--sz-flavor-lab); font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--txt); }
+  #sdm-{{ section.id }} .sdm-chosen{ font-family:var(--script); font-weight:700; font-size:var(--sz-flavor-chosen); line-height:1; color:var(--rose); white-space:nowrap; }
   #sdm-{{ section.id }} .sdm-swatch-row{ display:flex; gap:12px; flex-wrap:wrap; }
   #sdm-{{ section.id }} .sdm-swatch{ position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; background:none; border:none; padding:0; cursor:pointer; width:calc(var(--sw-size) + 8px); font-family:var(--sans); }
   #sdm-{{ section.id }} .sdm-disc{ position:relative; width:var(--sw-size); height:var(--sw-size); border-radius:50%; background:var(--disc-bg); display:flex; align-items:center; justify-content:center; overflow:hidden; transition:transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s; outline:2.5px solid transparent; outline-offset:2px; }
@@ -287,16 +313,16 @@
   #sdm-{{ section.id }} .sdm-swatch:hover .sdm-disc{ transform:translateY(-3px) scale(1.05); box-shadow:0 2px 12px rgba(27,58,92,.12); }
   #sdm-{{ section.id }} .sdm-swatch.sdm-active .sdm-disc{ outline-color:var(--sc,var(--rose)); box-shadow:0 2px 12px rgba(27,58,92,.12); }
   #sdm-{{ section.id }} .sdm-swatch.sdm-active .sdm-sblob{ opacity:.4; }
-  #sdm-{{ section.id }} .sdm-swatch-name{ font-size:9.5px; font-weight:600; line-height:1.2; color:var(--swname); text-align:center; }
+  #sdm-{{ section.id }} .sdm-swatch-name{ font-size:var(--sz-swatch-name); font-weight:600; line-height:1.2; color:var(--swname); text-align:center; }
   #sdm-{{ section.id }} .sdm-swatch.sdm-active .sdm-swatch-name{ color:var(--swname-on); }
 
-  #sdm-{{ section.id }} .sdm-buy{ margin-top:auto; padding-top:22px; display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+  #sdm-{{ section.id }} .sdm-buy{ margin-top:auto; padding-top:var(--mt-buy); display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
   #sdm-{{ section.id }} .sdm-price{ display:flex; flex-direction:column; align-items:center; }
-  #sdm-{{ section.id }} .sdm-from{ font-size:16px; font-weight:700; letter-spacing:.04em; color:var(--txt); text-align:center; width:100%; margin-bottom:4px; }
+  #sdm-{{ section.id }} .sdm-from{ font-size:var(--sz-sub-save); font-weight:700; letter-spacing:.04em; color:var(--txt); text-align:center; width:100%; margin-bottom:var(--mb-sub-save); }
   #sdm-{{ section.id }} .sdm-price-row{ display:inline-flex; align-items:baseline; gap:8px; flex-wrap:wrap; justify-content:center; }
-  #sdm-{{ section.id }} .sdm-now{ font-family:var(--serif); font-weight:800; font-size:var(--sz-price); color:var(--txt); letter-spacing:-.01em; }
-  #sdm-{{ section.id }} .sdm-was{ font-family:var(--serif); font-weight:800; font-size:var(--sz-price); color:var(--txt-muted); text-decoration:line-through; }
-  #sdm-{{ section.id }} .sdm-free-ship{ font-size:12px; font-weight:600; color:var(--rose); letter-spacing:.02em; white-space:nowrap; }
+  #sdm-{{ section.id }} .sdm-now{ font-family:var(--serif); font-weight:800; font-size:var(--sz-price-now); color:var(--txt); letter-spacing:-.01em; }
+  #sdm-{{ section.id }} .sdm-was{ font-family:var(--serif); font-weight:800; font-size:var(--sz-price-was); color:var(--txt-muted); text-decoration:line-through; }
+  #sdm-{{ section.id }} .sdm-free-ship{ font-size:var(--sz-free-ship); font-weight:600; color:var(--rose); letter-spacing:.02em; white-space:nowrap; }
 
   #sdm-{{ section.id }} .sdm-btn{
     display:inline-flex; align-items:center; gap:8px; border:none; border-radius:999px; cursor:pointer;
@@ -369,7 +395,8 @@
     { "type": "text", "id": "flavor_heading", "label": "Flavor label", "default": "Flavor —" },
     { "type": "text", "id": "price_label", "label": "Price label", "default": "Subscribe & save" },
     { "type": "text", "id": "view_label", "label": "Button label", "default": "View product" },
-    { "type": "text", "id": "flag_text", "label": "Corner flag", "default": "Bestseller", "info": "Leave blank to hide." },
+    { "type": "text", "id": "flag_text", "label": "Corner flag text", "default": "Bestseller" },
+    { "type": "checkbox", "id": "show_flag", "label": "Show corner flag", "default": true },
 
     { "type": "header", "content": "Image" },
     { "type": "image_picker", "id": "hero_image", "label": "Hero image", "info": "Defaults to the product's featured image." },
@@ -395,13 +422,59 @@
     { "type": "color", "id": "color_flag_bg", "label": "Corner flag background", "default": "#1B3A5C" },
     { "type": "color", "id": "color_flag_txt", "label": "Corner flag text", "default": "#FAF5F0" },
 
-    { "type": "header", "content": "Typography" },
+    { "type": "header", "content": "Typography · Brand name" },
+    { "type": "range", "id": "size_wordmark", "label": "Brand name size", "min": 8, "max": 24, "step": 1, "default": 13, "unit": "px" },
+    { "type": "range", "id": "pad_top_wordmark", "label": "Padding above", "min": 0, "max": 60, "step": 2, "default": 0, "unit": "px" },
+    { "type": "range", "id": "pad_bot_wordmark", "label": "Padding below", "min": 0, "max": 60, "step": 2, "default": 6, "unit": "px" },
+
+    { "type": "header", "content": "Typography · Product name" },
     { "type": "range", "id": "size_name", "label": "Product name — desktop", "min": 24, "max": 60, "step": 1, "default": 38, "unit": "px" },
     { "type": "range", "id": "size_name_mobile", "label": "Product name — mobile", "min": 20, "max": 48, "step": 1, "default": 30, "unit": "px" },
-    { "type": "range", "id": "size_tagline", "label": "Tagline", "min": 12, "max": 28, "step": 1, "default": 17, "unit": "px" },
-    { "type": "range", "id": "size_desc", "label": "Description", "min": 11, "max": 20, "step": 1, "default": 14, "unit": "px" },
-    { "type": "range", "id": "size_price", "label": "Price", "min": 16, "max": 40, "step": 1, "default": 26, "unit": "px" },
-    { "type": "range", "id": "size_btn", "label": "Button text", "min": 10, "max": 18, "step": 1, "default": 13, "unit": "px" },
+    { "type": "range", "id": "pad_top_name", "label": "Padding above", "min": 0, "max": 60, "step": 2, "default": 0, "unit": "px" },
+    { "type": "range", "id": "pad_bot_name", "label": "Padding below", "min": 0, "max": 60, "step": 2, "default": 0, "unit": "px" },
+
+    { "type": "header", "content": "Typography · Product subtitle" },
+    { "type": "range", "id": "size_tagline", "label": "Subtitle size", "min": 10, "max": 32, "step": 1, "default": 17, "unit": "px" },
+    { "type": "range", "id": "pad_top_tagline", "label": "Padding above", "min": 0, "max": 60, "step": 2, "default": 7, "unit": "px" },
+    { "type": "range", "id": "pad_bot_tagline", "label": "Padding below", "min": 0, "max": 60, "step": 2, "default": 4, "unit": "px" },
+
+    { "type": "header", "content": "Typography · Description" },
+    { "type": "range", "id": "size_desc", "label": "Description size", "min": 10, "max": 22, "step": 1, "default": 14, "unit": "px" },
+    { "type": "range", "id": "pad_top_desc", "label": "Padding above", "min": 0, "max": 60, "step": 2, "default": 12, "unit": "px" },
+    { "type": "range", "id": "pad_bot_desc", "label": "Padding below", "min": 0, "max": 60, "step": 2, "default": 0, "unit": "px" },
+
+    { "type": "header", "content": "Typography · Benefit pills" },
+    { "type": "range", "id": "size_pill", "label": "Pill text size", "min": 8, "max": 16, "step": 1, "default": 10, "unit": "px" },
+    { "type": "range", "id": "pad_top_pills", "label": "Padding above", "min": 0, "max": 60, "step": 2, "default": 18, "unit": "px" },
+    { "type": "range", "id": "pad_bot_pills", "label": "Padding below", "min": 0, "max": 60, "step": 2, "default": 0, "unit": "px" },
+
+    { "type": "header", "content": "Typography · Flavor label" },
+    { "type": "range", "id": "size_flavor_lab", "label": "\"Flavor\" label size", "min": 8, "max": 20, "step": 1, "default": 11, "unit": "px" },
+    { "type": "range", "id": "pad_top_flavor", "label": "Padding above flavor section", "min": 0, "max": 60, "step": 2, "default": 20, "unit": "px" },
+    { "type": "range", "id": "pad_bot_flavor_lab", "label": "Padding below flavor label row", "min": 0, "max": 60, "step": 2, "default": 16, "unit": "px" },
+
+    { "type": "header", "content": "Typography · Selected flavor name" },
+    { "type": "range", "id": "size_flavor_chosen", "label": "Chosen flavor name size", "min": 12, "max": 40, "step": 1, "default": 22, "unit": "px" },
+
+    { "type": "header", "content": "Typography · Flavor name under icons" },
+    { "type": "range", "id": "size_swatch_name", "label": "Swatch label size", "min": 6, "max": 16, "step": 1, "default": 10, "unit": "px" },
+
+    { "type": "header", "content": "Typography · Subscribe & Save" },
+    { "type": "range", "id": "size_sub_save", "label": "\"Subscribe & Save\" size", "min": 10, "max": 28, "step": 1, "default": 16, "unit": "px" },
+    { "type": "range", "id": "pad_top_buy", "label": "Padding above price block", "min": 0, "max": 80, "step": 2, "default": 22, "unit": "px" },
+    { "type": "range", "id": "pad_bot_sub_save", "label": "Padding below Subscribe & Save", "min": 0, "max": 40, "step": 2, "default": 4, "unit": "px" },
+
+    { "type": "header", "content": "Typography · Original price" },
+    { "type": "range", "id": "size_price_was", "label": "Crossed-out price size", "min": 14, "max": 48, "step": 1, "default": 26, "unit": "px" },
+
+    { "type": "header", "content": "Typography · New price" },
+    { "type": "range", "id": "size_price_now", "label": "New price size", "min": 14, "max": 48, "step": 1, "default": 26, "unit": "px" },
+
+    { "type": "header", "content": "Typography · Free shipping" },
+    { "type": "range", "id": "size_free_ship", "label": "\"+Free Shipping Always\" size", "min": 8, "max": 20, "step": 1, "default": 12, "unit": "px" },
+
+    { "type": "header", "content": "Typography · Button" },
+    { "type": "range", "id": "size_btn", "label": "Button text size", "min": 10, "max": 18, "step": 1, "default": 13, "unit": "px" },
 
     { "type": "header", "content": "Image controls" },
     { "type": "range", "id": "hero_size", "label": "Image width", "min": 30, "max": 100, "step": 5, "default": 70, "unit": "%" },
