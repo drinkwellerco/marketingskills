@@ -629,8 +629,13 @@
             return r.json().then(function(d){ return {ok:r.ok, data:d}; });
           })
           .then(function(res){
-            if(res.ok){ setBtn('success'); }
-            else{ setBtn('error', res.data.description || res.data.message || 'Could not add to cart'); }
+            if(res.ok){
+              setBtn('success');
+              if(window.HerdrationCartDrawer){ window.HerdrationCartDrawer.open(); }
+              else{ document.dispatchEvent(new CustomEvent('cart-drawer:open')); }
+            } else{
+              setBtn('error', res.data.description || res.data.message || 'Could not add to cart');
+            }
           })
           .catch(function(){ setBtn('error', 'Network error — please try again'); });
       } else {

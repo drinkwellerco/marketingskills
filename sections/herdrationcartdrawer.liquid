@@ -537,6 +537,28 @@
   });
   document.addEventListener('cart-drawer:open', function(){ refresh().then(open); });
 
+  /* Listen for any theme or app that signals a successful cart add */
+  document.addEventListener('cart:add', function(){ refresh().then(open); });
+  document.addEventListener('cart:refresh', function(){ refresh(); });
+  document.addEventListener('cart-drawer:refresh', function(){ refresh(); });
+
+  /* Intercept native add-to-cart form submissions so the drawer opens */
+  document.addEventListener('submit', function(e){
+    var form = e.target;
+    if(!form || form.getAttribute('action') !== '/cart/add' && !form.dataset.productForm) return;
+    var hasFile = Array.from(form.elements).some(function(el){ return el.type === 'file'; });
+    if(hasFile) return;
+    e.preventDefault();
+    var data = new FormData(form);
+    fetch('/cart/add.js',{
+      method:'POST',
+      headers:{'Accept':'application/json'},
+      body: data
+    }).then(function(r){
+      if(r.ok){ refresh().then(open); }
+    });
+  });
+
   window.HerdrationCartDrawer = {
     open: function(){ return refresh().then(open); },
     close: close,
