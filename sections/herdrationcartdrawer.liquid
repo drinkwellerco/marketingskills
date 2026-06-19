@@ -8,15 +8,18 @@
 {%- assign remaining = threshold_cents | minus: cart.total_price -%}
 
 {%- comment -%} savings + subscription detection {%- endcomment -%}
-{%- assign savings = 0 -%}
+{%- assign line_savings = 0 -%}
 {%- assign has_sub = false -%}
 {%- for item in cart.items -%}
   {%- if item.original_price > item.final_price -%}
     {%- assign diff = item.original_price | minus: item.final_price | times: item.quantity -%}
-    {%- assign savings = savings | plus: diff -%}
+    {%- assign line_savings = line_savings | plus: diff -%}
   {%- endif -%}
   {%- if item.selling_plan_allocation -%}{%- assign has_sub = true -%}{%- endif -%}
 {%- endfor -%}
+{%- comment -%} cart.total_discount includes both line discounts AND applied discount codes {%- endcomment -%}
+{%- assign savings = cart.total_discount -%}
+{%- if savings == 0 -%}{%- assign savings = line_savings -%}{%- endif -%}
 
 <div
   id="cd-{{ section.id }}"
@@ -154,12 +157,18 @@
               <span class="lbl">Subtotal</span>
               <span class="val">{{ cart.original_total_price | money }}</span>
             </div>
-            {%- if savings > 0 -%}
+            {%- if line_savings > 0 -%}
               <div class="cd-trow save">
-                <span class="lbl">Discount</span>
-                <span class="val">−{{ savings | money }}</span>
+                <span class="lbl">Item discounts</span>
+                <span class="val">−{{ line_savings | money }}</span>
               </div>
             {%- endif -%}
+            {%- for discount in cart.cart_level_discount_applications -%}
+              <div class="cd-trow save">
+                <span class="lbl">{{ discount.title }}</span>
+                <span class="val">−{{ discount.total_allocated_amount | money }}</span>
+              </div>
+            {%- endfor -%}
             <div class="cd-trow">
               <span class="lbl">Shipping</span>
               {%- if remaining > 0 -%}
@@ -415,6 +424,7 @@
         var count = doc.querySelector('.cd-count');
         var curCount = overlay.querySelector('.cd-count');
         if(count && curCount){ curCount.textContent = count.textContent; }
+        if(savedDiscount){ showAppliedBadge(savedDiscount); }
       });
   }
 
@@ -485,6 +495,7 @@
           updateCheckoutHref();
           input.value = '';
           showAppliedBadge(code);
+          return refresh();
         } else {
           if(msg){ msg.textContent='Code not found. Check spelling and try again.'; msg.className='cd-promo-msg err'; }
         }
@@ -494,6 +505,7 @@
         updateCheckoutHref();
         input.value = '';
         showAppliedBadge(code);
+        return refresh();
       })
       .finally(function(){
         btn.textContent = 'Apply';
