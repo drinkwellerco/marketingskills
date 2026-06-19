@@ -74,12 +74,13 @@
                 <div class="cd-line-info">
                   <div class="cd-line-name">{{ item.product.title }}</div>
                   <div class="cd-line-tag">
+                    {%- if item.variant.title != 'Default Title' -%}
+                      <span class="cd-line-variant">{{ item.variant.title }}</span>
+                    {%- endif -%}
                     {%- if item.selling_plan_allocation -%}
-                      {{ item.selling_plan_allocation.selling_plan.name }}
-                    {%- elsif item.variant.title != 'Default Title' -%}
-                      {{ item.variant.title }}
-                    {%- else -%}
-                      One-time purchase
+                      <span class="cd-line-plan">{{ item.selling_plan_allocation.selling_plan.name }}</span>
+                    {%- elsif item.variant.title == 'Default Title' -%}
+                      <span class="cd-line-plan">One-time purchase</span>
                     {%- endif -%}
                   </div>
                   <div class="cd-line-controls">
@@ -279,7 +280,9 @@
   #cd-{{ section.id }} .cd-line-img img{ position:relative; z-index:1; width:78%; height:78%; object-fit:contain; filter:drop-shadow(0 4px 8px rgba(27,58,92,.18)); }
   #cd-{{ section.id }} .cd-line-info{ flex:1; min-width:0; }
   #cd-{{ section.id }} .cd-line-name{ font-family:var(--cd-serif); font-weight:700; font-size:var(--cd-name-size); color:var(--cd-navy); line-height:1.15; }
-  #cd-{{ section.id }} .cd-line-tag{ font-size:var(--cd-tag-size); color:var(--cd-stone); margin-top:3px; }
+  #cd-{{ section.id }} .cd-line-tag{ font-size:var(--cd-tag-size); color:var(--cd-stone); margin-top:3px; display:flex; flex-direction:column; gap:2px; }
+  #cd-{{ section.id }} .cd-line-variant{ font-weight:600; color:var(--cd-navy); }
+  #cd-{{ section.id }} .cd-line-plan{ color:var(--cd-stone); }
   #cd-{{ section.id }} .cd-line-controls{ display:flex; align-items:center; gap:12px; margin-top:10px; }
   #cd-{{ section.id }} .cd-stepper{ display:inline-flex; align-items:center; gap:2px; background:#fff; border:1px solid var(--cd-mist); border-radius:999px; padding:3px; }
   #cd-{{ section.id }} .cd-stepper button{ width:26px; height:26px; border-radius:50%; border:none; cursor:pointer; background:transparent; color:var(--cd-navy); font-size:16px; font-weight:700; line-height:1; display:inline-flex; align-items:center; justify-content:center; transition:background .15s, color .15s, transform .1s; }
