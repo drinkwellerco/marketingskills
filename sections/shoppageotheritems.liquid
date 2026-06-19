@@ -44,7 +44,7 @@
       {%- if nm == blank and bp != blank -%}{%- assign nm = bp.title -%}{%- endif -%}
       {%- assign url = '#' -%}
       {%- if bp != blank -%}{%- assign url = bp.url -%}{%- endif -%}
-      <article class="soi-card{% if block.settings.highlight %} soi-card--hl{% endif %}" style="--accent:{{ block.settings.color }};--img-sz:{{ block.settings.image_size | default: 54 }}%;--img-va:{{ block.settings.image_valign | default: 'center' }}" {{ block.shopify_attributes }}>
+      <article class="soi-card{% if block.settings.highlight %} soi-card--hl{% endif %}" style="--accent:{{ block.settings.color }};--img-sz:{{ block.settings.image_size | default: 55 }}%;--img-va:{{ block.settings.image_valign | default: 'center' }};--flag-bg:{{ block.settings.flag_bg | default: '#ffffff' }};--flag-txt:{{ block.settings.flag_txt | default: '#1B3A5C' }}" {{ block.shopify_attributes }}>
         <div class="soi-visual">
           <span class="soi-vblob soi-vblob1"></span>
           <span class="soi-vblob soi-vblob2"></span>
@@ -128,8 +128,8 @@
   #soi-{{ section.id }} .soi-ware--duo .soi-duo svg{ width:70px; height:70px; }
   #soi-{{ section.id }} .soi-ware--duo .soi-duo svg:last-child{ margin-left:-18px; }
   #soi-{{ section.id }} .soi-ware-img{ position:relative; z-index:2; width:var(--img-sz,54%); max-width:none; height:auto; align-self:var(--img-va,center); object-fit:contain; filter:drop-shadow(0 10px 20px rgba(27,58,92,.16)); }
-  #soi-{{ section.id }} .soi-flag{ position:absolute; top:16px; left:16px; z-index:3; padding:5px 12px; border-radius:999px; background:rgba(255,255,255,.9); color:var(--navy); font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; box-shadow:0 1px 4px rgba(27,58,92,.06); }
-  #soi-{{ section.id }} .soi-flag--hl{ background:var(--rose); color:#fff; box-shadow:0 6px 24px rgba(232,96,122,.28); }
+  #soi-{{ section.id }} .soi-flag{ position:absolute; top:16px; left:16px; z-index:3; padding:5px 12px; border-radius:999px; background:var(--flag-bg,rgba(255,255,255,.9)); color:var(--flag-txt,var(--navy)); font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; box-shadow:0 1px 4px rgba(27,58,92,.06); }
+  #soi-{{ section.id }} .soi-flag--hl{ background:var(--flag-bg,var(--rose)); color:var(--flag-txt,#fff); box-shadow:0 6px 24px rgba(232,96,122,.28); }
 
   #soi-{{ section.id }} .soi-body{ padding:24px 26px 26px; display:flex; flex-direction:column; flex:1; }
   #soi-{{ section.id }} .soi-name{ font-family:var(--serif); font-weight:800; font-size:21px; color:var(--navy); line-height:1.15; }
@@ -172,6 +172,8 @@
         { "type": "text", "id": "name_override", "label": "Name override", "info": "Leave blank to use the product title." },
         { "type": "textarea", "id": "blurb", "label": "Short blurb" },
         { "type": "text", "id": "flag", "label": "Corner flag", "info": "Leave blank to hide." },
+        { "type": "color", "id": "flag_bg", "label": "Flag background", "default": "#ffffff" },
+        { "type": "color", "id": "flag_txt", "label": "Flag text color", "default": "#1B3A5C" },
         { "type": "text", "id": "unit", "label": "Price unit suffix", "info": "e.g. “/ 10”. Optional." },
         { "type": "checkbox", "id": "use_image", "label": "Use product image instead of icon", "default": false },
         { "type": "select", "id": "icon", "label": "Icon", "default": "cup",
