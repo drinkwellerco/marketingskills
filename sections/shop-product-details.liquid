@@ -1298,6 +1298,7 @@
               </div>
             </div>
           </section>
+          {%- unless request.design_mode -%}
           <script>
           (function(){
             var root=document.getElementById('sb-{{ bid }}');
@@ -1337,6 +1338,7 @@
             });
           })();
           </script>
+          {%- endunless -%}
         {% break %}{% endif %}{% endfor %}
         </div>
         </div>
