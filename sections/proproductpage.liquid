@@ -1178,7 +1178,7 @@
                 {%- if hs.show_story -%}
                 <div class="sb-panel active" data-sb="story" role="tabpanel">
                   {%- if hs.story_eyebrow != blank -%}<span class="eyebrow">{{ hs.story_eyebrow }}</span>{%- endif -%}
-                  {%- if hs.story_h != blank -%}<h3>{{ hs.story_h }}</h3>{%- endif -%}
+                  {%- if hs.story_h != blank -%}<h3 style="color:{{ hs.story_h_color | default: '#1B3A5C' }} !important;">{{ hs.story_h }}</h3>{%- endif -%}
                   {%- if hs.story_lead != blank -%}<p class="sb-lead" style="margin-top:16px;">{{ hs.story_lead }}</p>{%- endif -%}
                   {%- if hs.story_body != blank -%}{{ hs.story_body }}{%- endif -%}
                   {%- assign sb_stats = section.blocks | where: 'type', 'sb_stat' -%}
@@ -1193,7 +1193,7 @@
                 {%- if hs.show_ingredients -%}
                 <div class="sb-panel{% unless hs.show_story %} active{% endunless %}" data-sb="ingredients" role="tabpanel">
                   {%- if hs.ing_eyebrow != blank -%}<span class="eyebrow">{{ hs.ing_eyebrow }}</span>{%- endif -%}
-                  {%- if hs.ing_h != blank -%}<h3>{{ hs.ing_h }}</h3>{%- endif -%}
+                  {%- if hs.ing_h != blank -%}<h3 style="color:{{ hs.ing_h_color | default: '#1B3A5C' }} !important;">{{ hs.ing_h }}</h3>{%- endif -%}
                   {%- if hs.ing_lead != blank -%}<p class="sb-lead" style="margin-top:16px;">{{ hs.ing_lead }}</p>{%- endif -%}
                   {%- assign hs_ings = section.blocks | where: 'type', 'sb_ingredient' -%}
                   {%- if hs_ings.size > 0 -%}
@@ -1213,7 +1213,7 @@
                 {%- if hs.show_expert -%}
                 <div class="sb-panel" data-sb="expert" role="tabpanel">
                   {%- if hs.exp_eyebrow != blank -%}<span class="eyebrow">{{ hs.exp_eyebrow }}</span>{%- endif -%}
-                  {%- if hs.exp_h != blank -%}<h3>{{ hs.exp_h }}</h3>{%- endif -%}
+                  {%- if hs.exp_h != blank -%}<h3 style="color:{{ hs.exp_h_color | default: '#1B3A5C' }} !important;">{{ hs.exp_h }}</h3>{%- endif -%}
                   <div class="sb-pro">
                     <span class="sb-pro-photo">{%- if hs.exp_image != blank -%}{{ hs.exp_image | image_url: width: 240 | image_tag: alt: hs.exp_name, class: 'photo' }}{%- endif -%}</span>
                     <div>
@@ -1233,7 +1233,7 @@
                 {%- if hs.show_founders -%}
                 <div class="sb-panel" data-sb="founders" role="tabpanel">
                   {%- if hs.fnd_eyebrow != blank -%}<span class="eyebrow">{{ hs.fnd_eyebrow }}</span>{%- endif -%}
-                  {%- if hs.fnd_h != blank -%}<h3>{{ hs.fnd_h }}</h3>{%- endif -%}
+                  {%- if hs.fnd_h != blank -%}<h3 style="color:{{ hs.fnd_h_color | default: '#1B3A5C' }} !important;">{{ hs.fnd_h }}</h3>{%- endif -%}
                   {%- if hs.fnd_lead != blank -%}<p class="sb-lead" style="margin-top:14px;">{{ hs.fnd_lead }}</p>{%- endif -%}
                   <div class="sb-found-top">
                     <div class="sb-video">
@@ -1264,7 +1264,7 @@
                 {%- if hs.show_watch -%}
                 <div class="sb-panel" data-sb="watch" role="tabpanel">
                   {%- if hs.watch_eyebrow != blank -%}<span class="eyebrow">{{ hs.watch_eyebrow }}</span>{%- endif -%}
-                  {%- if hs.watch_h != blank -%}<h3>{{ hs.watch_h }}</h3>{%- endif -%}
+                  {%- if hs.watch_h != blank -%}<h3 style="color:{{ hs.watch_h_color | default: '#1B3A5C' }} !important;">{{ hs.watch_h }}</h3>{%- endif -%}
                   {%- if hs.watch_lead != blank -%}<p class="sb-lead" style="margin-top:14px;">{{ hs.watch_lead }}</p>{%- endif -%}
                   {%- assign sb_resources = section.blocks | where: 'type', 'sb_resource' -%}
                   {%- if sb_resources.size > 0 -%}
@@ -23714,17 +23714,20 @@
         { "type": "header", "content": "Tab · Full Story" },
         { "type": "text", "id": "story_eyebrow", "label": "Eyebrow", "default": "Why we built it" },
         { "type": "text", "id": "story_h", "label": "Heading", "default": "Hydration built around her." },
+        { "type": "color", "id": "story_h_color", "label": "Heading color", "default": "#1B3A5C" },
         { "type": "textarea", "id": "story_lead", "label": "Lead paragraph" },
         { "type": "richtext", "id": "story_body", "label": "Body" },
         { "type": "text", "id": "story_quote", "label": "Pull quote" },
         { "type": "header", "content": "Tab · What's Inside" },
         { "type": "text", "id": "ing_eyebrow", "label": "Eyebrow", "default": "Inside the scoop" },
         { "type": "text", "id": "ing_h", "label": "Heading", "default": "Eight actives. Every one earns its place." },
+        { "type": "color", "id": "ing_h_color", "label": "Heading color", "default": "#1B3A5C" },
         { "type": "textarea", "id": "ing_lead", "label": "Lead paragraph" },
         { "type": "text", "id": "ing_footnote", "label": "Footnote" },
         { "type": "header", "content": "Tab · Expert Opinion" },
         { "type": "text", "id": "exp_eyebrow", "label": "Eyebrow", "default": "The expert take" },
         { "type": "text", "id": "exp_h", "label": "Heading", "default": "Vetted by the people who'd know." },
+        { "type": "color", "id": "exp_h_color", "label": "Heading color", "default": "#1B3A5C" },
         { "type": "image_picker", "id": "exp_image", "label": "Expert headshot" },
         { "type": "textarea", "id": "exp_quote", "label": "Expert quote" },
         { "type": "text", "id": "exp_name", "label": "Expert name" },
@@ -23732,6 +23735,7 @@
         { "type": "header", "content": "Tab · Meet the Founders" },
         { "type": "text", "id": "fnd_eyebrow", "label": "Eyebrow", "default": "Our story" },
         { "type": "text", "id": "fnd_h", "label": "Heading", "default": "A husband-and-wife team, one stubborn idea." },
+        { "type": "color", "id": "fnd_h_color", "label": "Heading color", "default": "#1B3A5C" },
         { "type": "textarea", "id": "fnd_lead", "label": "Lead paragraph" },
         { "type": "video", "id": "fnd_video", "label": "Founders video" },
         { "type": "image_picker", "id": "fnd_collage1", "label": "Collage photo 1" },
@@ -23739,6 +23743,7 @@
         { "type": "header", "content": "Tab · Watch & Read" },
         { "type": "text", "id": "watch_eyebrow", "label": "Eyebrow", "default": "Dig deeper" },
         { "type": "text", "id": "watch_h", "label": "Heading", "default": "The research & stories behind it." },
+        { "type": "color", "id": "watch_h_color", "label": "Heading color", "default": "#1B3A5C" },
         { "type": "textarea", "id": "watch_lead", "label": "Lead paragraph" }
       ]
     },
