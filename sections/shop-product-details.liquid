@@ -74,25 +74,28 @@
     {%- assign gw = section.settings.gallery_width | default: 55 -%}
     {%- assign iw = 100 | minus: gw | minus: 2 -%}
     .shop-carousel-container {
-        grid-area: gallery;
         max-width: 100% !important;
+        width: 100%;
     }
     .shop-product-info {
-        grid-area: info;
+        flex: 1 1 {{ iw }}%;
+        min-width: 0;
         max-width: 100% !important;
     }
     .shop-product-layout {
-        display: grid !important;
-        grid-template-columns: {{ gw }}% {{ iw }}%;
-        grid-template-areas: "gallery info" "story info";
-        column-gap: 2%;
-        align-items: start;
+        display: flex !important;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        gap: 0 2%;
+    }
+    .shop-left-col {
+        flex: 0 0 {{ gw }}%;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
     }
     .shop-left-extras {
-        grid-area: story;
         width: 100%;
-        min-width: 0;
-        align-self: start;
         margin-top: 20px;
     }
     .shop-brand-story {
@@ -102,16 +105,26 @@
     }
     @media (max-width: 767px) {
         .shop-product-layout {
-            grid-template-columns: 1fr !important;
-            grid-template-areas: "gallery" "info" "story" !important;
+            flex-wrap: wrap;
+        }
+        .shop-left-col {
+            display: contents;
         }
         .shop-carousel-container {
+            order: 1;
             max-width: 100% !important;
             width: 100% !important;
         }
         .shop-product-info {
+            order: 2;
+            flex: 0 0 100% !important;
             max-width: 100% !important;
             width: 100% !important;
+        }
+        .shop-left-extras {
+            order: 3;
+            width: 100% !important;
+            margin-top: 0;
         }
         .shop-product-info .simple-variant-picker__values {
             justify-content: center !important;
@@ -897,6 +910,7 @@
       <p>Select a product in the section settings</p>
     {% else %}
       <div class="shop-product-layout{% unless section.settings.show_product_gallery %} no-gallery{% endunless %}">
+        <div class="shop-left-col">
         {% if section.settings.show_product_gallery %}
           {% render 'product-gallery',
             product: current_product,
@@ -904,13 +918,6 @@
             current_variant: current_variant,
             enable_image_zoom: section.settings.enable_image_zoom
           %}
-        {% endif %}
-
-        <!-- Product Information Column -->
-        {% if section.settings.show_product_info %}
-          <div class="shop-product-info">
-            {% render 'product-info', product: current_product, section: section %}
-          </div>
         {% endif %}
 
         <!-- Left column extras: brand story + herdration story block -->
@@ -1332,6 +1339,13 @@
           </script>
         {% break %}{% endif %}{% endfor %}
         </div>
+        </div>
+        <!-- Product Information Column -->
+        {% if section.settings.show_product_info %}
+          <div class="shop-product-info">
+            {% render 'product-info', product: current_product, section: section %}
+          </div>
+        {% endif %}
       </div>
 
     {% endif %}
