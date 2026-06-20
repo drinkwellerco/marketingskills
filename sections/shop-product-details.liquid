@@ -1010,8 +1010,8 @@
             }
             #sb-{{ bid }} *{ box-sizing:border-box; }
             #sb-{{ bid }} .sb-head{ max-width:100%; margin:0 auto 16px; text-align:{{ hs.align | default: 'left' }}; }
-            #sb-{{ bid }} .sscript{ font-family:var(--script); font-weight:700; font-size:24px; color:{{ hs.sscript_color | default: '#E8607A' }}; }
-            #sb-{{ bid }} .sb-head h2{ font-family:var(--serif); font-weight:800; font-size:var(--sb-h); color:{{ hs.heading_color | default: '#1B3A5C' }}; margin:2px 0 0; letter-spacing:-.01em; line-height:1.15; }
+            #sb-{{ bid }} .sscript{ font-family:var(--script); font-weight:700; font-size:24px; color:{{ hs.sscript_color | default: '#E8607A' }} !important; }
+            #sb-{{ bid }} .sb-head h2{ font-family:var(--serif); font-weight:800; font-size:var(--sb-h); color:{{ hs.heading_color | default: '#1B3A5C' }} !important; margin:2px 0 0; letter-spacing:-.01em; line-height:1.15; }
             #sb-{{ bid }} .sb-card{ max-width:100%; margin:0 auto; background:#fff; border-radius:var(--sb-radius); overflow:hidden; box-shadow:var(--shadow-md); border:1px solid var(--mist); display:flex; flex-direction:column; }
             #sb-{{ bid }} .sb-rail{ background:var(--fog); border-bottom:1px solid var(--mist); padding:8px; display:flex; flex-wrap:wrap; gap:4px; }
             #sb-{{ bid }} .sb-tab{ display:flex; flex-direction:column; align-items:center; gap:5px; flex:1 1 0; min-width:0; padding:9px 4px; border:none; background:transparent; cursor:pointer; border-radius:13px; text-align:center; color:var(--navy); font-family:var(--sans); font-weight:600; font-size:var(--sb-tab); line-height:1.2; transition:background .18s,color .18s; }
@@ -1121,8 +1121,8 @@
           <section id="sb-{{ bid }}" class="sb-block {% if hs.style == 'dark' %}is-dark{% endif %}" data-screen-label="Get to know us" {{ block.shopify_attributes }}>
             {%- if hs.sscript != blank or hs.heading != blank -%}
               <div class="sb-head">
-                {%- if hs.sscript != blank -%}<div class="sscript" style="color:{{ hs.sscript_color | default: '#E8607A' }};">{{ hs.sscript }}</div>{%- endif -%}
-                {%- if hs.heading != blank -%}<h2 style="color:{{ hs.heading_color | default: '#1B3A5C' }};">{{ hs.heading }}</h2>{%- endif -%}
+                {%- if hs.sscript != blank -%}<div class="sscript" style="color:{{ hs.sscript_color | default: '#E8607A' }} !important;">{{ hs.sscript }}</div>{%- endif -%}
+                {%- if hs.heading != blank -%}<h2 style="color:{{ hs.heading_color | default: '#1B3A5C' }} !important;">{{ hs.heading }}</h2>{%- endif -%}
               </div>
             {%- endif -%}
             <div class="sb-card">
