@@ -994,6 +994,12 @@
         {% for block in section.blocks %}{% if block.type == 'herdration_story' %}
           {%- assign hs = block.settings -%}
           {%- assign bid = block.id -%}
+          {%- if request.design_mode -%}
+            <div {{ block.shopify_attributes }} style="background:{{ hs.bg_color | default: '#F0E8E0' }};padding:32px 24px;border-radius:{{ hs.card_radius | default: 24 }}px;text-align:center;margin-top:20px;">
+              <p style="font-weight:700;font-size:16px;color:#1B3A5C;margin:0 0 6px;">📖 Story Block (Tabbed)</p>
+              <p style="font-size:13px;color:#8A7E76;margin:0;">This block renders on the live storefront. Use the settings panel on the right to configure it.</p>
+            </div>
+          {%- else -%}
           <style>
             #sb-{{ bid }}{
               --cream:#FAF5F0; --cream-dk:#F0E8E0; --fog:#F5EEE8; --mist:#E8DDD5; --stone:#8A7E76;
@@ -1298,7 +1304,6 @@
               </div>
             </div>
           </section>
-          {%- unless request.design_mode -%}
           <script>
           (function(){
             var root=document.getElementById('sb-{{ bid }}');
@@ -1338,7 +1343,7 @@
             });
           })();
           </script>
-          {%- endunless -%}
+          {%- endif -%}
         {% break %}{% endif %}{% endfor %}
         </div>
         </div>
