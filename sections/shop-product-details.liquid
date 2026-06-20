@@ -1121,8 +1121,8 @@
           <section id="sb-{{ bid }}" class="sb-block {% if hs.style == 'dark' %}is-dark{% endif %}" data-screen-label="Get to know us" {{ block.shopify_attributes }}>
             {%- if hs.sscript != blank or hs.heading != blank -%}
               <div class="sb-head">
-                {%- if hs.sscript != blank -%}<div class="sscript">{{ hs.sscript }}</div>{%- endif -%}
-                {%- if hs.heading != blank -%}<h2>{{ hs.heading }}</h2>{%- endif -%}
+                {%- if hs.sscript != blank -%}<div class="sscript" style="color:{{ hs.sscript_color | default: '#E8607A' }};">{{ hs.sscript }}</div>{%- endif -%}
+                {%- if hs.heading != blank -%}<h2 style="color:{{ hs.heading_color | default: '#1B3A5C' }};">{{ hs.heading }}</h2>{%- endif -%}
               </div>
             {%- endif -%}
             <div class="sb-card">
