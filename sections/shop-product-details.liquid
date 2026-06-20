@@ -1010,14 +1010,13 @@
             }
             #sb-{{ bid }} *{ box-sizing:border-box; }
             #sb-{{ bid }} .sb-head{ max-width:100%; margin:0 auto 16px; text-align:{{ hs.align | default: 'left' }}; }
-            #sb-{{ bid }} .sscript{ font-family:var(--script); font-weight:700; font-size:24px; color:var(--rose); }
-            #sb-{{ bid }} .sb-head h2{ font-family:var(--serif); font-weight:800; font-size:var(--sb-h); color:var(--navy); margin:2px 0 0; letter-spacing:-.01em; line-height:1.15; }
+            #sb-{{ bid }} .sscript{ font-family:var(--script); font-weight:700; font-size:24px; color:{{ hs.sscript_color | default: '#E8607A' }}; }
+            #sb-{{ bid }} .sb-head h2{ font-family:var(--serif); font-weight:800; font-size:var(--sb-h); color:{{ hs.heading_color | default: '#1B3A5C' }}; margin:2px 0 0; letter-spacing:-.01em; line-height:1.15; }
             #sb-{{ bid }} .sb-card{ max-width:100%; margin:0 auto; background:#fff; border-radius:var(--sb-radius); overflow:hidden; box-shadow:var(--shadow-md); border:1px solid var(--mist); display:flex; flex-direction:column; }
-            #sb-{{ bid }} .sb-rail{ background:var(--fog); border-bottom:1px solid var(--mist); padding:12px; display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; }
-            #sb-{{ bid }} .sb-rail::-webkit-scrollbar{ display:none; }
-            #sb-{{ bid }} .sb-tab{ display:flex; flex-direction:column; align-items:center; gap:7px; flex:1 0 auto; min-width:90px; padding:11px 8px; border:none; background:transparent; cursor:pointer; border-radius:13px; text-align:center; color:var(--navy); font-family:var(--sans); font-weight:600; font-size:var(--sb-tab); line-height:1.25; transition:background .18s,color .18s; }
-            #sb-{{ bid }} .sb-tab .ic{ width:38px; height:38px; border-radius:11px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; background:#fff; border:1px solid var(--mist); color:var(--rose); transition:all .18s; }
-            #sb-{{ bid }} .sb-tab .ic svg{ width:18px; height:18px; }
+            #sb-{{ bid }} .sb-rail{ background:var(--fog); border-bottom:1px solid var(--mist); padding:8px; display:flex; flex-wrap:wrap; gap:4px; }
+            #sb-{{ bid }} .sb-tab{ display:flex; flex-direction:column; align-items:center; gap:5px; flex:1 1 0; min-width:0; padding:9px 4px; border:none; background:transparent; cursor:pointer; border-radius:13px; text-align:center; color:var(--navy); font-family:var(--sans); font-weight:600; font-size:var(--sb-tab); line-height:1.2; transition:background .18s,color .18s; }
+            #sb-{{ bid }} .sb-tab .ic{ width:32px; height:32px; border-radius:9px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; background:#fff; border:1px solid var(--mist); color:var(--rose); transition:all .18s; }
+            #sb-{{ bid }} .sb-tab .ic svg{ width:15px; height:15px; }
             #sb-{{ bid }} .sb-tab:hover{ background:rgba(232,96,122,.07); }
             #sb-{{ bid }} .sb-tab.active{ background:var(--navy); color:var(--cream); }
             #sb-{{ bid }} .sb-tab.active .ic{ background:var(--rose); border-color:var(--rose); color:#fff; }
@@ -23645,7 +23644,9 @@
         { "type": "range", "id": "padding_bottom", "label": "Padding below card", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 0 },
         { "type": "header", "content": "Header" },
         { "type": "text", "id": "sscript", "label": "Script eyebrow", "default": "Get to know us" },
+        { "type": "color", "id": "sscript_color", "label": "Eyebrow color", "default": "#E8607A" },
         { "type": "text", "id": "heading", "label": "Heading", "default": "The story behind the scoop" },
+        { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#1B3A5C" },
         { "type": "header", "content": "Tabs — show / hide & labels" },
         { "type": "checkbox", "id": "show_story", "label": "Show Full Story tab", "default": true },
         { "type": "text", "id": "tab_story", "label": "Full Story label", "default": "The Full Story" },
