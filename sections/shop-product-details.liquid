@@ -991,7 +991,7 @@
             {% break %}
           {% endif %}
         {% endfor %}
-        {% for block in section.blocks %}{% if block.type == 'herdration_story' %}
+        {% for block in section.blocks %}{% if block.type == 'story_block' %}
           {%- assign hs = block.settings -%}
           {%- assign bid = block.id -%}
           <style>
@@ -1166,10 +1166,10 @@
                   {%- if hs.story_h != blank -%}<h3>{{ hs.story_h }}</h3>{%- endif -%}
                   {%- if hs.story_lead != blank -%}<p class="sb-lead" style="margin-top:16px;">{{ hs.story_lead }}</p>{%- endif -%}
                   {%- if hs.story_body != blank -%}{{ hs.story_body }}{%- endif -%}
-                  {%- assign hs_stats = section.blocks | where: 'type', 'hs_stat' -%}
-                  {%- if hs_stats.size > 0 -%}
+                  {%- assign sb_stats = section.blocks | where: 'type', 'sb_stat' -%}
+                  {%- if sb_stats.size > 0 -%}
                     <div class="sb-chips">
-                      {%- for b in hs_stats -%}<div class="sb-chip" {{ b.shopify_attributes }}><div class="n">{{ b.settings.number }}</div><div class="l">{{ b.settings.label }}</div></div>{%- endfor -%}
+                      {%- for b in sb_stats -%}<div class="sb-chip" {{ b.shopify_attributes }}><div class="n">{{ b.settings.number }}</div><div class="l">{{ b.settings.label }}</div></div>{%- endfor -%}
                     </div>
                   {%- endif -%}
                   {%- if hs.story_quote != blank -%}<div class="sb-quote"><p>{{ hs.story_quote }}</p></div>{%- endif -%}
@@ -1180,7 +1180,7 @@
                   {%- if hs.ing_eyebrow != blank -%}<span class="eyebrow">{{ hs.ing_eyebrow }}</span>{%- endif -%}
                   {%- if hs.ing_h != blank -%}<h3>{{ hs.ing_h }}</h3>{%- endif -%}
                   {%- if hs.ing_lead != blank -%}<p class="sb-lead" style="margin-top:16px;">{{ hs.ing_lead }}</p>{%- endif -%}
-                  {%- assign hs_ings = section.blocks | where: 'type', 'hs_ingredient' -%}
+                  {%- assign hs_ings = section.blocks | where: 'type', 'sb_ingredient' -%}
                   {%- if hs_ings.size > 0 -%}
                     <div class="sb-ings">
                       {%- for b in hs_ings -%}
@@ -1207,7 +1207,7 @@
                       {%- if hs.exp_cred != blank -%}<div class="pcred">{{ hs.exp_cred }}</div>{%- endif -%}
                     </div>
                   </div>
-                  {%- assign hs_endorse = section.blocks | where: 'type', 'hs_endorsement' -%}
+                  {%- assign hs_endorse = section.blocks | where: 'type', 'sb_endorsement' -%}
                   {%- if hs_endorse.size > 0 -%}
                     <ul class="sb-endorse">
                       {%- for b in hs_endorse -%}<li {{ b.shopify_attributes }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ b.settings.text }}</li>{%- endfor -%}
@@ -1233,10 +1233,10 @@
                       <span class="sb-ph">{%- if hs.fnd_collage2 != blank -%}{{ hs.fnd_collage2 | image_url: width: 400 | image_tag: alt: '' }}{%- endif -%}</span>
                     </div>
                   </div>
-                  {%- assign hs_founders = section.blocks | where: 'type', 'hs_founder' -%}
-                  {%- if hs_founders.size > 0 -%}
+                  {%- assign sb_founders = section.blocks | where: 'type', 'sb_founder' -%}
+                  {%- if sb_founders.size > 0 -%}
                     <div class="sb-founders">
-                      {%- for b in hs_founders -%}
+                      {%- for b in sb_founders -%}
                         <div class="sb-founder" {{ b.shopify_attributes }}>
                           <span class="sb-founder-photo">{%- if b.settings.image != blank -%}{{ b.settings.image | image_url: width: 160 | image_tag: alt: b.settings.name }}{%- endif -%}</span>
                           <div><div class="fname">{{ b.settings.name }}</div><div class="frole">{{ b.settings.role }}</div><div class="fbio">{{ b.settings.bio }}</div></div>
@@ -1251,10 +1251,10 @@
                   {%- if hs.watch_eyebrow != blank -%}<span class="eyebrow">{{ hs.watch_eyebrow }}</span>{%- endif -%}
                   {%- if hs.watch_h != blank -%}<h3>{{ hs.watch_h }}</h3>{%- endif -%}
                   {%- if hs.watch_lead != blank -%}<p class="sb-lead" style="margin-top:14px;">{{ hs.watch_lead }}</p>{%- endif -%}
-                  {%- assign hs_resources = section.blocks | where: 'type', 'hs_resource' -%}
-                  {%- if hs_resources.size > 0 -%}
+                  {%- assign sb_resources = section.blocks | where: 'type', 'sb_resource' -%}
+                  {%- if sb_resources.size > 0 -%}
                     <div class="sb-res">
-                      {%- for b in hs_resources -%}
+                      {%- for b in sb_resources -%}
                         <a href="{{ b.settings.url | default: '#' }}" class="sb-res-card" {{ b.shopify_attributes }}>
                           <span class="sb-res-badge {{ b.settings.badge | downcase }}">{{ b.settings.badge }}</span>
                           <span><span class="rt">{{ b.settings.title }}</span><div class="rs">{{ b.settings.source }}</div></span>
@@ -1263,10 +1263,10 @@
                       {%- endfor -%}
                     </div>
                   {%- endif -%}
-                  {%- assign hs_videos = section.blocks | where: 'type', 'hs_video' -%}
-                  {%- if hs_videos.size > 0 -%}
+                  {%- assign sb_videos = section.blocks | where: 'type', 'sb_video' -%}
+                  {%- if sb_videos.size > 0 -%}
                     <div class="sb-vids">
-                      {%- for b in hs_videos -%}
+                      {%- for b in sb_videos -%}
                         <div class="sb-vid" {{ b.shopify_attributes }}>
                           <div class="vwrap">
                             {%- if b.settings.video != blank -%}
@@ -23627,7 +23627,7 @@
       ]
     },
     {
-      "type": "herdration_story",
+      "type": "story_block",
       "name": "Story Block (Tabbed)",
       "settings": [
         { "type": "header", "content": "Style" },
@@ -23689,7 +23689,7 @@
       ]
     },
     {
-      "type": "hs_stat",
+      "type": "sb_stat",
       "name": "Story — Stat chip",
       "settings": [
         { "type": "text", "id": "number", "label": "Number", "default": "30" },
@@ -23697,7 +23697,7 @@
       ]
     },
     {
-      "type": "hs_ingredient",
+      "type": "sb_ingredient",
       "name": "Story — Ingredient",
       "settings": [
         { "type": "text", "id": "name", "label": "Name", "default": "Magnesium Glycinate" },
@@ -23707,14 +23707,14 @@
       ]
     },
     {
-      "type": "hs_endorsement",
+      "type": "sb_endorsement",
       "name": "Story — Endorsement",
       "settings": [
         { "type": "text", "id": "text", "label": "Line", "default": "Clinically-relevant doses, not pixie-dusted blends." }
       ]
     },
     {
-      "type": "hs_founder",
+      "type": "sb_founder",
       "name": "Story — Founder profile",
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Photo" },
@@ -23724,7 +23724,7 @@
       ]
     },
     {
-      "type": "hs_resource",
+      "type": "sb_resource",
       "name": "Story — Resource link",
       "settings": [
         { "type": "select", "id": "badge", "label": "Badge", "options": [{ "value": "Study", "label": "Study" },{ "value": "Article", "label": "Article" },{ "value": "Video", "label": "Video" }], "default": "Study" },
@@ -23734,7 +23734,7 @@
       ]
     },
     {
-      "type": "hs_video",
+      "type": "sb_video",
       "name": "Story — Video",
       "settings": [
         { "type": "video", "id": "video", "label": "Video" },
