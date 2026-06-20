@@ -994,12 +994,6 @@
         {% for block in section.blocks %}{% if block.type == 'herdration_story' %}
           {%- assign hs = block.settings -%}
           {%- assign bid = block.id -%}
-          {%- if request.design_mode -%}
-            <div {{ block.shopify_attributes }} style="background:{{ hs.bg_color | default: '#F0E8E0' }};padding:32px 24px;border-radius:{{ hs.card_radius | default: 24 }}px;text-align:center;margin-top:20px;">
-              <p style="font-weight:700;font-size:16px;color:#1B3A5C;margin:0 0 6px;">📖 Story Block (Tabbed)</p>
-              <p style="font-size:13px;color:#8A7E76;margin:0;">This block renders on the live storefront. Use the settings panel on the right to configure it.</p>
-            </div>
-          {%- else -%}
           <style>
             #sb-{{ bid }}{
               --cream:#FAF5F0; --cream-dk:#F0E8E0; --fog:#F5EEE8; --mist:#E8DDD5; --stone:#8A7E76;
@@ -1084,23 +1078,9 @@
             #sb-{{ bid }} .sb-vids{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px; }
             #sb-{{ bid }} .sb-vid .vwrap{ position:relative; border-radius:14px; overflow:hidden; aspect-ratio:16/9; background:var(--blush); }
             #sb-{{ bid }} .sb-vid .vt{ font-size:13px; font-weight:600; color:var(--navy); margin-top:9px; }
-            #sb-{{ bid }} .sb-vid a.vlink{ display:inline-block; font-size:11.5px; color:var(--rose); text-decoration:none; margin-top:2px; }
-            #sb-{{ bid }} .sb-vid a.vlink:hover{ text-decoration:underline; }
-            #sb-{{ bid }} .yt{ position:absolute; inset:0; border:none; padding:0; background-color:var(--blush); background-size:cover; background-position:center; cursor:pointer; overflow:hidden; }
-            #sb-{{ bid }} .yt::before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(27,58,92,0) 40%,rgba(27,58,92,.28)); opacity:0; transition:opacity .2s; }
-            #sb-{{ bid }} .yt.has-id:hover::before{ opacity:1; }
-            #sb-{{ bid }} .yt .play{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
-            #sb-{{ bid }} .yt .play span{ width:54px; height:54px; border-radius:50%; background:rgba(255,255,255,.92); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(27,58,92,.3); transition:transform .2s; }
-            #sb-{{ bid }} .yt .play svg{ width:21px; height:21px; color:var(--rose); margin-left:3px; }
-            #sb-{{ bid }} .yt.has-id:hover .play span{ transform:scale(1.08); }
-            #sb-{{ bid }} .yt iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
-            #sb-{{ bid }} .yt.playing .play,#sb-{{ bid }} .yt.playing::before{ display:none; }
-            #sb-{{ bid }} .yt.no-id{ cursor:default; display:flex; align-items:center; justify-content:center; }
-            #sb-{{ bid }} .yt.no-id .play{ display:none; }
-            #sb-{{ bid }} .yt-hint{ display:none; }
-            #sb-{{ bid }} .yt.no-id .yt-hint{ display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; padding:14px; color:var(--navy); }
-            #sb-{{ bid }} .yt-hint b{ font-size:12.5px; font-weight:700; }
-            #sb-{{ bid }} .yt-hint span{ font-size:11px; color:var(--stone); line-height:1.4; }
+            #sb-{{ bid }} .sb-native-video{ width:100%; height:100%; object-fit:cover; display:block; border-radius:14px; }
+            #sb-{{ bid }} .sb-video .sb-native-video{ border-radius:18px; }
+            #sb-{{ bid }} .sb-video-ph{ display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; min-height:180px; color:var(--stone); font-size:13px; text-align:center; padding:14px; }
             #sb-{{ bid }}.is-dark .sb-card{ background:var(--navy); border-color:rgba(250,245,240,.12); }
             #sb-{{ bid }}.is-dark .sb-rail{ background:rgba(0,0,0,.20); border-bottom-color:rgba(250,245,240,.12); }
             #sb-{{ bid }}.is-dark .sb-tab{ color:var(--cream); }
@@ -1242,10 +1222,11 @@
                   {%- if hs.fnd_lead != blank -%}<p class="sb-lead" style="margin-top:14px;">{{ hs.fnd_lead }}</p>{%- endif -%}
                   <div class="sb-found-top">
                     <div class="sb-video">
-                      <div class="yt" data-yt="{{ hs.fnd_video_id }}" role="button" tabindex="0" aria-label="Play founders video">
-                        <div class="play"><span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div>
-                        <div class="yt-hint"><b>Add the founders video</b><span>Paste a YouTube ID in the block settings</span></div>
-                      </div>
+                      {%- if hs.fnd_video != blank -%}
+                        {{ hs.fnd_video | video_tag: controls: true, class: 'sb-native-video' }}
+                      {%- else -%}
+                        <div class="sb-video-ph"><span>Upload a founders video in the block settings</span></div>
+                      {%- endif -%}
                     </div>
                     <div class="sb-collage">
                       <span class="sb-ph">{%- if hs.fnd_collage1 != blank -%}{{ hs.fnd_collage1 | image_url: width: 400 | image_tag: alt: '' }}{%- endif -%}</span>
@@ -1274,7 +1255,7 @@
                   {%- if hs_resources.size > 0 -%}
                     <div class="sb-res">
                       {%- for b in hs_resources -%}
-                        <a href="{{ b.settings.url | default: '#' }}" {% if b.settings.url != blank %}target="_blank" rel="noopener"{% endif %} class="sb-res-card" {{ b.shopify_attributes }}>
+                        <a href="{{ b.settings.url | default: '#' }}" class="sb-res-card" {{ b.shopify_attributes }}>
                           <span class="sb-res-badge {{ b.settings.badge | downcase }}">{{ b.settings.badge }}</span>
                           <span><span class="rt">{{ b.settings.title }}</span><div class="rs">{{ b.settings.source }}</div></span>
                           <span class="arr"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg></span>
@@ -1288,13 +1269,13 @@
                       {%- for b in hs_videos -%}
                         <div class="sb-vid" {{ b.shopify_attributes }}>
                           <div class="vwrap">
-                            <div class="yt" data-yt="{{ b.settings.youtube_id }}" role="button" tabindex="0" aria-label="Play video">
-                              <div class="play"><span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div>
-                              <div class="yt-hint"><b>Add a video</b><span>Paste a YouTube ID</span></div>
-                            </div>
+                            {%- if b.settings.video != blank -%}
+                              {{ b.settings.video | video_tag: controls: true, class: 'sb-native-video' }}
+                            {%- else -%}
+                              <div class="sb-video-ph"><span>Upload a video</span></div>
+                            {%- endif -%}
                           </div>
                           {%- if b.settings.title != blank -%}<div class="vt">{{ b.settings.title }}</div>{%- endif -%}
-                          <a href="#" target="_blank" rel="noopener" class="vlink">Watch on YouTube →</a>
                         </div>
                       {%- endfor -%}
                     </div>
@@ -1320,30 +1301,8 @@
                 root.querySelector('.sb-content').scrollTop=0;
               });
             });
-            function thumb(id){ return 'https://i.ytimg.com/vi/'+id+'/hqdefault.jpg'; }
-            function play(el,id){
-              var f=document.createElement('iframe');
-              f.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0';
-              f.title='YouTube video player';
-              f.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-              f.allowFullscreen=true; f.setAttribute('frameborder','0');
-              el.appendChild(f); el.classList.add('playing');
-            }
-            root.querySelectorAll('.yt').forEach(function(el){
-              var id=(el.getAttribute('data-yt')||'').trim();
-              if(!id){ el.classList.add('no-id'); return; }
-              el.classList.add('has-id');
-              el.style.backgroundImage='url('+thumb(id)+')';
-              var wrap=el.closest('.sb-vid');
-              if(wrap){ var link=wrap.querySelector('.vlink'); if(link) link.href='https://youtu.be/'+id; }
-              el.addEventListener('click',function(){ if(!el.classList.contains('playing')) play(el,id); });
-              el.addEventListener('keydown',function(e){
-                if((e.key==='Enter'||e.key===' ')&&!el.classList.contains('playing')){ e.preventDefault(); play(el,id); }
-              });
-            });
           })();
           </script>
-          {%- endif -%}
         {% break %}{% endif %}{% endfor %}
         </div>
         </div>
@@ -23720,7 +23679,7 @@
         { "type": "text", "id": "fnd_eyebrow", "label": "Eyebrow", "default": "Our story" },
         { "type": "text", "id": "fnd_h", "label": "Heading", "default": "A husband-and-wife team, one stubborn idea." },
         { "type": "textarea", "id": "fnd_lead", "label": "Lead paragraph" },
-        { "type": "text", "id": "fnd_video_id", "label": "Founders video YouTube ID" },
+        { "type": "video", "id": "fnd_video", "label": "Founders video" },
         { "type": "image_picker", "id": "fnd_collage1", "label": "Collage photo 1" },
         { "type": "image_picker", "id": "fnd_collage2", "label": "Collage photo 2" },
         { "type": "header", "content": "Tab · Watch & Read" },
@@ -23776,9 +23735,9 @@
     },
     {
       "type": "hs_video",
-      "name": "Story — YouTube video",
+      "name": "Story — Video",
       "settings": [
-        { "type": "text", "id": "youtube_id", "label": "YouTube ID" },
+        { "type": "video", "id": "video", "label": "Video" },
         { "type": "text", "id": "title", "label": "Caption", "default": "60-second intro" }
       ]
     },
