@@ -1,5 +1,6 @@
 {{ 'shop-product-details.css' | asset_url | stylesheet_tag }}
 {{ 'variant-selector.css' | asset_url | stylesheet_tag }}
+{{ 'shop-brand-story.css' | asset_url | stylesheet_tag }}
 
 {% style %}
     .shop-product-section {
@@ -868,6 +869,23 @@
       {% endif %}
     {% endfor %}
 
+    .shop-brand-story {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: none !important;
+    }
+    /* Brand story accordion (mobile only) */
+    @media (max-width: 767px) {
+      .shop-brand-story .bs-expandable { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+      .shop-brand-story.bs-open .bs-expandable { max-height: 1200px; }
+      .shop-brand-story .bs-toggle { display:flex; align-items:center; gap:6px; margin-top:14px; padding:10px 18px; border:1.5px solid currentColor; border-radius:999px; background:transparent; cursor:pointer; font-size:13px; font-weight:600; letter-spacing:.04em; }
+      .shop-brand-story .bs-chevron { transition:transform .3s ease; flex-shrink:0; }
+      .shop-brand-story.bs-open .bs-chevron { transform:rotate(180deg); }
+    }
+    @media (min-width: 768px) {
+      .shop-brand-story .bs-toggle { display:none !important; }
+      .shop-brand-story .bs-expandable { max-height:none !important; overflow:visible !important; }
+    }
 {% endstyle %}
 
 {%- liquid
@@ -905,6 +923,274 @@
           %}
         {% endif %}
 
+        <!-- Left column extras: brand story + story block -->
+        <div class="shop-left-extras">
+        {% for block in section.blocks %}
+          {% if block.type == 'brand_story' %}
+            {%- assign bs = block.settings -%}
+            {%- assign bs_title_tag = bs.title_tag | default: 'h2' -%}
+            {%- assign bs_sub_tag = bs.subtitle_tag | default: 'h3' -%}
+            <div class="shop-brand-story" {{ block.shopify_attributes }} style="
+              margin-top: {{ bs.margin_top | default: 24 }}px;
+              margin-bottom: {{ bs.margin_bottom | default: 0 }}px;
+              background: {{ bs.bg_color | default: 'transparent' }};
+            ">
+              {%- if bs.title != blank -%}
+                <{{ bs_title_tag }} class="bs-title" style="
+                  font-size: {{ bs.title_size | default: 40 }}px;
+                  color: {{ bs.title_color | default: '#222222' }};
+                  font-family: {% if bs.title_font == 'body' %}var(--font-body-family){% else %}var(--font-heading-family){% endif %};
+                  margin-bottom: 8px;
+                ">
+                  {%- assign title_parts = bs.title | split: "'" -%}
+                  {%- for part in title_parts -%}
+                    {%- unless forloop.first -%}<span style="color:{{ bs.accent_color | default: '#EF4A65' }};font-family:{% if bs.accent_font == 'body' %}var(--font-body-family){% else %}var(--font-heading-family){% endif %};">&#8217;</span>{%- endunless -%}
+                    {{- part -}}
+                  {%- endfor -%}
+                </{{ bs_title_tag }}>
+              {%- endif -%}
+
+              {%- if bs.image != blank -%}
+                <div class="bs-image-wrap" style="
+                  margin-top: 12px;
+                  border-radius: {{ bs.image_radius | default: 12 }}px;
+                  overflow: hidden;
+                ">
+                  <img
+                    src="{{ bs.image | image_url: width: 900 }}"
+                    alt="{{ bs.image.alt | default: bs.title | escape }}"
+                    width="900"
+                    height="{{ bs.image_height | default: 400 }}"
+                    loading="lazy"
+                    style="width:100%;height:{{ bs.image_height | default: 400 }}px;object-fit:{{ bs.image_fit | default: 'cover' }};display:block;border-radius:{{ bs.image_radius | default: 12 }}px;">
+                </div>
+              {%- endif -%}
+
+              {%- if bs.subtitle != blank or bs.description != blank -%}
+                <button class="bs-toggle" type="button" aria-expanded="false" style="color:{{ bs.title_color | default: '#222222' }};">
+                  <span class="bs-toggle-label">Read more</span>
+                  <svg class="bs-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="bs-expandable">
+                  {%- if bs.subtitle != blank -%}
+                    <{{ bs_sub_tag }} class="bs-subtitle" style="
+                      font-size: {{ bs.subtitle_size | default: 20 }}px;
+                      color: {{ bs.subtitle_color | default: '#444444' }};
+                      font-family: {% if bs.subtitle_font == 'body' %}var(--font-body-family){% else %}var(--font-heading-family){% endif %};
+                      margin-top: 14px; margin-bottom: 12px;
+                    ">{{ bs.subtitle }}</{{ bs_sub_tag }}>
+                  {%- endif -%}
+                  {%- if bs.description != blank -%}
+                    <div class="bs-desc" style="
+                      font-size: {{ bs.desc_size | default: 15 }}px;
+                      color: {{ bs.desc_color | default: '#444444' }};
+                      font-family: {% if bs.desc_font == 'body' %}var(--font-body-family){% else %}var(--font-heading-family){% endif %};
+                      line-height: 1.7;
+                    ">{{ bs.description }}</div>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            </div>
+            {% break %}
+          {% endif %}
+        {% endfor %}
+        {% for block in section.blocks %}{% if block.type == 'story_block' %}
+          {%- assign hs = block.settings -%}
+          {%- assign bid = block.id -%}
+
+          <section id="sb-{{ bid }}" class="sb-block {% if hs.style == 'dark' %}is-dark{% endif %}" data-screen-label="Get to know us" {{ block.shopify_attributes }} style="
+            --sb-h: {{ hs.heading_size | default: 26 }}px;
+            --sb-body: {{ hs.body_size | default: 14.5 }}px;
+            --sb-pad: {{ hs.content_padding | default: 30 }}px;
+            --sb-radius: {{ hs.card_radius | default: 24 }}px;
+            --sb-tab: {{ hs.tab_label_size | default: 11.5 }}px;
+            --sb-gap: {{ hs.item_spacing | default: 24 }}px;
+            background: {{ hs.bg_color | default: 'transparent' }};
+            padding: {{ hs.padding_top | default: 16 }}px 0 {{ hs.padding_bottom | default: 0 }}px;
+          ">
+            {%- if hs.sscript != blank or hs.heading != blank -%}
+              <div class="sb-head" style="text-align: {{ hs.align | default: 'left' }};">
+                {%- if hs.sscript != blank -%}<div class="sscript" style="color:{{ hs.sscript_color | default: '#E8607A' }} !important;">{{ hs.sscript }}</div>{%- endif -%}
+                {%- if hs.heading != blank -%}<h2 style="color:{{ hs.heading_color | default: '#1B3A5C' }} !important;">{{ hs.heading }}</h2>{%- endif -%}
+              </div>
+            {%- endif -%}
+            <div class="sb-card">
+              <div class="sb-rail" role="tablist" aria-label="Get to know us">
+                {%- if hs.show_story -%}
+                <button class="sb-tab active" data-sb="story" role="tab" type="button" aria-selected="true">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></span>
+                  <span>{{ hs.tab_story | default: 'The Full Story' }}</span>
+                </button>
+                {%- endif -%}
+                {%- if hs.show_ingredients -%}
+                <button class="sb-tab{% unless hs.show_story %} active{% endunless %}" data-sb="ingredients" role="tab" type="button" aria-selected="false">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7C8 8 6 11 6 14.5a6 6 0 0 0 12 0C18 11 16 8 12 2.7Z"/></svg></span>
+                  <span>{{ hs.tab_ingredients | default: "What's Inside" }}</span>
+                </button>
+                {%- endif -%}
+                {%- if hs.show_expert -%}
+                <button class="sb-tab" data-sb="expert" role="tab" type="button" aria-selected="false">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.6 7 22l5-3 5 3-1.2-8.4"/></svg></span>
+                  <span>{{ hs.tab_expert | default: 'Expert Opinion' }}</span>
+                </button>
+                {%- endif -%}
+                {%- if hs.show_founders -%}
+                <button class="sb-tab" data-sb="founders" role="tab" type="button" aria-selected="false">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
+                  <span>{{ hs.tab_founders | default: 'Meet the Founders' }}</span>
+                </button>
+                {%- endif -%}
+                {%- if hs.show_watch -%}
+                <button class="sb-tab" data-sb="watch" role="tab" type="button" aria-selected="false">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg></span>
+                  <span>{{ hs.tab_watch | default: 'Watch &amp; Read' }}</span>
+                </button>
+                {%- endif -%}
+              </div>
+              <div class="sb-content">
+                {%- if hs.show_story -%}
+                <div class="sb-panel active" data-sb="story" role="tabpanel">
+                  {%- if hs.story_eyebrow != blank -%}<span class="eyebrow">{{ hs.story_eyebrow }}</span>{%- endif -%}
+                  {%- if hs.story_h != blank -%}<h3 style="color:{{ hs.story_h_color | default: '#1B3A5C' }} !important;">{{ hs.story_h }}</h3>{%- endif -%}
+                  {%- if hs.story_lead != blank -%}<p class="sb-lead" style="margin-top:16px;">{{ hs.story_lead }}</p>{%- endif -%}
+                  {%- if hs.story_body != blank -%}{{ hs.story_body }}{%- endif -%}
+                  {%- assign sb_stats = section.blocks | where: 'type', 'sb_stat' -%}
+                  {%- if sb_stats.size > 0 -%}
+                    <div class="sb-chips">
+                      {%- for b in sb_stats -%}<div class="sb-chip" {{ b.shopify_attributes }}><div class="n">{{ b.settings.number }}</div><div class="l">{{ b.settings.label }}</div></div>{%- endfor -%}
+                    </div>
+                  {%- endif -%}
+                  {%- if hs.story_quote != blank -%}<div class="sb-quote"><p>{{ hs.story_quote }}</p></div>{%- endif -%}
+                </div>
+                {%- endif -%}
+                {%- if hs.show_ingredients -%}
+                <div class="sb-panel{% unless hs.show_story %} active{% endunless %}" data-sb="ingredients" role="tabpanel">
+                  {%- if hs.ing_eyebrow != blank -%}<span class="eyebrow">{{ hs.ing_eyebrow }}</span>{%- endif -%}
+                  {%- if hs.ing_h != blank -%}<h3 style="color:{{ hs.ing_h_color | default: '#1B3A5C' }} !important;">{{ hs.ing_h }}</h3>{%- endif -%}
+                  {%- if hs.ing_lead != blank -%}<p class="sb-lead" style="margin-top:16px;">{{ hs.ing_lead }}</p>{%- endif -%}
+                  {%- assign hs_ings = section.blocks | where: 'type', 'sb_ingredient' -%}
+                  {%- if hs_ings.size > 0 -%}
+                    <div class="sb-ings">
+                      {%- for b in hs_ings -%}
+                        <div class="sb-ing" {{ b.shopify_attributes }}>
+                          <span class="dot" style="background:{{ b.settings.color }};"></span>
+                          <span><span class="iname">{{ b.settings.name }}</span><div class="idesc">{{ b.settings.desc }}</div></span>
+                          <span class="dose">{{ b.settings.dose }}</span>
+                        </div>
+                      {%- endfor -%}
+                    </div>
+                  {%- endif -%}
+                  {%- if hs.ing_footnote != blank -%}<p class="sb-foot">{{ hs.ing_footnote }}</p>{%- endif -%}
+                </div>
+                {%- endif -%}
+                {%- if hs.show_expert -%}
+                <div class="sb-panel" data-sb="expert" role="tabpanel">
+                  {%- if hs.exp_eyebrow != blank -%}<span class="eyebrow">{{ hs.exp_eyebrow }}</span>{%- endif -%}
+                  {%- if hs.exp_h != blank -%}<h3 style="color:{{ hs.exp_h_color | default: '#1B3A5C' }} !important;">{{ hs.exp_h }}</h3>{%- endif -%}
+                  <div class="sb-pro">
+                    <span class="sb-pro-photo">{%- if hs.exp_image != blank -%}{{ hs.exp_image | image_url: width: 240 | image_tag: alt: hs.exp_name, class: 'photo' }}{%- endif -%}</span>
+                    <div>
+                      {%- if hs.exp_quote != blank -%}<p class="pq">{{ hs.exp_quote }}</p>{%- endif -%}
+                      {%- if hs.exp_name != blank -%}<div class="pname">{{ hs.exp_name }}</div>{%- endif -%}
+                      {%- if hs.exp_cred != blank -%}<div class="pcred">{{ hs.exp_cred }}</div>{%- endif -%}
+                    </div>
+                  </div>
+                  {%- assign hs_endorse = section.blocks | where: 'type', 'sb_endorsement' -%}
+                  {%- if hs_endorse.size > 0 -%}
+                    <ul class="sb-endorse">
+                      {%- for b in hs_endorse -%}<li {{ b.shopify_attributes }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ b.settings.text }}</li>{%- endfor -%}</ul>
+                  {%- endif -%}
+                </div>
+                {%- endif -%}
+                {%- if hs.show_founders -%}
+                <div class="sb-panel" data-sb="founders" role="tabpanel">
+                  {%- if hs.fnd_eyebrow != blank -%}<span class="eyebrow">{{ hs.fnd_eyebrow }}</span>{%- endif -%}
+                  {%- if hs.fnd_h != blank -%}<h3 style="color:{{ hs.fnd_h_color | default: '#1B3A5C' }} !important;">{{ hs.fnd_h }}</h3>{%- endif -%}
+                  {%- if hs.fnd_lead != blank -%}<p class="sb-lead" style="margin-top:14px;">{{ hs.fnd_lead }}</p>{%- endif -%}
+                  <div class="sb-found-top">
+                    <div class="sb-video">
+                      {%- if hs.fnd_video != blank -%}
+                        <iframe src="{{ hs.fnd_video | external_video_url: autoplay: false }}" class="sb-native-video" allowfullscreen allow="autoplay; encrypted-media" loading="lazy" style="border:0;width:100%;height:100%;position:absolute;top:0;left:0;"></iframe>
+                      {%- else -%}
+                        <div class="sb-video-ph"><span>Paste a YouTube or Vimeo URL in the block settings</span></div>
+                      {%- endif -%}
+                    </div>
+                    <div class="sb-collage">
+                      <span class="sb-ph">{%- if hs.fnd_collage1 != blank -%}{{ hs.fnd_collage1 | image_url: width: 400 | image_tag: alt: '' }}{%- endif -%}</span>
+                      <span class="sb-ph">{%- if hs.fnd_collage2 != blank -%}{{ hs.fnd_collage2 | image_url: width: 400 | image_tag: alt: '' }}{%- endif -%}</span>
+                    </div>
+                  </div>
+                  {%- assign sb_founders = section.blocks | where: 'type', 'sb_founder' -%}
+                  {%- if sb_founders.size > 0 -%}
+                    <div class="sb-founders">
+                      {%- for b in sb_founders -%}
+                        <div class="sb-founder" {{ b.shopify_attributes }}>
+                          <span class="sb-founder-photo">{%- if b.settings.image != blank -%}{{ b.settings.image | image_url: width: 160 | image_tag: alt: b.settings.name }}{%- endif -%}</span>
+                          <div><div class="fname">{{ b.settings.name }}</div><div class="frole">{{ b.settings.role }}</div><div class="fbio">{{ b.settings.bio }}</div></div>
+                        </div>
+                      {%- endfor -%}
+                    </div>
+                  {%- endif -%}
+                </div>
+                {%- endif -%}
+                {%- if hs.show_watch -%}
+                <div class="sb-panel" data-sb="watch" role="tabpanel">
+                  {%- if hs.watch_eyebrow != blank -%}<span class="eyebrow">{{ hs.watch_eyebrow }}</span>{%- endif -%}
+                  {%- if hs.watch_h != blank -%}<h3 style="color:{{ hs.watch_h_color | default: '#1B3A5C' }} !important;">{{ hs.watch_h }}</h3>{%- endif -%}
+                  {%- if hs.watch_lead != blank -%}<p class="sb-lead" style="margin-top:14px;">{{ hs.watch_lead }}</p>{%- endif -%}
+                  {%- assign sb_resources = section.blocks | where: 'type', 'sb_resource' -%}
+                  {%- if sb_resources.size > 0 -%}
+                    <div class="sb-res">
+                      {%- for b in sb_resources -%}
+                        <a href="{{ b.settings.url | default: '#' }}" class="sb-res-card" {{ b.shopify_attributes }}>
+                          <span class="sb-res-badge {{ b.settings.badge | downcase }}">{{ b.settings.badge }}</span>
+                          <span><span class="rt">{{ b.settings.title }}</span><div class="rs">{{ b.settings.source }}</div></span>
+                          <span class="arr"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg></span>
+                        </a>
+                      {%- endfor -%}
+                    </div>
+                  {%- endif -%}
+                  {%- assign sb_videos = section.blocks | where: 'type', 'sb_video' -%}
+                  {%- if sb_videos.size > 0 -%}
+                    <div class="sb-vids">
+                      {%- for b in sb_videos -%}
+                        <div class="sb-vid" {{ b.shopify_attributes }}>
+                          <div class="vwrap">
+                            {%- if b.settings.video != blank -%}
+                              <iframe src="{{ b.settings.video | external_video_url: autoplay: false }}" class="sb-native-video" allowfullscreen allow="autoplay; encrypted-media" loading="lazy" style="border:0;width:100%;height:100%;position:absolute;top:0;left:0;"></iframe>
+                            {%- else -%}
+                              <div class="sb-video-ph"><span>Paste a YouTube or Vimeo URL</span></div>
+                            {%- endif -%}
+                          </div>
+                          {%- if b.settings.title != blank -%}<div class="vt">{{ b.settings.title }}</div>{%- endif -%}
+                        </div>
+                      {%- endfor -%}
+                    </div>
+                  {%- endif -%}
+                </div>
+                {%- endif -%}
+              </div>
+            </div>
+          </section>
+          <script>
+          (function(){
+            var root=document.getElementById('sb-{{ bid }}');
+            if(!root) return;
+            var tabs=root.querySelectorAll('.sb-tab');
+            var panels=root.querySelectorAll('.sb-panel');
+            tabs.forEach(function(t){
+              t.addEventListener('click',function(){
+                tabs.forEach(function(x){ x.classList.remove('active'); x.setAttribute('aria-selected','false'); });
+                panels.forEach(function(p){ p.classList.remove('active'); });
+                t.classList.add('active'); t.setAttribute('aria-selected','true');
+                var panel=root.querySelector('.sb-panel[data-sb="'+t.dataset.sb+'"]');
+                if(panel) panel.classList.add('active');
+                root.querySelector('.sb-content').scrollTop=0;
+              });
+            });
+          })();
+          </script>
+        {% break %}{% endif %}{% endfor %}
         </div>
         </div>
         <!-- Product Information Column -->
@@ -919,7 +1205,20 @@
   </div>
 </div>
 
-
+<script>
+(function(){
+  document.querySelectorAll('.shop-brand-story').forEach(function(el){
+    var btn = el.querySelector('.bs-toggle');
+    if(!btn) return;
+    btn.addEventListener('click', function(){
+      var open = el.classList.toggle('bs-open');
+      btn.setAttribute('aria-expanded', String(open));
+      var lbl = btn.querySelector('.bs-toggle-label');
+      if(lbl) lbl.textContent = open ? 'Read less' : 'Read more';
+    });
+  });
+})();
+</script>
 
 {% if section.settings.control_app_subscription_preselect %}
   <script>
@@ -19413,6 +19712,850 @@
           "step": 2,
           "unit": "px",
           "default": 20
+        }
+      ]
+    },
+    {
+      "type": "brand_story",
+      "name": "Brand Story",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Title"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Meet Weller Co."
+        },
+        {
+          "type": "select",
+          "id": "title_tag",
+          "label": "Title tag (font type)",
+          "default": "h2",
+          "options": [
+            {
+              "value": "h1",
+              "label": "H1"
+            },
+            {
+              "value": "h2",
+              "label": "H2"
+            },
+            {
+              "value": "h3",
+              "label": "H3"
+            },
+            {
+              "value": "h4",
+              "label": "H4"
+            },
+            {
+              "value": "p",
+              "label": "Body / Paragraph"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "title_font",
+          "label": "Title font family",
+          "default": "body",
+          "options": [
+            {
+              "value": "body",
+              "label": "Body (Playfair Display)"
+            },
+            {
+              "value": "heading",
+              "label": "Heading"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "title_size",
+          "label": "Title font size",
+          "min": 16,
+          "max": 120,
+          "step": 2,
+          "unit": "px",
+          "default": 40
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Title color",
+          "default": "#222222"
+        },
+        {
+          "type": "color",
+          "id": "accent_color",
+          "label": "Accent color (apostrophes)",
+          "default": "#EF4A65"
+        },
+        {
+          "type": "select",
+          "id": "accent_font",
+          "label": "Accent font",
+          "default": "body",
+          "options": [
+            {
+              "value": "body",
+              "label": "Body (Playfair Display)"
+            },
+            {
+              "value": "heading",
+              "label": "Heading"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Subtitle"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subtitle_tag",
+          "label": "Subtitle tag",
+          "default": "h3",
+          "options": [
+            {
+              "value": "h2",
+              "label": "H2"
+            },
+            {
+              "value": "h3",
+              "label": "H3"
+            },
+            {
+              "value": "h4",
+              "label": "H4"
+            },
+            {
+              "value": "p",
+              "label": "Body / Paragraph"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "subtitle_font",
+          "label": "Subtitle font family",
+          "default": "body",
+          "options": [
+            {
+              "value": "body",
+              "label": "Body (Playfair Display)"
+            },
+            {
+              "value": "heading",
+              "label": "Heading"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "subtitle_size",
+          "label": "Subtitle font size",
+          "min": 12,
+          "max": 60,
+          "step": 2,
+          "unit": "px",
+          "default": 20
+        },
+        {
+          "type": "color",
+          "id": "subtitle_color",
+          "label": "Subtitle color",
+          "default": "#444444"
+        },
+        {
+          "type": "header",
+          "content": "Description"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description"
+        },
+        {
+          "type": "select",
+          "id": "desc_font",
+          "label": "Description font family",
+          "default": "body",
+          "options": [
+            {
+              "value": "body",
+              "label": "Body (Playfair Display)"
+            },
+            {
+              "value": "heading",
+              "label": "Heading"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "desc_size",
+          "label": "Description font size",
+          "min": 12,
+          "max": 30,
+          "step": 1,
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "color",
+          "id": "desc_color",
+          "label": "Description color",
+          "default": "#444444"
+        },
+        {
+          "type": "header",
+          "content": "Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "range",
+          "id": "image_height",
+          "label": "Image height",
+          "min": 100,
+          "max": 800,
+          "step": 10,
+          "unit": "px",
+          "default": 400
+        },
+        {
+          "type": "select",
+          "id": "image_fit",
+          "label": "Image fit",
+          "default": "cover",
+          "options": [
+            {
+              "value": "cover",
+              "label": "Cover"
+            },
+            {
+              "value": "contain",
+              "label": "Contain"
+            },
+            {
+              "value": "fill",
+              "label": "Fill"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "image_radius",
+          "label": "Image border radius",
+          "min": 0,
+          "max": 40,
+          "step": 2,
+          "unit": "px",
+          "default": 12
+        },
+        {
+          "type": "header",
+          "content": "Layout"
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "label": "Margin top",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom",
+          "label": "Margin bottom",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background color",
+          "default": "#ffffff"
+        }
+      ]
+    },
+    {
+      "type": "story_block",
+      "name": "Story Block (Tabbed)",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Style"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Card style",
+          "options": [
+            {
+              "value": "light",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark blue"
+            }
+          ],
+          "default": "light"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background behind card",
+          "default": "#F0E8E0"
+        },
+        {
+          "type": "select",
+          "id": "align",
+          "label": "Header alignment",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "header",
+          "content": "Size & spacing"
+        },
+        {
+          "type": "range",
+          "id": "heading_size",
+          "label": "Heading size",
+          "min": 18,
+          "max": 44,
+          "step": 1,
+          "unit": "px",
+          "default": 26
+        },
+        {
+          "type": "range",
+          "id": "body_size",
+          "label": "Body text size",
+          "min": 12,
+          "max": 20,
+          "step": 1,
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "range",
+          "id": "tab_label_size",
+          "label": "Tab label size",
+          "min": 9,
+          "max": 16,
+          "step": 1,
+          "unit": "px",
+          "default": 12
+        },
+        {
+          "type": "range",
+          "id": "content_padding",
+          "label": "Card inner padding",
+          "min": 14,
+          "max": 56,
+          "step": 2,
+          "unit": "px",
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "item_spacing",
+          "label": "Spacing between blocks",
+          "min": 12,
+          "max": 48,
+          "step": 2,
+          "unit": "px",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "card_radius",
+          "label": "Card corner radius",
+          "min": 0,
+          "max": 36,
+          "step": 2,
+          "unit": "px",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "padding_top",
+          "label": "Padding above card",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 16
+        },
+        {
+          "type": "range",
+          "id": "padding_bottom",
+          "label": "Padding below card",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "header",
+          "content": "Header"
+        },
+        {
+          "type": "text",
+          "id": "sscript",
+          "label": "Script eyebrow",
+          "default": "Get to know us"
+        },
+        {
+          "type": "color",
+          "id": "sscript_color",
+          "label": "Eyebrow color",
+          "default": "#E8607A"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "The story behind the scoop"
+        },
+        {
+          "type": "color",
+          "id": "heading_color",
+          "label": "Heading color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "header",
+          "content": "Tabs \u2014 show / hide & labels"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_story",
+          "label": "Show Full Story tab",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "tab_story",
+          "label": "Full Story label",
+          "default": "The Full Story"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_ingredients",
+          "label": "Show What's Inside tab",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "tab_ingredients",
+          "label": "What's Inside label",
+          "default": "What's Inside"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_expert",
+          "label": "Show Expert Opinion tab",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "tab_expert",
+          "label": "Expert Opinion label",
+          "default": "Expert Opinion"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_founders",
+          "label": "Show Meet the Founders tab",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "tab_founders",
+          "label": "Founders label",
+          "default": "Meet the Founders"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_watch",
+          "label": "Show Watch & Read tab",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "tab_watch",
+          "label": "Watch & Read label",
+          "default": "Watch & Read"
+        },
+        {
+          "type": "header",
+          "content": "Tab \u00b7 Full Story"
+        },
+        {
+          "type": "text",
+          "id": "story_eyebrow",
+          "label": "Eyebrow",
+          "default": "Why we built it"
+        },
+        {
+          "type": "text",
+          "id": "story_h",
+          "label": "Heading",
+          "default": "Hydration built around her."
+        },
+        {
+          "type": "color",
+          "id": "story_h_color",
+          "label": "Heading color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "textarea",
+          "id": "story_lead",
+          "label": "Lead paragraph"
+        },
+        {
+          "type": "richtext",
+          "id": "story_body",
+          "label": "Body"
+        },
+        {
+          "type": "text",
+          "id": "story_quote",
+          "label": "Pull quote"
+        },
+        {
+          "type": "header",
+          "content": "Tab \u00b7 What's Inside"
+        },
+        {
+          "type": "text",
+          "id": "ing_eyebrow",
+          "label": "Eyebrow",
+          "default": "Inside the scoop"
+        },
+        {
+          "type": "text",
+          "id": "ing_h",
+          "label": "Heading",
+          "default": "Eight actives. Every one earns its place."
+        },
+        {
+          "type": "color",
+          "id": "ing_h_color",
+          "label": "Heading color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "textarea",
+          "id": "ing_lead",
+          "label": "Lead paragraph"
+        },
+        {
+          "type": "text",
+          "id": "ing_footnote",
+          "label": "Footnote"
+        },
+        {
+          "type": "header",
+          "content": "Tab \u00b7 Expert Opinion"
+        },
+        {
+          "type": "text",
+          "id": "exp_eyebrow",
+          "label": "Eyebrow",
+          "default": "The expert take"
+        },
+        {
+          "type": "text",
+          "id": "exp_h",
+          "label": "Heading",
+          "default": "Vetted by the people who'd know."
+        },
+        {
+          "type": "color",
+          "id": "exp_h_color",
+          "label": "Heading color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "image_picker",
+          "id": "exp_image",
+          "label": "Expert headshot"
+        },
+        {
+          "type": "textarea",
+          "id": "exp_quote",
+          "label": "Expert quote"
+        },
+        {
+          "type": "text",
+          "id": "exp_name",
+          "label": "Expert name"
+        },
+        {
+          "type": "text",
+          "id": "exp_cred",
+          "label": "Expert credentials"
+        },
+        {
+          "type": "header",
+          "content": "Tab \u00b7 Meet the Founders"
+        },
+        {
+          "type": "text",
+          "id": "fnd_eyebrow",
+          "label": "Eyebrow",
+          "default": "Our story"
+        },
+        {
+          "type": "text",
+          "id": "fnd_h",
+          "label": "Heading",
+          "default": "A husband-and-wife team, one stubborn idea."
+        },
+        {
+          "type": "color",
+          "id": "fnd_h_color",
+          "label": "Heading color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "textarea",
+          "id": "fnd_lead",
+          "label": "Lead paragraph"
+        },
+        {
+          "type": "video_url",
+          "id": "fnd_video",
+          "label": "Founders video",
+          "accept": [
+            "youtube",
+            "vimeo"
+          ],
+          "info": "Paste a YouTube or Vimeo URL"
+        },
+        {
+          "type": "image_picker",
+          "id": "fnd_collage1",
+          "label": "Collage photo 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "fnd_collage2",
+          "label": "Collage photo 2"
+        },
+        {
+          "type": "header",
+          "content": "Tab \u00b7 Watch & Read"
+        },
+        {
+          "type": "text",
+          "id": "watch_eyebrow",
+          "label": "Eyebrow",
+          "default": "Dig deeper"
+        },
+        {
+          "type": "text",
+          "id": "watch_h",
+          "label": "Heading",
+          "default": "The research & stories behind it."
+        },
+        {
+          "type": "color",
+          "id": "watch_h_color",
+          "label": "Heading color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "textarea",
+          "id": "watch_lead",
+          "label": "Lead paragraph"
+        }
+      ]
+    },
+    {
+      "type": "sb_stat",
+      "name": "Story \u2014 Stat chip",
+      "settings": [
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Number",
+          "default": "30"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "servings per tub"
+        }
+      ]
+    },
+    {
+      "type": "sb_ingredient",
+      "name": "Story \u2014 Ingredient",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Magnesium Glycinate"
+        },
+        {
+          "type": "text",
+          "id": "desc",
+          "label": "Description",
+          "default": "Supports sleep, mood and PMS relief."
+        },
+        {
+          "type": "text",
+          "id": "dose",
+          "label": "Dose",
+          "default": "300 mg"
+        },
+        {
+          "type": "color",
+          "id": "color",
+          "label": "Dot color",
+          "default": "#8A9B6E"
+        }
+      ]
+    },
+    {
+      "type": "sb_endorsement",
+      "name": "Story \u2014 Endorsement",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Line",
+          "default": "Clinically-relevant doses, not pixie-dusted blends."
+        }
+      ]
+    },
+    {
+      "type": "sb_founder",
+      "name": "Story \u2014 Founder profile",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Photo"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Founder One"
+        },
+        {
+          "type": "text",
+          "id": "role",
+          "label": "Role",
+          "default": "Co-Founder & Formulator"
+        },
+        {
+          "type": "textarea",
+          "id": "bio",
+          "label": "Bio"
+        }
+      ]
+    },
+    {
+      "type": "sb_resource",
+      "name": "Story \u2014 Resource link",
+      "settings": [
+        {
+          "type": "select",
+          "id": "badge",
+          "label": "Badge",
+          "options": [
+            {
+              "value": "Study",
+              "label": "Study"
+            },
+            {
+              "value": "Article",
+              "label": "Article"
+            },
+            {
+              "value": "Video",
+              "label": "Video"
+            }
+          ],
+          "default": "Study"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Study title"
+        },
+        {
+          "type": "text",
+          "id": "source",
+          "label": "Source / publication"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    },
+    {
+      "type": "sb_video",
+      "name": "Story \u2014 Video",
+      "settings": [
+        {
+          "type": "video_url",
+          "id": "video",
+          "label": "Video",
+          "accept": [
+            "youtube",
+            "vimeo"
+          ],
+          "info": "Paste a YouTube or Vimeo URL"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Caption",
+          "default": "60-second intro"
         }
       ]
     }
