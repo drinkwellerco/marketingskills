@@ -459,6 +459,20 @@
   function open(){ overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; }
   function close(){ overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; }
 
+  function updateHeaderCount(n){
+    var s = String(n);
+    /* covers Dawn, Debut, and most custom themes */
+    document.querySelectorAll('[data-cart-count],[data-header-cart-count],.cart-count,.header-cart-count,#CartCount,.cart__count,.cart-icon__bubble-count').forEach(function(el){ el.textContent = s; });
+    /* Dawn's cart-icon-bubble custom element */
+    document.querySelectorAll('cart-icon-bubble').forEach(function(el){
+      var b = el.querySelector('.visually-hidden'); if(b) b.textContent = n + ' items';
+      var c = el.querySelector('[aria-hidden]'); if(c) c.textContent = s;
+    });
+    /* show/hide zero-state on elements that hide when empty */
+    document.querySelectorAll('[data-cart-count-bubble]').forEach(function(el){ el.style.display = n > 0 ? '' : 'none'; el.textContent = s; });
+    document.dispatchEvent(new CustomEvent('cart:refresh', { detail: { itemCount: n }, bubbles: true }));
+  }
+
   function refresh(){
     return fetch(window.location.pathname + '?section_id=' + SID, { headers:{ 'Accept':'text/html' } })
       .then(function(r){ return r.text(); })
@@ -471,6 +485,11 @@
         var curCount = overlay.querySelector('.cd-count');
         if(count && curCount){ curCount.textContent = count.textContent; }
         if(savedDiscount){ showAppliedBadge(savedDiscount); }
+        /* update header cart icon count */
+        fetch('/cart.js', { headers:{ 'Accept':'application/json' } })
+          .then(function(r){ return r.json(); })
+          .then(function(c){ updateHeaderCount(c.item_count); })
+          .catch(function(){});
       });
   }
 
