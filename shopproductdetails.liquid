@@ -922,7 +922,7 @@
           %}
         {% endif %}
 
-        <!-- Left column extras: brand story + story block -->
+        <!-- Left column extras: brand story + story tab blocks -->
         <div class="shop-left-extras">
         {% for block in section.blocks %}
           {% if block.type == 'brand_story' %}
@@ -990,7 +990,132 @@
                 </div>
               {%- endif -%}
             </div>
-            {% break %}
+
+          {% elsif block.type == 'story_full' %}
+            {%- assign st = block.settings -%}
+            <div class="sb-card-block" {{ block.shopify_attributes }} style="background:{{ st.bg_color | default: '#ffffff' }};border-radius:{{ st.radius | default: 24 }}px;padding:{{ st.padding | default: 30 }}px;margin-top:{{ st.margin_top | default: 16 }}px;box-shadow:0 4px 24px rgba(27,58,92,.10);border:1px solid #E8DDD5;">
+              {%- if st.eyebrow != blank -%}<span class="sb-eyebrow">{{ st.eyebrow }}</span>{%- endif -%}
+              {%- if st.heading != blank -%}<h3 class="sb-heading" style="color:{{ st.heading_color | default: '#1B3A5C' }};">{{ st.heading }}</h3>{%- endif -%}
+              {%- if st.lead != blank -%}<p class="sb-lead">{{ st.lead }}</p>{%- endif -%}
+              {%- if st.body != blank -%}<div class="sb-body">{{ st.body }}</div>{%- endif -%}
+              {%- assign sb_stats = section.blocks | where: 'type', 'sb_stat' -%}
+              {%- if sb_stats.size > 0 -%}
+                <div class="sb-chips">
+                  {%- for b in sb_stats -%}<div class="sb-chip" {{ b.shopify_attributes }}><div class="n">{{ b.settings.number }}</div><div class="l">{{ b.settings.label }}</div></div>{%- endfor -%}
+                </div>
+              {%- endif -%}
+              {%- if st.quote != blank -%}<div class="sb-quote"><p>{{ st.quote }}</p></div>{%- endif -%}
+            </div>
+
+          {% elsif block.type == 'story_ingredients' %}
+            {%- assign st = block.settings -%}
+            <div class="sb-card-block" {{ block.shopify_attributes }} style="background:{{ st.bg_color | default: '#ffffff' }};border-radius:{{ st.radius | default: 24 }}px;padding:{{ st.padding | default: 30 }}px;margin-top:{{ st.margin_top | default: 16 }}px;box-shadow:0 4px 24px rgba(27,58,92,.10);border:1px solid #E8DDD5;">
+              {%- if st.eyebrow != blank -%}<span class="sb-eyebrow">{{ st.eyebrow }}</span>{%- endif -%}
+              {%- if st.heading != blank -%}<h3 class="sb-heading" style="color:{{ st.heading_color | default: '#1B3A5C' }};">{{ st.heading }}</h3>{%- endif -%}
+              {%- if st.lead != blank -%}<p class="sb-lead">{{ st.lead }}</p>{%- endif -%}
+              {%- assign hs_ings = section.blocks | where: 'type', 'sb_ingredient' -%}
+              {%- if hs_ings.size > 0 -%}
+                <div class="sb-ings">
+                  {%- for b in hs_ings -%}
+                    <div class="sb-ing" {{ b.shopify_attributes }}>
+                      <span class="dot" style="background:{{ b.settings.color }};"></span>
+                      <span><span class="iname">{{ b.settings.name }}</span><div class="idesc">{{ b.settings.desc }}</div></span>
+                      <span class="dose">{{ b.settings.dose }}</span>
+                    </div>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+              {%- if st.footnote != blank -%}<p class="sb-foot">{{ st.footnote }}</p>{%- endif -%}
+            </div>
+
+          {% elsif block.type == 'story_expert' %}
+            {%- assign st = block.settings -%}
+            <div class="sb-card-block" {{ block.shopify_attributes }} style="background:{{ st.bg_color | default: '#ffffff' }};border-radius:{{ st.radius | default: 24 }}px;padding:{{ st.padding | default: 30 }}px;margin-top:{{ st.margin_top | default: 16 }}px;box-shadow:0 4px 24px rgba(27,58,92,.10);border:1px solid #E8DDD5;">
+              {%- if st.eyebrow != blank -%}<span class="sb-eyebrow">{{ st.eyebrow }}</span>{%- endif -%}
+              {%- if st.heading != blank -%}<h3 class="sb-heading" style="color:{{ st.heading_color | default: '#1B3A5C' }};">{{ st.heading }}</h3>{%- endif -%}
+              <div class="sb-pro">
+                <span class="sb-pro-photo">{%- if st.expert_image != blank -%}{{ st.expert_image | image_url: width: 240 | image_tag: alt: st.expert_name, class: 'photo' }}{%- endif -%}</span>
+                <div>
+                  {%- if st.expert_quote != blank -%}<p class="pq">{{ st.expert_quote }}</p>{%- endif -%}
+                  {%- if st.expert_name != blank -%}<div class="pname">{{ st.expert_name }}</div>{%- endif -%}
+                  {%- if st.expert_cred != blank -%}<div class="pcred">{{ st.expert_cred }}</div>{%- endif -%}
+                </div>
+              </div>
+              {%- assign hs_endorse = section.blocks | where: 'type', 'sb_endorsement' -%}
+              {%- if hs_endorse.size > 0 -%}
+                <ul class="sb-endorse">
+                  {%- for b in hs_endorse -%}<li {{ b.shopify_attributes }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ b.settings.text }}</li>{%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </div>
+
+          {% elsif block.type == 'story_founders' %}
+            {%- assign st = block.settings -%}
+            <div class="sb-card-block" {{ block.shopify_attributes }} style="background:{{ st.bg_color | default: '#ffffff' }};border-radius:{{ st.radius | default: 24 }}px;padding:{{ st.padding | default: 30 }}px;margin-top:{{ st.margin_top | default: 16 }}px;box-shadow:0 4px 24px rgba(27,58,92,.10);border:1px solid #E8DDD5;">
+              {%- if st.eyebrow != blank -%}<span class="sb-eyebrow">{{ st.eyebrow }}</span>{%- endif -%}
+              {%- if st.heading != blank -%}<h3 class="sb-heading" style="color:{{ st.heading_color | default: '#1B3A5C' }};">{{ st.heading }}</h3>{%- endif -%}
+              {%- if st.lead != blank -%}<p class="sb-lead">{{ st.lead }}</p>{%- endif -%}
+              <div class="sb-found-top">
+                {%- if st.video_url != blank -%}
+                  <div class="sb-video"><iframe src="{{ st.video_url | external_video_url: autoplay: false }}" allowfullscreen allow="autoplay; encrypted-media" loading="lazy" style="border:0;width:100%;height:100%;position:absolute;top:0;left:0;"></iframe></div>
+                {%- endif -%}
+                {%- if st.collage1 != blank or st.collage2 != blank -%}
+                  <div class="sb-collage">
+                    <span class="sb-ph">{%- if st.collage1 != blank -%}{{ st.collage1 | image_url: width: 400 | image_tag: alt: '' }}{%- endif -%}</span>
+                    <span class="sb-ph">{%- if st.collage2 != blank -%}{{ st.collage2 | image_url: width: 400 | image_tag: alt: '' }}{%- endif -%}</span>
+                  </div>
+                {%- endif -%}
+              </div>
+              {%- assign sb_founders = section.blocks | where: 'type', 'sb_founder' -%}
+              {%- if sb_founders.size > 0 -%}
+                <div class="sb-founders">
+                  {%- for b in sb_founders -%}
+                    <div class="sb-founder" {{ b.shopify_attributes }}>
+                      <span class="sb-founder-photo">{%- if b.settings.image != blank -%}{{ b.settings.image | image_url: width: 160 | image_tag: alt: b.settings.name }}{%- endif -%}</span>
+                      <div><div class="fname">{{ b.settings.name }}</div><div class="frole">{{ b.settings.role }}</div><div class="fbio">{{ b.settings.bio }}</div></div>
+                    </div>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            </div>
+
+          {% elsif block.type == 'story_watch' %}
+            {%- assign st = block.settings -%}
+            <div class="sb-card-block" {{ block.shopify_attributes }} style="background:{{ st.bg_color | default: '#ffffff' }};border-radius:{{ st.radius | default: 24 }}px;padding:{{ st.padding | default: 30 }}px;margin-top:{{ st.margin_top | default: 16 }}px;box-shadow:0 4px 24px rgba(27,58,92,.10);border:1px solid #E8DDD5;">
+              {%- if st.eyebrow != blank -%}<span class="sb-eyebrow">{{ st.eyebrow }}</span>{%- endif -%}
+              {%- if st.heading != blank -%}<h3 class="sb-heading" style="color:{{ st.heading_color | default: '#1B3A5C' }};">{{ st.heading }}</h3>{%- endif -%}
+              {%- if st.lead != blank -%}<p class="sb-lead">{{ st.lead }}</p>{%- endif -%}
+              {%- assign sb_resources = section.blocks | where: 'type', 'sb_resource' -%}
+              {%- if sb_resources.size > 0 -%}
+                <div class="sb-res">
+                  {%- for b in sb_resources -%}
+                    <a href="{{ b.settings.url | default: '#' }}" class="sb-res-card" {{ b.shopify_attributes }}>
+                      <span class="sb-res-badge {{ b.settings.badge | downcase }}">{{ b.settings.badge }}</span>
+                      <span><span class="rt">{{ b.settings.title }}</span><div class="rs">{{ b.settings.source }}</div></span>
+                      <span class="arr"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg></span>
+                    </a>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+              {%- assign sb_videos = section.blocks | where: 'type', 'sb_video' -%}
+              {%- if sb_videos.size > 0 -%}
+                <div class="sb-vids">
+                  {%- for b in sb_videos -%}
+                    <div class="sb-vid" {{ b.shopify_attributes }}>
+                      <div class="vwrap">
+                        {%- if b.settings.video != blank -%}
+                          <iframe src="{{ b.settings.video | external_video_url: autoplay: false }}" allowfullscreen allow="autoplay; encrypted-media" loading="lazy" style="border:0;width:100%;height:100%;position:absolute;top:0;left:0;"></iframe>
+                        {%- else -%}
+                          <div class="sb-video-ph"><span>Paste a YouTube or Vimeo URL</span></div>
+                        {%- endif -%}
+                      </div>
+                      {%- if b.settings.title != blank -%}<div class="vt">{{ b.settings.title }}</div>{%- endif -%}
+                    </div>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            </div>
+
           {% endif %}
         {% endfor %}
         </div>
@@ -19801,410 +19926,6 @@
       ]
     },
     {
-      "type": "story_block",
-      "name": "Story Block (Tabbed)",
-      "settings": [
-        {
-          "type": "header",
-          "content": "Style"
-        },
-        {
-          "type": "select",
-          "id": "style",
-          "label": "Card style",
-          "options": [
-            {
-              "value": "light",
-              "label": "Light"
-            },
-            {
-              "value": "dark",
-              "label": "Dark blue"
-            }
-          ],
-          "default": "light"
-        },
-        {
-          "type": "color",
-          "id": "bg_color",
-          "label": "Background behind card",
-          "default": "#F0E8E0"
-        },
-        {
-          "type": "select",
-          "id": "align",
-          "label": "Header alignment",
-          "options": [
-            {
-              "value": "left",
-              "label": "Left"
-            },
-            {
-              "value": "center",
-              "label": "Center"
-            }
-          ],
-          "default": "left"
-        },
-        {
-          "type": "header",
-          "content": "Size & spacing"
-        },
-        {
-          "type": "range",
-          "id": "heading_size",
-          "label": "Heading size",
-          "min": 18,
-          "max": 44,
-          "step": 1,
-          "unit": "px",
-          "default": 26
-        },
-        {
-          "type": "range",
-          "id": "body_size",
-          "label": "Body text size",
-          "min": 12,
-          "max": 20,
-          "step": 1,
-          "unit": "px",
-          "default": 15
-        },
-        {
-          "type": "range",
-          "id": "tab_label_size",
-          "label": "Tab label size",
-          "min": 9,
-          "max": 16,
-          "step": 1,
-          "unit": "px",
-          "default": 12
-        },
-        {
-          "type": "range",
-          "id": "content_padding",
-          "label": "Card inner padding",
-          "min": 14,
-          "max": 56,
-          "step": 2,
-          "unit": "px",
-          "default": 30
-        },
-        {
-          "type": "range",
-          "id": "item_spacing",
-          "label": "Spacing between blocks",
-          "min": 12,
-          "max": 48,
-          "step": 2,
-          "unit": "px",
-          "default": 24
-        },
-        {
-          "type": "range",
-          "id": "card_radius",
-          "label": "Card corner radius",
-          "min": 0,
-          "max": 36,
-          "step": 2,
-          "unit": "px",
-          "default": 24
-        },
-        {
-          "type": "range",
-          "id": "padding_top",
-          "label": "Padding above card",
-          "min": 0,
-          "max": 80,
-          "step": 4,
-          "unit": "px",
-          "default": 16
-        },
-        {
-          "type": "range",
-          "id": "padding_bottom",
-          "label": "Padding below card",
-          "min": 0,
-          "max": 80,
-          "step": 4,
-          "unit": "px",
-          "default": 0
-        },
-        {
-          "type": "header",
-          "content": "Header"
-        },
-        {
-          "type": "text",
-          "id": "sscript",
-          "label": "Script eyebrow",
-          "default": "Get to know us"
-        },
-        {
-          "type": "color",
-          "id": "sscript_color",
-          "label": "Eyebrow color",
-          "default": "#E8607A"
-        },
-        {
-          "type": "text",
-          "id": "heading",
-          "label": "Heading",
-          "default": "The story behind the scoop"
-        },
-        {
-          "type": "color",
-          "id": "heading_color",
-          "label": "Heading color",
-          "default": "#1B3A5C"
-        },
-        {
-          "type": "header",
-          "content": "Tabs \u2014 show / hide & labels"
-        },
-        {
-          "type": "checkbox",
-          "id": "show_story",
-          "label": "Show Full Story tab",
-          "default": true
-        },
-        {
-          "type": "text",
-          "id": "tab_story",
-          "label": "Full Story label",
-          "default": "The Full Story"
-        },
-        {
-          "type": "checkbox",
-          "id": "show_ingredients",
-          "label": "Show What's Inside tab",
-          "default": true
-        },
-        {
-          "type": "text",
-          "id": "tab_ingredients",
-          "label": "What's Inside label",
-          "default": "What's Inside"
-        },
-        {
-          "type": "checkbox",
-          "id": "show_expert",
-          "label": "Show Expert Opinion tab",
-          "default": true
-        },
-        {
-          "type": "text",
-          "id": "tab_expert",
-          "label": "Expert Opinion label",
-          "default": "Expert Opinion"
-        },
-        {
-          "type": "checkbox",
-          "id": "show_founders",
-          "label": "Show Meet the Founders tab",
-          "default": true
-        },
-        {
-          "type": "text",
-          "id": "tab_founders",
-          "label": "Founders label",
-          "default": "Meet the Founders"
-        },
-        {
-          "type": "checkbox",
-          "id": "show_watch",
-          "label": "Show Watch & Read tab",
-          "default": true
-        },
-        {
-          "type": "text",
-          "id": "tab_watch",
-          "label": "Watch & Read label",
-          "default": "Watch & Read"
-        },
-        {
-          "type": "header",
-          "content": "Tab \u00b7 Full Story"
-        },
-        {
-          "type": "text",
-          "id": "story_eyebrow",
-          "label": "Eyebrow",
-          "default": "Why we built it"
-        },
-        {
-          "type": "text",
-          "id": "story_h",
-          "label": "Heading",
-          "default": "Hydration built around her."
-        },
-        {
-          "type": "color",
-          "id": "story_h_color",
-          "label": "Heading color",
-          "default": "#1B3A5C"
-        },
-        {
-          "type": "textarea",
-          "id": "story_lead",
-          "label": "Lead paragraph"
-        },
-        {
-          "type": "richtext",
-          "id": "story_body",
-          "label": "Body"
-        },
-        {
-          "type": "text",
-          "id": "story_quote",
-          "label": "Pull quote"
-        },
-        {
-          "type": "header",
-          "content": "Tab \u00b7 What's Inside"
-        },
-        {
-          "type": "text",
-          "id": "ing_eyebrow",
-          "label": "Eyebrow",
-          "default": "Inside the scoop"
-        },
-        {
-          "type": "text",
-          "id": "ing_h",
-          "label": "Heading",
-          "default": "Eight actives. Every one earns its place."
-        },
-        {
-          "type": "color",
-          "id": "ing_h_color",
-          "label": "Heading color",
-          "default": "#1B3A5C"
-        },
-        {
-          "type": "textarea",
-          "id": "ing_lead",
-          "label": "Lead paragraph"
-        },
-        {
-          "type": "text",
-          "id": "ing_footnote",
-          "label": "Footnote"
-        },
-        {
-          "type": "header",
-          "content": "Tab \u00b7 Expert Opinion"
-        },
-        {
-          "type": "text",
-          "id": "exp_eyebrow",
-          "label": "Eyebrow",
-          "default": "The expert take"
-        },
-        {
-          "type": "text",
-          "id": "exp_h",
-          "label": "Heading",
-          "default": "Vetted by the people who'd know."
-        },
-        {
-          "type": "color",
-          "id": "exp_h_color",
-          "label": "Heading color",
-          "default": "#1B3A5C"
-        },
-        {
-          "type": "image_picker",
-          "id": "exp_image",
-          "label": "Expert headshot"
-        },
-        {
-          "type": "textarea",
-          "id": "exp_quote",
-          "label": "Expert quote"
-        },
-        {
-          "type": "text",
-          "id": "exp_name",
-          "label": "Expert name"
-        },
-        {
-          "type": "text",
-          "id": "exp_cred",
-          "label": "Expert credentials"
-        },
-        {
-          "type": "header",
-          "content": "Tab \u00b7 Meet the Founders"
-        },
-        {
-          "type": "text",
-          "id": "fnd_eyebrow",
-          "label": "Eyebrow",
-          "default": "Our story"
-        },
-        {
-          "type": "text",
-          "id": "fnd_h",
-          "label": "Heading",
-          "default": "A husband-and-wife team, one stubborn idea."
-        },
-        {
-          "type": "color",
-          "id": "fnd_h_color",
-          "label": "Heading color",
-          "default": "#1B3A5C"
-        },
-        {
-          "type": "textarea",
-          "id": "fnd_lead",
-          "label": "Lead paragraph"
-        },
-        {
-          "type": "video",
-          "id": "fnd_video",
-          "label": "Founders video"
-        },
-        {
-          "type": "image_picker",
-          "id": "fnd_collage1",
-          "label": "Collage photo 1"
-        },
-        {
-          "type": "image_picker",
-          "id": "fnd_collage2",
-          "label": "Collage photo 2"
-        },
-        {
-          "type": "header",
-          "content": "Tab \u00b7 Watch & Read"
-        },
-        {
-          "type": "text",
-          "id": "watch_eyebrow",
-          "label": "Eyebrow",
-          "default": "Dig deeper"
-        },
-        {
-          "type": "text",
-          "id": "watch_h",
-          "label": "Heading",
-          "default": "The research & stories behind it."
-        },
-        {
-          "type": "color",
-          "id": "watch_h_color",
-          "label": "Heading color",
-          "default": "#1B3A5C"
-        },
-        {
-          "type": "textarea",
-          "id": "watch_lead",
-          "label": "Lead paragraph"
-        }
-      ]
-    },
-    {
       "type": "sb_stat",
       "name": "Story \u2014 Stat chip",
       "settings": [
@@ -20339,15 +20060,440 @@
       "name": "Story \u2014 Video",
       "settings": [
         {
-          "type": "video",
+          "type": "video_url",
           "id": "video",
-          "label": "Video"
+          "label": "Video",
+          "accept": [
+            "youtube",
+            "vimeo"
+          ],
+          "info": "Paste a YouTube or Vimeo URL"
         },
         {
           "type": "text",
           "id": "title",
           "label": "Caption",
           "default": "60-second intro"
+        }
+      ]
+    },
+    {
+      "type": "story_full",
+      "name": "Story: Full Story",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Card Style"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "range",
+          "id": "radius",
+          "label": "Corner radius",
+          "min": 0,
+          "max": 36,
+          "step": 2,
+          "unit": "px",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "padding",
+          "label": "Inner padding",
+          "min": 14,
+          "max": 56,
+          "step": 2,
+          "unit": "px",
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "label": "Top margin",
+          "min": 0,
+          "max": 60,
+          "step": 4,
+          "unit": "px",
+          "default": 16
+        },
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Why we built it"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Hydration built around her."
+        },
+        {
+          "type": "color",
+          "id": "heading_color",
+          "label": "Heading color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "textarea",
+          "id": "lead",
+          "label": "Lead paragraph"
+        },
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "Body"
+        },
+        {
+          "type": "text",
+          "id": "quote",
+          "label": "Pull quote"
+        }
+      ]
+    },
+    {
+      "type": "story_ingredients",
+      "name": "Story: Ingredients",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Card Style"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "range",
+          "id": "radius",
+          "label": "Corner radius",
+          "min": 0,
+          "max": 36,
+          "step": 2,
+          "unit": "px",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "padding",
+          "label": "Inner padding",
+          "min": 14,
+          "max": 56,
+          "step": 2,
+          "unit": "px",
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "label": "Top margin",
+          "min": 0,
+          "max": 60,
+          "step": 4,
+          "unit": "px",
+          "default": 16
+        },
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Inside the scoop"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Eight actives. Every one earns its place."
+        },
+        {
+          "type": "color",
+          "id": "heading_color",
+          "label": "Heading color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "textarea",
+          "id": "lead",
+          "label": "Lead paragraph"
+        },
+        {
+          "type": "text",
+          "id": "footnote",
+          "label": "Footnote"
+        }
+      ]
+    },
+    {
+      "type": "story_expert",
+      "name": "Story: Expert Opinion",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Card Style"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "range",
+          "id": "radius",
+          "label": "Corner radius",
+          "min": 0,
+          "max": 36,
+          "step": 2,
+          "unit": "px",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "padding",
+          "label": "Inner padding",
+          "min": 14,
+          "max": 56,
+          "step": 2,
+          "unit": "px",
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "label": "Top margin",
+          "min": 0,
+          "max": 60,
+          "step": 4,
+          "unit": "px",
+          "default": 16
+        },
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "The expert take"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Vetted by the people who'd know."
+        },
+        {
+          "type": "color",
+          "id": "heading_color",
+          "label": "Heading color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "image_picker",
+          "id": "expert_image",
+          "label": "Expert headshot"
+        },
+        {
+          "type": "textarea",
+          "id": "expert_quote",
+          "label": "Expert quote"
+        },
+        {
+          "type": "text",
+          "id": "expert_name",
+          "label": "Expert name"
+        },
+        {
+          "type": "text",
+          "id": "expert_cred",
+          "label": "Expert credentials"
+        }
+      ]
+    },
+    {
+      "type": "story_founders",
+      "name": "Story: Meet the Founders",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Card Style"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "range",
+          "id": "radius",
+          "label": "Corner radius",
+          "min": 0,
+          "max": 36,
+          "step": 2,
+          "unit": "px",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "padding",
+          "label": "Inner padding",
+          "min": 14,
+          "max": 56,
+          "step": 2,
+          "unit": "px",
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "label": "Top margin",
+          "min": 0,
+          "max": 60,
+          "step": 4,
+          "unit": "px",
+          "default": 16
+        },
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Our story"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "A husband-and-wife team, one stubborn idea."
+        },
+        {
+          "type": "color",
+          "id": "heading_color",
+          "label": "Heading color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "textarea",
+          "id": "lead",
+          "label": "Lead paragraph"
+        },
+        {
+          "type": "video_url",
+          "id": "video_url",
+          "label": "Founders video",
+          "accept": [
+            "youtube",
+            "vimeo"
+          ],
+          "info": "Paste a YouTube or Vimeo URL"
+        },
+        {
+          "type": "image_picker",
+          "id": "collage1",
+          "label": "Collage photo 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "collage2",
+          "label": "Collage photo 2"
+        }
+      ]
+    },
+    {
+      "type": "story_watch",
+      "name": "Story: Watch & Read",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Card Style"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "range",
+          "id": "radius",
+          "label": "Corner radius",
+          "min": 0,
+          "max": 36,
+          "step": 2,
+          "unit": "px",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "padding",
+          "label": "Inner padding",
+          "min": 14,
+          "max": 56,
+          "step": 2,
+          "unit": "px",
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "label": "Top margin",
+          "min": 0,
+          "max": 60,
+          "step": 4,
+          "unit": "px",
+          "default": 16
+        },
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Dig deeper"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "The research & stories behind it."
+        },
+        {
+          "type": "color",
+          "id": "heading_color",
+          "label": "Heading color",
+          "default": "#1B3A5C"
+        },
+        {
+          "type": "textarea",
+          "id": "lead",
+          "label": "Lead paragraph"
         }
       ]
     }
