@@ -1,0 +1,100 @@
+{%- liquid
+  assign bg    = background_color | default: '#F5EEE8'
+  assign btn   = button_color     | default: '#1B3A5C'
+  assign txt   = text_color       | default: '#1B3A5C'
+  assign mt    = margin_top       | default: 0
+  assign mb    = margin_bottom    | default: 0
+  assign qid   = 'qty-' | append: product_form_id
+-%}
+
+<div class="mqty-wrap" style="margin-top:{{ mt }}px;margin-bottom:{{ mb }}px;">
+  <div class="mqty" id="{{ qid }}"
+    style="
+      --mqty-bg:{{ bg }};
+      --mqty-btn:{{ btn }};
+      --mqty-txt:{{ txt }};
+    "
+    data-form-id="{{ product_form_id }}"
+  >
+    <button type="button" class="mqty-btn mqty-minus" aria-label="Decrease quantity">&#8722;</button>
+    <span class="mqty-val">1</span>
+    <button type="button" class="mqty-btn mqty-plus" aria-label="Increase quantity">&#43;</button>
+  </div>
+</div>
+
+<style>
+  .mqty-wrap { display:inline-block; }
+  .mqty {
+    display:inline-flex;
+    align-items:center;
+    border-radius:999px;
+    overflow:hidden;
+    background:var(--mqty-bg);
+    border:1.5px solid var(--mqty-btn);
+    height:44px;
+    user-select:none;
+  }
+  .mqty-btn {
+    width:44px;
+    height:44px;
+    border:none;
+    background:transparent;
+    color:var(--mqty-btn);
+    font-size:22px;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:background .15s;
+    flex-shrink:0;
+  }
+  .mqty-btn:hover { background:rgba(0,0,0,.07); }
+  .mqty-btn:active { background:rgba(0,0,0,.14); }
+  .mqty-val {
+    min-width:36px;
+    text-align:center;
+    font-size:16px;
+    font-weight:700;
+    color:var(--mqty-txt);
+    font-family:inherit;
+  }
+</style>
+
+<script>
+(function(){
+  var wrap = document.getElementById('{{ qid }}');
+  if(!wrap) return;
+  var formId = wrap.dataset.formId;
+  var minusBtn = wrap.querySelector('.mqty-minus');
+  var plusBtn  = wrap.querySelector('.mqty-plus');
+  var display  = wrap.querySelector('.mqty-val');
+  var qty = 1;
+
+  function getInput(){
+    var form = document.getElementById(formId);
+    if(!form) return null;
+    var inp = form.querySelector('input[name="quantity"]');
+    if(!inp){
+      inp = document.createElement('input');
+      inp.type  = 'hidden';
+      inp.name  = 'quantity';
+      inp.value = '1';
+      form.appendChild(inp);
+    }
+    return inp;
+  }
+
+  function update(n){
+    qty = Math.max(1, n);
+    display.textContent = qty;
+    minusBtn.disabled = qty <= 1;
+    var inp = getInput();
+    if(inp) inp.value = qty;
+  }
+
+  minusBtn.addEventListener('click', function(){ update(qty - 1); });
+  plusBtn.addEventListener('click',  function(){ update(qty + 1); });
+  update(1);
+})();
+</script>
