@@ -1164,10 +1164,16 @@
                   {%- if hs.story_h != blank -%}<h3 style="color:{{ hs.story_h_color | default: '#1B3A5C' }} !important;">{{ hs.story_h }}</h3>{%- endif -%}
                   {%- if hs.story_lead != blank -%}<p class="sb-lead" style="margin-top:16px;">{{ hs.story_lead }}</p>{%- endif -%}
                   {%- if hs.story_body != blank -%}{{ hs.story_body }}{%- endif -%}
-                  {%- assign sb_stats = section.blocks | where: 'type', 'sb_stat' -%}
-                  {%- if sb_stats.size > 0 -%}
-                    <div class="sb-chips">
-                      {%- for b in sb_stats -%}<div class="sb-chip" {{ b.shopify_attributes }}><div class="n">{{ b.settings.number }}</div><div class="l">{{ b.settings.label }}</div></div>{%- endfor -%}
+                  {%- assign tab_stats = section.blocks | where: 'type', 'sb_stats_tab' | first -%}
+                  {%- if tab_stats -%}
+                    <div class="sb-chips" {{ tab_stats.shopify_attributes }}>
+                      {%- for i in (1..10) -%}
+                        {%- assign sn = 'stat_' | append: i | append: '_number' -%}
+                        {%- assign sl = 'stat_' | append: i | append: '_label' -%}
+                        {%- if tab_stats.settings[sn] != blank -%}
+                          <div class="sb-chip"><div class="n">{{ tab_stats.settings[sn] }}</div><div class="l">{{ tab_stats.settings[sl] }}</div></div>
+                        {%- endif -%}
+                      {%- endfor -%}
                     </div>
                   {%- endif -%}
                   {%- if hs.story_quote != blank -%}<div class="sb-quote"><p>{{ hs.story_quote }}</p></div>{%- endif -%}
@@ -23730,11 +23736,30 @@
       ]
     },
     {
-      "type": "sb_stat",
-      "name": "Story — Stat chip",
+      "type": "sb_stats_tab",
+      "name": "Story — Stat chips",
+      "limit": 1,
       "settings": [
-        { "type": "text", "id": "number", "label": "Number", "default": "30" },
-        { "type": "text", "id": "label", "label": "Label", "default": "servings per tub" }
+        { "type": "text", "id": "stat_1_number", "label": "Stat 1 — Number" },
+        { "type": "text", "id": "stat_1_label", "label": "Stat 1 — Label" },
+        { "type": "text", "id": "stat_2_number", "label": "Stat 2 — Number" },
+        { "type": "text", "id": "stat_2_label", "label": "Stat 2 — Label" },
+        { "type": "text", "id": "stat_3_number", "label": "Stat 3 — Number" },
+        { "type": "text", "id": "stat_3_label", "label": "Stat 3 — Label" },
+        { "type": "text", "id": "stat_4_number", "label": "Stat 4 — Number" },
+        { "type": "text", "id": "stat_4_label", "label": "Stat 4 — Label" },
+        { "type": "text", "id": "stat_5_number", "label": "Stat 5 — Number" },
+        { "type": "text", "id": "stat_5_label", "label": "Stat 5 — Label" },
+        { "type": "text", "id": "stat_6_number", "label": "Stat 6 — Number" },
+        { "type": "text", "id": "stat_6_label", "label": "Stat 6 — Label" },
+        { "type": "text", "id": "stat_7_number", "label": "Stat 7 — Number" },
+        { "type": "text", "id": "stat_7_label", "label": "Stat 7 — Label" },
+        { "type": "text", "id": "stat_8_number", "label": "Stat 8 — Number" },
+        { "type": "text", "id": "stat_8_label", "label": "Stat 8 — Label" },
+        { "type": "text", "id": "stat_9_number", "label": "Stat 9 — Number" },
+        { "type": "text", "id": "stat_9_label", "label": "Stat 9 — Label" },
+        { "type": "text", "id": "stat_10_number", "label": "Stat 10 — Number" },
+        { "type": "text", "id": "stat_10_label", "label": "Stat 10 — Label" }
       ]
     },
     {
