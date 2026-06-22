@@ -1116,6 +1116,10 @@
         {% for block in section.blocks %}{% if block.type == 'story_block' %}
           {%- assign hs = block.settings -%}
           {%- assign bid = block.id -%}
+          {%- assign tab_ing = section.blocks | where: 'type', 'sb_ingredients_tab' | first -%}
+          {%- assign tab_exp = section.blocks | where: 'type', 'sb_expert_tab' | first -%}
+          {%- assign tab_fnd = section.blocks | where: 'type', 'sb_founders_tab' | first -%}
+          {%- assign tab_watch = section.blocks | where: 'type', 'sb_watch_tab' | first -%}
           <section id="sb-{{ bid }}" class="sb-block {% if hs.style == 'dark' %}is-dark{% endif %}" data-screen-label="Get to know us" {{ block.shopify_attributes }}
             style="background:{{ hs.bg_color | default: 'transparent' }};padding:{{ hs.padding_top | default: 16 }}px 0 {{ hs.padding_bottom | default: 0 }}px;--sb-h:{{ hs.heading_size | default: 26 }}px;--sb-body:{{ hs.body_size | default: 14.5 }}px;--sb-pad:{{ hs.content_padding | default: 30 }}px;--sb-radius:{{ hs.card_radius | default: 24 }}px;--sb-tab:{{ hs.tab_label_size | default: 11.5 }}px;--sb-gap:{{ hs.item_spacing | default: 24 }}px;--sb-align:{{ hs.align | default: 'left' }};">
             {%- if hs.sscript != blank or hs.heading != blank -%}
@@ -1132,28 +1136,28 @@
                   <span>{{ hs.tab_story | default: 'The Full Story' }}</span>
                 </button>
                 {%- endif -%}
-                {%- if hs.show_ingredients -%}
+                {%- if tab_ing and tab_ing.settings.show_ingredients -%}
                 <button class="sb-tab{% unless hs.show_story %} active{% endunless %}" data-sb="ingredients" role="tab" type="button" aria-selected="false">
                   <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7C8 8 6 11 6 14.5a6 6 0 0 0 12 0C18 11 16 8 12 2.7Z"/></svg></span>
-                  <span>{{ hs.tab_ingredients | default: "What's Inside" }}</span>
+                  <span>{{ tab_ing.settings.tab_ingredients | default: "What's Inside" }}</span>
                 </button>
                 {%- endif -%}
-                {%- if hs.show_expert -%}
+                {%- if tab_exp and tab_exp.settings.show_expert -%}
                 <button class="sb-tab" data-sb="expert" role="tab" type="button" aria-selected="false">
                   <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.6 7 22l5-3 5 3-1.2-8.4"/></svg></span>
-                  <span>{{ hs.tab_expert | default: 'Expert Opinion' }}</span>
+                  <span>{{ tab_exp.settings.tab_expert | default: 'Expert Opinion' }}</span>
                 </button>
                 {%- endif -%}
-                {%- if hs.show_founders -%}
+                {%- if tab_fnd and tab_fnd.settings.show_founders -%}
                 <button class="sb-tab" data-sb="founders" role="tab" type="button" aria-selected="false">
                   <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
-                  <span>{{ hs.tab_founders | default: 'Meet the Founders' }}</span>
+                  <span>{{ tab_fnd.settings.tab_founders | default: 'Meet the Founders' }}</span>
                 </button>
                 {%- endif -%}
-                {%- if hs.show_watch -%}
+                {%- if tab_watch and tab_watch.settings.show_watch -%}
                 <button class="sb-tab" data-sb="watch" role="tab" type="button" aria-selected="false">
                   <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg></span>
-                  <span>{{ hs.tab_watch | default: 'Watch &amp; Read' }}</span>
+                  <span>{{ tab_watch.settings.tab_watch | default: 'Watch &amp; Read' }}</span>
                 </button>
                 {%- endif -%}
               </div>
@@ -1179,107 +1183,138 @@
                   {%- if hs.story_quote != blank -%}<div class="sb-quote"><p>{{ hs.story_quote }}</p></div>{%- endif -%}
                 </div>
                 {%- endif -%}
-                {%- if hs.show_ingredients -%}
-                <div class="sb-panel{% unless hs.show_story %} active{% endunless %}" data-sb="ingredients" role="tabpanel">
-                  {%- if hs.ing_eyebrow != blank -%}<span class="eyebrow">{{ hs.ing_eyebrow }}</span>{%- endif -%}
-                  {%- if hs.ing_h != blank -%}<h3 style="color:{{ hs.ing_h_color | default: '#1B3A5C' }} !important;">{{ hs.ing_h }}</h3>{%- endif -%}
-                  {%- if hs.ing_lead != blank -%}<p class="sb-lead" style="margin-top:16px;">{{ hs.ing_lead }}</p>{%- endif -%}
-                  {%- assign hs_ings = section.blocks | where: 'type', 'sb_ingredient' -%}
-                  {%- if hs_ings.size > 0 -%}
-                    <div class="sb-ings">
-                      {%- for b in hs_ings -%}
-                        <div class="sb-ing" {{ b.shopify_attributes }}>
-                          <span class="dot" style="background:{{ b.settings.dot_color | default: '#8A9B6E' }};"></span>
-                          <span><span class="iname">{{ b.settings.name }}</span><div class="idesc">{{ b.settings.desc }}</div></span>
-                          <span class="dose">{{ b.settings.dose }}</span>
+                {%- if tab_ing and tab_ing.settings.show_ingredients -%}
+                <div class="sb-panel{% unless hs.show_story %} active{% endunless %}" data-sb="ingredients" role="tabpanel" {{ tab_ing.shopify_attributes }}>
+                  {%- if tab_ing.settings.ing_eyebrow != blank -%}<span class="eyebrow">{{ tab_ing.settings.ing_eyebrow }}</span>{%- endif -%}
+                  {%- if tab_ing.settings.ing_h != blank -%}<h3 style="color:{{ tab_ing.settings.ing_h_color | default: '#1B3A5C' }} !important;">{{ tab_ing.settings.ing_h }}</h3>{%- endif -%}
+                  {%- if tab_ing.settings.ing_lead != blank -%}<p class="sb-lead" style="margin-top:16px;">{{ tab_ing.settings.ing_lead }}</p>{%- endif -%}
+                  <div class="sb-ings">
+                    {%- for i in (1..10) -%}
+                      {%- assign ing_name = 'ing_' | append: i | append: '_name' -%}
+                      {%- assign ing_name_val = tab_ing.settings[ing_name] -%}
+                      {%- if ing_name_val != blank -%}
+                        {%- assign ing_desc = 'ing_' | append: i | append: '_desc' -%}
+                        {%- assign ing_dose = 'ing_' | append: i | append: '_dose' -%}
+                        {%- assign ing_dot = 'ing_' | append: i | append: '_dot' -%}
+                        <div class="sb-ing">
+                          <span class="dot" style="background:{{ tab_ing.settings[ing_dot] | default: '#8A9B6E' }};"></span>
+                          <span><span class="iname">{{ tab_ing.settings[ing_name] }}</span><div class="idesc">{{ tab_ing.settings[ing_desc] }}</div></span>
+                          <span class="dose">{{ tab_ing.settings[ing_dose] }}</span>
                         </div>
-                      {%- endfor -%}
-                    </div>
-                  {%- endif -%}
-                  {%- if hs.ing_footnote != blank -%}<p class="sb-foot">{{ hs.ing_footnote }}</p>{%- endif -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </div>
+                  {%- if tab_ing.settings.ing_footnote != blank -%}<p class="sb-foot">{{ tab_ing.settings.ing_footnote }}</p>{%- endif -%}
                 </div>
                 {%- endif -%}
-                {%- if hs.show_expert -%}
-                <div class="sb-panel" data-sb="expert" role="tabpanel">
-                  {%- if hs.exp_eyebrow != blank -%}<span class="eyebrow">{{ hs.exp_eyebrow }}</span>{%- endif -%}
-                  {%- if hs.exp_h != blank -%}<h3 style="color:{{ hs.exp_h_color | default: '#1B3A5C' }} !important;">{{ hs.exp_h }}</h3>{%- endif -%}
+                {%- if tab_exp and tab_exp.settings.show_expert -%}
+                <div class="sb-panel" data-sb="expert" role="tabpanel" {{ tab_exp.shopify_attributes }}>
+                  {%- if tab_exp.settings.exp_eyebrow != blank -%}<span class="eyebrow">{{ tab_exp.settings.exp_eyebrow }}</span>{%- endif -%}
+                  {%- if tab_exp.settings.exp_h != blank -%}<h3 style="color:{{ tab_exp.settings.exp_h_color | default: '#1B3A5C' }} !important;">{{ tab_exp.settings.exp_h }}</h3>{%- endif -%}
                   <div class="sb-pro">
-                    <span class="sb-pro-photo">{%- if hs.exp_image != blank -%}{{ hs.exp_image | image_url: width: 240 | image_tag: alt: hs.exp_name, class: 'photo' }}{%- endif -%}</span>
+                    <span class="sb-pro-photo">{%- if tab_exp.settings.exp_image != blank -%}{{ tab_exp.settings.exp_image | image_url: width: 240 | image_tag: alt: tab_exp.settings.exp_name, class: 'photo' }}{%- endif -%}</span>
                     <div>
-                      {%- if hs.exp_quote != blank -%}<p class="pq">{{ hs.exp_quote }}</p>{%- endif -%}
-                      {%- if hs.exp_name != blank -%}<div class="pname">{{ hs.exp_name }}</div>{%- endif -%}
-                      {%- if hs.exp_cred != blank -%}<div class="pcred">{{ hs.exp_cred }}</div>{%- endif -%}
+                      {%- if tab_exp.settings.exp_quote != blank -%}<p class="pq">{{ tab_exp.settings.exp_quote }}</p>{%- endif -%}
+                      {%- if tab_exp.settings.exp_name != blank -%}<div class="pname">{{ tab_exp.settings.exp_name }}</div>{%- endif -%}
+                      {%- if tab_exp.settings.exp_cred != blank -%}<div class="pcred">{{ tab_exp.settings.exp_cred }}</div>{%- endif -%}
                     </div>
                   </div>
-                  {%- assign hs_endorse = section.blocks | where: 'type', 'sb_endorsement' -%}
-                  {%- if hs_endorse.size > 0 -%}
+                  {%- assign has_endorse = false -%}
+                  {%- for i in (1..10) -%}
+                    {%- assign endorse_key = 'endorse_' | append: i -%}
+                    {%- if tab_exp.settings[endorse_key] != blank -%}{%- assign has_endorse = true -%}{%- endif -%}
+                  {%- endfor -%}
+                  {%- if has_endorse -%}
                     <ul class="sb-endorse">
-                      {%- for b in hs_endorse -%}<li {{ b.shopify_attributes }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ b.settings.text }}</li>{%- endfor -%}
+                      {%- for i in (1..10) -%}
+                        {%- assign endorse_key = 'endorse_' | append: i -%}
+                        {%- if tab_exp.settings[endorse_key] != blank -%}
+                          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ tab_exp.settings[endorse_key] }}</li>
+                        {%- endif -%}
+                      {%- endfor -%}
                     </ul>
                   {%- endif -%}
                 </div>
                 {%- endif -%}
-                {%- if hs.show_founders -%}
-                <div class="sb-panel" data-sb="founders" role="tabpanel">
-                  {%- if hs.fnd_eyebrow != blank -%}<span class="eyebrow">{{ hs.fnd_eyebrow }}</span>{%- endif -%}
-                  {%- if hs.fnd_h != blank -%}<h3 style="color:{{ hs.fnd_h_color | default: '#1B3A5C' }} !important;">{{ hs.fnd_h }}</h3>{%- endif -%}
-                  {%- if hs.fnd_lead != blank -%}<p class="sb-lead" style="margin-top:14px;">{{ hs.fnd_lead }}</p>{%- endif -%}
+                {%- if tab_fnd and tab_fnd.settings.show_founders -%}
+                <div class="sb-panel" data-sb="founders" role="tabpanel" {{ tab_fnd.shopify_attributes }}>
+                  {%- if tab_fnd.settings.fnd_eyebrow != blank -%}<span class="eyebrow">{{ tab_fnd.settings.fnd_eyebrow }}</span>{%- endif -%}
+                  {%- if tab_fnd.settings.fnd_h != blank -%}<h3 style="color:{{ tab_fnd.settings.fnd_h_color | default: '#1B3A5C' }} !important;">{{ tab_fnd.settings.fnd_h }}</h3>{%- endif -%}
+                  {%- if tab_fnd.settings.fnd_lead != blank -%}<p class="sb-lead" style="margin-top:14px;">{{ tab_fnd.settings.fnd_lead }}</p>{%- endif -%}
                   <div class="sb-found-top">
                     <div class="sb-video">
-                      {%- if hs.fnd_video != blank -%}
-                        {{ hs.fnd_video | video_tag: controls: true, class: 'sb-native-video' }}
+                      {%- if tab_fnd.settings.fnd_video != blank -%}
+                        {{ tab_fnd.settings.fnd_video | video_tag: controls: true, class: 'sb-native-video' }}
                       {%- else -%}
                         <div class="sb-video-ph"><span>Upload a founders video in block settings</span></div>
                       {%- endif -%}
                     </div>
                     <div class="sb-collage">
-                      <span class="sb-ph">{%- if hs.fnd_collage1 != blank -%}{{ hs.fnd_collage1 | image_url: width: 400 | image_tag: alt: '' }}{%- endif -%}</span>
-                      <span class="sb-ph">{%- if hs.fnd_collage2 != blank -%}{{ hs.fnd_collage2 | image_url: width: 400 | image_tag: alt: '' }}{%- endif -%}</span>
+                      <span class="sb-ph">{%- if tab_fnd.settings.fnd_collage1 != blank -%}{{ tab_fnd.settings.fnd_collage1 | image_url: width: 400 | image_tag: alt: '' }}{%- endif -%}</span>
+                      <span class="sb-ph">{%- if tab_fnd.settings.fnd_collage2 != blank -%}{{ tab_fnd.settings.fnd_collage2 | image_url: width: 400 | image_tag: alt: '' }}{%- endif -%}</span>
                     </div>
                   </div>
-                  {%- assign sb_founders = section.blocks | where: 'type', 'sb_founder' -%}
-                  {%- if sb_founders.size > 0 -%}
-                    <div class="sb-founders">
-                      {%- for b in sb_founders -%}
-                        <div class="sb-founder" {{ b.shopify_attributes }}>
-                          <span class="sb-founder-photo">{%- if b.settings.image != blank -%}{{ b.settings.image | image_url: width: 160 | image_tag: alt: b.settings.name }}{%- endif -%}</span>
-                          <div><div class="fname">{{ b.settings.name }}</div><div class="frole">{{ b.settings.role }}</div><div class="fbio">{{ b.settings.bio }}</div></div>
+                  <div class="sb-founders">
+                    {%- for i in (1..5) -%}
+                      {%- assign fnd_name = 'founder_' | append: i | append: '_name' -%}
+                      {%- assign fnd_name_val = tab_fnd.settings[fnd_name] -%}
+                      {%- if fnd_name_val != blank -%}
+                        {%- assign fnd_role = 'founder_' | append: i | append: '_role' -%}
+                        {%- assign fnd_bio = 'founder_' | append: i | append: '_bio' -%}
+                        {%- assign fnd_image = 'founder_' | append: i | append: '_image' -%}
+                        <div class="sb-founder">
+                          <span class="sb-founder-photo">{%- if tab_fnd.settings[fnd_image] != blank -%}{{ tab_fnd.settings[fnd_image] | image_url: width: 160 | image_tag: alt: tab_fnd.settings[fnd_name] }}{%- endif -%}</span>
+                          <div><div class="fname">{{ tab_fnd.settings[fnd_name] }}</div><div class="frole">{{ tab_fnd.settings[fnd_role] }}</div><div class="fbio">{{ tab_fnd.settings[fnd_bio] }}</div></div>
                         </div>
-                      {%- endfor -%}
-                    </div>
-                  {%- endif -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </div>
                 </div>
                 {%- endif -%}
-                {%- if hs.show_watch -%}
-                <div class="sb-panel" data-sb="watch" role="tabpanel">
-                  {%- if hs.watch_eyebrow != blank -%}<span class="eyebrow">{{ hs.watch_eyebrow }}</span>{%- endif -%}
-                  {%- if hs.watch_h != blank -%}<h3 style="color:{{ hs.watch_h_color | default: '#1B3A5C' }} !important;">{{ hs.watch_h }}</h3>{%- endif -%}
-                  {%- if hs.watch_lead != blank -%}<p class="sb-lead" style="margin-top:14px;">{{ hs.watch_lead }}</p>{%- endif -%}
-                  {%- assign sb_resources = section.blocks | where: 'type', 'sb_resource' -%}
-                  {%- if sb_resources.size > 0 -%}
+                {%- if tab_watch and tab_watch.settings.show_watch -%}
+                <div class="sb-panel" data-sb="watch" role="tabpanel" {{ tab_watch.shopify_attributes }}>
+                  {%- if tab_watch.settings.watch_eyebrow != blank -%}<span class="eyebrow">{{ tab_watch.settings.watch_eyebrow }}</span>{%- endif -%}
+                  {%- if tab_watch.settings.watch_h != blank -%}<h3 style="color:{{ tab_watch.settings.watch_h_color | default: '#1B3A5C' }} !important;">{{ tab_watch.settings.watch_h }}</h3>{%- endif -%}
+                  {%- if tab_watch.settings.watch_lead != blank -%}<p class="sb-lead" style="margin-top:14px;">{{ tab_watch.settings.watch_lead }}</p>{%- endif -%}
+                  {%- assign has_links = false -%}
+                  {%- for i in (1..10) -%}
+                    {%- assign link_title_key = 'link_' | append: i | append: '_title' -%}
+                    {%- if tab_watch.settings[link_title_key] != blank -%}{%- assign has_links = true -%}{%- endif -%}
+                  {%- endfor -%}
+                  {%- if has_links -%}
                     <div class="sb-res">
-                      {%- for b in sb_resources -%}
-                        <div class="sb-res-card" {{ b.shopify_attributes }}>
-                          <span class="sb-res-badge {{ b.settings.badge | downcase }}">{{ b.settings.badge }}</span>
-                          <span><span class="rt">{{ b.settings.title }}</span><div class="rs">{{ b.settings.source }}</div></span>
-                        </div>
+                      {%- for i in (1..10) -%}
+                        {%- assign link_title_key = 'link_' | append: i | append: '_title' -%}
+                        {%- if tab_watch.settings[link_title_key] != blank -%}
+                          {%- assign link_source_key = 'link_' | append: i | append: '_source' -%}
+                          {%- assign link_badge_key = 'link_' | append: i | append: '_badge' -%}
+                          {%- assign link_url_key = 'link_' | append: i | append: '_url' -%}
+                          <div class="sb-res-card">
+                            <span class="sb-res-badge {{ tab_watch.settings[link_badge_key] | downcase }}">{{ tab_watch.settings[link_badge_key] | default: 'Study' }}</span>
+                            <span><span class="rt">{{ tab_watch.settings[link_title_key] }}</span><div class="rs">{{ tab_watch.settings[link_source_key] }}</div></span>
+                          </div>
+                        {%- endif -%}
                       {%- endfor -%}
                     </div>
                   {%- endif -%}
-                  {%- assign sb_videos = section.blocks | where: 'type', 'sb_video' -%}
-                  {%- if sb_videos.size > 0 -%}
+                  {%- assign has_videos = false -%}
+                  {%- for i in (1..5) -%}
+                    {%- assign video_key = 'video_' | append: i -%}
+                    {%- if tab_watch.settings[video_key] != blank -%}{%- assign has_videos = true -%}{%- endif -%}
+                  {%- endfor -%}
+                  {%- if has_videos -%}
                     <div class="sb-vids">
-                      {%- for b in sb_videos -%}
-                        <div class="sb-vid" {{ b.shopify_attributes }}>
-                          <div class="vwrap">
-                            {%- if b.settings.video != blank -%}
-                              {{ b.settings.video | video_tag: controls: true, class: 'sb-native-video' }}
-                            {%- else -%}
-                              <div class="sb-video-ph"><span>Upload a video</span></div>
-                            {%- endif -%}
+                      {%- for i in (1..5) -%}
+                        {%- assign video_key = 'video_' | append: i -%}
+                        {%- if tab_watch.settings[video_key] != blank -%}
+                          {%- assign video_title_key = 'video_' | append: i | append: '_title' -%}
+                          <div class="sb-vid">
+                            <div class="vwrap">
+                              {{ tab_watch.settings[video_key] | video_tag: controls: true, class: 'sb-native-video' }}
+                            </div>
+                            {%- if tab_watch.settings[video_title_key] != blank -%}<div class="vt">{{ tab_watch.settings[video_title_key] }}</div>{%- endif -%}
                           </div>
-                          {%- if b.settings.title != blank -%}<div class="vt">{{ b.settings.title }}</div>{%- endif -%}
-                        </div>
+                        {%- endif -%}
                       {%- endfor -%}
                     </div>
                   {%- endif -%}
@@ -23669,6 +23704,7 @@
     {
       "type": "story_block",
       "name": "Story Block (Tabbed)",
+      "limit": 1,
       "settings": [
         { "type": "header", "content": "Style" },
         { "type": "select", "id": "style", "label": "Card style", "options": [{ "value": "light", "label": "Light" },{ "value": "dark", "label": "Dark blue" }], "default": "light" },
@@ -23688,51 +23724,15 @@
         { "type": "color", "id": "sscript_color", "label": "Eyebrow color", "default": "#E8607A" },
         { "type": "text", "id": "heading", "label": "Heading", "default": "The story behind the scoop" },
         { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#1B3A5C" },
-        { "type": "header", "content": "Tabs — show / hide & labels" },
+        { "type": "header", "content": "Tab — Full Story" },
         { "type": "checkbox", "id": "show_story", "label": "Show Full Story tab", "default": true },
         { "type": "text", "id": "tab_story", "label": "Full Story label", "default": "The Full Story" },
-        { "type": "checkbox", "id": "show_ingredients", "label": "Show What's Inside tab", "default": true },
-        { "type": "text", "id": "tab_ingredients", "label": "What's Inside label", "default": "What's Inside" },
-        { "type": "checkbox", "id": "show_expert", "label": "Show Expert Opinion tab", "default": true },
-        { "type": "text", "id": "tab_expert", "label": "Expert Opinion label", "default": "Expert Opinion" },
-        { "type": "checkbox", "id": "show_founders", "label": "Show Meet the Founders tab", "default": true },
-        { "type": "text", "id": "tab_founders", "label": "Founders label", "default": "Meet the Founders" },
-        { "type": "checkbox", "id": "show_watch", "label": "Show Watch & Read tab", "default": true },
-        { "type": "text", "id": "tab_watch", "label": "Watch & Read label", "default": "Watch & Read" },
-        { "type": "header", "content": "Tab · Full Story" },
         { "type": "text", "id": "story_eyebrow", "label": "Eyebrow", "default": "Why we built it" },
         { "type": "text", "id": "story_h", "label": "Heading", "default": "Hydration built around her." },
         { "type": "color", "id": "story_h_color", "label": "Heading color", "default": "#1B3A5C" },
         { "type": "textarea", "id": "story_lead", "label": "Lead paragraph" },
         { "type": "richtext", "id": "story_body", "label": "Body" },
-        { "type": "text", "id": "story_quote", "label": "Pull quote" },
-        { "type": "header", "content": "Tab · What's Inside" },
-        { "type": "text", "id": "ing_eyebrow", "label": "Eyebrow", "default": "Inside the scoop" },
-        { "type": "text", "id": "ing_h", "label": "Heading", "default": "Eight actives. Every one earns its place." },
-        { "type": "color", "id": "ing_h_color", "label": "Heading color", "default": "#1B3A5C" },
-        { "type": "textarea", "id": "ing_lead", "label": "Lead paragraph" },
-        { "type": "text", "id": "ing_footnote", "label": "Footnote" },
-        { "type": "header", "content": "Tab · Expert Opinion" },
-        { "type": "text", "id": "exp_eyebrow", "label": "Eyebrow", "default": "The expert take" },
-        { "type": "text", "id": "exp_h", "label": "Heading", "default": "Vetted by the people who'd know." },
-        { "type": "color", "id": "exp_h_color", "label": "Heading color", "default": "#1B3A5C" },
-        { "type": "image_picker", "id": "exp_image", "label": "Expert headshot" },
-        { "type": "textarea", "id": "exp_quote", "label": "Expert quote" },
-        { "type": "text", "id": "exp_name", "label": "Expert name" },
-        { "type": "text", "id": "exp_cred", "label": "Expert credentials" },
-        { "type": "header", "content": "Tab · Meet the Founders" },
-        { "type": "text", "id": "fnd_eyebrow", "label": "Eyebrow", "default": "Our story" },
-        { "type": "text", "id": "fnd_h", "label": "Heading", "default": "A husband-and-wife team, one stubborn idea." },
-        { "type": "color", "id": "fnd_h_color", "label": "Heading color", "default": "#1B3A5C" },
-        { "type": "textarea", "id": "fnd_lead", "label": "Lead paragraph" },
-        { "type": "video", "id": "fnd_video", "label": "Founders video" },
-        { "type": "image_picker", "id": "fnd_collage1", "label": "Collage photo 1" },
-        { "type": "image_picker", "id": "fnd_collage2", "label": "Collage photo 2" },
-        { "type": "header", "content": "Tab · Watch & Read" },
-        { "type": "text", "id": "watch_eyebrow", "label": "Eyebrow", "default": "Dig deeper" },
-        { "type": "text", "id": "watch_h", "label": "Heading", "default": "The research & stories behind it." },
-        { "type": "color", "id": "watch_h_color", "label": "Heading color", "default": "#1B3A5C" },
-        { "type": "textarea", "id": "watch_lead", "label": "Lead paragraph" }
+        { "type": "text", "id": "story_quote", "label": "Pull quote" }
       ]
     },
     {
@@ -23763,48 +23763,222 @@
       ]
     },
     {
-      "type": "sb_ingredient",
-      "name": "Story — Ingredient",
+      "type": "sb_ingredients_tab",
+      "name": "Tab — What's Inside",
+      "limit": 1,
       "settings": [
-        { "type": "text", "id": "name", "label": "Name", "default": "Magnesium Glycinate" },
-        { "type": "text", "id": "desc", "label": "Description", "default": "Supports sleep, mood and PMS relief." },
-        { "type": "text", "id": "dose", "label": "Dose", "default": "300 mg" },
-        { "type": "color", "id": "dot_color", "label": "Dot color", "default": "#8A9B6E" }
+        { "type": "checkbox", "id": "show_ingredients", "label": "Show What's Inside tab", "default": true },
+        { "type": "text", "id": "tab_ingredients", "label": "Tab label", "default": "What's Inside" },
+        { "type": "text", "id": "ing_eyebrow", "label": "Eyebrow", "default": "Inside the scoop" },
+        { "type": "text", "id": "ing_h", "label": "Heading", "default": "Eight actives. Every one earns its place." },
+        { "type": "color", "id": "ing_h_color", "label": "Heading color", "default": "#1B3A5C" },
+        { "type": "textarea", "id": "ing_lead", "label": "Lead paragraph" },
+        { "type": "text", "id": "ing_footnote", "label": "Footnote" },
+        { "type": "header", "content": "Ingredient 1" },
+        { "type": "text", "id": "ing_1_name", "label": "Name" },
+        { "type": "text", "id": "ing_1_desc", "label": "Description" },
+        { "type": "text", "id": "ing_1_dose", "label": "Dose" },
+        { "type": "color", "id": "ing_1_dot", "label": "Dot color", "default": "#8A9B6E" },
+        { "type": "header", "content": "Ingredient 2" },
+        { "type": "text", "id": "ing_2_name", "label": "Name" },
+        { "type": "text", "id": "ing_2_desc", "label": "Description" },
+        { "type": "text", "id": "ing_2_dose", "label": "Dose" },
+        { "type": "color", "id": "ing_2_dot", "label": "Dot color", "default": "#8A9B6E" },
+        { "type": "header", "content": "Ingredient 3" },
+        { "type": "text", "id": "ing_3_name", "label": "Name" },
+        { "type": "text", "id": "ing_3_desc", "label": "Description" },
+        { "type": "text", "id": "ing_3_dose", "label": "Dose" },
+        { "type": "color", "id": "ing_3_dot", "label": "Dot color", "default": "#8A9B6E" },
+        { "type": "header", "content": "Ingredient 4" },
+        { "type": "text", "id": "ing_4_name", "label": "Name" },
+        { "type": "text", "id": "ing_4_desc", "label": "Description" },
+        { "type": "text", "id": "ing_4_dose", "label": "Dose" },
+        { "type": "color", "id": "ing_4_dot", "label": "Dot color", "default": "#8A9B6E" },
+        { "type": "header", "content": "Ingredient 5" },
+        { "type": "text", "id": "ing_5_name", "label": "Name" },
+        { "type": "text", "id": "ing_5_desc", "label": "Description" },
+        { "type": "text", "id": "ing_5_dose", "label": "Dose" },
+        { "type": "color", "id": "ing_5_dot", "label": "Dot color", "default": "#8A9B6E" },
+        { "type": "header", "content": "Ingredient 6" },
+        { "type": "text", "id": "ing_6_name", "label": "Name" },
+        { "type": "text", "id": "ing_6_desc", "label": "Description" },
+        { "type": "text", "id": "ing_6_dose", "label": "Dose" },
+        { "type": "color", "id": "ing_6_dot", "label": "Dot color", "default": "#8A9B6E" },
+        { "type": "header", "content": "Ingredient 7" },
+        { "type": "text", "id": "ing_7_name", "label": "Name" },
+        { "type": "text", "id": "ing_7_desc", "label": "Description" },
+        { "type": "text", "id": "ing_7_dose", "label": "Dose" },
+        { "type": "color", "id": "ing_7_dot", "label": "Dot color", "default": "#8A9B6E" },
+        { "type": "header", "content": "Ingredient 8" },
+        { "type": "text", "id": "ing_8_name", "label": "Name" },
+        { "type": "text", "id": "ing_8_desc", "label": "Description" },
+        { "type": "text", "id": "ing_8_dose", "label": "Dose" },
+        { "type": "color", "id": "ing_8_dot", "label": "Dot color", "default": "#8A9B6E" },
+        { "type": "header", "content": "Ingredient 9" },
+        { "type": "text", "id": "ing_9_name", "label": "Name" },
+        { "type": "text", "id": "ing_9_desc", "label": "Description" },
+        { "type": "text", "id": "ing_9_dose", "label": "Dose" },
+        { "type": "color", "id": "ing_9_dot", "label": "Dot color", "default": "#8A9B6E" },
+        { "type": "header", "content": "Ingredient 10" },
+        { "type": "text", "id": "ing_10_name", "label": "Name" },
+        { "type": "text", "id": "ing_10_desc", "label": "Description" },
+        { "type": "text", "id": "ing_10_dose", "label": "Dose" },
+        { "type": "color", "id": "ing_10_dot", "label": "Dot color", "default": "#8A9B6E" }
       ]
     },
     {
-      "type": "sb_endorsement",
-      "name": "Story — Endorsement",
+      "type": "sb_expert_tab",
+      "name": "Tab — Expert Opinion",
+      "limit": 1,
       "settings": [
-        { "type": "text", "id": "text", "label": "Line", "default": "Clinically-relevant doses, not pixie-dusted blends." }
+        { "type": "checkbox", "id": "show_expert", "label": "Show Expert Opinion tab", "default": true },
+        { "type": "text", "id": "tab_expert", "label": "Tab label", "default": "Expert Opinion" },
+        { "type": "text", "id": "exp_eyebrow", "label": "Eyebrow", "default": "The expert take" },
+        { "type": "text", "id": "exp_h", "label": "Heading", "default": "Vetted by the people who'd know." },
+        { "type": "color", "id": "exp_h_color", "label": "Heading color", "default": "#1B3A5C" },
+        { "type": "text", "id": "exp_name", "label": "Expert name" },
+        { "type": "text", "id": "exp_cred", "label": "Expert credentials" },
+        { "type": "textarea", "id": "exp_quote", "label": "Expert quote" },
+        { "type": "image_picker", "id": "exp_image", "label": "Expert headshot" },
+        { "type": "header", "content": "Endorsement 1" },
+        { "type": "text", "id": "endorse_1", "label": "Line" },
+        { "type": "header", "content": "Endorsement 2" },
+        { "type": "text", "id": "endorse_2", "label": "Line" },
+        { "type": "header", "content": "Endorsement 3" },
+        { "type": "text", "id": "endorse_3", "label": "Line" },
+        { "type": "header", "content": "Endorsement 4" },
+        { "type": "text", "id": "endorse_4", "label": "Line" },
+        { "type": "header", "content": "Endorsement 5" },
+        { "type": "text", "id": "endorse_5", "label": "Line" },
+        { "type": "header", "content": "Endorsement 6" },
+        { "type": "text", "id": "endorse_6", "label": "Line" },
+        { "type": "header", "content": "Endorsement 7" },
+        { "type": "text", "id": "endorse_7", "label": "Line" },
+        { "type": "header", "content": "Endorsement 8" },
+        { "type": "text", "id": "endorse_8", "label": "Line" },
+        { "type": "header", "content": "Endorsement 9" },
+        { "type": "text", "id": "endorse_9", "label": "Line" },
+        { "type": "header", "content": "Endorsement 10" },
+        { "type": "text", "id": "endorse_10", "label": "Line" }
       ]
     },
     {
-      "type": "sb_founder",
-      "name": "Story — Founder profile",
+      "type": "sb_founders_tab",
+      "name": "Tab — Meet the Founders",
+      "limit": 1,
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Photo" },
-        { "type": "text", "id": "name", "label": "Name", "default": "Founder One" },
-        { "type": "text", "id": "role", "label": "Role", "default": "Co-Founder & Formulator" },
-        { "type": "textarea", "id": "bio", "label": "Bio" }
+        { "type": "checkbox", "id": "show_founders", "label": "Show Meet the Founders tab", "default": true },
+        { "type": "text", "id": "tab_founders", "label": "Tab label", "default": "Meet the Founders" },
+        { "type": "text", "id": "fnd_eyebrow", "label": "Eyebrow", "default": "Our story" },
+        { "type": "text", "id": "fnd_h", "label": "Heading", "default": "A husband-and-wife team, one stubborn idea." },
+        { "type": "color", "id": "fnd_h_color", "label": "Heading color", "default": "#1B3A5C" },
+        { "type": "textarea", "id": "fnd_lead", "label": "Lead paragraph" },
+        { "type": "video", "id": "fnd_video", "label": "Founders video" },
+        { "type": "image_picker", "id": "fnd_collage1", "label": "Collage photo 1" },
+        { "type": "image_picker", "id": "fnd_collage2", "label": "Collage photo 2" },
+        { "type": "header", "content": "Founder 1" },
+        { "type": "text", "id": "founder_1_name", "label": "Name" },
+        { "type": "text", "id": "founder_1_role", "label": "Role" },
+        { "type": "textarea", "id": "founder_1_bio", "label": "Bio" },
+        { "type": "image_picker", "id": "founder_1_image", "label": "Photo" },
+        { "type": "header", "content": "Founder 2" },
+        { "type": "text", "id": "founder_2_name", "label": "Name" },
+        { "type": "text", "id": "founder_2_role", "label": "Role" },
+        { "type": "textarea", "id": "founder_2_bio", "label": "Bio" },
+        { "type": "image_picker", "id": "founder_2_image", "label": "Photo" },
+        { "type": "header", "content": "Founder 3" },
+        { "type": "text", "id": "founder_3_name", "label": "Name" },
+        { "type": "text", "id": "founder_3_role", "label": "Role" },
+        { "type": "textarea", "id": "founder_3_bio", "label": "Bio" },
+        { "type": "image_picker", "id": "founder_3_image", "label": "Photo" },
+        { "type": "header", "content": "Founder 4" },
+        { "type": "text", "id": "founder_4_name", "label": "Name" },
+        { "type": "text", "id": "founder_4_role", "label": "Role" },
+        { "type": "textarea", "id": "founder_4_bio", "label": "Bio" },
+        { "type": "image_picker", "id": "founder_4_image", "label": "Photo" },
+        { "type": "header", "content": "Founder 5" },
+        { "type": "text", "id": "founder_5_name", "label": "Name" },
+        { "type": "text", "id": "founder_5_role", "label": "Role" },
+        { "type": "textarea", "id": "founder_5_bio", "label": "Bio" },
+        { "type": "image_picker", "id": "founder_5_image", "label": "Photo" }
       ]
     },
     {
-      "type": "sb_resource",
-      "name": "Story — Resource link",
+      "type": "sb_watch_tab",
+      "name": "Tab — Watch & Read",
+      "limit": 1,
       "settings": [
-        { "type": "select", "id": "badge", "label": "Badge", "options": [{ "value": "Study", "label": "Study" },{ "value": "Article", "label": "Article" },{ "value": "Video", "label": "Video" }], "default": "Study" },
-        { "type": "text", "id": "title", "label": "Title", "default": "Study title" },
-        { "type": "text", "id": "source", "label": "Source / publication" },
-        { "type": "url", "id": "url", "label": "Link" }
-      ]
-    },
-    {
-      "type": "sb_video",
-      "name": "Story — Video",
-      "settings": [
-        { "type": "video", "id": "video", "label": "Video" },
-        { "type": "text", "id": "title", "label": "Caption", "default": "60-second intro" }
+        { "type": "checkbox", "id": "show_watch", "label": "Show Watch & Read tab", "default": true },
+        { "type": "text", "id": "tab_watch", "label": "Tab label", "default": "Watch & Read" },
+        { "type": "text", "id": "watch_eyebrow", "label": "Eyebrow", "default": "Dig deeper" },
+        { "type": "text", "id": "watch_h", "label": "Heading", "default": "The research & stories behind it." },
+        { "type": "color", "id": "watch_h_color", "label": "Heading color", "default": "#1B3A5C" },
+        { "type": "textarea", "id": "watch_lead", "label": "Lead paragraph" },
+        { "type": "header", "content": "Link 1" },
+        { "type": "text", "id": "link_1_title", "label": "Title" },
+        { "type": "text", "id": "link_1_source", "label": "Source" },
+        { "type": "select", "id": "link_1_badge", "label": "Badge", "options": [{ "value": "Study", "label": "Study" },{ "value": "Article", "label": "Article" },{ "value": "Video", "label": "Video" }], "default": "Study" },
+        { "type": "url", "id": "link_1_url", "label": "URL" },
+        { "type": "header", "content": "Link 2" },
+        { "type": "text", "id": "link_2_title", "label": "Title" },
+        { "type": "text", "id": "link_2_source", "label": "Source" },
+        { "type": "select", "id": "link_2_badge", "label": "Badge", "options": [{ "value": "Study", "label": "Study" },{ "value": "Article", "label": "Article" },{ "value": "Video", "label": "Video" }], "default": "Study" },
+        { "type": "url", "id": "link_2_url", "label": "URL" },
+        { "type": "header", "content": "Link 3" },
+        { "type": "text", "id": "link_3_title", "label": "Title" },
+        { "type": "text", "id": "link_3_source", "label": "Source" },
+        { "type": "select", "id": "link_3_badge", "label": "Badge", "options": [{ "value": "Study", "label": "Study" },{ "value": "Article", "label": "Article" },{ "value": "Video", "label": "Video" }], "default": "Study" },
+        { "type": "url", "id": "link_3_url", "label": "URL" },
+        { "type": "header", "content": "Link 4" },
+        { "type": "text", "id": "link_4_title", "label": "Title" },
+        { "type": "text", "id": "link_4_source", "label": "Source" },
+        { "type": "select", "id": "link_4_badge", "label": "Badge", "options": [{ "value": "Study", "label": "Study" },{ "value": "Article", "label": "Article" },{ "value": "Video", "label": "Video" }], "default": "Study" },
+        { "type": "url", "id": "link_4_url", "label": "URL" },
+        { "type": "header", "content": "Link 5" },
+        { "type": "text", "id": "link_5_title", "label": "Title" },
+        { "type": "text", "id": "link_5_source", "label": "Source" },
+        { "type": "select", "id": "link_5_badge", "label": "Badge", "options": [{ "value": "Study", "label": "Study" },{ "value": "Article", "label": "Article" },{ "value": "Video", "label": "Video" }], "default": "Study" },
+        { "type": "url", "id": "link_5_url", "label": "URL" },
+        { "type": "header", "content": "Link 6" },
+        { "type": "text", "id": "link_6_title", "label": "Title" },
+        { "type": "text", "id": "link_6_source", "label": "Source" },
+        { "type": "select", "id": "link_6_badge", "label": "Badge", "options": [{ "value": "Study", "label": "Study" },{ "value": "Article", "label": "Article" },{ "value": "Video", "label": "Video" }], "default": "Study" },
+        { "type": "url", "id": "link_6_url", "label": "URL" },
+        { "type": "header", "content": "Link 7" },
+        { "type": "text", "id": "link_7_title", "label": "Title" },
+        { "type": "text", "id": "link_7_source", "label": "Source" },
+        { "type": "select", "id": "link_7_badge", "label": "Badge", "options": [{ "value": "Study", "label": "Study" },{ "value": "Article", "label": "Article" },{ "value": "Video", "label": "Video" }], "default": "Study" },
+        { "type": "url", "id": "link_7_url", "label": "URL" },
+        { "type": "header", "content": "Link 8" },
+        { "type": "text", "id": "link_8_title", "label": "Title" },
+        { "type": "text", "id": "link_8_source", "label": "Source" },
+        { "type": "select", "id": "link_8_badge", "label": "Badge", "options": [{ "value": "Study", "label": "Study" },{ "value": "Article", "label": "Article" },{ "value": "Video", "label": "Video" }], "default": "Study" },
+        { "type": "url", "id": "link_8_url", "label": "URL" },
+        { "type": "header", "content": "Link 9" },
+        { "type": "text", "id": "link_9_title", "label": "Title" },
+        { "type": "text", "id": "link_9_source", "label": "Source" },
+        { "type": "select", "id": "link_9_badge", "label": "Badge", "options": [{ "value": "Study", "label": "Study" },{ "value": "Article", "label": "Article" },{ "value": "Video", "label": "Video" }], "default": "Study" },
+        { "type": "url", "id": "link_9_url", "label": "URL" },
+        { "type": "header", "content": "Link 10" },
+        { "type": "text", "id": "link_10_title", "label": "Title" },
+        { "type": "text", "id": "link_10_source", "label": "Source" },
+        { "type": "select", "id": "link_10_badge", "label": "Badge", "options": [{ "value": "Study", "label": "Study" },{ "value": "Article", "label": "Article" },{ "value": "Video", "label": "Video" }], "default": "Study" },
+        { "type": "url", "id": "link_10_url", "label": "URL" },
+        { "type": "header", "content": "Video 1" },
+        { "type": "video", "id": "video_1", "label": "Video" },
+        { "type": "text", "id": "video_1_title", "label": "Caption" },
+        { "type": "header", "content": "Video 2" },
+        { "type": "video", "id": "video_2", "label": "Video" },
+        { "type": "text", "id": "video_2_title", "label": "Caption" },
+        { "type": "header", "content": "Video 3" },
+        { "type": "video", "id": "video_3", "label": "Video" },
+        { "type": "text", "id": "video_3_title", "label": "Caption" },
+        { "type": "header", "content": "Video 4" },
+        { "type": "video", "id": "video_4", "label": "Video" },
+        { "type": "text", "id": "video_4_title", "label": "Caption" },
+        { "type": "header", "content": "Video 5" },
+        { "type": "video", "id": "video_5", "label": "Video" },
+        { "type": "text", "id": "video_5_title", "label": "Caption" }
       ]
     },
     {
