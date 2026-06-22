@@ -1122,7 +1122,7 @@
               #sb-{{ bid }} .sb-found-top,#sb-{{ bid }} .sb-vids,#sb-{{ bid }} .sb-pro{ grid-template-columns:1fr; }
               #sb-{{ bid }} .sb-pro-photo{ width:100px; height:100px; }
             }
-          </style>
+          {% endstyle %}
 
           <section id="sb-{{ bid }}" class="sb-block {% if hs.style == 'dark' %}is-dark{% endif %}" data-screen-label="Get to know us" {{ block.shopify_attributes }}>
             {%- if hs.sscript != blank or hs.heading != blank -%}
