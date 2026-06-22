@@ -1139,12 +1139,14 @@
                   <span>{{ hs.tab_story | default: 'The Full Story' }}</span>
                 </button>
                 {%- endif -%}
+                {% comment %}INGREDIENTS TAB BUTTON - temporarily disabled
                 {%- if hs.show_ingredients -%}
                 <button class="sb-tab{% unless hs.show_story %} active{% endunless %}" data-sb="ingredients" role="tab" type="button" aria-selected="false">
                   <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7C8 8 6 11 6 14.5a6 6 0 0 0 12 0C18 11 16 8 12 2.7Z"/></svg></span>
                   <span>{{ hs.tab_ingredients | default: "What's Inside" }}</span>
                 </button>
                 {%- endif -%}
+                {% endcomment %}
                 {%- if hs.show_expert -%}
                 <button class="sb-tab" data-sb="expert" role="tab" type="button" aria-selected="false">
                   <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.6 7 22l5-3 5 3-1.2-8.4"/></svg></span>
@@ -1180,6 +1182,7 @@
                   {%- if hs.story_quote != blank -%}<div class="sb-quote"><p>{{ hs.story_quote }}</p></div>{%- endif -%}
                 </div>
                 {%- endif -%}
+                {% comment %}INGREDIENTS TAB PANEL - temporarily disabled
                 {%- if hs.show_ingredients -%}
                 <div class="sb-panel{% unless hs.show_story %} active{% endunless %}" data-sb="ingredients" role="tabpanel">
                   {%- if hs.ing_eyebrow != blank -%}<span class="eyebrow">{{ hs.ing_eyebrow }}</span>{%- endif -%}
@@ -1200,6 +1203,7 @@
                   {%- if hs.ing_footnote != blank -%}<p class="sb-foot">{{ hs.ing_footnote }}</p>{%- endif -%}
                 </div>
                 {%- endif -%}
+                {% endcomment %}
                 {%- if hs.show_expert -%}
                 <div class="sb-panel" data-sb="expert" role="tabpanel">
                   {%- if hs.exp_eyebrow != blank -%}<span class="eyebrow">{{ hs.exp_eyebrow }}</span>{%- endif -%}
