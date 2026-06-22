@@ -991,6 +991,7 @@
             {% break %}
           {% endif %}
         {% endfor %}
+        {% comment %}STORY BLOCK - temporarily disabled
         {% for block in section.blocks %}{% if block.type == 'story_block' %}
           {%- assign hs = block.settings -%}
           {%- assign bid = block.id -%}
@@ -1316,6 +1317,7 @@
           })();
           </script>
         {% break %}{% endif %}{% endfor %}
+        {% endcomment %}
         </div>
         </div>
         <!-- Product Information Column -->
