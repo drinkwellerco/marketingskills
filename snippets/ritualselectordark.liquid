@@ -354,6 +354,7 @@
   var slice = function(c){ return Array.prototype.slice.call(c); };
 
   var form = root.querySelector('form');
+  if(form) form.setAttribute('data-ritual-form', '');
   var subPlan = root.querySelector('.rc-plan[data-plan="sub"]');
   var onePlan = root.querySelector('.rc-plan[data-plan="one"]');
   var oneNow  = onePlan ? onePlan.querySelector('.rc-now') : null;

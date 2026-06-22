@@ -613,6 +613,7 @@
   document.addEventListener('submit', function(e){
     var form = e.target;
     if(!form || form.getAttribute('action') !== '/cart/add' && !form.dataset.productForm) return;
+    if(form.hasAttribute('data-ritual-form')) return;
     var hasFile = Array.from(form.elements).some(function(el){ return el.type === 'file'; });
     if(hasFile) return;
     e.preventDefault();
