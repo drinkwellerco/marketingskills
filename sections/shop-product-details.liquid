@@ -991,6 +991,322 @@
             {% break %}
           {% endif %}
         {% endfor %}
+        {% for block in section.blocks %}{% if block.type == 'story_block' %}
+          {%- assign hs = block.settings -%}
+          {%- assign bid = block.id -%}
+          {% style %}
+            #sb-{{ bid }}{
+              --cream:#FAF5F0; --cream-dk:#F0E8E0; --fog:#F5EEE8; --mist:#E8DDD5; --stone:#8A7E76;
+              --navy:#1B3A5C; --rose:#E8607A; --sage:#8A9B6E; --peach:#E8A87C; --lime:#7DB642;
+              --blush:#F2C4CE; --sky:#4A90B8;
+              --serif:'Playfair Display','Georgia',serif; --script:'Dancing Script',cursive; --sans:'DM Sans','Helvetica Neue',sans-serif;
+              --shadow-md:0 4px 24px rgba(27,58,92,.10);
+              --sb-h:{{ hs.heading_size | default: 26 }}px; --sb-body:{{ hs.body_size | default: 14.5 }}px;
+              --sb-pad:{{ hs.content_padding | default: 30 }}px; --sb-radius:{{ hs.card_radius | default: 24 }}px;
+              --sb-tab:{{ hs.tab_label_size | default: 11.5 }}px; --sb-gap:{{ hs.item_spacing | default: 24 }}px;
+              background:{{ hs.bg_color | default: 'transparent' }};
+              padding:{{ hs.padding_top | default: 16 }}px 0 {{ hs.padding_bottom | default: 0 }}px;
+              font-family:var(--sans);
+            }
+            #sb-{{ bid }} *{ box-sizing:border-box; }
+            #sb-{{ bid }} .sb-head{ max-width:100%; margin:0 auto 16px; text-align:{{ hs.align | default: 'left' }}; }
+            #sb-{{ bid }} .sscript{ font-family:var(--script); font-weight:700; font-size:24px; color:{{ hs.sscript_color | default: '#E8607A' }} !important; }
+            #sb-{{ bid }} .sb-head h2{ font-family:var(--serif); font-weight:800; font-size:var(--sb-h); color:{{ hs.heading_color | default: '#1B3A5C' }} !important; margin:2px 0 0; letter-spacing:-.01em; line-height:1.15; }
+            #sb-{{ bid }} .sb-card{ max-width:100%; margin:0 auto; background:#fff; border-radius:var(--sb-radius); overflow:hidden; box-shadow:var(--shadow-md); border:1px solid var(--mist); display:flex; flex-direction:column; }
+            #sb-{{ bid }} .sb-rail{ background:var(--fog); border-bottom:1px solid var(--mist); padding:8px; display:flex; flex-wrap:wrap; gap:4px; }
+            #sb-{{ bid }} .sb-tab{ display:flex; flex-direction:column; align-items:center; gap:5px; flex:1 1 0; min-width:0; padding:9px 4px; border:none; background:transparent; cursor:pointer; border-radius:13px; text-align:center; color:var(--navy); font-family:var(--sans); font-weight:600; font-size:var(--sb-tab); line-height:1.2; transition:background .18s,color .18s; }
+            #sb-{{ bid }} .sb-tab .ic{ width:32px; height:32px; border-radius:9px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; background:#fff; border:1px solid var(--mist); color:var(--rose); transition:all .18s; }
+            #sb-{{ bid }} .sb-tab .ic svg{ width:15px; height:15px; }
+            #sb-{{ bid }} .sb-tab:hover{ background:rgba(232,96,122,.07); }
+            #sb-{{ bid }} .sb-tab.active{ background:var(--navy); color:var(--cream); }
+            #sb-{{ bid }} .sb-tab.active .ic{ background:var(--rose); border-color:var(--rose); color:#fff; }
+            #sb-{{ bid }} .sb-content{ padding:var(--sb-pad); }
+            #sb-{{ bid }} .sb-panel{ display:none; }
+            #sb-{{ bid }} .sb-panel.active{ display:block; animation:sbFade-{{ bid }} .35s ease; }
+            @keyframes sbFade-{{ bid }}{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:none;} }
+            #sb-{{ bid }} .eyebrow{ font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--rose); }
+            #sb-{{ bid }} .sb-panel h3{ font-family:var(--serif); font-weight:800; font-size:var(--sb-h); color:var(--navy); line-height:1.18; margin:12px 0 0; }
+            #sb-{{ bid }} .sb-panel p{ font-size:var(--sb-body); line-height:1.7; color:var(--navy); }
+            #sb-{{ bid }} .sb-lead{ font-size:calc(var(--sb-body) + 1.5px); line-height:1.6; color:var(--stone); }
+            #sb-{{ bid }} .sb-foot{ font-size:12px; color:var(--stone); margin-top:18px; }
+            #sb-{{ bid }} .sb-chips{ display:flex; gap:12px; flex-wrap:wrap; margin:var(--sb-gap) 0 4px; }
+            #sb-{{ bid }} .sb-chip{ background:var(--fog); border:1px solid var(--mist); border-radius:14px; padding:13px 16px; flex:1; min-width:140px; }
+            #sb-{{ bid }} .sb-chip .n{ font-family:var(--serif); font-weight:900; font-size:23px; color:var(--rose); }
+            #sb-{{ bid }} .sb-chip .l{ font-size:12px; color:var(--stone); margin-top:2px; line-height:1.4; }
+            #sb-{{ bid }} .sb-quote{ margin:calc(var(--sb-gap) + 2px) 0 0; padding:20px 24px; border-left:3px solid var(--rose); background:rgba(232,96,122,.05); border-radius:0 14px 14px 0; }
+            #sb-{{ bid }} .sb-quote p{ font-family:var(--serif); font-style:italic; font-size:18px; color:var(--navy); margin:0; line-height:1.5; }
+            #sb-{{ bid }} .sb-ings{ display:grid; margin-top:var(--sb-gap); }
+            #sb-{{ bid }} .sb-ing{ display:grid; grid-template-columns:14px 1fr auto; gap:16px; align-items:center; padding:15px 4px; border-bottom:1px dashed var(--mist); }
+            #sb-{{ bid }} .sb-ing:last-child{ border-bottom:none; }
+            #sb-{{ bid }} .sb-ing .dot{ width:12px; height:12px; border-radius:50%; }
+            #sb-{{ bid }} .sb-ing .iname{ font-weight:700; color:var(--navy); font-size:15px; }
+            #sb-{{ bid }} .sb-ing .idesc{ font-size:12.5px; color:var(--stone); margin-top:2px; line-height:1.45; }
+            #sb-{{ bid }} .sb-ing .dose{ font-family:var(--serif); font-weight:800; color:var(--navy); font-size:14px; background:var(--fog); padding:5px 13px; border-radius:999px; white-space:nowrap; }
+            #sb-{{ bid }} .sb-pro{ display:grid; grid-template-columns:120px 1fr; gap:26px; align-items:start; margin-top:var(--sb-gap); background:var(--fog); border-radius:20px; padding:28px; }
+            #sb-{{ bid }} .sb-pro-photo{ width:120px; height:120px; border-radius:50%; overflow:hidden; background:var(--blush); display:block; }
+            #sb-{{ bid }} .sb-pro-photo img{ width:100%; height:100%; object-fit:cover; }
+            #sb-{{ bid }} .sb-pro .pq{ font-family:var(--serif); font-style:italic; font-size:19px; line-height:1.5; color:var(--navy); margin:0 0 16px; }
+            #sb-{{ bid }} .sb-pro .pname{ font-weight:700; color:var(--navy); font-size:15px; }
+            #sb-{{ bid }} .sb-pro .pcred{ font-size:12.5px; color:var(--rose); font-weight:600; margin-top:2px; }
+            #sb-{{ bid }} .sb-endorse{ display:grid; gap:12px; margin-top:var(--sb-gap); padding:0; }
+            #sb-{{ bid }} .sb-endorse li{ display:flex; gap:10px; align-items:flex-start; font-size:14px; color:var(--navy); line-height:1.5; list-style:none; }
+            #sb-{{ bid }} .sb-endorse svg{ width:18px; height:18px; color:var(--sage); flex-shrink:0; margin-top:1px; }
+            #sb-{{ bid }} .sb-found-top{ display:grid; grid-template-columns:1fr; gap:14px; margin-top:var(--sb-gap); }
+            #sb-{{ bid }} .sb-video{ position:relative; border-radius:18px; overflow:hidden; aspect-ratio:16/10; background:var(--blush); }
+            #sb-{{ bid }} .sb-collage{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+            #sb-{{ bid }} .sb-ph{ display:block; border-radius:18px; overflow:hidden; aspect-ratio:1/1; background:var(--blush); }
+            #sb-{{ bid }} .sb-ph img{ width:100%; height:100%; object-fit:cover; }
+            #sb-{{ bid }} .sb-founders{ display:grid; grid-template-columns:1fr; gap:14px; margin-top:18px; }
+            #sb-{{ bid }} .sb-founder{ background:var(--fog); border-radius:18px; padding:20px; display:flex; gap:14px; align-items:flex-start; }
+            #sb-{{ bid }} .sb-founder-photo{ width:64px; height:64px; border-radius:50%; overflow:hidden; background:var(--blush); flex-shrink:0; display:block; }
+            #sb-{{ bid }} .sb-founder-photo img{ width:100%; height:100%; object-fit:cover; }
+            #sb-{{ bid }} .sb-founder .fname{ font-family:var(--serif); font-weight:800; font-size:17px; color:var(--navy); }
+            #sb-{{ bid }} .sb-founder .frole{ font-size:11px; color:var(--rose); font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-top:2px; }
+            #sb-{{ bid }} .sb-founder .fbio{ font-size:12.5px; color:var(--stone); margin-top:8px; line-height:1.55; }
+            #sb-{{ bid }} .sb-res{ display:grid; gap:12px; margin-top:var(--sb-gap); }
+            #sb-{{ bid }} .sb-res-card{ display:flex; align-items:center; gap:16px; padding:16px 18px; background:#fff; border:1px solid var(--mist); border-radius:16px; text-decoration:none; transition:border-color .2s,transform .2s; }
+            #sb-{{ bid }} .sb-res-card:hover{ border-color:var(--rose); transform:translateX(4px); }
+            #sb-{{ bid }} .sb-res-badge{ font-size:10px; letter-spacing:.1em; text-transform:uppercase; font-weight:700; padding:5px 11px; border-radius:999px; flex-shrink:0; }
+            #sb-{{ bid }} .sb-res-badge.article{ background:rgba(74,144,184,.14); color:var(--sky); }
+            #sb-{{ bid }} .sb-res-badge.study{ background:rgba(125,182,66,.16); color:#4e7d1f; }
+            #sb-{{ bid }} .sb-res-badge.video{ background:rgba(232,96,122,.12); color:var(--rose); }
+            #sb-{{ bid }} .sb-res-card .rt{ font-weight:600; color:var(--navy); font-size:14.5px; }
+            #sb-{{ bid }} .sb-res-card .rs{ font-size:12px; color:var(--stone); margin-top:2px; }
+            #sb-{{ bid }} .sb-res-card .arr{ margin-left:auto; color:var(--stone); flex-shrink:0; }
+            #sb-{{ bid }} .sb-res-card:hover .arr{ color:var(--rose); }
+            #sb-{{ bid }} .sb-vids{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px; }
+            #sb-{{ bid }} .sb-vid .vwrap{ position:relative; border-radius:14px; overflow:hidden; aspect-ratio:16/9; background:var(--blush); }
+            #sb-{{ bid }} .sb-vid .vt{ font-size:13px; font-weight:600; color:var(--navy); margin-top:9px; }
+            #sb-{{ bid }} .sb-native-video{ width:100%; height:100%; object-fit:cover; display:block; border-radius:14px; }
+            #sb-{{ bid }} .sb-video .sb-native-video{ border-radius:18px; }
+            #sb-{{ bid }} .sb-video-ph{ display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; min-height:180px; color:var(--stone); font-size:13px; text-align:center; padding:14px; }
+            #sb-{{ bid }}.is-dark .sb-card{ background:var(--navy); border-color:rgba(250,245,240,.12); }
+            #sb-{{ bid }}.is-dark .sb-rail{ background:rgba(0,0,0,.20); border-bottom-color:rgba(250,245,240,.12); }
+            #sb-{{ bid }}.is-dark .sb-tab{ color:var(--cream); }
+            #sb-{{ bid }}.is-dark .sb-tab .ic{ background:rgba(250,245,240,.08); border-color:rgba(250,245,240,.16); color:var(--blush); }
+            #sb-{{ bid }}.is-dark .sb-tab:hover{ background:rgba(250,245,240,.08); }
+            #sb-{{ bid }}.is-dark .sb-tab.active{ background:var(--cream); color:var(--navy); }
+            #sb-{{ bid }}.is-dark .sb-tab.active .ic{ background:var(--rose); border-color:var(--rose); color:#fff; }
+            #sb-{{ bid }}.is-dark .sb-head h2{ color:var(--cream) !important; }
+            #sb-{{ bid }}.is-dark .sscript{ color:var(--blush) !important; }
+            #sb-{{ bid }}.is-dark .eyebrow{ color:var(--blush) !important; }
+            #sb-{{ bid }}.is-dark .sb-panel h3{ color:var(--cream) !important; }
+            #sb-{{ bid }}.is-dark .sb-panel p{ color:rgba(250,245,240,.82); }
+            #sb-{{ bid }}.is-dark .sb-lead{ color:rgba(250,245,240,.68); }
+            #sb-{{ bid }}.is-dark .sb-foot{ color:rgba(250,245,240,.55); }
+            #sb-{{ bid }}.is-dark .sb-chip{ background:rgba(250,245,240,.06); border-color:rgba(250,245,240,.14); }
+            #sb-{{ bid }}.is-dark .sb-chip .n{ color:var(--blush); }
+            #sb-{{ bid }}.is-dark .sb-chip .l{ color:rgba(250,245,240,.62); }
+            #sb-{{ bid }}.is-dark .sb-quote{ background:rgba(232,96,122,.14); }
+            #sb-{{ bid }}.is-dark .sb-quote p{ color:var(--cream); }
+            #sb-{{ bid }}.is-dark .sb-ing{ border-bottom-color:rgba(250,245,240,.12); }
+            #sb-{{ bid }}.is-dark .sb-ing .iname{ color:var(--cream); }
+            #sb-{{ bid }}.is-dark .sb-ing .idesc{ color:rgba(250,245,240,.6); }
+            #sb-{{ bid }}.is-dark .sb-ing .dose{ background:rgba(250,245,240,.10); color:var(--cream); }
+            #sb-{{ bid }}.is-dark .sb-pro{ background:rgba(250,245,240,.05); }
+            #sb-{{ bid }}.is-dark .sb-pro .pq,#sb-{{ bid }}.is-dark .sb-pro .pname{ color:var(--cream); }
+            #sb-{{ bid }}.is-dark .sb-pro .pcred{ color:var(--blush); }
+            #sb-{{ bid }}.is-dark .sb-endorse li{ color:rgba(250,245,240,.85); }
+            #sb-{{ bid }}.is-dark .sb-endorse svg{ color:var(--blush); }
+            #sb-{{ bid }}.is-dark .sb-founder{ background:rgba(250,245,240,.05); }
+            #sb-{{ bid }}.is-dark .sb-founder .fname{ color:var(--cream); }
+            #sb-{{ bid }}.is-dark .sb-founder .frole{ color:var(--blush); }
+            #sb-{{ bid }}.is-dark .sb-founder .fbio{ color:rgba(250,245,240,.6); }
+            #sb-{{ bid }}.is-dark .sb-res-card{ background:rgba(250,245,240,.05); border-color:rgba(250,245,240,.14); }
+            #sb-{{ bid }}.is-dark .sb-res-card .rt{ color:var(--cream); }
+            #sb-{{ bid }}.is-dark .sb-res-card .rs{ color:rgba(250,245,240,.6); }
+            #sb-{{ bid }}.is-dark .sb-res-card .arr{ color:rgba(250,245,240,.5); }
+            #sb-{{ bid }}.is-dark .sb-vid .vt{ color:var(--cream); }
+            #sb-{{ bid }}.is-dark .sb-video-ph{ color:rgba(250,245,240,.6); }
+            @media (max-width:620px){
+              #sb-{{ bid }} .sb-found-top,#sb-{{ bid }} .sb-vids,#sb-{{ bid }} .sb-pro{ grid-template-columns:1fr; }
+              #sb-{{ bid }} .sb-pro-photo{ width:100px; height:100px; }
+            }
+          {% endstyle %}
+          <section id="sb-{{ bid }}" class="sb-block {% if hs.style == 'dark' %}is-dark{% endif %}" data-screen-label="Get to know us" {{ block.shopify_attributes }}>
+            {%- if hs.sscript != blank or hs.heading != blank -%}
+              <div class="sb-head">
+                {%- if hs.sscript != blank -%}<div class="sscript" style="color:{{ hs.sscript_color | default: '#E8607A' }} !important;">{{ hs.sscript }}</div>{%- endif -%}
+                {%- if hs.heading != blank -%}<h2 style="color:{{ hs.heading_color | default: '#1B3A5C' }} !important;">{{ hs.heading }}</h2>{%- endif -%}
+              </div>
+            {%- endif -%}
+            <div class="sb-card">
+              <div class="sb-rail" role="tablist" aria-label="Get to know us">
+                {%- if hs.show_story -%}
+                <button class="sb-tab active" data-sb="story" role="tab" type="button" aria-selected="true">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></span>
+                  <span>{{ hs.tab_story | default: 'The Full Story' }}</span>
+                </button>
+                {%- endif -%}
+                {%- if hs.show_ingredients -%}
+                <button class="sb-tab{% unless hs.show_story %} active{% endunless %}" data-sb="ingredients" role="tab" type="button" aria-selected="false">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7C8 8 6 11 6 14.5a6 6 0 0 0 12 0C18 11 16 8 12 2.7Z"/></svg></span>
+                  <span>{{ hs.tab_ingredients | default: "What's Inside" }}</span>
+                </button>
+                {%- endif -%}
+                {%- if hs.show_expert -%}
+                <button class="sb-tab" data-sb="expert" role="tab" type="button" aria-selected="false">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.6 7 22l5-3 5 3-1.2-8.4"/></svg></span>
+                  <span>{{ hs.tab_expert | default: 'Expert Opinion' }}</span>
+                </button>
+                {%- endif -%}
+                {%- if hs.show_founders -%}
+                <button class="sb-tab" data-sb="founders" role="tab" type="button" aria-selected="false">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
+                  <span>{{ hs.tab_founders | default: 'Meet the Founders' }}</span>
+                </button>
+                {%- endif -%}
+                {%- if hs.show_watch -%}
+                <button class="sb-tab" data-sb="watch" role="tab" type="button" aria-selected="false">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg></span>
+                  <span>{{ hs.tab_watch | default: 'Watch &amp; Read' }}</span>
+                </button>
+                {%- endif -%}
+              </div>
+              <div class="sb-content">
+                {%- if hs.show_story -%}
+                <div class="sb-panel active" data-sb="story" role="tabpanel">
+                  {%- if hs.story_eyebrow != blank -%}<span class="eyebrow">{{ hs.story_eyebrow }}</span>{%- endif -%}
+                  {%- if hs.story_h != blank -%}<h3 style="color:{{ hs.story_h_color | default: '#1B3A5C' }} !important;">{{ hs.story_h }}</h3>{%- endif -%}
+                  {%- if hs.story_lead != blank -%}<p class="sb-lead" style="margin-top:16px;">{{ hs.story_lead }}</p>{%- endif -%}
+                  {%- if hs.story_body != blank -%}{{ hs.story_body }}{%- endif -%}
+                  {%- assign sb_stats = section.blocks | where: 'type', 'sb_stat' -%}
+                  {%- if sb_stats.size > 0 -%}
+                    <div class="sb-chips">
+                      {%- for b in sb_stats -%}<div class="sb-chip" {{ b.shopify_attributes }}><div class="n">{{ b.settings.number }}</div><div class="l">{{ b.settings.label }}</div></div>{%- endfor -%}
+                    </div>
+                  {%- endif -%}
+                  {%- if hs.story_quote != blank -%}<div class="sb-quote"><p>{{ hs.story_quote }}</p></div>{%- endif -%}
+                </div>
+                {%- endif -%}
+                {%- if hs.show_ingredients -%}
+                <div class="sb-panel{% unless hs.show_story %} active{% endunless %}" data-sb="ingredients" role="tabpanel">
+                  {%- if hs.ing_eyebrow != blank -%}<span class="eyebrow">{{ hs.ing_eyebrow }}</span>{%- endif -%}
+                  {%- if hs.ing_h != blank -%}<h3 style="color:{{ hs.ing_h_color | default: '#1B3A5C' }} !important;">{{ hs.ing_h }}</h3>{%- endif -%}
+                  {%- if hs.ing_lead != blank -%}<p class="sb-lead" style="margin-top:16px;">{{ hs.ing_lead }}</p>{%- endif -%}
+                  {%- assign hs_ings = section.blocks | where: 'type', 'sb_ingredient' -%}
+                  {%- if hs_ings.size > 0 -%}
+                    <div class="sb-ings">
+                      {%- for b in hs_ings -%}
+                        <div class="sb-ing" {{ b.shopify_attributes }}>
+                          <span class="dot" style="background:{{ b.settings.dot_color | default: '#8A9B6E' }};"></span>
+                          <span><span class="iname">{{ b.settings.name }}</span><div class="idesc">{{ b.settings.desc }}</div></span>
+                          <span class="dose">{{ b.settings.dose }}</span>
+                        </div>
+                      {%- endfor -%}
+                    </div>
+                  {%- endif -%}
+                  {%- if hs.ing_footnote != blank -%}<p class="sb-foot">{{ hs.ing_footnote }}</p>{%- endif -%}
+                </div>
+                {%- endif -%}
+                {%- if hs.show_expert -%}
+                <div class="sb-panel" data-sb="expert" role="tabpanel">
+                  {%- if hs.exp_eyebrow != blank -%}<span class="eyebrow">{{ hs.exp_eyebrow }}</span>{%- endif -%}
+                  {%- if hs.exp_h != blank -%}<h3 style="color:{{ hs.exp_h_color | default: '#1B3A5C' }} !important;">{{ hs.exp_h }}</h3>{%- endif -%}
+                  <div class="sb-pro">
+                    <span class="sb-pro-photo">{%- if hs.exp_image != blank -%}{{ hs.exp_image | image_url: width: 240 | image_tag: alt: hs.exp_name, class: 'photo' }}{%- endif -%}</span>
+                    <div>
+                      {%- if hs.exp_quote != blank -%}<p class="pq">{{ hs.exp_quote }}</p>{%- endif -%}
+                      {%- if hs.exp_name != blank -%}<div class="pname">{{ hs.exp_name }}</div>{%- endif -%}
+                      {%- if hs.exp_cred != blank -%}<div class="pcred">{{ hs.exp_cred }}</div>{%- endif -%}
+                    </div>
+                  </div>
+                  {%- assign hs_endorse = section.blocks | where: 'type', 'sb_endorsement' -%}
+                  {%- if hs_endorse.size > 0 -%}
+                    <ul class="sb-endorse">
+                      {%- for b in hs_endorse -%}<li {{ b.shopify_attributes }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ b.settings.text }}</li>{%- endfor -%}
+                    </ul>
+                  {%- endif -%}
+                </div>
+                {%- endif -%}
+                {%- if hs.show_founders -%}
+                <div class="sb-panel" data-sb="founders" role="tabpanel">
+                  {%- if hs.fnd_eyebrow != blank -%}<span class="eyebrow">{{ hs.fnd_eyebrow }}</span>{%- endif -%}
+                  {%- if hs.fnd_h != blank -%}<h3 style="color:{{ hs.fnd_h_color | default: '#1B3A5C' }} !important;">{{ hs.fnd_h }}</h3>{%- endif -%}
+                  {%- if hs.fnd_lead != blank -%}<p class="sb-lead" style="margin-top:14px;">{{ hs.fnd_lead }}</p>{%- endif -%}
+                  <div class="sb-found-top">
+                    <div class="sb-video">
+                      {%- if hs.fnd_video != blank -%}
+                        {{ hs.fnd_video | video_tag: controls: true, class: 'sb-native-video' }}
+                      {%- else -%}
+                        <div class="sb-video-ph"><span>Upload a founders video in block settings</span></div>
+                      {%- endif -%}
+                    </div>
+                    <div class="sb-collage">
+                      <span class="sb-ph">{%- if hs.fnd_collage1 != blank -%}{{ hs.fnd_collage1 | image_url: width: 400 | image_tag: alt: '' }}{%- endif -%}</span>
+                      <span class="sb-ph">{%- if hs.fnd_collage2 != blank -%}{{ hs.fnd_collage2 | image_url: width: 400 | image_tag: alt: '' }}{%- endif -%}</span>
+                    </div>
+                  </div>
+                  {%- assign sb_founders = section.blocks | where: 'type', 'sb_founder' -%}
+                  {%- if sb_founders.size > 0 -%}
+                    <div class="sb-founders">
+                      {%- for b in sb_founders -%}
+                        <div class="sb-founder" {{ b.shopify_attributes }}>
+                          <span class="sb-founder-photo">{%- if b.settings.image != blank -%}{{ b.settings.image | image_url: width: 160 | image_tag: alt: b.settings.name }}{%- endif -%}</span>
+                          <div><div class="fname">{{ b.settings.name }}</div><div class="frole">{{ b.settings.role }}</div><div class="fbio">{{ b.settings.bio }}</div></div>
+                        </div>
+                      {%- endfor -%}
+                    </div>
+                  {%- endif -%}
+                </div>
+                {%- endif -%}
+                {%- if hs.show_watch -%}
+                <div class="sb-panel" data-sb="watch" role="tabpanel">
+                  {%- if hs.watch_eyebrow != blank -%}<span class="eyebrow">{{ hs.watch_eyebrow }}</span>{%- endif -%}
+                  {%- if hs.watch_h != blank -%}<h3 style="color:{{ hs.watch_h_color | default: '#1B3A5C' }} !important;">{{ hs.watch_h }}</h3>{%- endif -%}
+                  {%- if hs.watch_lead != blank -%}<p class="sb-lead" style="margin-top:14px;">{{ hs.watch_lead }}</p>{%- endif -%}
+                  {%- assign sb_resources = section.blocks | where: 'type', 'sb_resource' -%}
+                  {%- if sb_resources.size > 0 -%}
+                    <div class="sb-res">
+                      {%- for b in sb_resources -%}
+                        <div class="sb-res-card" {{ b.shopify_attributes }}>
+                          <span class="sb-res-badge {{ b.settings.badge | downcase }}">{{ b.settings.badge }}</span>
+                          <span><span class="rt">{{ b.settings.title }}</span><div class="rs">{{ b.settings.source }}</div></span>
+                        </div>
+                      {%- endfor -%}
+                    </div>
+                  {%- endif -%}
+                  {%- assign sb_videos = section.blocks | where: 'type', 'sb_video' -%}
+                  {%- if sb_videos.size > 0 -%}
+                    <div class="sb-vids">
+                      {%- for b in sb_videos -%}
+                        <div class="sb-vid" {{ b.shopify_attributes }}>
+                          <div class="vwrap">
+                            {%- if b.settings.video != blank -%}
+                              {{ b.settings.video | video_tag: controls: true, class: 'sb-native-video' }}
+                            {%- else -%}
+                              <div class="sb-video-ph"><span>Upload a video</span></div>
+                            {%- endif -%}
+                          </div>
+                          {%- if b.settings.title != blank -%}<div class="vt">{{ b.settings.title }}</div>{%- endif -%}
+                        </div>
+                      {%- endfor -%}
+                    </div>
+                  {%- endif -%}
+                </div>
+                {%- endif -%}
+              </div>
+            </div>
+          </section>
+          <script>
+          (function(){
+            var root=document.getElementById('sb-{{ bid }}');
+            if(!root) return;
+            var tabs=root.querySelectorAll('.sb-tab');
+            var panels=root.querySelectorAll('.sb-panel');
+            tabs.forEach(function(t){
+              t.addEventListener('click',function(){
+                tabs.forEach(function(x){ x.classList.remove('active'); x.setAttribute('aria-selected','false'); });
+                panels.forEach(function(p){ p.classList.remove('active'); });
+                t.classList.add('active'); t.setAttribute('aria-selected','true');
+                var panel=root.querySelector('.sb-panel[data-sb="'+t.dataset.sb+'"]');
+                if(panel) panel.classList.add('active');
+                root.querySelector('.sb-content').scrollTop=0;
+              });
+            });
+          })();
+          </script>
+        {% break %}{% endif %}{% endfor %}
         </div>
         </div>
         <!-- Product Information Column -->
