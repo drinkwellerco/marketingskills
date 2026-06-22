@@ -1159,12 +1159,14 @@
                   <span>{{ hs.tab_founders | default: 'Meet the Founders' }}</span>
                 </button>
                 {%- endif -%}
+                {% comment %}WATCH TAB BUTTON - temporarily disabled
                 {%- if hs.show_watch -%}
                 <button class="sb-tab" data-sb="watch" role="tab" type="button" aria-selected="false">
                   <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg></span>
                   <span>{{ hs.tab_watch | default: 'Watch &amp; Read' }}</span>
                 </button>
                 {%- endif -%}
+                {% endcomment %}
               </div>
               <div class="sb-content">
                 {%- if hs.show_story -%}
@@ -1255,6 +1257,7 @@
                   {%- endif -%}
                 </div>
                 {%- endif -%}
+                {% comment %}WATCH TAB PANEL - temporarily disabled
                 {%- if hs.show_watch -%}
                 <div class="sb-panel" data-sb="watch" role="tabpanel">
                   {%- if hs.watch_eyebrow != blank -%}<span class="eyebrow">{{ hs.watch_eyebrow }}</span>{%- endif -%}
@@ -1290,7 +1293,7 @@
                     </div>
                   {%- endif -%}
                 </div>
-                {%- endif -%}
+                {% endcomment %}
               </div>
             </div>
           </section>
