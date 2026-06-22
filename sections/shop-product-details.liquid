@@ -994,27 +994,7 @@
         {% for block in section.blocks %}{% if block.type == 'story_block' %}
           {%- assign hs = block.settings -%}
           {%- assign bid = block.id -%}
-          {%- if request.design_mode -%}
-            {%- assign sb_stats = section.blocks | where: 'type', 'sb_stat' -%}
-            {%- assign sb_ings = section.blocks | where: 'type', 'sb_ingredient' -%}
-            {%- assign sb_ends = section.blocks | where: 'type', 'sb_endorsement' -%}
-            {%- assign sb_fnds = section.blocks | where: 'type', 'sb_founder' -%}
-            {%- assign sb_res = section.blocks | where: 'type', 'sb_resource' -%}
-            {%- assign sb_vids = section.blocks | where: 'type', 'sb_video' -%}
-            <div {{ block.shopify_attributes }} style="background:{{ hs.bg_color | default: '#F0E8E0' }};padding:24px;border-radius:16px;margin-top:20px;font-family:sans-serif;">
-              <p style="font-weight:700;font-size:15px;color:#1B3A5C;margin:0 0 4px;">📖 {{ hs.heading | default: 'Story Block' }}</p>
-              <p style="font-size:12px;color:#8A7E76;margin:0 0 12px;">Renders on the live storefront — edit settings in the panel →</p>
-              <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                <span style="background:#fff;border:1px solid #E8DDD5;border-radius:999px;padding:4px 12px;font-size:12px;color:#1B3A5C;">{{ sb_stats.size }} stats</span>
-                <span style="background:#fff;border:1px solid #E8DDD5;border-radius:999px;padding:4px 12px;font-size:12px;color:#1B3A5C;">{{ sb_ings.size }} ingredients</span>
-                <span style="background:#fff;border:1px solid #E8DDD5;border-radius:999px;padding:4px 12px;font-size:12px;color:#1B3A5C;">{{ sb_ends.size }} endorsements</span>
-                <span style="background:#fff;border:1px solid #E8DDD5;border-radius:999px;padding:4px 12px;font-size:12px;color:#1B3A5C;">{{ sb_fnds.size }} founders</span>
-                <span style="background:#fff;border:1px solid #E8DDD5;border-radius:999px;padding:4px 12px;font-size:12px;color:#1B3A5C;">{{ sb_res.size }} resources</span>
-                <span style="background:#fff;border:1px solid #E8DDD5;border-radius:999px;padding:4px 12px;font-size:12px;color:#1B3A5C;">{{ sb_vids.size }} videos</span>
-              </div>
-            </div>
-          {%- else -%}
-          <style>
+          {% style %}
             #sb-{{ bid }}{
               --cream:#FAF5F0; --cream-dk:#F0E8E0; --fog:#F5EEE8; --mist:#E8DDD5; --stone:#8A7E76;
               --navy:#1B3A5C; --rose:#E8607A; --sage:#8A9B6E; --peach:#E8A87C; --lime:#7DB642;
@@ -1210,7 +1190,7 @@
                     <div class="sb-ings">
                       {%- for b in hs_ings -%}
                         <div class="sb-ing" {{ b.shopify_attributes }}>
-                          <span class="dot" style="background:{{ b.settings.color }};"></span>
+                          <span class="dot" style="background:{{ b.settings.dot_color | default: '#8A9B6E' }};"></span>
                           <span><span class="iname">{{ b.settings.name }}</span><div class="idesc">{{ b.settings.desc }}</div></span>
                           <span class="dose">{{ b.settings.dose }}</span>
                         </div>
@@ -23736,7 +23716,7 @@
         { "type": "text", "id": "name", "label": "Name", "default": "Magnesium Glycinate" },
         { "type": "text", "id": "desc", "label": "Description", "default": "Supports sleep, mood and PMS relief." },
         { "type": "text", "id": "dose", "label": "Dose", "default": "300 mg" },
-        { "type": "color", "id": "color", "label": "Dot color", "default": "#8A9B6E" }
+        { "type": "color", "id": "dot_color", "label": "Dot color", "default": "#8A9B6E" }
       ]
     },
     {
