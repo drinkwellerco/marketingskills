@@ -25,7 +25,7 @@
 
 {%- assign brand = section.settings.us_name | default: "Her'dration" -%}
 {%- assign bp = brand | split: "'" -%}
-{%- assign unit = section.settings.price_unit | default: '/serving' -%}
+{%- assign unit = section.settings.price_unit -%}
 {%- if section.settings.bg_gradient -%}
   {%- assign bg_top = section.settings.bg_color_2 -%}
 {%- else -%}
