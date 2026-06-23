@@ -24,9 +24,9 @@
 {%- assign bp = brand | split: "'" -%}
 {%- assign unit = section.settings.price_unit | default: '/serving' -%}
 {%- if section.settings.bg_gradient -%}
-  {%- assign _bg_top = section.settings.bg_color_2 -%}
+  {%- assign bg_top = section.settings.bg_color_2 -%}
 {%- else -%}
-  {%- assign _bg_top = section.settings.bg_color -%}
+  {%- assign bg_top = section.settings.bg_color -%}
 {%- endif -%}
 
 <section id="cmp-{{ section.id }}" class="cmp">
@@ -223,7 +223,7 @@
     display: block; position: relative; overflow: hidden;
     padding: {{ section.settings.pad_top }}px {{ section.settings.pad_x }}px {{ section.settings.pad_bottom }}px;
     --cmp-bg:     {{ section.settings.bg_color }};
-    --cmp-bg-top: {{ _bg_top }};
+    --cmp-bg-top: {{ bg_top }};
     background: linear-gradient(180deg, var(--cmp-bg-top) 0%, var(--cmp-bg) 42%);
     color: var(--cmp-navy); font-family: var(--cmp-sans);
   }
