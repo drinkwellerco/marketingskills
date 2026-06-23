@@ -1,0 +1,674 @@
+{%- comment -%}
+  WELLER CO. — Competitor Comparison
+  Full desktop/mobile control: fonts, sizes, colors, spacing, icons, badge, logo.
+{%- endcomment -%}
+
+{%- capture svg_check -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{%- endcapture -%}
+{%- capture svg_cross -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>{%- endcapture -%}
+
+{%- assign three = section.settings.c2_enabled -%}
+{%- if three -%}
+  {%- assign grid_cols = '1.35fr 1.06fr .92fr .92fr' -%}
+  {%- assign min_w = section.settings.min_w_3col | append: 'px' -%}
+{%- else -%}
+  {%- assign grid_cols = '1.5fr 1.18fr 1fr' -%}
+  {%- assign min_w = section.settings.min_w_2col | append: 'px' -%}
+{%- endif -%}
+
+{%- assign brand = section.settings.us_name | default: "Her'dration" -%}
+{%- assign bp = brand | split: "'" -%}
+{%- assign unit = section.settings.price_unit | default: '/serving' -%}
+{%- if section.settings.bg_gradient -%}
+  {%- assign _bg_top = section.settings.bg_color_2 -%}
+{%- else -%}
+  {%- assign _bg_top = section.settings.bg_color -%}
+{%- endif -%}
+
+<section id="cmp-{{ section.id }}" class="cmp">
+  <div class="cmp-inner">
+
+    <div class="cmp-head-block">
+      {%- if section.settings.eyebrow != blank -%}<span class="cmp-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2 class="cmp-title">{{ section.settings.heading }}</h2>{%- endif -%}
+      {%- if section.settings.lead != blank -%}<p class="cmp-lead">{{ section.settings.lead }}</p>{%- endif -%}
+    </div>
+
+    <div class="cmp-scroll">
+      <div class="cmp-grid">
+
+        <div class="cmp-col cmp-col-feat">
+          <div class="cmp-cellhead"><span class="cmp-feat-eyebrow">{{ section.settings.feat_label | default: 'How we compare' }}</span></div>
+          {%- for block in section.blocks -%}
+            <div class="cmp-cell" {{ block.shopify_attributes }}>
+              {{ block.settings.label }}
+              {%- if block.settings.sublabel != blank -%}<span class="cmp-feat-sub">{{ block.settings.sublabel }}</span>{%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="cmp-col cmp-col-us">
+          {%- if section.settings.us_badge != blank -%}<span class="cmp-badge">{{ section.settings.us_badge }}</span>{%- endif -%}
+          <div class="cmp-cellhead">
+            {%- if section.settings.us_mark != blank -%}{{ section.settings.us_mark | image_url: width: 240 | image_tag: class: 'cmp-mark', alt: brand }}{%- endif -%}
+            <span class="cmp-brand">{{ bp[0] }}{%- if bp.size > 1 -%}<span class="cmp-apos">&#8217;</span>{{ bp[1] }}{%- endif -%}</span>
+            {%- if section.settings.us_tag != blank -%}<span class="cmp-tag">{{ section.settings.us_tag }}</span>{%- endif -%}
+          </div>
+          {%- for block in section.blocks -%}
+            {%- if block.settings.is_price -%}
+              <div class="cmp-cell cmp-price-row"><span class="cmp-price us">{{ block.settings.us_text }}<small>{{ unit }}</small></span></div>
+            {%- else -%}
+              <div class="cmp-cell">
+                {%- case block.settings.us_type -%}
+                  {%- when 'cross' -%}<span class="cmp-ic no">{{ svg_cross }}</span>
+                  {%- when 'text' -%}<span class="cmp-txt-yes">{{ block.settings.us_text }}</span>
+                  {%- else -%}<span class="cmp-ic yes">{{ svg_check }}</span>
+                {%- endcase -%}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        <div class="cmp-col cmp-col-them">
+          <div class="cmp-cellhead">
+            <span class="cmp-them-dot"></span>
+            <span class="cmp-brand">{{ section.settings.c1_name | default: 'Leading Mix' }}</span>
+            {%- if section.settings.c1_tag != blank -%}<span class="cmp-tag">{{ section.settings.c1_tag }}</span>{%- endif -%}
+          </div>
+          {%- for block in section.blocks -%}
+            {%- if block.settings.is_price -%}
+              <div class="cmp-cell cmp-price-row"><span class="cmp-price them">{{ block.settings.c1_text }}<small>{{ unit }}</small></span></div>
+            {%- else -%}
+              <div class="cmp-cell">
+                {%- case block.settings.c1_type -%}
+                  {%- when 'cross' -%}<span class="cmp-ic no">{{ svg_cross }}</span>
+                  {%- when 'text' -%}<span class="cmp-txt-no">{{ block.settings.c1_text }}</span>
+                  {%- else -%}<span class="cmp-ic eq">{{ svg_check }}</span>
+                {%- endcase -%}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if three -%}
+          <div class="cmp-col cmp-col-them cmp-col-them2">
+            <div class="cmp-cellhead">
+              <span class="cmp-them-dot"></span>
+              <span class="cmp-brand">{{ section.settings.c2_name | default: 'Mood Blend' }}</span>
+              {%- if section.settings.c2_tag != blank -%}<span class="cmp-tag">{{ section.settings.c2_tag }}</span>{%- endif -%}
+            </div>
+            {%- for block in section.blocks -%}
+              {%- if block.settings.is_price -%}
+                <div class="cmp-cell cmp-price-row"><span class="cmp-price them">{{ block.settings.c2_text }}<small>{{ unit }}</small></span></div>
+              {%- else -%}
+                <div class="cmp-cell">
+                  {%- case block.settings.c2_type -%}
+                    {%- when 'cross' -%}<span class="cmp-ic no">{{ svg_cross }}</span>
+                    {%- when 'text' -%}<span class="cmp-txt-no">{{ block.settings.c2_text }}</span>
+                    {%- else -%}<span class="cmp-ic eq">{{ svg_check }}</span>
+                  {%- endcase -%}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+      </div>
+    </div>
+
+    {%- if section.settings.note != blank -%}
+      <p class="cmp-note">
+        {%- if section.settings.note_strong != blank -%}<span class="cmp-note-strong">{{ section.settings.note_strong }}</span> {%- endif -%}
+        {{ section.settings.note }} <span class="cmp-note-heart">&hearts;</span>
+      </p>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family={{ section.settings.font_serif | replace: " ", "+" }}:wght@300;400;500;600;700;800;900&family={{ section.settings.font_sans | replace: " ", "+" }}:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family={{ section.settings.font_display | replace: " ", "+" }}:wght@300;400;500;700&display=swap');
+
+  #cmp-{{ section.id }} {
+    /* palette */
+    --cmp-navy: {{ section.settings.color_navy }};
+    --cmp-rose: {{ section.settings.color_rose }};
+    --cmp-stone: {{ section.settings.color_stone }};
+    --cmp-mist: {{ section.settings.color_mist }};
+
+    /* fonts */
+    --cmp-serif: '{{ section.settings.font_serif }}', 'Georgia', serif;
+    --cmp-sans:  '{{ section.settings.font_sans }}',  'Helvetica Neue', sans-serif;
+    --cmp-display: '{{ section.settings.font_display }}', 'Georgia', serif;
+
+    /* eyebrow */
+    --cmp-ey-size:    {{ section.settings.eyebrow_size }}px;
+    --cmp-ey-color:   {{ section.settings.eyebrow_color }};
+    --cmp-ey-weight:  {{ section.settings.eyebrow_weight }};
+    --cmp-ey-spacing: {{ section.settings.eyebrow_spacing }}px;
+
+    /* heading */
+    --cmp-h-min:    {{ section.settings.title_size_min }}px;
+    --cmp-h-max:    {{ section.settings.title_size_max }}px;
+    --cmp-h-color:  {{ section.settings.title_color }};
+    --cmp-h-weight: {{ section.settings.title_weight }};
+
+    /* lead */
+    --cmp-lead-size:   {{ section.settings.lead_size }}px;
+    --cmp-lead-color:  {{ section.settings.lead_color }};
+    --cmp-lead-weight: {{ section.settings.lead_weight }};
+
+    /* badge */
+    --cmp-badge-bg:     {{ section.settings.badge_bg }};
+    --cmp-badge-color:  {{ section.settings.badge_color }};
+    --cmp-badge-size:   {{ section.settings.badge_size_d }}px;
+    --cmp-badge-radius: {{ section.settings.badge_radius }}px;
+    --cmp-badge-px:     {{ section.settings.badge_px }}px;
+    --cmp-badge-py:     {{ section.settings.badge_py }}px;
+
+    /* column header */
+    --cmp-ch-h:          {{ section.settings.cellhead_h_d }}px;
+    --cmp-brand-us-size: {{ section.settings.brand_us_size_d }}px;
+    --cmp-brand-th-size: {{ section.settings.brand_them_size_d }}px;
+    --cmp-tag-size:      {{ section.settings.tag_size_d }}px;
+    --cmp-tag-color-us:  {{ section.settings.tag_color_us }};
+    --cmp-tag-color-th:  {{ section.settings.tag_color_them }};
+    --cmp-dot-size:      {{ section.settings.them_dot_size_d }}px;
+    --cmp-dot-color:     {{ section.settings.them_dot_color }};
+    --cmp-mark-h:        {{ section.settings.mark_h_d }}px;
+
+    /* table cells */
+    --cmp-cell-h:    {{ section.settings.cell_h_d }}px;
+    --cmp-cell-size: {{ section.settings.cell_size_d }}px;
+    --cmp-feat-size: {{ section.settings.feat_size_d }}px;
+    --cmp-feat-w:    {{ section.settings.feat_weight }};
+    --cmp-sub-size:  {{ section.settings.sub_size_d }}px;
+
+    /* icons */
+    --cmp-ic-size:    {{ section.settings.ic_size_d }}px;
+    --cmp-ic-svg:     {{ section.settings.ic_svg_d }}px;
+    --cmp-ic-yes-bg:  {{ section.settings.ic_yes_bg }};
+    --cmp-ic-yes-c:   {{ section.settings.ic_yes_color }};
+    --cmp-ic-no-bg:   {{ section.settings.ic_no_bg }};
+    --cmp-ic-no-c:    {{ section.settings.ic_no_color }};
+    --cmp-ic-eq-bg:   {{ section.settings.ic_eq_bg }};
+    --cmp-ic-eq-c:    {{ section.settings.ic_eq_color }};
+
+    /* price */
+    --cmp-price-size:    {{ section.settings.price_size_d }}px;
+    --cmp-price-color:   {{ section.settings.price_color }};
+    --cmp-price-th-c:    {{ section.settings.price_them_color }};
+    --cmp-price-sub-size:{{ section.settings.price_sub_size_d }}px;
+
+    /* note */
+    --cmp-note-size:    {{ section.settings.note_size_d }}px;
+    --cmp-note-color:   {{ section.settings.note_color }};
+    --cmp-note-strong-color: {{ section.settings.note_strong_color }};
+    --cmp-note-heart-color:  {{ section.settings.note_heart_color }};
+
+    /* feat-eyebrow (label column header) */
+    --cmp-feat-ey-size:  {{ section.settings.feat_ey_size_d }}px;
+    --cmp-feat-ey-color: {{ section.settings.feat_ey_color }};
+
+    /* column / cell backgrounds */
+    --cmp-us-col-bg:    {{ section.settings.us_col_bg }};
+    --cmp-them-col-bg:  {{ section.settings.them_col_bg }};
+    --cmp-them2-col-bg: {{ section.settings.them2_col_bg }};
+    --cmp-price-row-bg: {{ section.settings.price_row_bg }};
+
+    display: block; position: relative; overflow: hidden;
+    padding: {{ section.settings.pad_top }}px {{ section.settings.pad_x }}px {{ section.settings.pad_bottom }}px;
+    --cmp-bg:     {{ section.settings.bg_color }};
+    --cmp-bg-top: {{ _bg_top }};
+    background: linear-gradient(180deg, var(--cmp-bg-top) 0%, var(--cmp-bg) 42%);
+    color: var(--cmp-navy); font-family: var(--cmp-sans);
+  }
+
+  #cmp-{{ section.id }} * { box-sizing: border-box; }
+
+  #cmp-{{ section.id }} .cmp-inner {
+    max-width: {{ section.settings.inner_max_w }}px; margin: 0 auto; position: relative; z-index: 2;
+  }
+
+  /* ---- Head block ---- */
+  #cmp-{{ section.id }} .cmp-head-block {
+    text-align: {{ section.settings.head_align }}; max-width: {{ section.settings.head_max_w }}px;
+    margin: 0 auto {{ section.settings.head_gap_d }}px;
+  }
+  #cmp-{{ section.id }} .cmp-eyebrow {
+    display: block;
+    font-family: var(--cmp-sans);
+    font-size: var(--cmp-ey-size);
+    font-weight: var(--cmp-ey-weight);
+    letter-spacing: var(--cmp-ey-spacing);
+    text-transform: uppercase;
+    color: var(--cmp-ey-color);
+    margin-bottom: {{ section.settings.eyebrow_mb }}px;
+  }
+  #cmp-{{ section.id }} .cmp-title {
+    font-family: var(--cmp-serif);
+    font-weight: var(--cmp-h-weight);
+    font-size: clamp(var(--cmp-h-min), 4vw, var(--cmp-h-max));
+    line-height: {{ section.settings.title_lh }}px;
+    letter-spacing: {{ section.settings.title_ls }}px;
+    color: var(--cmp-h-color);
+    margin: 0;
+  }
+  #cmp-{{ section.id }} .cmp-lead {
+    font-family: var(--cmp-sans);
+    font-size: var(--cmp-lead-size);
+    font-weight: var(--cmp-lead-weight);
+    line-height: {{ section.settings.lead_lh }}px;
+    color: var(--cmp-lead-color);
+    margin: {{ section.settings.lead_mt }}px auto 0;
+    max-width: {{ section.settings.lead_max_w }}px;
+  }
+
+  /* ---- Grid ---- */
+  /* Desktop: horizontal scroll only if table overflows (large tables) */
+  #cmp-{{ section.id }} .cmp-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-top: 14px; }
+  #cmp-{{ section.id }} .cmp-grid { display: grid; grid-template-columns: {{ grid_cols }}; align-items: start; position: relative; min-width: {{ min_w }}; }
+  #cmp-{{ section.id }} .cmp-col { display: flex; flex-direction: column; border: 1.5px solid transparent; border-radius: {{ section.settings.col_radius }}px; }
+  #cmp-{{ section.id }} .cmp-col-us {
+    background: var(--cmp-us-col-bg);
+    box-shadow: {{ section.settings.us_col_shadow }};
+    border-color: {{ section.settings.us_col_border }};
+    position: relative; z-index: 3;
+  }
+  #cmp-{{ section.id }} .cmp-col-them {
+    background: var(--cmp-them-col-bg);
+    border-color: var(--cmp-mist);
+    margin-left: -4px;
+  }
+  #cmp-{{ section.id }} .cmp-col-them2 { background: var(--cmp-them2-col-bg); }
+
+  /* ---- Column header ---- */
+  #cmp-{{ section.id }} .cmp-cellhead {
+    height: var(--cmp-ch-h);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px; padding: 22px 12px 16px; text-align: center;
+  }
+  #cmp-{{ section.id }} .cmp-col-feat .cmp-cellhead {
+    align-items: flex-start; justify-content: flex-end; padding-left: 4px;
+  }
+  #cmp-{{ section.id }} .cmp-feat-eyebrow {
+    font-size: var(--cmp-feat-ey-size);
+    font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--cmp-feat-ey-color);
+  }
+
+  /* ---- Badge ---- */
+  #cmp-{{ section.id }} .cmp-badge {
+    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+    background: var(--cmp-badge-bg);
+    color: var(--cmp-badge-color);
+    font-family: var(--cmp-sans);
+    font-size: var(--cmp-badge-size);
+    font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    padding: var(--cmp-badge-py) var(--cmp-badge-px);
+    border-radius: var(--cmp-badge-radius);
+    white-space: nowrap;
+    box-shadow: 0 6px 24px rgba(0,0,0,.18);
+    z-index: 4;
+  }
+
+  /* ---- Logo ---- */
+  #cmp-{{ section.id }} .cmp-mark { height: var(--cmp-mark-h); width: auto; }
+
+  /* ---- Competitor dot ---- */
+  #cmp-{{ section.id }} .cmp-them-dot {
+    width: var(--cmp-dot-size); height: var(--cmp-dot-size);
+    border-radius: 50%; background: var(--cmp-dot-color); display: inline-block;
+  }
+
+  /* ---- Brand & tag ---- */
+  #cmp-{{ section.id }} .cmp-col-us .cmp-brand {
+    font-family: var(--cmp-serif); font-weight: 800;
+    font-size: var(--cmp-brand-us-size); color: var(--cmp-navy); white-space: nowrap; line-height: 1.1;
+  }
+  #cmp-{{ section.id }} .cmp-col-them .cmp-brand {
+    font-family: var(--cmp-serif); font-weight: 800;
+    font-size: var(--cmp-brand-th-size); color: var(--cmp-stone); white-space: nowrap; line-height: 1.1;
+  }
+  #cmp-{{ section.id }} .cmp-apos { color: var(--cmp-rose); }
+  #cmp-{{ section.id }} .cmp-tag {
+    font-size: var(--cmp-tag-size); font-weight: 600; letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  #cmp-{{ section.id }} .cmp-col-us .cmp-tag   { color: var(--cmp-tag-color-us); }
+  #cmp-{{ section.id }} .cmp-col-them .cmp-tag  { color: var(--cmp-tag-color-th); }
+
+  /* ---- Table cells ---- */
+  #cmp-{{ section.id }} .cmp-cell {
+    height: var(--cmp-cell-h);
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 16px; text-align: center;
+    font-size: var(--cmp-cell-size);
+    border-top: 1px solid rgba(27,58,92,.08);
+  }
+  #cmp-{{ section.id }} .cmp-col-feat .cmp-cell {
+    justify-content: flex-start; text-align: left; padding-left: 4px;
+    font-size: var(--cmp-feat-size); font-weight: var(--cmp-feat-w);
+    color: var(--cmp-navy); flex-direction: column; align-items: flex-start; gap: 1px;
+  }
+  #cmp-{{ section.id }} .cmp-feat-sub {
+    font-weight: 400; font-size: var(--cmp-sub-size);
+    color: var(--cmp-stone); letter-spacing: 0;
+  }
+  #cmp-{{ section.id }} .cmp-col-them .cmp-cell {
+    color: var(--cmp-stone); border-top-color: rgba(138,126,118,.16);
+  }
+
+  /* ---- Icons ---- */
+  #cmp-{{ section.id }} .cmp-ic {
+    width: var(--cmp-ic-size); height: var(--cmp-ic-size);
+    border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  }
+  #cmp-{{ section.id }} .cmp-ic svg { width: var(--cmp-ic-svg); height: var(--cmp-ic-svg); }
+  #cmp-{{ section.id }} .cmp-ic.yes { background: var(--cmp-ic-yes-bg); color: var(--cmp-ic-yes-c); }
+  #cmp-{{ section.id }} .cmp-ic.eq  { background: var(--cmp-ic-eq-bg);  color: var(--cmp-ic-eq-c);  }
+  #cmp-{{ section.id }} .cmp-ic.no  { background: var(--cmp-ic-no-bg);  color: var(--cmp-ic-no-c);  }
+  #cmp-{{ section.id }} .cmp-txt-yes { color: var(--cmp-navy); font-weight: 600; font-size: var(--cmp-cell-size); }
+  #cmp-{{ section.id }} .cmp-txt-no  { color: var(--cmp-stone); font-size: var(--cmp-cell-size); }
+
+  /* ---- Price ---- */
+  #cmp-{{ section.id }} .cmp-price {
+    font-family: var(--cmp-sans); font-weight: 800;
+    font-size: var(--cmp-price-size); letter-spacing: -.01em; white-space: nowrap;
+  }
+  #cmp-{{ section.id }} .cmp-price.us   { color: var(--cmp-price-color); }
+  #cmp-{{ section.id }} .cmp-price.them { color: var(--cmp-price-th-c); font-weight: 700; }
+  #cmp-{{ section.id }} .cmp-price small {
+    font-weight: 500; font-size: var(--cmp-price-sub-size); opacity: .7; margin-left: 1px;
+  }
+  #cmp-{{ section.id }} .cmp-col-us .cmp-price-row { background: var(--cmp-price-row-bg); }
+
+  /* ---- Note ---- */
+  #cmp-{{ section.id }} .cmp-note {
+    margin-top: {{ section.settings.note_mt }}px; text-align: center;
+    font-family: var(--cmp-display); font-weight: 400;
+    font-size: var(--cmp-note-size); line-height: 1.5; color: var(--cmp-note-color);
+  }
+  #cmp-{{ section.id }} .cmp-note-strong {
+    font-family: var(--cmp-sans); font-weight: 700;
+    font-size: {{ section.settings.note_strong_size_d }}px;
+    color: var(--cmp-note-strong-color);
+  }
+  #cmp-{{ section.id }} .cmp-note-heart { color: var(--cmp-note-heart-color); }
+
+  /* ---- Mobile ---- */
+  @media (max-width: 860px) {
+    #cmp-{{ section.id }} {
+      padding: {{ section.settings.pad_top_m }}px {{ section.settings.pad_x_m }}px {{ section.settings.pad_bottom_m }}px;
+      --cmp-ey-size:       {{ section.settings.eyebrow_size_m }}px;
+      --cmp-h-min:         {{ section.settings.title_size_min_m }}px;
+      --cmp-h-max:         {{ section.settings.title_size_min_m }}px;
+      --cmp-lead-size:     {{ section.settings.lead_size_m }}px;
+      --cmp-badge-size:    {{ section.settings.badge_size_m }}px;
+      --cmp-ch-h:          {{ section.settings.cellhead_h_m }}px;
+      --cmp-brand-us-size: {{ section.settings.brand_us_size_m }}px;
+      --cmp-brand-th-size: {{ section.settings.brand_them_size_m }}px;
+      --cmp-tag-size:      {{ section.settings.tag_size_m }}px;
+      --cmp-dot-size:      {{ section.settings.them_dot_size_m }}px;
+      --cmp-mark-h:        {{ section.settings.mark_h_m }}px;
+      --cmp-cell-h:        {{ section.settings.cell_h_m }}px;
+      --cmp-cell-size:     {{ section.settings.cell_size_m }}px;
+      --cmp-feat-size:     {{ section.settings.feat_size_m }}px;
+      --cmp-sub-size:      {{ section.settings.sub_size_m }}px;
+      --cmp-ic-size:       {{ section.settings.ic_size_m }}px;
+      --cmp-ic-svg:        {{ section.settings.ic_svg_m }}px;
+      --cmp-price-size:    {{ section.settings.price_size_m }}px;
+      --cmp-price-sub-size:{{ section.settings.price_sub_size_m }}px;
+      --cmp-note-size:     {{ section.settings.note_size_m }}px;
+      --cmp-feat-ey-size:  {{ section.settings.feat_ey_size_m }}px;
+      /* no inner overflow — section sits naturally in the page flow */
+      overflow: visible;
+    }
+    #cmp-{{ section.id }} .cmp-head-block { margin-bottom: {{ section.settings.head_gap_m }}px; }
+    #cmp-{{ section.id }} .cmp-note-strong { font-size: {{ section.settings.note_strong_size_m }}px; }
+
+    /* Kill the inner scroll container — on mobile the table fits the viewport */
+    #cmp-{{ section.id }} .cmp-scroll { overflow: visible; padding-top: 10px; }
+
+    /* 3-column layout: feature labels | us | 1 competitor */
+    #cmp-{{ section.id }} .cmp-grid {
+      grid-template-columns: 1.4fr 1.1fr 1fr;
+      min-width: 0;
+      width: 100%;
+    }
+
+    /* Hide second competitor column on mobile */
+    #cmp-{{ section.id }} .cmp-col-them2 { display: none; }
+
+    /* Tighten horizontal padding inside cells on small screens */
+    #cmp-{{ section.id }} .cmp-cell { padding: 0 8px; }
+    #cmp-{{ section.id }} .cmp-col-feat .cmp-cell { padding-left: 2px; }
+    #cmp-{{ section.id }} .cmp-cellhead { padding: 16px 8px 12px; gap: 5px; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Competitor Comparison",
+  "tag": "section",
+  "class": "shopify-section--comparison",
+  "max_blocks": 10,
+  "settings": [
+
+    { "type": "header", "content": "Intro text" },
+    { "type": "text",     "id": "eyebrow",    "label": "Eyebrow",    "default": "The honest comparison" },
+    { "type": "text",     "id": "heading",    "label": "Heading",    "default": "More for your money, more for your body" },
+    { "type": "textarea", "id": "lead",       "label": "Lead",       "default": "Some hydrate. Some add a pinch of mood support. We do both — at full clinical doses, with hormone support and a money-back promise." },
+    { "type": "text",     "id": "feat_label", "label": "Label-column heading", "default": "How we compare" },
+    { "type": "select",   "id": "head_align", "label": "Header alignment", "default": "center", "options": [{"value":"left","label":"Left"},{"value":"center","label":"Center"},{"value":"right","label":"Right"}] },
+    { "type": "range", "id": "head_max_w", "label": "Header max width (px)", "min": 400, "max": 1200, "step": 20, "default": 720 },
+
+    { "type": "header", "content": "Typography — Eyebrow" },
+    { "type": "range", "id": "eyebrow_size",   "label": "Font size — Desktop (px)", "min": 8,  "max": 20,  "step": 1,  "default": 11 },
+    { "type": "range", "id": "eyebrow_size_m", "label": "Font size — Mobile (px)",  "min": 8,  "max": 18,  "step": 1,  "default": 10 },
+    { "type": "select", "id": "eyebrow_weight", "label": "Weight", "default": "600", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"}] },
+    { "type": "color",  "id": "eyebrow_color",   "label": "Color",            "default": "#E8607A" },
+    { "type": "range",  "id": "eyebrow_spacing",  "label": "Letter spacing (px)", "min": 0, "max": 12, "step": 1, "unit": "px", "default": 3 },
+    { "type": "range",  "id": "eyebrow_mb",        "label": "Space below eyebrow (px)", "min": 0, "max": 40, "step": 2, "default": 14 },
+
+    { "type": "header", "content": "Typography — Heading" },
+    { "type": "range", "id": "title_size_min",   "label": "Size min / desktop (px)",  "min": 20, "max": 72, "step": 2, "default": 34 },
+    { "type": "range", "id": "title_size_max",   "label": "Size max / desktop (px)",  "min": 28, "max": 96, "step": 2, "default": 52 },
+    { "type": "range", "id": "title_size_min_m", "label": "Size — Mobile (px)",       "min": 20, "max": 56, "step": 2, "default": 28 },
+    { "type": "select", "id": "title_weight", "label": "Weight", "default": "800", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra-bold"},{"value":"900","label":"Black"}] },
+    { "type": "color",  "id": "title_color",  "label": "Color",        "default": "#1B3A5C" },
+    { "type": "range",  "id": "title_lh",  "label": "Line height (px)", "min": 28, "max": 100, "step": 2, "unit": "px", "default": 56 },
+    { "type": "range",  "id": "title_ls", "label": "Letter spacing (px)", "min": -3, "max": 6, "step": 1, "unit": "px", "default": -1 },
+
+    { "type": "header", "content": "Typography — Lead" },
+    { "type": "range", "id": "lead_size",   "label": "Font size — Desktop (px)", "min": 12, "max": 28, "step": 1, "default": 18 },
+    { "type": "range", "id": "lead_size_m", "label": "Font size — Mobile (px)",  "min": 12, "max": 24, "step": 1, "default": 15 },
+    { "type": "select", "id": "lead_weight", "label": "Weight", "default": "300", "options": [{"value":"300","label":"Light"},{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"}] },
+    { "type": "color",  "id": "lead_color",  "label": "Color", "default": "#1B3A5C" },
+    { "type": "range",  "id": "lead_lh",     "label": "Line height (px)", "min": 14, "max": 60, "step": 2, "unit": "px", "default": 30 },
+    { "type": "range",  "id": "lead_mt",     "label": "Space above lead (px)", "min": 0, "max": 40, "step": 2, "default": 18 },
+    { "type": "range",  "id": "lead_max_w",  "label": "Lead max width (px)",   "min": 300, "max": 900, "step": 20, "default": 580 },
+    { "type": "range",  "id": "head_gap_d",  "label": "Header to table gap — Desktop (px)", "min": 20, "max": 120, "step": 4, "default": 52 },
+    { "type": "range",  "id": "head_gap_m",  "label": "Header to table gap — Mobile (px)",  "min": 16, "max": 80,  "step": 4, "default": 36 },
+
+    { "type": "header", "content": "Your product (us column)" },
+    { "type": "text",         "id": "us_name",  "label": "Name", "info": "Apostrophe renders in accent color.", "default": "Her'dration" },
+    { "type": "text",         "id": "us_tag",   "label": "Tagline", "default": "Hormone-smart hydration" },
+    { "type": "text",         "id": "us_badge", "label": "Ribbon / badge text", "default": "Best value" },
+    { "type": "image_picker", "id": "us_mark",  "label": "Logo mark" },
+
+    { "type": "header", "content": "Badge style" },
+    { "type": "color", "id": "badge_bg",     "label": "Background",         "default": "#E8607A" },
+    { "type": "color", "id": "badge_color",  "label": "Text color",         "default": "#ffffff" },
+    { "type": "range", "id": "badge_size_d", "label": "Font size — Desktop (px)", "min": 7,  "max": 18, "step": 1, "default": 9 },
+    { "type": "range", "id": "badge_size_m", "label": "Font size — Mobile (px)",  "min": 7,  "max": 16, "step": 1, "default": 8 },
+    { "type": "range", "id": "badge_radius", "label": "Border radius (px)",        "min": 0,  "max": 60, "step": 2, "default": 60 },
+    { "type": "range", "id": "badge_px",     "label": "Padding horizontal (px)",   "min": 4,  "max": 32, "step": 2, "default": 14 },
+    { "type": "range", "id": "badge_py",     "label": "Padding vertical (px)",     "min": 2,  "max": 16, "step": 1, "default": 6 },
+
+    { "type": "header", "content": "Competitor 1" },
+    { "type": "text", "id": "c1_name", "label": "Name",    "default": "Leading Mix" },
+    { "type": "text", "id": "c1_tag",  "label": "Tagline", "default": "Classic hydration" },
+
+    { "type": "header", "content": "Competitor 2" },
+    { "type": "checkbox", "id": "c2_enabled", "label": "Show competitor 2", "default": true },
+    { "type": "text",     "id": "c2_name",    "label": "Name",              "default": "Mood Blend" },
+    { "type": "text",     "id": "c2_tag",     "label": "Tagline",           "default": "Electrolytes + mood" },
+
+    { "type": "header", "content": "Column headers — sizing" },
+    { "type": "range", "id": "cellhead_h_d",      "label": "Header row height — Desktop (px)",   "min": 80,  "max": 220, "step": 4,  "default": 136 },
+    { "type": "range", "id": "cellhead_h_m",      "label": "Header row height — Mobile (px)",    "min": 70,  "max": 178, "step": 4,  "default": 110 },
+    { "type": "range", "id": "brand_us_size_d",   "label": "Brand name (us) — Desktop (px)",     "min": 12,  "max": 40,  "step": 1,  "default": 22 },
+    { "type": "range", "id": "brand_us_size_m",   "label": "Brand name (us) — Mobile (px)",      "min": 12,  "max": 32,  "step": 1,  "default": 18 },
+    { "type": "range", "id": "brand_them_size_d", "label": "Brand name (them) — Desktop (px)",   "min": 12,  "max": 36,  "step": 1,  "default": 20 },
+    { "type": "range", "id": "brand_them_size_m", "label": "Brand name (them) — Mobile (px)",    "min": 12,  "max": 28,  "step": 1,  "default": 16 },
+    { "type": "range", "id": "tag_size_d",        "label": "Tagline size — Desktop (px)",         "min": 7,   "max": 18,  "step": 1,  "default": 10 },
+    { "type": "range", "id": "tag_size_m",        "label": "Tagline size — Mobile (px)",          "min": 7,   "max": 16,  "step": 1,  "default": 9 },
+    { "type": "color",  "id": "tag_color_us",     "label": "Tagline color — your product",        "default": "#E8607A" },
+    { "type": "color",  "id": "tag_color_them",   "label": "Tagline color — competitors",         "default": "#8A7E76" },
+    { "type": "range",  "id": "feat_ey_size_d",   "label": "Label-col eyebrow — Desktop (px)",    "min": 8,   "max": 18,  "step": 1,  "default": 11 },
+    { "type": "range",  "id": "feat_ey_size_m",   "label": "Label-col eyebrow — Mobile (px)",     "min": 8,   "max": 16,  "step": 1,  "default": 10 },
+    { "type": "color",  "id": "feat_ey_color",    "label": "Label-col eyebrow color",             "default": "#E8607A" },
+
+    { "type": "header", "content": "Logo mark" },
+    { "type": "range", "id": "mark_h_d", "label": "Height — Desktop (px)", "min": 20, "max": 100, "step": 2, "default": 40 },
+    { "type": "range", "id": "mark_h_m", "label": "Height — Mobile (px)",  "min": 16, "max": 80,  "step": 2, "default": 32 },
+
+    { "type": "header", "content": "Competitor dot" },
+    { "type": "range", "id": "them_dot_size_d", "label": "Size — Desktop (px)", "min": 16, "max": 60, "step": 2, "default": 34 },
+    { "type": "range", "id": "them_dot_size_m", "label": "Size — Mobile (px)",  "min": 14, "max": 48, "step": 2, "default": 28 },
+    { "type": "color",  "id": "them_dot_color",  "label": "Color",               "default": "#d6cec9" },
+
+    { "type": "header", "content": "Table rows — sizing" },
+    { "type": "range", "id": "cell_h_d",    "label": "Row height — Desktop (px)",     "min": 40, "max": 120, "step": 2, "default": 64 },
+    { "type": "range", "id": "cell_h_m",    "label": "Row height — Mobile (px)",      "min": 36, "max": 100, "step": 2, "default": 52 },
+    { "type": "range", "id": "cell_size_d", "label": "Value font size — Desktop (px)", "min": 10, "max": 22,  "step": 1, "default": 14 },
+    { "type": "range", "id": "cell_size_m", "label": "Value font size — Mobile (px)",  "min": 10, "max": 20,  "step": 1, "default": 12 },
+    { "type": "range", "id": "feat_size_d", "label": "Label font size — Desktop (px)", "min": 10, "max": 22,  "step": 1, "default": 14 },
+    { "type": "range", "id": "feat_size_m", "label": "Label font size — Mobile (px)",  "min": 10, "max": 20,  "step": 1, "default": 12 },
+    { "type": "select", "id": "feat_weight", "label": "Label font weight", "default": "600", "options": [{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"}] },
+    { "type": "range", "id": "sub_size_d",  "label": "Sub-label size — Desktop (px)", "min": 8,  "max": 16,  "step": 1, "default": 12 },
+    { "type": "range", "id": "sub_size_m",  "label": "Sub-label size — Mobile (px)",  "min": 8,  "max": 14,  "step": 1, "default": 11 },
+
+    { "type": "header", "content": "Icons — Yes (your product ✓)" },
+    { "type": "range", "id": "ic_size_d",    "label": "Circle size — Desktop (px)", "min": 20, "max": 56, "step": 2, "default": 32 },
+    { "type": "range", "id": "ic_size_m",    "label": "Circle size — Mobile (px)",  "min": 16, "max": 48, "step": 2, "default": 28 },
+    { "type": "range", "id": "ic_svg_d",     "label": "Icon size — Desktop (px)",   "min": 10, "max": 36, "step": 2, "default": 16 },
+    { "type": "range", "id": "ic_svg_m",     "label": "Icon size — Mobile (px)",    "min": 8,  "max": 30, "step": 2, "default": 14 },
+    { "type": "color",  "id": "ic_yes_bg",   "label": "Yes — circle bg",    "default": "#f5d5da" },
+    { "type": "color",  "id": "ic_yes_color","label": "Yes — icon color",   "default": "#E8607A" },
+
+    { "type": "header", "content": "Icons — No (✕)" },
+    { "type": "color",  "id": "ic_no_bg",    "label": "No — circle bg",     "default": "#e6e0db" },
+    { "type": "color",  "id": "ic_no_color", "label": "No — icon color",    "default": "#8A7E76" },
+
+    { "type": "header", "content": "Icons — Equal (competitor ✓)" },
+    { "type": "color",  "id": "ic_eq_bg",    "label": "Equal — circle bg",  "default": "#dce5d0" },
+    { "type": "color",  "id": "ic_eq_color", "label": "Equal — icon color", "default": "#5a6d3f" },
+
+    { "type": "header", "content": "Pricing" },
+    { "type": "text",  "id": "price_unit",        "label": "Price unit suffix",          "default": "/serving" },
+    { "type": "range", "id": "price_size_d",      "label": "Price size — Desktop (px)",  "min": 14, "max": 40, "step": 1, "default": 20 },
+    { "type": "range", "id": "price_size_m",      "label": "Price size — Mobile (px)",   "min": 12, "max": 32, "step": 1, "default": 17 },
+    { "type": "range", "id": "price_sub_size_d",  "label": "Unit size — Desktop (px)",   "min": 8,  "max": 18, "step": 1, "default": 11 },
+    { "type": "range", "id": "price_sub_size_m",  "label": "Unit size — Mobile (px)",    "min": 7,  "max": 16, "step": 1, "default": 10 },
+    { "type": "color",  "id": "price_color",      "label": "Your price color",           "default": "#E8607A" },
+    { "type": "color",  "id": "price_them_color", "label": "Competitor price color",     "default": "#8A7E76" },
+    { "type": "color",  "id": "price_row_bg",     "label": "Your price row bg",          "default": "#faedf0" },
+
+    { "type": "header", "content": "Closing note" },
+    { "type": "text",  "id": "note_strong",        "label": "Emphasized text (bold)",     "default": "Real clinical doses. Real fruit. Real guarantee." },
+    { "type": "text",  "id": "note",               "label": "Rest of note",               "default": "Mood & hydration the others only half-deliver." },
+    { "type": "range", "id": "note_size_d",        "label": "Font size — Desktop (px)",   "min": 12, "max": 32, "step": 1, "default": 20 },
+    { "type": "range", "id": "note_size_m",        "label": "Font size — Mobile (px)",    "min": 12, "max": 26, "step": 1, "default": 16 },
+    { "type": "range", "id": "note_strong_size_d", "label": "Bold text size — Desktop",   "min": 10, "max": 28, "step": 1, "default": 16 },
+    { "type": "range", "id": "note_strong_size_m", "label": "Bold text size — Mobile",    "min": 10, "max": 24, "step": 1, "default": 14 },
+    { "type": "color",  "id": "note_color",        "label": "Note text color",            "default": "#1B3A5C" },
+    { "type": "color",  "id": "note_strong_color", "label": "Bold text color",            "default": "#E8607A" },
+    { "type": "color",  "id": "note_heart_color",  "label": "Heart color",                "default": "#E8607A" },
+    { "type": "range",  "id": "note_mt",           "label": "Space above note (px)",      "min": 16, "max": 80, "step": 4, "default": 32 },
+
+    { "type": "header", "content": "Fonts (Google Fonts names)" },
+    { "type": "text", "id": "font_serif",   "label": "Serif (brand names, heading)", "default": "Playfair Display" },
+    { "type": "text", "id": "font_sans",    "label": "Sans (body, cells, badge)",    "default": "DM Sans" },
+    { "type": "text", "id": "font_display", "label": "Display (closing note)",       "default": "Cormorant Garamond" },
+
+    { "type": "header", "content": "Base colors" },
+    { "type": "color", "id": "color_navy",  "label": "Navy (primary text)",       "default": "#1B3A5C" },
+    { "type": "color", "id": "color_rose",  "label": "Rose (accent)",             "default": "#E8607A" },
+    { "type": "color", "id": "color_stone", "label": "Stone (muted / them text)", "default": "#8A7E76" },
+    { "type": "color", "id": "color_mist",  "label": "Mist (border)",             "default": "#E8DDD5" },
+
+    { "type": "header", "content": "Column appearance" },
+    { "type": "range", "id": "col_radius",    "label": "Column border radius (px)", "min": 0, "max": 40, "step": 2, "default": 24 },
+    { "type": "color",  "id": "us_col_bg",    "label": "Your col background",       "default": "#ffffff" },
+    { "type": "color",  "id": "us_col_border","label": "Your col border",           "default": "#f0b4c0" },
+    { "type": "text",   "id": "us_col_shadow","label": "Your col box-shadow (CSS)", "default": "0 8px 40px rgba(27,58,92,.12)" },
+    { "type": "color",  "id": "them_col_bg",  "label": "Competitor col background", "default": "#f0e8e0" },
+    { "type": "color",  "id": "them2_col_bg", "label": "2nd competitor col bg",     "default": "#ede5dd" },
+
+    { "type": "header", "content": "Background" },
+    { "type": "checkbox", "id": "bg_gradient",  "label": "Gradient background", "default": true },
+    { "type": "color",    "id": "bg_color",     "label": "Background",           "default": "#FAF5F0" },
+    { "type": "color",    "id": "bg_color_2",   "label": "Gradient top color",   "default": "#F0E8E0" },
+
+    { "type": "header", "content": "Layout & spacing" },
+    { "type": "range", "id": "inner_max_w",  "label": "Section max width (px)",      "min": 600, "max": 1600, "step": 20, "default": 1080 },
+    { "type": "range", "id": "pad_top",      "label": "Padding top — Desktop (px)",  "min": 20,  "max": 200,  "step": 4,  "default": 108 },
+    { "type": "range", "id": "pad_bottom",   "label": "Padding bottom — Desktop (px)","min": 20, "max": 200,  "step": 4,  "default": 108 },
+    { "type": "range", "id": "pad_x",        "label": "Padding sides — Desktop (px)", "min": 0,  "max": 80,   "step": 4,  "default": 32 },
+    { "type": "range", "id": "pad_top_m",    "label": "Padding top — Mobile (px)",   "min": 16,  "max": 120,  "step": 4,  "default": 60 },
+    { "type": "range", "id": "pad_bottom_m", "label": "Padding bottom — Mobile (px)","min": 16,  "max": 120,  "step": 4,  "default": 60 },
+    { "type": "range", "id": "pad_x_m",      "label": "Padding sides — Mobile (px)", "min": 0,   "max": 40,   "step": 2,  "default": 16 },
+    { "type": "range", "id": "min_w_2col",   "label": "Table min-width 2-col (px)",  "min": 320,  "max": 900,  "step": 20, "default": 560 },
+    { "type": "range", "id": "min_w_3col",   "label": "Table min-width 3-col (px)",  "min": 480,  "max": 1100, "step": 20, "default": 720 }
+  ],
+
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Comparison row",
+      "settings": [
+        { "type": "text",     "id": "label",    "label": "Feature" },
+        { "type": "text",     "id": "sublabel", "label": "Sub-text (optional)" },
+        { "type": "checkbox", "id": "is_price", "label": "Price row", "info": "Renders values as large prices.", "default": false },
+        { "type": "header",   "content": "Your product" },
+        { "type": "select", "id": "us_type", "label": "Value", "default": "check", "options": [
+          { "value": "check", "label": "Yes (check)" },
+          { "value": "cross", "label": "No (✕)" },
+          { "value": "text",  "label": "Custom text" }
+        ]},
+        { "type": "text", "id": "us_text", "label": "Text / price", "info": "Used for Custom text or Price row." },
+        { "type": "header", "content": "Competitor 1" },
+        { "type": "select", "id": "c1_type", "label": "Value", "default": "cross", "options": [
+          { "value": "check", "label": "Yes (check)" },
+          { "value": "cross", "label": "No (✕)" },
+          { "value": "text",  "label": "Custom text" }
+        ]},
+        { "type": "text", "id": "c1_text", "label": "Text / price" },
+        { "type": "header", "content": "Competitor 2" },
+        { "type": "select", "id": "c2_type", "label": "Value", "default": "cross", "options": [
+          { "value": "check", "label": "Yes (check)" },
+          { "value": "cross", "label": "No (✕)" },
+          { "value": "text",  "label": "Custom text" }
+        ]},
+        { "type": "text", "id": "c2_text", "label": "Text / price" }
+      ]
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Competitor Comparison",
+      "blocks": [
+        { "type": "row", "settings": { "label": "Price per serving", "is_price": true, "us_text": "$1.47", "c1_text": "$1.56", "c2_text": "$1.89" } },
+        { "type": "row", "settings": { "label": "Electrolyte hydration", "us_type": "check", "c1_type": "check", "c2_type": "check" } },
+        { "type": "row", "settings": { "label": "Mood & focus support", "us_type": "check", "c1_type": "cross", "c2_type": "check" } },
+        { "type": "row", "settings": { "label": "Hormone & cycle support", "us_type": "check", "c1_type": "cross", "c2_type": "cross" } },
+        { "type": "row", "settings": { "label": "Clinically studied doses", "sublabel": "full doses, not micro-doses", "us_type": "check", "c1_type": "cross", "c2_type": "cross" } },
+        { "type": "row", "settings": { "label": "Real fruit, no synthetic dyes", "us_type": "check", "c1_type": "cross", "c2_type": "cross" } },
+        { "type": "row", "settings": { "label": "Money-back guarantee", "us_type": "check", "c1_type": "cross", "c2_type": "cross" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
