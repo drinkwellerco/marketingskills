@@ -436,26 +436,27 @@
       padding-top: 10px;
     }
 
-    /* Only ONE competitor on mobile: label + your product + competitor 1.
-       minmax(0,Xfr) lets the tracks shrink below their content's natural width. */
+    /* Compress the "How we compare" label column so the competitor columns get
+       more room. minmax(0,Xfr) lets every track shrink below its content width. */
     #cmp-{{ section.id }} .cmp-grid {
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: {% if three %}minmax(0, .8fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr){% else %}minmax(0, .9fr) minmax(0, 1fr) minmax(0, 1fr){% endif %};
       min-width: 0;
       width: 100%;
     }
 
-    /* Hide the second competitor entirely on mobile */
-    #cmp-{{ section.id }} .cmp-col-them2 { display: none !important; }
+    /* Remove the column overlap on mobile to reclaim horizontal space */
+    #cmp-{{ section.id }} .cmp-col-them { margin-left: 0; }
 
     /* Let text wrap so it never forces a column wider than its track */
     #cmp-{{ section.id }} .cmp-col-us .cmp-brand,
     #cmp-{{ section.id }} .cmp-col-them .cmp-brand,
     #cmp-{{ section.id }} .cmp-price { white-space: normal; word-break: break-word; }
 
-    /* Tighten padding so text has room */
-    #cmp-{{ section.id }} .cmp-cell { padding: 0 6px; }
-    #cmp-{{ section.id }} .cmp-col-feat .cmp-cell { padding-left: 2px; }
-    #cmp-{{ section.id }} .cmp-cellhead { padding: 14px 6px 10px; gap: 4px; }
+    /* Minimal horizontal padding so more of the table is visible */
+    #cmp-{{ section.id }} .cmp-cell { padding: 0 3px; }
+    #cmp-{{ section.id }} .cmp-col-feat .cmp-cell { padding-left: 1px; padding-right: 4px; }
+    #cmp-{{ section.id }} .cmp-cellhead { padding: 12px 3px 8px; gap: 3px; }
+    #cmp-{{ section.id }} .cmp-col-feat .cmp-cellhead { padding-left: 1px; }
   }
 </style>
 
