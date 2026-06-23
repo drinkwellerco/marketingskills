@@ -459,6 +459,18 @@
   function open(){ overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; }
   function close(){ overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; }
 
+  function updateHeaderBubble(){
+    fetch('/?sections=cart-icon-bubble',{headers:{'Accept':'application/json'}})
+      .then(function(r){return r.json();})
+      .then(function(data){
+        var html=data['cart-icon-bubble'];if(!html)return;
+        var target=document.getElementById('cart-icon-bubble');if(!target)return;
+        var doc=new DOMParser().parseFromString(html,'text/html');
+        var fresh=doc.getElementById('cart-icon-bubble');
+        if(fresh){target.innerHTML=fresh.innerHTML;}
+      }).catch(function(){});
+  }
+
   function updateHeaderCount(n){
     var s = String(n);
     /* covers Dawn, Debut, and most custom themes */
@@ -470,7 +482,8 @@
     });
     /* show/hide zero-state on elements that hide when empty */
     document.querySelectorAll('[data-cart-count-bubble]').forEach(function(el){ el.style.display = n > 0 ? '' : 'none'; el.textContent = s; });
-    document.dispatchEvent(new CustomEvent('cart:refresh', { detail: { itemCount: n }, bubbles: true }));
+    /* Re-render Dawn's cart bubble via Section Rendering API so it appears/disappears correctly */
+    updateHeaderBubble();
   }
 
   function refresh(){
@@ -625,7 +638,6 @@
 
   /* Listen for any theme or app that signals a successful cart add */
   document.addEventListener('cart:add', function(){ refresh().then(open); });
-  document.addEventListener('cart:refresh', function(){ refresh(); });
   document.addEventListener('cart-drawer:refresh', function(){ refresh(); });
 
   /* Intercept native add-to-cart form submissions so the drawer opens */
