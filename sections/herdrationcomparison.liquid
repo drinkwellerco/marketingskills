@@ -20,6 +20,9 @@
 {%- assign c1_order = section.settings.c1_order | default: 2 -%}
 {%- assign c2_order = section.settings.c2_order | default: 3 -%}
 
+{%- comment -%} Row count (header + one per comparison row) for the mobile subgrid {%- endcomment -%}
+{%- assign nrows = section.blocks.size -%}
+
 {%- assign brand = section.settings.us_name | default: "Her'dration" -%}
 {%- assign bp = brand | split: "'" -%}
 {%- assign unit = section.settings.price_unit | default: '/serving' -%}
@@ -436,27 +439,49 @@
       padding-top: 10px;
     }
 
-    /* Compress the "How we compare" label column so the competitor columns get
-       more room. minmax(0,Xfr) lets every track shrink below its content width. */
+    /* Per-column widths (fr units, set in theme editor). minmax(0,..) lets every
+       track shrink below its content width so the table always fits the screen. */
     #cmp-{{ section.id }} .cmp-grid {
-      grid-template-columns: {% if three %}minmax(0, .8fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr){% else %}minmax(0, .9fr) minmax(0, 1fr) minmax(0, 1fr){% endif %};
+      grid-template-columns:
+        minmax(0, {{ section.settings.feat_w_m }}fr)
+        minmax(0, {{ section.settings.us_w_m }}fr)
+        minmax(0, {{ section.settings.c1_w_m }}fr){% if three %}
+        minmax(0, {{ section.settings.c2_w_m }}fr){% endif %};
+      grid-template-rows: auto repeat({{ nrows }}, auto);
       min-width: 0;
       width: 100%;
     }
 
+    /* SUBGRID: each column shares the parent's row tracks, so every row auto-sizes
+       to its tallest cell and stays perfectly aligned across columns. Text can wrap
+       freely and the row simply grows — it can never overlap the row below it. */
+    #cmp-{{ section.id }} .cmp-col {
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-row: 1 / -1;
+    }
+
+    /* Cells grow with content (fixed height was what caused the overlap).
+       The mobile "row height" now acts as a minimum. */
+    #cmp-{{ section.id }} .cmp-cell    { height: auto; min-height: var(--cmp-cell-h); }
+    #cmp-{{ section.id }} .cmp-cellhead { height: auto; min-height: var(--cmp-ch-h); }
+
     /* Remove the column overlap on mobile to reclaim horizontal space */
     #cmp-{{ section.id }} .cmp-col-them { margin-left: 0; }
 
-    /* Let text wrap so it never forces a column wider than its track */
+    /* Let every text element wrap instead of pushing the column wider */
     #cmp-{{ section.id }} .cmp-col-us .cmp-brand,
     #cmp-{{ section.id }} .cmp-col-them .cmp-brand,
-    #cmp-{{ section.id }} .cmp-price { white-space: normal; word-break: break-word; }
+    #cmp-{{ section.id }} .cmp-price,
+    #cmp-{{ section.id }} .cmp-txt-yes,
+    #cmp-{{ section.id }} .cmp-txt-no,
+    #cmp-{{ section.id }} .cmp-tag { white-space: normal; word-break: break-word; overflow-wrap: anywhere; }
 
-    /* Minimal horizontal padding so more of the table is visible */
-    #cmp-{{ section.id }} .cmp-cell { padding: 0 3px; }
-    #cmp-{{ section.id }} .cmp-col-feat .cmp-cell { padding-left: 1px; padding-right: 4px; }
-    #cmp-{{ section.id }} .cmp-cellhead { padding: 12px 3px 8px; gap: 3px; }
-    #cmp-{{ section.id }} .cmp-col-feat .cmp-cellhead { padding-left: 1px; }
+    /* Spacing controls (set in theme editor) */
+    #cmp-{{ section.id }} .cmp-cell { padding: {{ section.settings.cell_py_m }}px {{ section.settings.cell_px_m }}px; }
+    #cmp-{{ section.id }} .cmp-col-feat .cmp-cell { padding-left: {{ section.settings.feat_px_m }}px; padding-right: {{ section.settings.cell_px_m }}px; }
+    #cmp-{{ section.id }} .cmp-cellhead { padding: {{ section.settings.cellhead_py_m }}px {{ section.settings.cell_px_m }}px; gap: {{ section.settings.cellhead_gap_m }}px; }
+    #cmp-{{ section.id }} .cmp-col-feat .cmp-cellhead { padding-left: {{ section.settings.feat_px_m }}px; }
   }
 </style>
 
@@ -591,6 +616,20 @@
     { "type": "color",  "id": "price_color",      "label": "Your price color",           "default": "#E8607A" },
     { "type": "color",  "id": "price_them_color", "label": "Competitor price color",     "default": "#8A7E76" },
     { "type": "color",  "id": "price_row_bg",     "label": "Your price row bg",          "default": "#faedf0" },
+
+    { "type": "header", "content": "── Mobile column widths (fr) ──" },
+    { "type": "paragraph", "content": "Relative widths of each column on mobile. Bigger number = wider. e.g. 0.8 / 1 / 1 / 1." },
+    { "type": "range", "id": "feat_w_m", "label": "Label column width", "min": 0.4, "max": 3, "step": 0.1, "default": 0.8 },
+    { "type": "range", "id": "us_w_m",   "label": "Your product column width", "min": 0.4, "max": 3, "step": 0.1, "default": 1 },
+    { "type": "range", "id": "c1_w_m",   "label": "Competitor 1 column width", "min": 0.4, "max": 3, "step": 0.1, "default": 1 },
+    { "type": "range", "id": "c2_w_m",   "label": "Competitor 2 column width", "min": 0.4, "max": 3, "step": 0.1, "default": 1 },
+
+    { "type": "header", "content": "── Mobile spacing ──" },
+    { "type": "range", "id": "cell_px_m",     "label": "Cell horizontal padding (px)", "min": 0, "max": 24, "step": 1, "default": 4 },
+    { "type": "range", "id": "cell_py_m",     "label": "Cell vertical padding (px)",   "min": 0, "max": 28, "step": 1, "default": 8 },
+    { "type": "range", "id": "feat_px_m",     "label": "Label column left padding (px)", "min": 0, "max": 24, "step": 1, "default": 2 },
+    { "type": "range", "id": "cellhead_py_m", "label": "Header vertical padding (px)",  "min": 4, "max": 32, "step": 1, "default": 12 },
+    { "type": "range", "id": "cellhead_gap_m","label": "Header inner gap (px)",         "min": 0, "max": 20, "step": 1, "default": 4 },
 
     { "type": "header", "content": "Closing note" },
     { "type": "text",  "id": "note_strong",        "label": "Emphasized text (bold)",     "default": "Real clinical doses. Real fruit. Real guarantee." },
