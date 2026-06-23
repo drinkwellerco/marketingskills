@@ -420,29 +420,35 @@
       --cmp-price-sub-size:{{ section.settings.price_sub_size_m }}px;
       --cmp-note-size:     {{ section.settings.note_size_m }}px;
       --cmp-feat-ey-size:  {{ section.settings.feat_ey_size_m }}px;
-      /* no inner overflow — section sits naturally in the page flow */
-      overflow: visible;
+      /* prevent section from clipping or scrolling its own content */
+      overflow-x: clip;
     }
     #cmp-{{ section.id }} .cmp-head-block { margin-bottom: {{ section.settings.head_gap_m }}px; }
     #cmp-{{ section.id }} .cmp-note-strong { font-size: {{ section.settings.note_strong_size_m }}px; }
 
-    /* Kill the inner scroll container — on mobile the table fits the viewport */
-    #cmp-{{ section.id }} .cmp-scroll { overflow: visible; padding-top: 10px; }
+    /* overflow:clip is NOT a scroll container (unlike hidden/auto) so no inner scroll box */
+    #cmp-{{ section.id }} .cmp-scroll { overflow: clip; padding-top: 10px; }
 
-    /* 3-column layout: feature labels | us | 1 competitor */
+    /* minmax(0,Xfr) enforces fractional widths even with nowrap content inside cells.
+       Plain Xfr won't shrink below min-content, which is what caused the overflow. */
     #cmp-{{ section.id }} .cmp-grid {
-      grid-template-columns: 1.4fr 1.1fr 1fr;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr) minmax(0, 1fr);
       min-width: 0;
       width: 100%;
     }
 
-    /* Hide second competitor column on mobile */
+    /* Hide second competitor — 3 columns is the max that fits a phone */
     #cmp-{{ section.id }} .cmp-col-them2 { display: none; }
 
-    /* Tighten horizontal padding inside cells on small screens */
-    #cmp-{{ section.id }} .cmp-cell { padding: 0 8px; }
+    /* Let brand names wrap so they don't force columns wider than their fraction */
+    #cmp-{{ section.id }} .cmp-col-us .cmp-brand,
+    #cmp-{{ section.id }} .cmp-col-them .cmp-brand { white-space: normal; }
+    #cmp-{{ section.id }} .cmp-price { white-space: normal; }
+
+    /* Tighten padding so text has room */
+    #cmp-{{ section.id }} .cmp-cell { padding: 0 6px; }
     #cmp-{{ section.id }} .cmp-col-feat .cmp-cell { padding-left: 2px; }
-    #cmp-{{ section.id }} .cmp-cellhead { padding: 16px 8px 12px; gap: 5px; }
+    #cmp-{{ section.id }} .cmp-cellhead { padding: 14px 6px 10px; gap: 4px; }
   }
 </style>
 
