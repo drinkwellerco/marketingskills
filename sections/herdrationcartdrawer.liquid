@@ -460,7 +460,9 @@
   function close(){ overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; }
 
   function updateHeaderBubble(){
-    fetch('/?sections=cart-icon-bubble',{headers:{'Accept':'application/json'}})
+    /* cache-bust + no-store: the Section Rendering response gets cached by the
+       browser otherwise, and a stale (often empty) bubble overwrites the live one */
+    fetch('/?sections=cart-icon-bubble&t=' + Date.now(),{cache:'no-store',headers:{'Accept':'application/json'}})
       .then(function(r){return r.json();})
       .then(function(data){
         var html=data['cart-icon-bubble'];if(!html)return;
@@ -499,7 +501,7 @@
         if(count && curCount){ curCount.textContent = count.textContent; }
         if(savedDiscount){ showAppliedBadge(savedDiscount); }
         /* update header cart icon count */
-        fetch('/cart.js', { headers:{ 'Accept':'application/json' } })
+        fetch('/cart.js', { cache:'no-store', headers:{ 'Accept':'application/json' } })
           .then(function(r){ return r.json(); })
           .then(function(c){ updateHeaderCount(c.item_count); })
           .catch(function(){});
