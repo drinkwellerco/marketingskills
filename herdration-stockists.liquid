@@ -1,0 +1,479 @@
+{%- comment -%}
+  ============================================================
+  WELLER CO. — Her'dration Stockist Locator  (Compact Directory)
+  ------------------------------------------------------------
+  A Shopify section with TWO ways to add locations, so you can
+  scale well past Shopify's 50-block-per-section limit:
+
+    1. "Retailer" blocks (theme editor) — up to 50, each with
+       its own logo dot color and up to 3 uploaded photos.
+       Best for your flagship / featured stockists.
+
+    2. "Bulk locations" paste box — one stockist per line,
+       pipe-separated. No 50-cap, so this is how you reach 100+.
+       Supports an optional photo via image URL.
+
+  Both sources are merged, grouped by region, and plotted on the
+  same live pan/zoom Leaflet map. Tap a row (or pin) to expand it
+  inline & fly the map to it; collapse to zoom back out.
+
+  Leaflet (OpenStreetMap) is loaded from CDN on demand.
+  Everything is namespaced under #st-{{ section.id }}.
+  ============================================================
+{%- endcomment -%}
+
+{%- assign accent = section.settings.accent | default: '#E8607A' -%}
+{%- assign map_h = section.settings.map_height | default: 600 -%}
+
+{%- comment -%} ---- parse the bulk paste box into an array of lines ---- {%- endcomment -%}
+{%- assign bulk_lines = '' -%}
+{%- if section.settings.bulk != blank -%}
+  {%- assign bulk_lines = section.settings.bulk | strip | newline_to_br | split: '<br />' -%}
+{%- endif -%}
+
+{%- comment -%} ---- unique region list, delimiter-wrapped to avoid substring collisions ---- {%- endcomment -%}
+{%- assign region_list = '|||' -%}
+{%- for block in section.blocks -%}
+  {%- if block.type == 'retailer' -%}
+    {%- assign rkey = block.settings.region | default: 'Stockists' -%}
+    {%- assign probe = '|||' | append: rkey | append: '|||' -%}
+    {%- unless region_list contains probe -%}
+      {%- assign region_list = region_list | append: rkey | append: '|||' -%}
+    {%- endunless -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- for line in bulk_lines -%}
+  {%- assign f = line | split: '|' -%}
+  {%- assign bname = f[0] | strip -%}
+  {%- unless bname == blank -%}
+    {%- assign rkey = f[1] | strip -%}
+    {%- if rkey == blank -%}{%- assign rkey = 'Stockists' -%}{%- endif -%}
+    {%- assign probe = '|||' | append: rkey | append: '|||' -%}
+    {%- unless region_list contains probe -%}
+      {%- assign region_list = region_list | append: rkey | append: '|||' -%}
+    {%- endunless -%}
+  {%- endunless -%}
+{%- endfor -%}
+{%- assign regions = region_list | split: '|||' -%}
+
+{%- comment -%} ---- total count across both sources ---- {%- endcomment -%}
+{%- assign total = 0 -%}
+{%- for block in section.blocks -%}{%- if block.type == 'retailer' -%}{%- assign total = total | plus: 1 -%}{%- endif -%}{%- endfor -%}
+{%- for line in bulk_lines -%}{%- assign f = line | split: '|' -%}{%- assign bname = f[0] | strip -%}{%- unless bname == blank -%}{%- assign total = total | plus: 1 -%}{%- endunless -%}{%- endfor -%}
+
+{%- capture ic_phone -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>{%- endcapture -%}
+{%- capture ic_pin -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>{%- endcapture -%}
+{%- capture ic_globe -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z"/></svg>{%- endcapture -%}
+{%- capture ic_clock -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{%- endcapture -%}
+{%- capture ic_cam -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"/><circle cx="12" cy="13" r="4"/></svg>{%- endcapture -%}
+{%- capture ic_chev -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>{%- endcapture -%}
+{%- capture ic_nav -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 19-9-9 19-2-8-8-2Z"/></svg>{%- endcapture -%}
+
+<section id="st-{{ section.id }}" class="st" data-accent="{{ accent }}" data-map-height="{{ map_h }}">
+
+  {%- if section.settings.heading != blank or section.settings.intro != blank -%}
+  <div class="st-head">
+    {%- if section.settings.eyebrow != blank -%}<span class="st-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+    {%- if section.settings.heading != blank -%}<h2 class="st-title">{{ section.settings.heading }}</h2>{%- endif -%}
+    {%- if section.settings.intro != blank -%}<p class="st-intro">{{ section.settings.intro }}</p>{%- endif -%}
+  </div>
+  {%- endif -%}
+
+  {%- if total == 0 -%}
+    <p style="text-align:center;padding:40px;color:#8A7E76;">Add a <b>Retailer</b> block — or paste rows into <b>Bulk locations</b> — in the theme editor to populate the map.</p>
+  {%- else -%}
+
+  <div class="st-card">
+    <div class="st-card-head">
+      <div class="st-card-title">{{ section.settings.list_title | default: 'The directory' }}</div>
+      <div class="st-card-count">{{ total }} locations · {{ section.settings.count_label | default: 'nationwide' }}</div>
+    </div>
+
+    <div class="st-split">
+      <div>
+        <div class="st-list" id="st-list-{{ section.id }}">
+          {%- assign idx = 0 -%}
+          {%- assign markers_json = '' -%}
+          {%- for region in regions -%}
+            {%- unless region == blank -%}
+              {%- comment -%} group size = matching blocks + matching bulk lines {%- endcomment -%}
+              {%- assign gsize = 0 -%}
+              {%- for b in section.blocks -%}{%- if b.type == 'retailer' -%}{%- assign brk = b.settings.region | default: 'Stockists' -%}{%- if brk == region -%}{%- assign gsize = gsize | plus: 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}
+              {%- for line in bulk_lines -%}{%- assign f = line | split: '|' -%}{%- assign bname = f[0] | strip -%}{%- unless bname == blank -%}{%- assign brk = f[1] | strip -%}{%- if brk == blank -%}{%- assign brk = 'Stockists' -%}{%- endif -%}{%- if brk == region -%}{%- assign gsize = gsize | plus: 1 -%}{%- endif -%}{%- endunless -%}{%- endfor -%}
+
+              <div class="st-group">
+                <div class="st-ghead">{{ region }}<span class="st-gcount">{{ gsize }}</span></div>
+
+                {%- comment -%} ===== block-based retailers ===== {%- endcomment -%}
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'retailer' -%}
+                  {%- assign brk = block.settings.region | default: 'Stockists' -%}
+                  {%- if brk == region -%}
+                    {%- assign idx = idx | plus: 1 -%}
+                    {%- assign dot = block.settings.color | default: accent -%}
+                    {%- assign lat = block.settings.latitude | default: 0 -%}
+                    {%- assign lng = block.settings.longitude | default: 0 -%}
+                    {%- capture markers_json -%}{{ markers_json }}{% if idx > 1 %},{% endif %}{"n":{{ idx }},"id":{{ block.id | json }},"name":{{ block.settings.name | json }},"cat":{{ block.settings.category | json }},"lat":{{ lat }},"lng":{{ lng }}}{%- endcapture -%}
+
+                    <div class="st-row" data-id="{{ block.id }}" {{ block.shopify_attributes }}>
+                      <button class="st-rhead" type="button" aria-expanded="false">
+                        <span class="st-dot" style="--dot:{{ dot }}">{{ idx }}</span>
+                        <span class="st-rmeta">
+                          <span class="st-name">{{ block.settings.name | default: 'Retailer name' }}</span>
+                          <span class="st-sub">{{ block.settings.category }}{% if block.settings.photo != blank %} · <span class="st-haspic">{{ ic_cam }}</span>{% endif %}</span>
+                        </span>
+                        {%- if block.settings.state != blank -%}<span class="st-rdist">{{ block.settings.state }}</span>{%- endif -%}
+                        <span class="st-chev">{{ ic_chev }}</span>
+                      </button>
+                      <div class="st-body"><div class="st-body-in">
+                        {%- if block.settings.description != blank -%}<p class="st-desc">{{ block.settings.description }}</p>{%- endif -%}
+                        <div class="st-contact">
+                          {%- if block.settings.phone != blank -%}<a class="st-c" href="tel:{{ block.settings.phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' }}">{{ ic_phone }}<span>{{ block.settings.phone }}</span></a>{%- endif -%}
+                          {%- if block.settings.address != blank -%}<div class="st-c"><span class="st-c-ic">{{ ic_pin }}</span><span>{{ block.settings.address }}</span></div>{%- endif -%}
+                          {%- if block.settings.website != blank -%}<a class="st-c" href="{{ block.settings.website }}" target="_blank" rel="noopener">{{ ic_globe }}<span>{{ block.settings.website_label | default: block.settings.website | remove: 'https://' | remove: 'http://' }}</span></a>{%- endif -%}
+                          {%- if block.settings.hours != blank -%}<div class="st-c"><span class="st-c-ic">{{ ic_clock }}</span><span>{{ block.settings.hours }}</span></div>{%- endif -%}
+                        </div>
+                        {%- if block.settings.photo != blank -%}
+                        <div class="st-photos">
+                          <img class="st-shot st-shot-hero" src="{{ block.settings.photo | image_url: width: 900 }}" alt="{{ block.settings.name | escape }}" loading="lazy">
+                          {%- if block.settings.photo2 != blank or block.settings.photo3 != blank -%}
+                          <div class="st-thumbs">
+                            {%- if block.settings.photo2 != blank -%}<img class="st-shot" src="{{ block.settings.photo2 | image_url: width: 500 }}" alt="" loading="lazy">{%- endif -%}
+                            {%- if block.settings.photo3 != blank -%}<img class="st-shot" src="{{ block.settings.photo3 | image_url: width: 500 }}" alt="" loading="lazy">{%- endif -%}
+                          </div>
+                          {%- endif -%}
+                        </div>
+                        {%- endif -%}
+                        {%- if block.settings.address != blank -%}<a class="st-btn" href="https://maps.google.com/?q={{ block.settings.address | url_encode }}" target="_blank" rel="noopener">{{ ic_nav }} Get directions</a>{%- endif -%}
+                      </div></div>
+                    </div>
+                  {%- endif -%}
+                  {%- endif -%}
+                {%- endfor -%}
+
+                {%- comment -%} ===== bulk-paste retailers ===== {%- endcomment -%}
+                {%- for line in bulk_lines -%}
+                  {%- assign f = line | split: '|' -%}
+                  {%- assign bname = f[0] | strip -%}
+                  {%- unless bname == blank -%}
+                    {%- assign brk = f[1] | strip -%}
+                    {%- if brk == blank -%}{%- assign brk = 'Stockists' -%}{%- endif -%}
+                    {%- if brk == region -%}
+                      {%- assign idx = idx | plus: 1 -%}
+                      {%- assign bid = 'bulk-' | append: forloop.index -%}
+                      {%- assign bcity = f[2] | strip -%}
+                      {%- assign bstate = f[3] | strip -%}
+                      {%- assign blat = f[4] | strip -%}{%- if blat == blank -%}{%- assign blat = 0 -%}{%- endif -%}
+                      {%- assign blng = f[5] | strip -%}{%- if blng == blank -%}{%- assign blng = 0 -%}{%- endif -%}
+                      {%- assign bphone = f[6] | strip -%}
+                      {%- assign baddr = f[7] | strip -%}
+                      {%- assign bweb = f[8] | strip -%}
+                      {%- assign bhours = f[9] | strip -%}
+                      {%- assign bcat = f[10] | strip -%}
+                      {%- assign bdesc = f[11] | strip -%}
+                      {%- assign bimg = f[12] | strip -%}
+                      {%- capture markers_json -%}{{ markers_json }}{% if idx > 1 %},{% endif %}{"n":{{ idx }},"id":{{ bid | json }},"name":{{ bname | json }},"cat":{{ bcat | json }},"lat":{{ blat }},"lng":{{ blng }}}{%- endcapture -%}
+
+                      <div class="st-row" data-id="{{ bid }}">
+                        <button class="st-rhead" type="button" aria-expanded="false">
+                          <span class="st-dot" style="--dot:{{ accent }}">{{ idx }}</span>
+                          <span class="st-rmeta">
+                            <span class="st-name">{{ bname }}</span>
+                            <span class="st-sub">{{ bcat }}{% if bimg != blank %} · <span class="st-haspic">{{ ic_cam }}</span>{% endif %}</span>
+                          </span>
+                          {%- if bstate != blank -%}<span class="st-rdist">{{ bstate }}</span>{%- endif -%}
+                          <span class="st-chev">{{ ic_chev }}</span>
+                        </button>
+                        <div class="st-body"><div class="st-body-in">
+                          {%- if bdesc != blank -%}<p class="st-desc">{{ bdesc }}</p>{%- endif -%}
+                          <div class="st-contact">
+                            {%- if bphone != blank -%}<a class="st-c" href="tel:{{ bphone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' }}">{{ ic_phone }}<span>{{ bphone }}</span></a>{%- endif -%}
+                            {%- if baddr != blank -%}<div class="st-c"><span class="st-c-ic">{{ ic_pin }}</span><span>{{ baddr }}</span></div>{%- elsif bcity != blank -%}<div class="st-c"><span class="st-c-ic">{{ ic_pin }}</span><span>{{ bcity }}{% if bstate != blank %}, {{ bstate }}{% endif %}</span></div>{%- endif -%}
+                            {%- if bweb != blank -%}<a class="st-c" href="{{ bweb }}" target="_blank" rel="noopener">{{ ic_globe }}<span>{{ bweb | remove: 'https://' | remove: 'http://' }}</span></a>{%- endif -%}
+                            {%- if bhours != blank -%}<div class="st-c"><span class="st-c-ic">{{ ic_clock }}</span><span>{{ bhours }}</span></div>{%- endif -%}
+                          </div>
+                          {%- if bimg != blank -%}
+                          <div class="st-photos">
+                            <img class="st-shot st-shot-hero" src="{{ bimg }}" alt="{{ bname | escape }}" loading="lazy">
+                          </div>
+                          {%- endif -%}
+                          {%- if baddr != blank -%}<a class="st-btn" href="https://maps.google.com/?q={{ baddr | url_encode }}" target="_blank" rel="noopener">{{ ic_nav }} Get directions</a>{%- elsif bcity != blank -%}<a class="st-btn" href="https://maps.google.com/?q={{ bcity | append: ' ' | append: bstate | url_encode }}" target="_blank" rel="noopener">{{ ic_nav }} Get directions</a>{%- endif -%}
+                        </div></div>
+                      </div>
+                    {%- endif -%}
+                  {%- endunless -%}
+                {%- endfor -%}
+              </div>
+            {%- endunless -%}
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <div class="st-map-col">
+        <div id="st-map-{{ section.id }}" class="st-map" style="height:{{ map_h }}px"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json" id="st-data-{{ section.id }}">[{{ markers_json }}]</script>
+  {%- endif -%}
+</section>
+
+<style>
+  #st-{{ section.id }}{
+    --navy:#1B3A5C; --rose:#E8607A; --sky:#4A90B8; --sage:#8A9B6E; --peach:#E8A87C; --lime:#7DB642;
+    --cream:#FAF5F0; --fog:#F5EEE8; --mist:#E8DDD5; --stone:#8A7E76; --charcoal:#2D2521;
+    --serif:'Playfair Display','Georgia',serif; --display:'Cormorant Garamond','Georgia',serif; --sans:'DM Sans','Helvetica Neue',sans-serif;
+    --accent:{{ accent }};
+    display:block; font-family:var(--sans); color:var(--navy);
+    max-width:1180px; margin:0 auto; padding:24px 20px;
+  }
+  #st-{{ section.id }} *{ box-sizing:border-box; }
+
+  #st-{{ section.id }} .st-head{ text-align:center; max-width:680px; margin:0 auto 28px; }
+  #st-{{ section.id }} .st-eyebrow{ font-size:11px; font-weight:600; letter-spacing:.24em; text-transform:uppercase; color:var(--accent); }
+  #st-{{ section.id }} .st-title{ font-family:var(--serif); font-weight:900; font-size:clamp(28px,4vw,44px); line-height:1.05; color:var(--navy); margin:12px 0 0; letter-spacing:-.02em; }
+  #st-{{ section.id }} .st-intro{ font-family:var(--display); font-weight:300; font-size:19px; color:rgba(27,58,92,.72); margin:14px auto 0; max-width:560px; }
+
+  #st-{{ section.id }} .st-card{ background:#fff; border-radius:28px; padding:26px; box-shadow:0 8px 40px rgba(27,58,92,.12); position:relative; }
+  #st-{{ section.id }} .st-card-head{ display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+  #st-{{ section.id }} .st-card-title{ font-family:var(--serif); font-weight:800; font-size:24px; color:var(--navy); }
+  #st-{{ section.id }} .st-card-count{ font-size:12px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--stone); }
+
+  #st-{{ section.id }} .st-split{ display:grid; grid-template-columns:1.15fr .85fr; gap:22px; }
+  #st-{{ section.id }} .st-list{ max-height:{{ map_h }}px; overflow-y:auto; padding-right:6px; scroll-behavior:smooth; }
+  #st-{{ section.id }} .st-list::-webkit-scrollbar{ width:8px; }
+  #st-{{ section.id }} .st-list::-webkit-scrollbar-thumb{ background:var(--mist); border-radius:999px; }
+  #st-{{ section.id }} .st-map-col{ position:sticky; top:12px; align-self:start; }
+  #st-{{ section.id }} .st-map{ border-radius:20px; overflow:hidden; background:var(--fog); }
+
+  #st-{{ section.id }} .st-group + .st-group{ margin-top:6px; }
+  #st-{{ section.id }} .st-ghead{ position:sticky; top:0; z-index:5; background:rgba(255,255,255,.94); backdrop-filter:blur(6px); padding:10px 6px 8px; font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--navy); display:flex; align-items:center; gap:9px; border-bottom:1.5px solid var(--mist); }
+  #st-{{ section.id }} .st-gcount{ font-size:10px; background:var(--fog); color:var(--stone); padding:2px 8px; border-radius:999px; letter-spacing:.04em; }
+
+  #st-{{ section.id }} .st-row{ border-bottom:1px solid var(--fog); }
+  #st-{{ section.id }} .st-row.on{ background:color-mix(in srgb, var(--accent) 5%, transparent); }
+  #st-{{ section.id }} .st-rhead{ width:100%; display:flex; align-items:center; gap:12px; padding:13px 6px; background:none; border:none; text-align:left; cursor:pointer; }
+  #st-{{ section.id }} .st-dot{ flex-shrink:0; width:30px; height:30px; border-radius:9px; background:var(--dot,var(--accent)); color:#fff; font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 1px rgba(255,255,255,.25); }
+  #st-{{ section.id }} .st-rmeta{ flex:1; min-width:0; }
+  #st-{{ section.id }} .st-name{ font-family:var(--serif); font-weight:700; font-size:15px; color:var(--navy); line-height:1.2; display:block; }
+  #st-{{ section.id }} .st-sub{ font-size:12.5px; color:var(--stone); display:block; margin-top:2px; }
+  #st-{{ section.id }} .st-haspic{ display:inline-flex; vertical-align:-2px; color:var(--accent); }
+  #st-{{ section.id }} .st-haspic svg{ width:13px; height:13px; }
+  #st-{{ section.id }} .st-rdist{ flex-shrink:0; font-size:12px; font-weight:700; color:var(--accent); }
+  #st-{{ section.id }} .st-chev{ flex-shrink:0; color:var(--stone); display:inline-flex; transition:transform .25s; }
+  #st-{{ section.id }} .st-chev svg{ width:16px; height:16px; }
+  #st-{{ section.id }} .st-row.on .st-chev{ transform:rotate(180deg); color:var(--accent); }
+
+  #st-{{ section.id }} .st-body{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .32s cubic-bezier(.4,0,.2,1); }
+  #st-{{ section.id }} .st-row.on .st-body{ grid-template-rows:1fr; }
+  #st-{{ section.id }} .st-body-in{ overflow:hidden; }
+  #st-{{ section.id }} .st-row.on .st-body-in{ padding:2px 6px 18px 48px; }
+
+  #st-{{ section.id }} .st-desc{ font-size:14px; line-height:1.6; color:var(--charcoal); margin:0 0 16px; }
+  #st-{{ section.id }} .st-contact{ display:grid; gap:10px; margin-bottom:16px; }
+  #st-{{ section.id }} .st-c{ display:flex; align-items:flex-start; gap:11px; font-size:13.5px; color:var(--navy); text-decoration:none; }
+  #st-{{ section.id }} .st-c svg{ width:17px; height:17px; color:var(--accent); flex-shrink:0; margin-top:1px; }
+  #st-{{ section.id }} .st-c-ic{ display:inline-flex; }
+  #st-{{ section.id }} a.st-c:hover span:last-child{ color:var(--accent); text-decoration:underline; }
+  #st-{{ section.id }} .st-btn{ display:inline-flex; align-items:center; gap:8px; padding:11px 20px; border-radius:999px; background:var(--navy); color:var(--cream); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; text-decoration:none; transition:background .18s, transform .18s; }
+  #st-{{ section.id }} .st-btn svg{ width:15px; height:15px; }
+  #st-{{ section.id }} .st-btn:hover{ background:var(--accent); transform:translateY(-1px); }
+
+  #st-{{ section.id }} .st-photos{ margin-bottom:16px; }
+  #st-{{ section.id }} .st-shot{ width:100%; display:block; border-radius:12px; object-fit:cover; }
+  #st-{{ section.id }} .st-shot-hero{ height:200px; border-radius:16px; }
+  #st-{{ section.id }} .st-thumbs{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:8px; }
+  #st-{{ section.id }} .st-thumbs .st-shot{ height:110px; }
+
+  /* Leaflet pin */
+  #st-{{ section.id }} .leaflet-container{ font-family:var(--sans); background:#e8eef0; }
+  #st-{{ section.id }} .leaflet-popup-content-wrapper{ border-radius:12px; }
+  #st-{{ section.id }} .leaflet-popup-content{ margin:11px 14px; font-size:13px; line-height:1.4; }
+  #st-{{ section.id }} .leaflet-popup-content b{ color:var(--navy); font-family:var(--serif); }
+  #st-{{ section.id }} .leaflet-control-zoom a{ color:var(--navy) !important; }
+  .st-pin{ background:none; border:none; }
+  .st-pin-body{ display:block; width:30px; height:30px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); box-shadow:0 4px 10px rgba(27,58,92,.32); border:2.5px solid #fff; transition:transform .2s; }
+  .st-pin-num{ display:flex; align-items:center; justify-content:center; width:100%; height:100%; transform:rotate(45deg); color:#fff; font-weight:800; font-size:13px; font-family:'DM Sans',sans-serif; }
+  .st-pin.is-active{ z-index:1000 !important; }
+  .st-pin.is-active .st-pin-body{ transform:rotate(-45deg) scale(1.32); box-shadow:0 8px 18px rgba(27,58,92,.4); }
+
+  @media (max-width:860px){
+    #st-{{ section.id }} .st-split{ grid-template-columns:1fr; }
+    #st-{{ section.id }} .st-map-col{ position:relative; order:-1; }
+    #st-{{ section.id }} .st-map{ height:320px !important; }
+    #st-{{ section.id }} .st-list{ max-height:none; }
+  }
+</style>
+
+<script>
+(function(){
+  function ensureLeaflet(){
+    if(window.__herdLeafletP) return window.__herdLeafletP;
+    window.__herdLeafletP = new Promise(function(res, rej){
+      if(window.L){ res(window.L); return; }
+      if(!document.getElementById('herd-leaflet-css')){
+        var css = document.createElement('link');
+        css.id = 'herd-leaflet-css'; css.rel = 'stylesheet';
+        css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+        document.head.appendChild(css);
+      }
+      var s = document.createElement('script');
+      s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      s.onload = function(){ res(window.L); };
+      s.onerror = rej;
+      document.head.appendChild(s);
+    });
+    return window.__herdLeafletP;
+  }
+
+  function init(){
+    var root = document.getElementById('st-{{ section.id }}');
+    if(!root || root.dataset.stReady) return;
+    var dataEl = document.getElementById('st-data-{{ section.id }}');
+    var listEl = document.getElementById('st-list-{{ section.id }}');
+    var mapEl = document.getElementById('st-map-{{ section.id }}');
+    if(!dataEl || !mapEl) return;
+    var accent = root.dataset.accent || '#E8607A';
+    var DATA;
+    try { DATA = JSON.parse(dataEl.textContent); } catch(e){ DATA = []; }
+    DATA = DATA.filter(function(d){ return d.lat && d.lng && !(d.lat === 0 && d.lng === 0); });
+    if(!DATA.length){ return; }
+    root.dataset.stReady = '1';
+
+    ensureLeaflet().then(function(L){
+      var map = L.map(mapEl, { scrollWheelZoom: true, zoomControl: true });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
+
+      function icon(n, active){
+        return L.divIcon({
+          className: 'st-pin' + (active ? ' is-active' : ''),
+          html: '<span class="st-pin-body" style="background:' + accent + '"><span class="st-pin-num">' + n + '</span></span>',
+          iconSize: [32,32], iconAnchor: [16,36], popupAnchor: [0,-34]
+        });
+      }
+      var byId = {};
+      var markers = DATA.map(function(d){
+        var m = L.marker([d.lat, d.lng], { icon: icon(d.n, false) }).addTo(map);
+        m.bindPopup('<b>' + (d.name||'') + '</b>' + (d.cat ? '<br><span style="color:#8A7E76">' + d.cat + '</span>' : ''), { closeButton:false });
+        m.on('click', function(){ select(d.id, true); });
+        byId[d.id] = { marker:m, data:d };
+        return m;
+      });
+      var home = L.latLngBounds(DATA.map(function(d){ return [d.lat, d.lng]; })).pad(0.18);
+      map.fitBounds(home);
+      setTimeout(function(){ map.invalidateSize(); }, 200);
+
+      var current = null;
+      var rows = Array.prototype.slice.call(listEl.querySelectorAll('.st-row'));
+      rows.forEach(function(row){
+        row.querySelector('.st-rhead').addEventListener('click', function(){ select(row.dataset.id, false); });
+      });
+
+      function render(){
+        rows.forEach(function(row){
+          var on = row.dataset.id === current;
+          row.classList.toggle('on', on);
+          row.querySelector('.st-rhead').setAttribute('aria-expanded', on ? 'true' : 'false');
+        });
+        DATA.forEach(function(d){ if(byId[d.id]) byId[d.id].marker.setIcon(icon(d.n, d.id === current)); });
+      }
+      function select(id, fromMap){
+        if(current === id){
+          current = null; render();
+          map.closePopup();
+          map.flyToBounds(home, { duration: 0.55 });
+          return;
+        }
+        current = id; render();
+        var ref = byId[id];
+        if(ref){ map.flyTo([ref.data.lat, ref.data.lng], 13, { duration: 0.55 }); ref.marker.openPopup(); }
+        if(fromMap){
+          var row = listEl.querySelector('.st-row[data-id="' + id + '"]');
+          if(row) listEl.scrollTo({ top: row.offsetTop - 44, behavior: 'smooth' });
+        }
+      }
+    }).catch(function(){
+      mapEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#8A7E76;font-size:13px;">Map unavailable</div>';
+    });
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+  document.addEventListener('shopify:section:load', function(e){ if(e.detail && e.detail.sectionId === '{{ section.id }}') init(); });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Stockist Locator",
+  "tag": "section",
+  "class": "shopify-section--stockists",
+  "settings": [
+    { "type": "header", "content": "Header" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our Retailers" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Find Her'dration near you" },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Tap any shop to see hours, photos and how to get there — the map flies to it, then zooms back out when you close it." },
+
+    { "type": "header", "content": "Directory card" },
+    { "type": "text", "id": "list_title", "label": "Card title", "default": "The directory" },
+    { "type": "text", "id": "count_label", "label": "Count label", "default": "nationwide" },
+
+    { "type": "header", "content": "Bulk locations (paste many at once)" },
+    { "type": "paragraph", "content": "Add featured stockists as Retailer blocks below (max 50, with uploaded photos). To list 100+ locations, paste them here — ONE per line, fields separated by | in this order:" },
+    { "type": "paragraph", "content": "Name | Region | City | State | Lat | Lng | Phone | Address | Website | Hours | Category | Description | Image URL" },
+    { "type": "paragraph", "content": "Only Name is required. Leave a field empty to skip it (keep the | bars). Lat & Lng place it on the map — right-click a spot in Google Maps to copy coordinates. Image URL is optional (upload to Settings → Files, then paste the link)." },
+    {
+      "type": "textarea",
+      "id": "bulk",
+      "label": "Locations",
+      "info": "Example: Harvest Market | West Coast | Portland | OR | 45.5231 | -122.6765 | (503) 555-0144 | 110 SE Main St, Portland, OR | https://harvestmkt.com | Daily 8–9 | Natural Grocer | Find us in the wellness aisle. | https://cdn.shopify.com/.../store.jpg"
+    },
+
+    { "type": "header", "content": "Style" },
+    { "type": "color", "id": "accent", "label": "Accent color", "default": "#E8607A" },
+    { "type": "range", "id": "map_height", "label": "Map height", "min": 360, "max": 760, "step": 20, "unit": "px", "default": 600 }
+  ],
+  "blocks": [
+    {
+      "type": "retailer",
+      "name": "Retailer (featured, with photos)",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Wellness Market" },
+        { "type": "text", "id": "category", "label": "Category", "default": "Health & Supplements" },
+        { "type": "color", "id": "color", "label": "Logo dot color", "default": "#E8607A" },
+        { "type": "text", "id": "region", "label": "Region (groups the list)", "default": "West Coast", "info": "Rows are grouped under this label. Reuse the same text across retailers to group them." },
+        { "type": "text", "id": "city", "label": "City", "default": "Los Angeles" },
+        { "type": "text", "id": "state", "label": "State / badge", "default": "CA" },
+        { "type": "header", "content": "Map location" },
+        { "type": "text", "id": "latitude", "label": "Latitude", "info": "e.g. 34.0522 — from Google Maps, right-click the spot → copy coordinates.", "default": "34.0522" },
+        { "type": "text", "id": "longitude", "label": "Longitude", "default": "-118.2437" },
+        { "type": "header", "content": "Details" },
+        { "type": "textarea", "id": "description", "label": "Description", "default": "A neighborhood market with Her'dration front-of-store in the hydration set." },
+        { "type": "text", "id": "phone", "label": "Phone" },
+        { "type": "text", "id": "address", "label": "Address" },
+        { "type": "url", "id": "website", "label": "Website URL" },
+        { "type": "text", "id": "website_label", "label": "Website label (optional)" },
+        { "type": "text", "id": "hours", "label": "Hours", "default": "Mon–Sat 9–8 · Sun 10–6" },
+        { "type": "header", "content": "Photos (optional)" },
+        { "type": "image_picker", "id": "photo", "label": "Storefront photo" },
+        { "type": "image_picker", "id": "photo2", "label": "Gallery photo 2" },
+        { "type": "image_picker", "id": "photo3", "label": "Gallery photo 3" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Stockist Locator",
+      "blocks": [
+        { "type": "retailer", "settings": { "name": "Golden State Wellness", "category": "Health & Supplements", "color": "#E8607A", "region": "West Coast", "city": "Los Angeles", "state": "CA", "latitude": "34.0830", "longitude": "-118.3380", "phone": "(323) 555-0142", "address": "820 N Highland Ave, Los Angeles, CA 90038", "hours": "Mon–Sat 9–8 · Sun 10–6" } },
+        { "type": "retailer", "settings": { "name": "Emerald City Nutrition", "category": "Sports Nutrition", "color": "#E8A87C", "region": "West Coast", "city": "Seattle", "state": "WA", "latitude": "47.6230", "longitude": "-122.3210", "phone": "(206) 555-0156", "address": "415 Broadway E, Seattle, WA 98102", "hours": "Mon–Sat 9–9 · Sun 11–6" } },
+        { "type": "retailer", "settings": { "name": "Mile High Market", "category": "Natural Grocer", "color": "#7DB642", "region": "Mountain West", "city": "Denver", "state": "CO", "latitude": "39.7200", "longitude": "-104.9520", "phone": "(303) 555-0188", "address": "2900 E 6th Ave, Denver, CO 80206", "hours": "Daily 8–9" } },
+        { "type": "retailer", "settings": { "name": "Windy City Wellness", "category": "Health & Supplements", "color": "#E8607A", "region": "Midwest", "city": "Chicago", "state": "IL", "latitude": "41.9090", "longitude": "-87.6720", "phone": "(312) 555-0142", "address": "1543 N Milwaukee Ave, Chicago, IL 60622", "hours": "Mon–Sat 9–8 · Sun 10–6" } },
+        { "type": "retailer", "settings": { "name": "Empire Wellness", "category": "Health & Supplements", "color": "#4A90B8", "region": "Northeast", "city": "New York", "state": "NY", "latitude": "40.7220", "longitude": "-73.9980", "phone": "(212) 555-0142", "address": "215 Lafayette St, New York, NY 10012", "hours": "Mon–Sat 9–9 · Sun 10–7" } },
+        { "type": "retailer", "settings": { "name": "Peach State Provisions", "category": "Health & Supplements", "color": "#8A9B6E", "region": "South", "city": "Atlanta", "state": "GA", "latitude": "33.7870", "longitude": "-84.4150", "phone": "(404) 555-0142", "address": "1198 Howell Mill Rd, Atlanta, GA 30318", "hours": "Mon–Sat 9–8 · Sun 10–6" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
